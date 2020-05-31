@@ -5,17 +5,20 @@ import java.util.stream.Stream;
 import javax.crypto.spec.SecretKeySpec;
 
 abstract interface SecureCryptoConfigInterface {
+	//Symmetric Encryption
 	public SCCCiphertext symmetricEncrypt(SCCKey key, PlaintextContainer plaintext);
 
-	public SCCCiphertext SymmetricReEncrypt(SCCKey key, SCCCiphertext ciphertext);
+	public SCCCiphertext symmetricReEncrypt(SCCKey key, SCCCiphertext ciphertext);
 
 	public PlaintextContainer symmetricDecrypt(SCCKey key, SCCCiphertext sccciphertext);
 
-	public SCCCiphertextStream<?> encrypt(SCCKey key, PlaintextContainerStream<?> plaintext);
+	public SCCCiphertextStream<?> streamEncrypt(SCCKey key, PlaintextContainerStream<?> plaintext);
 
-	public SCCCiphertextStream<?> reEncrypt(SCCKey key, SCCCiphertextStream<?> ciphertext);
+	public SCCCiphertextStream<?> streamReEncrypt(SCCKey key, SCCCiphertextStream<?> ciphertext);
 
-	public PlaintextContainerStream<?> decrypt(SCCKey key, SCCCiphertextStream<?> ciphertext);
+	public PlaintextContainerStream<?> streamDecrypt(SCCKey key, SCCCiphertextStream<?> ciphertext);
+	
+	//Asymmetric
 
 	public SCCCiphertext[] encrypt(SCCKey[] key, PlaintextContainer plaintext);
 
@@ -24,18 +27,24 @@ abstract interface SecureCryptoConfigInterface {
 	public SCCCiphertext AsymmetricReEncrypt(SCCKey key, SCCCiphertext ciphertext);
 
 	public PlaintextContainer asymmetricDecrypt(SCCKey key, SCCCiphertext ciphertext);
+	
+	//Hashing
 
 	public SCCHash hash(PlaintextContainer plaintext);
 
 	public SCCHash reHash(PlaintextContainer plaintext);
 
 	public boolean verifyHash(PlaintextContainer plaintext, SCCHash hash);
+	
+	//Digital Signature
 
 	public SCCSignature sign(SCCKey privateKey, PlaintextContainer plaintext);
 
 	public SCCSignature reSign(SCCKey privateKey, PlaintextContainer plaintext);
 
 	public boolean validteSignature(SCCKey publicKeyy, SCCSignature signature);
+	
+	//Password Hashing
 
 	public SCCPasswordHash passwordHash(String password);
 
@@ -48,9 +57,10 @@ abstract interface SecureCryptoConfigInterface {
 }
 
 abstract interface PlaintextContainer {
+
 	public byte[] getPlaintext();
 
-	boolean verify(SCCHash scchash);
+	//boolean verify(SCCHash scchash);
 }
 
 abstract interface PlaintextContainerStream<T> {
@@ -80,6 +90,7 @@ abstract class AlgorithmIdentifier {
 	}
 }
 
+//extends SecretKeySpec?
 abstract class SCCKey extends SecretKeySpec {
 
 	private SCCKey(byte[] key, String algorithm) {

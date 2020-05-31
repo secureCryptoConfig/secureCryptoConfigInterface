@@ -1,17 +1,29 @@
 package test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import main.SecureCryptoConfig;
+
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.SecretKey;
+
+import main.SymmetricEncryption;
 
 import org.junit.jupiter.api.Test;
 
 class SecureCryptoConfigTest {
 
-	SecureCryptoConfig s = new SecureCryptoConfig();
+	SymmetricEncryption s = new SymmetricEncryption();
+	String plainText ="Hello World";
 	
 	@Test
-	void test() {
-		assertEquals(4, s.add(2,2));
+	void testSymmetricEncryption() throws NoSuchAlgorithmException {
+		SecretKey key = s.makeKey();
+		byte[] nonce = s.generateNonce(32);
+		byte[] plain  = s.getByte(plainText);
+		String cipherText = s.encrypt(key, plain, nonce);
+		String decrypted = s.decrypt(key, cipherText, nonce);
+
+		assertEquals(plainText, decrypted);
 	}
 
 }
