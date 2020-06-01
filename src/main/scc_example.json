@@ -1,0 +1,29 @@
+[
+	{
+    "PolicyName" : "SCC_SecurityLevel_5",
+    "Publisher" : [
+        {
+            "name" : "Crypto Forum Research Group",
+            "URL" : "https://irtf.org/cfrg"
+        }
+    ],
+    "Version" : "2020-0",
+    "PolicyIssueDate" : "2020-04-20",
+    "Expiry" : "2023-04-21",
+    "Usage" : {
+        "SymmetricEncryption" : [
+            "AES_GCM_256_128_128",
+            "AES_GCM_256_256_128"
+        ],
+        "AsymmetricEncryption" : [
+            "RSA_SHA3_256"
+        ],
+        "Hashing" : [
+            "SHA3_512"
+        ],
+        "Signing" : [
+            "ES512"
+        ]
+    }
+  }
+]
