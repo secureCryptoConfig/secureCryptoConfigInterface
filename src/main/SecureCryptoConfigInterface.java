@@ -4,9 +4,11 @@ import java.util.stream.Stream;
 
 import javax.crypto.spec.SecretKeySpec;
 
+import COSE.CoseException;
+
 abstract interface SecureCryptoConfigInterface {
 	//Symmetric Encryption
-	public SCCCiphertext symmetricEncrypt(SCCKey key, PlaintextContainer plaintext);
+	public SCCCiphertext symmetricEncrypt(SCCKey key, PlaintextContainer plaintext) throws CoseException;
 
 	public SCCCiphertext symmetricReEncrypt(SCCKey key, SCCCiphertext ciphertext);
 

@@ -6,6 +6,10 @@
             "name" : "Crypto Forum Research Group",
             "URL" : "https://irtf.org/cfrg"
         }
+        {
+            "name" : "BSI",
+            "URL" : "https://BSI"
+        }
     ],
     "Version" : "2020-0",
     "PolicyIssueDate" : "2020-04-20",
