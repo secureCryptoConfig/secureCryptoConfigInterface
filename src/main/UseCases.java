@@ -3,6 +3,7 @@ package main;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Base64;
@@ -17,16 +18,18 @@ import javax.crypto.spec.GCMParameterSpec;
 
 
 
-public class SymmetricEncryption {
+public class UseCases {
 	
+	/**
+	 * Convert String (UTF8) into byte[]
+	 */
 	public byte[] getByte (String plainText) {
 		return plainText.getBytes(StandardCharsets.UTF_8);
 	}
 	
-	public String getString (byte[] b) {
-		return new String(b, StandardCharsets.UTF_8);
-	}
-
+	/**
+	 * Generate Secrete Key needed for crypto use cases
+	 */
 	public SecretKey makeKey() throws NoSuchAlgorithmException {
 		KeyGenerator keyGen;
 		keyGen = KeyGenerator.getInstance("AES");
@@ -36,6 +39,10 @@ public class SymmetricEncryption {
 		
 	}
 	
+	
+	/**
+	 * Generate Nonce with secure Random numer generator
+	 */
 	public byte[] generateNonce(int nonceLength) throws NoSuchAlgorithmException {
 		 // GENERATE random nonce (number used once)
 	      final byte[] nonce = new byte[32];
@@ -44,8 +51,10 @@ public class SymmetricEncryption {
 	      return nonce;
 	}
 	
-	//Only general symmetric encryption
-	public String encrypt(SecretKey key, byte[] plainText, byte[] nonce)
+	/**
+	 * Implements basic functionality of symmetric encryption
+	 */
+	public String symmetricEncrypt(SecretKey key, byte[] plainText, byte[] nonce)
 	{
 	      try {
 	    
@@ -66,7 +75,10 @@ public class SymmetricEncryption {
 		} 
 	}
 	
-	public String decrypt(SecretKey key, String cipherText, byte[] nonce) {
+	/**
+	 * Implements basic functionality of symmetric decryption
+	 */
+	public String symmetricDecrypt(SecretKey key, String cipherText, byte[] nonce) {
 		try {
 	      Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
 	      GCMParameterSpec spec = new GCMParameterSpec(16 * 8, nonce);
@@ -79,6 +91,8 @@ public class SymmetricEncryption {
 			return null;
 		}
 	}
+	
+
 
 
 

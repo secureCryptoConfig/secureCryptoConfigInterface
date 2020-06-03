@@ -1,6 +1,5 @@
 package main;
 
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -19,11 +18,16 @@ public class JSONReader {
     //JSON parser object to parse read file
 	static JSONParser jsonParser = new JSONParser();
 	
+	//Enum representing supported crypto use cases
 	public enum CryptoUseCase            
 	{
 	   SymmetricEncryption, Signing, Hashing, AsymmetricEncryption ;  
 	}
 	
+	/**
+	 * retrieving Algorithms for specific Crypto Use case out of JSON
+	 * @param useCase, value from Enum
+	 */
 	public static ArrayList<String> getAlgos(CryptoUseCase useCase) 
     {
         ArrayList<String> algos = new ArrayList<String>();
@@ -31,16 +35,13 @@ public class JSONReader {
         {
             //Read JSON file
             Object obj = jsonParser.parse(reader);
- 
             JSONArray sccList = (JSONArray) obj;
-            System.out.println(sccList);
-            
             JSONObject scc = (JSONObject) sccList.get(0);
             
             
             JSONObject usageObject = (JSONObject) scc.get("Usage");
             JSONArray use = (JSONArray)usageObject.get(useCase.toString());
-            Iterator iterator = use.iterator();
+            Iterator<?> iterator = use.iterator();
             while (iterator.hasNext()) {
                //System.out.println(iterator.next());
                algos.add((String)iterator.next());
@@ -53,6 +54,11 @@ public class JSONReader {
  
     }
 	
+	/**
+	 * Auxiliary method for readJSON method
+	 * Prints all names/URL from each publisher
+	 * @param publisher
+	 */
 	private static void getPublisher(JSONObject publisher) 
     {
       
@@ -65,11 +71,17 @@ public class JSONReader {
  
     }
 	
+	/**
+	 * Auxiliary method for readJSON method
+	 * Prints all algorithms for a given useCase
+	 * 
+	 */
+	
 	private static void getUsage(CryptoUseCase useCase, JSONObject usageObject) 
     {
 		System.out.println(useCase.toString());
 		 JSONArray use = (JSONArray)usageObject.get(useCase.toString());
-         Iterator iterator = use.iterator();
+         Iterator<?> iterator = use.iterator();
          while (iterator.hasNext()) {
             System.out.println(iterator.next());
          }
@@ -77,6 +89,9 @@ public class JSONReader {
     }
 	
 	
+	/**
+	 * Prints all data contained in the JSON file
+	 */
 	@SuppressWarnings("unchecked")
 	public static void readJSON() {
 
@@ -110,17 +125,10 @@ public class JSONReader {
             Arrays.asList(CryptoUseCase.values()).
             forEach(useCase -> getUsage(useCase, usageObject));
  
-        } catch (FileNotFoundException e) {
+        } catch (IOException | ParseException e) {
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        } 
    }
 		
-	public static void main(String[] args) {
-		getAlgos(CryptoUseCase.SymmetricEncryption);
-	}
 	}
 
