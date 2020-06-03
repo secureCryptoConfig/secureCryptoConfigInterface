@@ -16,84 +16,94 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
 
-
-
-public class UseCases {
+	public class UseCases {
 	
 	/**
 	 * Convert String (UTF8) into byte[]
 	 */
-	public byte[] getByte (String plainText) {
+	public byte[] getByte(String plainText) {
 		return plainText.getBytes(StandardCharsets.UTF_8);
 	}
-	
+
 	/**
 	 * Generate Secrete Key needed for crypto use cases
 	 */
 	public SecretKey makeKey() throws NoSuchAlgorithmException {
 		KeyGenerator keyGen;
 		keyGen = KeyGenerator.getInstance("AES");
-	    keyGen.init(256);
-	    SecretKey key = keyGen.generateKey();
-	    return key;
-		
+		keyGen.init(256);
+		SecretKey key = keyGen.generateKey();
+		return key;
+
 	}
-	
-	
+
 	/**
 	 * Generate Nonce with secure Random numer generator
 	 */
 	public byte[] generateNonce(int nonceLength) throws NoSuchAlgorithmException {
-		 // GENERATE random nonce (number used once)
-	      final byte[] nonce = new byte[32];
-	      SecureRandom random = SecureRandom.getInstanceStrong();
-	      random.nextBytes(nonce);
-	      return nonce;
+		// GENERATE random nonce (number used once)
+		final byte[] nonce = new byte[32];
+		SecureRandom random = SecureRandom.getInstanceStrong();
+		random.nextBytes(nonce);
+		return nonce;
 	}
-	
+
 	/**
 	 * Implements basic functionality of symmetric encryption
 	 */
-	public String symmetricEncrypt(SecretKey key, byte[] plainText, byte[] nonce)
-	{
-	      try {
-	    
-	      // ENCRYPTION
-	      Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-	      GCMParameterSpec spec = new GCMParameterSpec(16 * 8, nonce);
-	      cipher.init(Cipher.ENCRYPT_MODE, key, spec);
+	public String symmetricEncrypt(SecretKey key, byte[] plainText, byte[] nonce) {
+		try {
 
-	      byte[] byteCipher = cipher.doFinal(plainText);
-	      // CONVERSION of raw bytes to BASE64 representation
-	     String cipherText = Base64.getEncoder().encodeToString(byteCipher);
-	     return cipherText;
-	      
-	      }catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | 
-	    		  IllegalBlockSizeException | BadPaddingException e) {
-	    	  e.printStackTrace();
-	    	  return null;
-		} 
+			// ENCRYPTION
+			Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+			GCMParameterSpec spec = new GCMParameterSpec(16 * 8, nonce);
+			cipher.init(Cipher.ENCRYPT_MODE, key, spec);
+
+			byte[] byteCipher = cipher.doFinal(plainText);
+			// CONVERSION of raw bytes to BASE64 representation
+			String cipherText = Base64.getEncoder().encodeToString(byteCipher);
+			return cipherText;
+
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+				| InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
-	
+
 	/**
 	 * Implements basic functionality of symmetric decryption
 	 */
 	public String symmetricDecrypt(SecretKey key, String cipherText, byte[] nonce) {
 		try {
-	      Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
-	      GCMParameterSpec spec = new GCMParameterSpec(16 * 8, nonce);
-	      cipher.init(Cipher.DECRYPT_MODE, key, spec);
-		  byte[] decryptedCipher = cipher.doFinal(Base64.getDecoder().decode(cipherText));
-		  String decryptedCipherText = new String(decryptedCipher, StandardCharsets.UTF_8);
-		  return decryptedCipherText;
-		} catch (IllegalBlockSizeException | BadPaddingException | InvalidKeyException | InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchPaddingException e) {
+			Cipher cipher = Cipher.getInstance("AES/GCM/NoPadding");
+			GCMParameterSpec spec = new GCMParameterSpec(16 * 8, nonce);
+			cipher.init(Cipher.DECRYPT_MODE, key, spec);
+			byte[] decryptedCipher = cipher.doFinal(Base64.getDecoder().decode(cipherText));
+			String decryptedCipherText = new String(decryptedCipher, StandardCharsets.UTF_8);
+			return decryptedCipherText;
+		} catch (IllegalBlockSizeException | BadPaddingException | InvalidKeyException
+				| InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchPaddingException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
-	
 
+	public String hash(String plainText) {
+		try {
+			// Get MessageDigest Instance
+			MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
 
+			// CREATE HASH
+			byte[] hashBytes = messageDigest.digest(plainText.getBytes(StandardCharsets.UTF_8));
 
+			// CONVERT/ENCODE IN BASE64
+			String hashString = Base64.getEncoder().encodeToString(hashBytes);
+			return hashString;
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 }

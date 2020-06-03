@@ -36,6 +36,7 @@ abstract interface SecureCryptoConfigInterface {
 
 	public SCCHash reHash(PlaintextContainer plaintext);
 
+	// How to verify Hash?
 	public boolean verifyHash(PlaintextContainer plaintext, SCCHash hash);
 	
 	//Digital Signature
@@ -52,9 +53,8 @@ abstract interface SecureCryptoConfigInterface {
 
 	public boolean verifyPassword(String password, SCCPasswordHash passwordhash);
 
-	// TODO methods for key generation?
-
-	// TODO methods for CSPRNG?
+	// TODO methods for key generation? Returning of SCCKey?
+	public SCCKey generateKey();
 
 }
 
@@ -62,7 +62,7 @@ abstract interface PlaintextContainer {
 
 	public byte[] getPlaintext();
 
-	//boolean verify(SCCHash scchash);
+	boolean verifyHash(SCCHash scchash);
 }
 
 abstract interface PlaintextContainerStream<T> {
@@ -113,7 +113,7 @@ abstract class SCCKey extends SecretKeySpec {
 }
 
 abstract class SCCHash {
-	abstract boolean verify(PlaintextContainer plaintext);
+	//abstract boolean verify(PlaintextContainer plaintext);
 }
 
 abstract class SCCPasswordHash {

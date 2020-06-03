@@ -30,8 +30,9 @@ class SecureCryptoConfigTest {
 	//Test for Hashing / how to test?
 	@Test
 	void testHashing()  {
-		
-		//assertEquals(hashed1, hashed2);
+		String hashed1 = s.hash(plainText);
+		String hashed2 = s.hash(plainText);
+		assertEquals(hashed1, hashed2);
 	}
 
 }

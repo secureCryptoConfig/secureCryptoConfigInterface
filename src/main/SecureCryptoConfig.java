@@ -1,57 +1,52 @@
 package main;
+
 import java.util.ArrayList;
 
 import COSE.*;
 import main.JSONReader.CryptoUseCase;
 
-
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
-	
-	//needed
+
+	// needed ?
 	public enum Algorithms {
-		AES_GCM_256_128_128,
-        AES_GCM_256_256_128,
-        AES_CCM_64_128_128,
-        AES_CCM_64_128_256
+		AES_GCM_256_128_128, AES_GCM_256_256_128, AES_CCM_64_128_128, AES_CCM_64_128_256
 	}
 
+	// Only draft
 	@Override
 	public SCCCiphertext symmetricEncrypt(SCCKey key, PlaintextContainer plaintext) throws CoseException {
-		ArrayList<String> algos = new ArrayList<String>();
-		algos = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
-		String alg = algos.get(0);
+		ArrayList<String> algorithms = new ArrayList<String>();
+		// read our Algorithms for symmetric encryption out of JSON
+		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
+		// get first one, later look what to do if first is not validate -> take next
+		String alg = algorithms.get(0);
+		// According to Algo encrypt different (or read out params out of names first?)
 		switch (alg) {
-        case "AES_GCM_256_128_128":
-        case "AES_GCM_256_256_128":
-            AES_GCM_Encrypt(alg, key, plaintext);
-            break;
+		case "AES_GCM_256_128_128":
+		case "AES_GCM_256_256_128":
+			AES_GCM_Encrypt(alg, key, plaintext);
+			break;
 
-        case "AES_CCM_64_128_128":
-        case "AES_CCM_64_128_256":
-            AES_CCM_Encrypt(alg, key, plaintext);
-            break;
+		case "AES_CCM_64_128_128":
+		case "AES_CCM_64_128_256":
+			AES_CCM_Encrypt(alg, key, plaintext);
+			break;
 
-        default:
-            throw new CoseException("Unsupported Algorithm Specified");
-    }
+		default:
+			throw new CoseException("Unsupported Algorithm Specified");
+		}
 		return null;
 	}
 
-
-
 	private void AES_CCM_Encrypt(String alg, SCCKey key, PlaintextContainer plaintext) {
 		// TODO Auto-generated method stub
-		
+
 	}
-
-
 
 	private void AES_GCM_Encrypt(String alg, SCCKey key, PlaintextContainer plaintext) {
 		// TODO Auto-generated method stub
-		
+
 	}
-
-
 
 	@Override
 	public SCCCiphertext symmetricReEncrypt(SCCKey key, SCCCiphertext ciphertext) {
@@ -154,6 +149,11 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
+
+	@Override
+	public SCCKey generateKey() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }
