@@ -29,12 +29,10 @@ import javax.crypto.spec.GCMParameterSpec;
 	 * Generate Secrete Key needed for crypto use cases
 	 */
 	public static SecretKey makeKey() throws NoSuchAlgorithmException {
-		KeyGenerator keyGen;
-		keyGen = KeyGenerator.getInstance("AES");
+		KeyGenerator keyGen = KeyGenerator.getInstance("AES");
 		keyGen.init(256);
 		SecretKey key = keyGen.generateKey();
 		return key;
-
 	}
 
 	/**
@@ -113,7 +111,6 @@ import javax.crypto.spec.GCMParameterSpec;
 		}
 		
 	}
-	
 	
  
 }
