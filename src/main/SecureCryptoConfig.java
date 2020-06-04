@@ -17,10 +17,6 @@ import main.JSONReader.CryptoUseCase;
 
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
-	// needed ?
-	public enum Algorithms {
-		AES_GCM_256_128_128, AES_GCM_256_256_128, AES_CCM_64_128_128, AES_CCM_64_128_256
-	}
 
 	// Only draft
 	@Override
@@ -45,7 +41,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		String [] parameters = alg.split("_");
 		String algorithm = parameters[0];
 		String mode = parameters[1];
-		//int keyLength = Integer.parseInt(parameters[2]);
+		int keyLength = Integer.parseInt(parameters[2]);
 		int tagLenth = Integer.parseInt(parameters[3]);
 		int nonceLength = Integer.parseInt(parameters[4]);
 		
