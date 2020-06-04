@@ -2,14 +2,16 @@ package main;
 
 import java.util.stream.Stream;
 
+import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
-import COSE.CoseException;
 
 abstract interface SecureCryptoConfigInterface {
 	//Symmetric Encryption
-	public SCCCiphertext symmetricEncrypt(SCCKey key, PlaintextContainer plaintext) throws CoseException;
-
+	
+	//public SCCCiphertext symmetricEncrypt(SCCKey key, PlaintextContainer plaintext);
+	public String symmetricEncrypt(SecretKey key, String plaintext);
+	
 	public SCCCiphertext symmetricReEncrypt(SCCKey key, SCCCiphertext ciphertext);
 
 	public PlaintextContainer symmetricDecrypt(SCCKey key, SCCCiphertext sccciphertext);
@@ -95,9 +97,11 @@ abstract class AlgorithmIdentifier {
 //extends SecretKeySpec?
 abstract class SCCKey extends SecretKeySpec {
 
-	private SCCKey(byte[] key, String algorithm) {
+	private static final long serialVersionUID = -5728367200343756529L;
+
+	protected SCCKey(byte[] key, String algorithm) {
 		super(key, algorithm);
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	enum SCCKeyType {

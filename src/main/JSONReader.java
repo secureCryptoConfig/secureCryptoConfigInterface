@@ -129,6 +129,12 @@ public class JSONReader {
             e.printStackTrace();
         } 
    }
-		
+		public static void main(String[] args) {
+			String s = "AES_GCM_256_128_128";
+			String [] parameters = s.split("_");
+			for (int i = 0; i < parameters.length; i++) {
+				System.out.println(parameters[i]);
+			}
+		}
 	}
 

@@ -18,9 +18,9 @@ class SecureCryptoConfigTest {
 	//Test for basic symmetric en/decryption
 	@Test
 	void testSymmetricEncryption() throws NoSuchAlgorithmException {
-		SecretKey key = s.makeKey();
-		byte[] nonce = s.generateNonce(32);
-		byte[] plain  = s.getByte(plainText);
+		SecretKey key = UseCases.makeKey();
+		byte[] nonce = UseCases.generateNonce(32);
+		byte[] plain  = UseCases.getByte(plainText);
 		String cipherText = s.symmetricEncrypt(key, plain, nonce);
 		String decrypted = s.symmetricDecrypt(key, cipherText, nonce);
 

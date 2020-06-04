@@ -21,14 +21,14 @@ import javax.crypto.spec.GCMParameterSpec;
 	/**
 	 * Convert String (UTF8) into byte[]
 	 */
-	public byte[] getByte(String plainText) {
+	public static byte[] getByte(String plainText) {
 		return plainText.getBytes(StandardCharsets.UTF_8);
 	}
 
 	/**
 	 * Generate Secrete Key needed for crypto use cases
 	 */
-	public SecretKey makeKey() throws NoSuchAlgorithmException {
+	public static SecretKey makeKey() throws NoSuchAlgorithmException {
 		KeyGenerator keyGen;
 		keyGen = KeyGenerator.getInstance("AES");
 		keyGen.init(256);
@@ -40,12 +40,19 @@ import javax.crypto.spec.GCMParameterSpec;
 	/**
 	 * Generate Nonce with secure Random numer generator
 	 */
-	public byte[] generateNonce(int nonceLength) throws NoSuchAlgorithmException {
+	public static byte[] generateNonce(int nonceLength) {
+		try {
 		// GENERATE random nonce (number used once)
-		final byte[] nonce = new byte[32];
-		SecureRandom random = SecureRandom.getInstanceStrong();
+		final byte[] nonce = new byte[nonceLength];
+		SecureRandom random;
+		random = SecureRandom.getInstanceStrong();
 		random.nextBytes(nonce);
-		return nonce;
+		return nonce;	
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
 	}
 
 	/**
@@ -104,6 +111,9 @@ import javax.crypto.spec.GCMParameterSpec;
 			e.printStackTrace();
 			return null;
 		}
+		
 	}
-
+	
+	
+ 
 }

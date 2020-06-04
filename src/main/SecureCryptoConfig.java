@@ -1,8 +1,18 @@
 package main;
 
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 
-import COSE.*;
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.GCMParameterSpec;
+
 import main.JSONReader.CryptoUseCase;
 
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
@@ -14,39 +24,56 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	// Only draft
 	@Override
-	public SCCCiphertext symmetricEncrypt(SCCKey key, PlaintextContainer plaintext) throws CoseException {
+	public String symmetricEncrypt(SecretKey key, String plaintext) {
+		
 		ArrayList<String> algorithms = new ArrayList<String>();
+		
 		// read our Algorithms for symmetric encryption out of JSON
 		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
+		
 		// get first one, later look what to do if first is not validate -> take next
 		String alg = algorithms.get(0);
-		// According to Algo encrypt different (or read out params out of names first?)
-		switch (alg) {
-		case "AES_GCM_256_128_128":
-		case "AES_GCM_256_256_128":
-			AES_GCM_Encrypt(alg, key, plaintext);
-			break;
+		
+		return doSymmetricEncryption(key, plaintext, alg);
 
-		case "AES_CCM_64_128_128":
-		case "AES_CCM_64_128_256":
-			AES_CCM_Encrypt(alg, key, plaintext);
-			break;
+	}
 
-		default:
-			throw new CoseException("Unsupported Algorithm Specified");
+
+
+	private String doSymmetricEncryption(SecretKey key, String plainText, String alg) {
+		//Split Algo Identifier in its parameters
+		String [] parameters = alg.split("_");
+		String algorithm = parameters[0];
+		String mode = parameters[1];
+		//int keyLength = Integer.parseInt(parameters[2]);
+		int tagLenth = Integer.parseInt(parameters[3]);
+		int nonceLength = Integer.parseInt(parameters[4]);
+		
+		try {
+
+			// ENCRYPTION
+			Cipher cipher = Cipher.getInstance(algorithm + "/" + mode + "/NoPadding");
+			
+			// GENERATE random nonce (number used once)
+			final byte[] nonce = UseCases.generateNonce(nonceLength);
+			
+			GCMParameterSpec spec = new GCMParameterSpec(tagLenth, nonce);
+			cipher.init(Cipher.ENCRYPT_MODE, key, spec);
+
+			byte[] byteCipher = cipher.doFinal(UseCases.getByte(plainText));
+			// CONVERSION of raw bytes to BASE64 representation
+			String cipherText = Base64.getEncoder().encodeToString(byteCipher);
+			return cipherText;
+
+		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+				| InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+			e.printStackTrace();
+			return null;
 		}
-		return null;
+		
 	}
 
-	private void AES_CCM_Encrypt(String alg, SCCKey key, PlaintextContainer plaintext) {
-		// TODO Auto-generated method stub
 
-	}
-
-	private void AES_GCM_Encrypt(String alg, SCCKey key, PlaintextContainer plaintext) {
-		// TODO Auto-generated method stub
-
-	}
 
 	@Override
 	public SCCCiphertext symmetricReEncrypt(SCCKey key, SCCCiphertext ciphertext) {
@@ -155,5 +182,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
 
+	
 }
