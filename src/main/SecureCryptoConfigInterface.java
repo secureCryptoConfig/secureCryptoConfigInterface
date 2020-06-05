@@ -136,7 +136,10 @@ abstract class AbstractSCCKey extends SecretKeySpec {
 }
 
 abstract class AbstractSCCHash {
-	// abstract boolean verify(PlaintextContainer plaintext);
+	abstract boolean verify(PlaintextContainer plaintext);
+	
+	@Override
+	public abstract String toString();
 }
 
 abstract class AbstractSCCPasswordHash {

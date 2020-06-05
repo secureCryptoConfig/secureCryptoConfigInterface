@@ -10,20 +10,19 @@ import org.junit.jupiter.api.Test;
 
 import main.PlaintextContainer;
 import main.SCCCiphertext;
+import main.SCCHash;
 import main.SCCKey;
 import main.SecureCryptoConfig;
 import main.UseCases;
 
 class SecureCryptoConfigTest {
 
-	UseCases s = new UseCases();
-	String plainText = "very confidential";
+	SecureCryptoConfig scc = new SecureCryptoConfig();
+	String inputPlaintext = "very confidential";
+	PlaintextContainer plaintextContainer = new PlaintextContainer(inputPlaintext);
 
-	@Test
+	//@Test
 	void testSCCsymmetricEncryption() {
-		SecureCryptoConfig scc = new SecureCryptoConfig();
-		String inputPlaintext = "very confidential";
-		PlaintextContainer plaintextContainer = new PlaintextContainer(inputPlaintext);
 		SCCKey scckey = SCCKey.createKey();
 
 		SCCCiphertext sccciphertext = scc.symmetricEncrypt(scckey, plaintextContainer);
@@ -35,11 +34,13 @@ class SecureCryptoConfigTest {
 	}
 
 	// Test for Hashing / how to test?
-	// @Test
+	@Test
 	void testHashing() {
-		String hashed1 = s.hash(plainText);
-		String hashed2 = s.hash(plainText);
-		assertEquals(hashed1, hashed2);
+		SCCHash hashed = scc.hash(plaintextContainer);
+		String s = hashed.toString();
+		SCCHash hashed1 = scc.hash(plaintextContainer);
+		String s1 = hashed1.toString();
+		assertEquals(s, s1);
 	}
 
 }

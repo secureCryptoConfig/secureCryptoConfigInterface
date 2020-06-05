@@ -3,6 +3,7 @@ package main;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -41,10 +42,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		ArrayList<String> algorithms = new ArrayList<String>();
 
 		// read our Algorithms for symmetric encryption out of JSON
-		 algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
 
 		// get first one, later look what to do if first is not validate -> take next
-		// String alg = algorithms.get(0);
+		String alg = algorithms.get(0);
 		// return new SCCCiphertext
 
 		// return doSymmetricEncryption(key, plaintext, alg);
@@ -103,7 +104,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			byte[] nonce = sccciphertext.parameters.nonce;
 			int tagLength = sccciphertext.parameters.tagLength;
 			String algo = sccciphertext.parameters.algo;
-			
+
 			Cipher cipher = Cipher.getInstance(algo);
 			GCMParameterSpec spec = new GCMParameterSpec(tagLength, nonce);
 			cipher.init(Cipher.DECRYPT_MODE, key, spec);
@@ -117,13 +118,12 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			return null;
 		}
 	}
-	
+
 	@Override
 	public AbstractSCCCiphertext symmetricReEncrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 
 	@Override
 	public SCCCiphertextStream<?> streamEncrypt(AbstractSCCKey key, PlaintextContainerStream<?> plaintext) {
@@ -168,8 +168,41 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public AbstractSCCHash hash(PlaintextContainerInterface plaintext) {
-		// TODO Auto-generated method stub
+	public SCCHash hash(PlaintextContainerInterface plaintext) {
+		ArrayList<String> algorithms = new ArrayList<String>();
+
+		// read our Algorithms for symmetric encryption out of JSON
+		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
+
+		// get first one, later look what to do if first is not validate -> take next
+		String alg = algorithms.get(0);
+
+		String sccalgorithmID = "SHA3_512";
+
+		// TODO mapping from sting to enum:
+
+		if (getEnums().contains(sccalgorithmID)) {
+
+			AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+
+			switch (chosenAlgorithmID) {
+			case SHA3_512:
+				try {
+					// Get MessageDigest Instance
+					MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
+
+					// CREATE HASH
+					byte[] hashBytes = messageDigest.digest(plaintext.getByteArray());
+					SCCHash hash = new SCCHash(hashBytes);
+					return hash;
+				} catch (NoSuchAlgorithmException e) {
+					e.printStackTrace();
+					return null;
+				}
+			default:
+				return null;
+			}
+		}
 		return null;
 	}
 
