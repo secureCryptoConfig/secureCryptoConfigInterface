@@ -7,7 +7,7 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	private String plaintext;
 
 	@Override
-	public byte[] getPlaintext() {
+	public byte[] getByteArray() {
 		// TODO Auto-generated method stub
 		return plaintext.getBytes(StandardCharsets.UTF_8);
 	}
@@ -20,6 +20,12 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 
 	public PlaintextContainer(String plaintext) {
 		this.plaintext = plaintext;
+	}
+	
+	@Override
+	public String getPlain()
+	{
+		return this.plaintext;
 	}
 
 }

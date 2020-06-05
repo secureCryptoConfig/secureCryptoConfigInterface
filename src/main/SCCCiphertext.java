@@ -1,6 +1,7 @@
 package main;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 public class SCCCiphertext extends AbstractSCCCiphertext {
 
@@ -35,7 +36,7 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
-		return new String(this.ciphertext, StandardCharsets.UTF_8);
+		return Base64.getEncoder().encodeToString(this.ciphertext);
 	}
 
 

@@ -59,8 +59,8 @@ abstract interface SecureCryptoConfigInterface {
 
 abstract interface PlaintextContainerInterface {
 
-	public byte[] getPlaintext();
-
+	abstract byte[] getByteArray();
+	abstract String getPlain();
 	boolean verifyHash(AbstractSCCHash scchash);
 }
 
@@ -78,7 +78,7 @@ abstract class AbstractSCCAlgorithmParameters {
 	String algo;
 	AbstractSCCKey key;
 	
-    public AbstractSCCAlgorithmParameters(AbstractSCCKey key, byte[] nonce, int tag, String algo ) {
+    protected AbstractSCCAlgorithmParameters(AbstractSCCKey key, byte[] nonce, int tag, String algo ) {
 		this.key = key;
 		this.nonce = nonce;
 		this.tagLength = tag;

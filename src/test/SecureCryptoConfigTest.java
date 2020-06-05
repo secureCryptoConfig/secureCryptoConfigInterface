@@ -19,17 +19,6 @@ class SecureCryptoConfigTest {
 	UseCases s = new UseCases();
 	String plainText = "very confidential";
 
-	// Test for basic symmetric en/decryption
-	// @Test
-	void testSymmetricEncryption() throws NoSuchAlgorithmException {
-		SecretKey key = UseCases.makeKey();
-		byte[] nonce = UseCases.generateNonce(32);
-		byte[] plain = UseCases.getByte(plainText);
-		String cipherText = s.symmetricEncrypt(key, plain, nonce);
-		String decrypted = s.symmetricDecrypt(key, cipherText, nonce);
-		assertEquals(plainText, decrypted);
-	}
-
 	@Test
 	void testSCCsymmetricEncryption() {
 		SecureCryptoConfig scc = new SecureCryptoConfig();
@@ -38,12 +27,10 @@ class SecureCryptoConfigTest {
 		SCCKey scckey = SCCKey.createKey();
 
 		SCCCiphertext sccciphertext = scc.symmetricEncrypt(scckey, plaintextContainer);
-		String encryptedPlaintext = sccciphertext.toString();
-		System.out.println(encryptedPlaintext);
-		// PlaintextContainer outputPlaintext = scc.symmetricDecrypt(scckey,
-		// sccciphertext);
-		assertEquals(1, 1);
-		// TODO compare decrypted to original plaintext
+		//String encryptedPlaintext = sccciphertext.toString();
+		PlaintextContainer plain = scc.symmetricDecrypt(scckey, sccciphertext);
+		String decrypted = plain.getPlain();
+		assertEquals(inputPlaintext, decrypted);
 
 	}
 
