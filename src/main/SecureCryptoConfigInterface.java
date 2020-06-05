@@ -23,11 +23,11 @@ abstract interface SecureCryptoConfigInterface {
 
 	// Asymmetric
 	
-	public AbstractSCCCiphertext asymmetricEncrypt(AbstractSCCKey key, PlaintextContainerInterface plaintext);
+	public AbstractSCCCiphertext asymmetricEncrypt(AbstractSCCKey[] publicKey, PlaintextContainerInterface plaintext);
 
-	public AbstractSCCCiphertext AsymmetricReEncrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext);
+	public AbstractSCCCiphertext AsymmetricReEncrypt(AbstractSCCKey[] key, AbstractSCCCiphertext ciphertext);
 
-	public PlaintextContainerInterface asymmetricDecrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext);
+	public PlaintextContainerInterface asymmetricDecrypt(AbstractSCCKey[] privateKey, AbstractSCCCiphertext ciphertext);
 
 	// Hashing
 
@@ -77,11 +77,17 @@ abstract class AbstractSCCAlgorithmParameters {
 	byte[] nonce;
 	String algo;
 	AbstractSCCKey key;
+	AbstractSCCKey[] keyPair;
 	
     protected AbstractSCCAlgorithmParameters(AbstractSCCKey key, byte[] nonce, int tag, String algo ) {
 		this.key = key;
 		this.nonce = nonce;
 		this.tagLength = tag;
+		this.algo = algo;
+	}
+    
+    protected AbstractSCCAlgorithmParameters(AbstractSCCKey[] keyPair, String algo ) {
+		this.keyPair = keyPair;
 		this.algo = algo;
 	}
 
@@ -122,14 +128,12 @@ abstract class AbstractSCCKey extends SecretKeySpec {
 		super(key, algorithm);
 
 	}
-
+	
 	enum SCCKeyType {
 		Symmetric, Asymmetric
 	}
 
 	abstract AbstractSCCKey createKey(byte[] bytes);
-
-	abstract SCCKeyType getSCCKeyType();
 
 	abstract String getDefaultAlgorithm();
 

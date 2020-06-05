@@ -1,6 +1,10 @@
 package main;
 
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
@@ -20,6 +24,7 @@ public class SCCKey extends main.AbstractSCCKey {
 		return null;
 	}
 
+	
 	public static SCCKey createKey() {
 		KeyGenerator keyGen;
 		try {
@@ -28,23 +33,35 @@ public class SCCKey extends main.AbstractSCCKey {
 			SecretKey key = keyGen.generateKey();
 			return new SCCKey(key.getEncoded(), "AES");
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
 
 	}
+	
+	//not working
+	public static SCCKey[] createKeyPair() {
+		try {
+			  KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+		      keyPairGenerator.initialize(4096);
+		      KeyPair keyPair = keyPairGenerator.generateKeyPair();
+		      SCCKey privateKey = new SCCKey(keyPair.getPrivate().getEncoded(), "RSA");
+		      SCCKey publicKey = new SCCKey(keyPair.getPublic().getEncoded(), "RSA");
+		      SCCKey[] pair = new SCCKey[2];
+		      pair[0] = privateKey;
+		      pair[1] = publicKey;
+		      return pair;
+			} catch (NoSuchAlgorithmException e) {
+				e.printStackTrace();
+			}
+			return null;  
 
-	@Override
-	SCCKeyType getSCCKeyType() {
-		// TODO Auto-generated method stub
-		return null;
 	}
+
 
 	@Override
 	String getDefaultAlgorithm() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.getAlgorithm();
 	}
 
 }

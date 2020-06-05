@@ -3,6 +3,8 @@ package main;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -21,7 +23,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	// TODO refactor in separate class?
 	static enum AlgorithmIDEnum {
-		AES_GCM_256_128_128, AES_GCM_256_256_128, SHA3_512,
+		AES_GCM_256_128_128, AES_GCM_256_256_128, SHA3_512, RSA_SHA3_256
 	}
 
 	public static HashSet<String> getEnums() {
@@ -150,19 +152,58 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public AbstractSCCCiphertext asymmetricEncrypt(AbstractSCCKey key, PlaintextContainerInterface plaintext) {
+	public SCCCiphertext asymmetricEncrypt(AbstractSCCKey[] keyPair, PlaintextContainerInterface plaintext) {
+
+		ArrayList<String> algorithms = new ArrayList<String>();
+
+		// read our Algorithms for symmetric encryption out of JSON
+		algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption);
+
+		// get first one, later look what to do if first is not validate -> take next
+		String alg = algorithms.get(0);
+
+		String sccalgorithmID = "RSA_SHA3_256";
+
+		// TODO mapping from sting to enum:
+
+		if (getEnums().contains(sccalgorithmID)) {
+			
+			String algo;
+
+			AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+
+			switch (chosenAlgorithmID) {
+			case RSA_SHA3_256:
+				try {
+				
+			    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+				keyPairGenerator.initialize(4096);
+				KeyPair keyPair1 = keyPairGenerator.generateKeyPair();
+				algo = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
+				Cipher cipher = Cipher.getInstance(algo);
+				cipher.init(Cipher.ENCRYPT_MODE, keyPair1.getPublic());
+				byte[] cipherTextBytes = cipher.doFinal(plaintext.getByteArray());
+				SCCAlgorithmParameters parameters = new SCCAlgorithmParameters(keyPair, algo);
+				SCCCiphertext encrypted = new SCCCiphertext(cipherTextBytes, parameters);
+				return encrypted;
+				} catch (IllegalBlockSizeException | BadPaddingException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
+					e.printStackTrace();
+				}
+			default:
+				return null;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public AbstractSCCCiphertext AsymmetricReEncrypt(AbstractSCCKey[] key, AbstractSCCCiphertext ciphertext) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public AbstractSCCCiphertext AsymmetricReEncrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PlaintextContainerInterface asymmetricDecrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext) {
+	public PlaintextContainerInterface asymmetricDecrypt(AbstractSCCKey[] privateKey, AbstractSCCCiphertext ciphertext) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -172,7 +213,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		ArrayList<String> algorithms = new ArrayList<String>();
 
 		// read our Algorithms for symmetric encryption out of JSON
-		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.Hashing);
 
 		// get first one, later look what to do if first is not validate -> take next
 		String alg = algorithms.get(0);
