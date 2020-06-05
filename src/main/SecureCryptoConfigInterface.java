@@ -19,10 +19,10 @@ abstract interface SecureCryptoConfigInterface {
 
 	public PlaintextContainerStream<?> streamDecrypt(AbstractSCCKey key, SCCCiphertextStream<?> ciphertext);
 
-	// Asymmetric
-
 	public AbstractSCCCiphertext[] encrypt(AbstractSCCKey[] key, PlaintextContainerInterface plaintext);
 
+	// Asymmetric
+	
 	public AbstractSCCCiphertext asymmetricEncrypt(AbstractSCCKey key, PlaintextContainerInterface plaintext);
 
 	public AbstractSCCCiphertext AsymmetricReEncrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext);
@@ -53,7 +53,7 @@ abstract interface SecureCryptoConfigInterface {
 	public boolean verifyPassword(String password, AbstractSCCPasswordHash passwordhash);
 
 	// TODO methods for key generation? Returning of SCCKey?
-	public SCCKey generateKey();
+	
 
 }
 
@@ -72,20 +72,38 @@ abstract class SCCCiphertextStream<T> implements Stream<T> {
 
 }
 
+abstract class AbstractSCCAlgorithmParameters {
+	int nonceLength, tagLength;
+	String algo;
+	AbstractSCCKey key;
+	
+    public AbstractSCCAlgorithmParameters(AbstractSCCKey key, int nonce, int tag, String algo ) {
+		this.key = key;
+		this.nonceLength = nonce;
+		this.tagLength = tag;
+		this.algo = algo;
+	}
+
+}
+
 abstract class AbstractSCCCiphertext {
 
-	abstract AbstractSCCCiphertext(byte[] ciphertext, AbstractSCCAlgorithmParameters parameters);
+	AbstractSCCAlgorithmParameters parameters;
+	byte[] ciphertext;
+	
+	public AbstractSCCCiphertext(byte[] ciphertext, AbstractSCCAlgorithmParameters parameters) {
+		this.ciphertext = ciphertext;
+		this.parameters = parameters;
+	}
 
 	abstract AbstractAlgorithmIdentifier getAlgorithmIdentifier(AbstractSCCCiphertext sccciphertext);
 
 	@Override
 	public abstract String toString();
 
-}
-
-abstract class AbstractSCCAlgorithmParameters {
 
 }
+
 
 abstract class AbstractAlgorithmIdentifier {
 	// named defined in IANA registry

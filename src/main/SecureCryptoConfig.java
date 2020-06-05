@@ -3,14 +3,16 @@ package main;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
+import java.util.ArrayList;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import javax.crypto.SecretKey;
+
 import javax.crypto.spec.GCMParameterSpec;
+
+import main.JSONReader.CryptoUseCase;
 
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
@@ -18,45 +20,36 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	@Override
 	public SCCCiphertext symmetricEncrypt(AbstractSCCKey key, PlaintextContainerInterface plaintext) {
 
-		// ArrayList<String> algorithms = new ArrayList<String>();
+		ArrayList<String> algorithms = new ArrayList<String>();
 
 		// read our Algorithms for symmetric encryption out of JSON
-		// algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
 
 		// get first one, later look what to do if first is not validate -> take next
-		// String alg = algorithms.get(0);
+		String alg = algorithms.get(0);
 		// return new SCCCiphertext
 
 		// return doSymmetricEncryption(key, plaintext, alg);
-		SCCCiphertext sccciphertext = SCCCiphertext.getSCCCiphertext();
-		return sccciphertext;
-
-	}
-
-	private String doSymmetricEncryption(SecretKey key, String plainText, String alg) {
-		// Split Algo Identifier in its parameters
-		String[] parameters = alg.split("_");
-		String algorithm = parameters[0];
-		String mode = parameters[1];
-		int keyLength = Integer.parseInt(parameters[2]);
-		int tagLenth = Integer.parseInt(parameters[3]);
-		int nonceLength = Integer.parseInt(parameters[4]);
-
+		//SCCCiphertext sccciphertext = SCCCiphertext.getSCCCiphertext();
+		//return sccciphertext;
+		
 		try {
-
+			int nonceLength = 32;
+			int tagLength = 128;
+			String algo = "AES/GCM/NoPadding";
 			// ENCRYPTION
-			Cipher cipher = Cipher.getInstance(algorithm + "/" + mode + "/NoPadding");
+			Cipher cipher = Cipher.getInstance(algo);
 
 			// GENERATE random nonce (number used once)
 			final byte[] nonce = UseCases.generateNonce(nonceLength);
 
-			GCMParameterSpec spec = new GCMParameterSpec(tagLenth, nonce);
+			GCMParameterSpec spec = new GCMParameterSpec(tagLength, nonce);
 			cipher.init(Cipher.ENCRYPT_MODE, key, spec);
 
-			byte[] byteCipher = cipher.doFinal(UseCases.getByte(plainText));
-			// CONVERSION of raw bytes to BASE64 representation
-			String cipherText = Base64.getEncoder().encodeToString(byteCipher);
-			return cipherText;
+			byte[] byteCipher = cipher.doFinal(plaintext.getPlaintext());
+			SCCAlgorithmParameters param = new SCCAlgorithmParameters(key, nonceLength, tagLength, algo);
+			SCCCiphertext c = new SCCCiphertext(byteCipher, param);
+			return c;
 
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
 				| InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
@@ -64,8 +57,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			return null;
 		}
 
+
 	}
 
+	
 	@Override
 	public AbstractSCCCiphertext symmetricReEncrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext) {
 		// TODO Auto-generated method stub
@@ -168,10 +163,6 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		return false;
 	}
 
-	@Override
-	public SCCKey generateKey() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 }

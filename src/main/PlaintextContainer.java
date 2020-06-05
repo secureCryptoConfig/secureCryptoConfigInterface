@@ -1,5 +1,7 @@
 package main;
 
+import java.nio.charset.StandardCharsets;
+
 public class PlaintextContainer implements PlaintextContainerInterface {
 
 	private String plaintext;
@@ -7,7 +9,7 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	@Override
 	public byte[] getPlaintext() {
 		// TODO Auto-generated method stub
-		return plaintext.getBytes();
+		return plaintext.getBytes(StandardCharsets.UTF_8);
 	}
 
 	@Override

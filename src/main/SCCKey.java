@@ -7,6 +7,8 @@ import javax.crypto.SecretKey;
 
 public class SCCKey extends main.AbstractSCCKey {
 
+	private static final long serialVersionUID = 1L;
+
 	protected SCCKey(byte[] key, String algorithm) {
 		super(key, algorithm);
 		// TODO Auto-generated constructor stub
