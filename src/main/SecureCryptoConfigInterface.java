@@ -73,13 +73,14 @@ abstract class SCCCiphertextStream<T> implements Stream<T> {
 }
 
 abstract class AbstractSCCAlgorithmParameters {
-	int nonceLength, tagLength;
+	int tagLength;
+	byte[] nonce;
 	String algo;
 	AbstractSCCKey key;
 	
-    public AbstractSCCAlgorithmParameters(AbstractSCCKey key, int nonce, int tag, String algo ) {
+    public AbstractSCCAlgorithmParameters(AbstractSCCKey key, byte[] nonce, int tag, String algo ) {
 		this.key = key;
-		this.nonceLength = nonce;
+		this.nonce = nonce;
 		this.tagLength = tag;
 		this.algo = algo;
 	}

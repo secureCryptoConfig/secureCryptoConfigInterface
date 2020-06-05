@@ -12,14 +12,14 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	/**
 	private SCCCiphertext generateSCCCiphertext() {
 		//return SCCCiphertext(new String("empty").getBytes(), new SCCAlgorithmParameters());
-		SCCCiphertext c = new SCCCiphertext(new String("empty").getBytes(), new SCCAlgorithmParameters(null, 0, 0, null));
+		SCCCiphertext c = new SCCCiphertext(new String("empty").getBytes(), new SCCAlgorithmParameters(null, nul, 0, null));
 		return c;
 	}
 	**/
 
 	public static SCCCiphertext getSCCCiphertext() {
 		//return new SCCCiphertext();
-		SCCCiphertext c = new SCCCiphertext(new String("empty").getBytes(), new SCCAlgorithmParameters(null, 0, 0, null));
+		SCCCiphertext c = new SCCCiphertext(new String("empty").getBytes(), new SCCAlgorithmParameters(null, null, 0, null));
 		return c;
 	}
 

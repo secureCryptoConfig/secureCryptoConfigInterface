@@ -47,7 +47,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			cipher.init(Cipher.ENCRYPT_MODE, key, spec);
 
 			byte[] byteCipher = cipher.doFinal(plaintext.getPlaintext());
-			SCCAlgorithmParameters param = new SCCAlgorithmParameters(key, nonceLength, tagLength, algo);
+			SCCAlgorithmParameters param = new SCCAlgorithmParameters(key, nonce, tagLength, algo);
 			SCCCiphertext c = new SCCCiphertext(byteCipher, param);
 			return c;
 
