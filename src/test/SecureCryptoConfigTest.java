@@ -20,7 +20,7 @@ class SecureCryptoConfigTest {
 	String plainText = "very confidential";
 
 	// Test for basic symmetric en/decryption
-	//@Test
+	// @Test
 	void testSymmetricEncryption() throws NoSuchAlgorithmException {
 		SecretKey key = UseCases.makeKey();
 		byte[] nonce = UseCases.generateNonce(32);
@@ -36,17 +36,19 @@ class SecureCryptoConfigTest {
 		String inputPlaintext = "very confidential";
 		PlaintextContainer plaintextContainer = new PlaintextContainer(inputPlaintext);
 		SCCKey scckey = SCCKey.createKey();
+
 		SCCCiphertext sccciphertext = scc.symmetricEncrypt(scckey, plaintextContainer);
 		String encryptedPlaintext = sccciphertext.toString();
 		System.out.println(encryptedPlaintext);
-		//PlaintextContainer outputPlaintext = scc.symmetricDecrypt(scckey, sccciphertext);
+		// PlaintextContainer outputPlaintext = scc.symmetricDecrypt(scckey,
+		// sccciphertext);
 		assertEquals(1, 1);
 		// TODO compare decrypted to original plaintext
 
 	}
 
 	// Test for Hashing / how to test?
-	//@Test
+	// @Test
 	void testHashing() {
 		String hashed1 = s.hash(plainText);
 		String hashed2 = s.hash(plainText);

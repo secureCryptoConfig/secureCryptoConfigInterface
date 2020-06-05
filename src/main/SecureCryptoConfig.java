@@ -3,64 +3,96 @@ package main;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
+import java.util.HashSet;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-
 import javax.crypto.spec.GCMParameterSpec;
 
-import main.JSONReader.CryptoUseCase;
-
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
+
+	// TODO refactor in separate class?
+	static enum AlgorithmIDEnum {
+		AEAD_AES_256_GCM, AEAD_AES_512_GCM, SHA3_512,
+	}
+
+	public static HashSet<String> getEnums() {
+
+		HashSet<String> values = new HashSet<String>();
+
+		for (AlgorithmIDEnum c : AlgorithmIDEnum.values()) {
+			values.add(c.name());
+		}
+
+		return values;
+	}
 
 	// Only draft
 	@Override
 	public SCCCiphertext symmetricEncrypt(AbstractSCCKey key, PlaintextContainerInterface plaintext) {
 
-		ArrayList<String> algorithms = new ArrayList<String>();
+		// ArrayList<String> algorithms = new ArrayList<String>();
 
 		// read our Algorithms for symmetric encryption out of JSON
-		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
+		// algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
 
 		// get first one, later look what to do if first is not validate -> take next
-		String alg = algorithms.get(0);
+		// String alg = algorithms.get(0);
 		// return new SCCCiphertext
 
 		// return doSymmetricEncryption(key, plaintext, alg);
-		//SCCCiphertext sccciphertext = SCCCiphertext.getSCCCiphertext();
-		//return sccciphertext;
-		
-		try {
-			int nonceLength = 32;
-			int tagLength = 128;
-			String algo = "AES/GCM/NoPadding";
-			// ENCRYPTION
-			Cipher cipher = Cipher.getInstance(algo);
+		// SCCCiphertext sccciphertext = SCCCiphertext.getSCCCiphertext();
+		// return sccciphertext;
 
-			// GENERATE random nonce (number used once)
-			final byte[] nonce = UseCases.generateNonce(nonceLength);
+		String sccalgorithmID = "AEAD_AES_256_GCM";
 
-			GCMParameterSpec spec = new GCMParameterSpec(tagLength, nonce);
-			cipher.init(Cipher.ENCRYPT_MODE, key, spec);
+		// TODO mapping from sting to enum:
 
-			byte[] byteCipher = cipher.doFinal(plaintext.getPlaintext());
-			SCCAlgorithmParameters param = new SCCAlgorithmParameters(key, nonce, tagLength, algo);
-			SCCCiphertext c = new SCCCiphertext(byteCipher, param);
-			return c;
+		if (getEnums().contains(sccalgorithmID)) {
 
-		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
-				| InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
-			e.printStackTrace();
-			return null;
+			AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+			Cipher cipher;
+			int nonceLength;
+			int tagLength;
+			String algo;
+			final byte[] nonce;
+			switch (chosenAlgorithmID) {
+			case AEAD_AES_256_GCM:
+				try {
+					nonceLength = 32;
+					tagLength = 128;
+					algo = "AES/GCM/NoPadding";
+					// ENCRYPTION
+					cipher = Cipher.getInstance(algo);
+
+					// GENERATE random nonce (number used once)
+					nonce = UseCases.generateNonce(nonceLength);
+
+					GCMParameterSpec spec = new GCMParameterSpec(tagLength, nonce);
+
+					cipher.init(Cipher.ENCRYPT_MODE, key, spec);
+
+					byte[] byteCipher = cipher.doFinal(plaintext.getPlaintext());
+					SCCAlgorithmParameters param = new SCCAlgorithmParameters(key, nonce, tagLength, algo);
+					SCCCiphertext c = new SCCCiphertext(byteCipher, param);
+					return c;
+				} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+						| InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+					return null;
+				}
+			default:
+
+				return null;
+
+			}
 		}
-
-
+		return null;
 	}
 
-	
 	@Override
 	public AbstractSCCCiphertext symmetricReEncrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext) {
 		// TODO Auto-generated method stub
@@ -162,7 +194,5 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-
 
 }
