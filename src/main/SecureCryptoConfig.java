@@ -19,7 +19,10 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 
+import com.upokecenter.cbor.CBORObject;
+
 import main.JSONReader.CryptoUseCase;
+import COSE.*;
 
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
@@ -29,7 +32,6 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	public static HashSet<String> getEnums() {
-
 		HashSet<String> values = new HashSet<String>();
 
 		for (AlgorithmIDEnum c : AlgorithmIDEnum.values()) {
@@ -68,6 +70,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			int tagLength;
 			String algo;
 			final byte[] nonce;
+			
+			
 			switch (chosenAlgorithmID) {
 			case AES_GCM_256_128_128:
 				try {
@@ -193,17 +197,20 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		return null;
 	}
 
-	@Override
-	public AbstractSCCCiphertext AsymmetricReEncrypt(AbstractSCCKeyPair key, AbstractSCCCiphertext ciphertext) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 	@Override
 	public PlaintextContainerInterface asymmetricDecrypt(AbstractSCCKeyPair privateKey, AbstractSCCCiphertext ciphertext) {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public AbstractSCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair key, AbstractSCCCiphertext ciphertext) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 
 	@Override
 	public SCCHash hash(PlaintextContainerInterface plaintext) {
@@ -285,5 +292,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		// TODO Auto-generated method stub
 		return false;
 	}
+
+
 
 }

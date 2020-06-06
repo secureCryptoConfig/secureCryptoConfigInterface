@@ -4,6 +4,7 @@ import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 
 public class SCCKeyPair extends AbstractSCCKeyPair {
 
@@ -21,6 +22,7 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 			keyPairGenerator.initialize(4096);
 			KeyPair keyPair = keyPairGenerator.generateKeyPair();
 			SCCKeyPair pair = new SCCKeyPair(keyPair.getPublic(), keyPair.getPrivate(), "RSA");
+			Key p=keyPair.getPublic();
 			return pair;
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();

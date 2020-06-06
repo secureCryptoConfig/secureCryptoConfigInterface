@@ -1,7 +1,6 @@
 package main;
 
 import java.security.Key;
-import java.security.KeyPairGeneratorSpi;
 import java.util.stream.Stream;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -27,7 +26,7 @@ abstract interface SecureCryptoConfigInterface {
 	
 	public AbstractSCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair publicKey, PlaintextContainerInterface plaintext);
 
-	public AbstractSCCCiphertext AsymmetricReEncrypt(AbstractSCCKeyPair key, AbstractSCCCiphertext ciphertext);
+	public AbstractSCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair key, AbstractSCCCiphertext ciphertext);
 
 	public PlaintextContainerInterface asymmetricDecrypt(AbstractSCCKeyPair privateKey, AbstractSCCCiphertext ciphertext);
 
