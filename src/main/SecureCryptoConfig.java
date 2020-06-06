@@ -3,10 +3,12 @@ package main;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashSet;
@@ -152,10 +154,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCCiphertext asymmetricEncrypt(AbstractSCCKey[] keyPair, PlaintextContainerInterface plaintext) {
+	public SCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext) {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
-
 		// read our Algorithms for symmetric encryption out of JSON
 		algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption);
 
@@ -175,13 +176,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			switch (chosenAlgorithmID) {
 			case RSA_SHA3_256:
 				try {
-				
-			    KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-				keyPairGenerator.initialize(4096);
-				KeyPair keyPair1 = keyPairGenerator.generateKeyPair();
 				algo = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
 				Cipher cipher = Cipher.getInstance(algo);
-				cipher.init(Cipher.ENCRYPT_MODE, keyPair1.getPublic());
+				cipher.init(Cipher.ENCRYPT_MODE, keyPair.publicKey);
 				byte[] cipherTextBytes = cipher.doFinal(plaintext.getByteArray());
 				SCCAlgorithmParameters parameters = new SCCAlgorithmParameters(keyPair, algo);
 				SCCCiphertext encrypted = new SCCCiphertext(cipherTextBytes, parameters);
@@ -197,13 +194,13 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public AbstractSCCCiphertext AsymmetricReEncrypt(AbstractSCCKey[] key, AbstractSCCCiphertext ciphertext) {
+	public AbstractSCCCiphertext AsymmetricReEncrypt(AbstractSCCKeyPair key, AbstractSCCCiphertext ciphertext) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public PlaintextContainerInterface asymmetricDecrypt(AbstractSCCKey[] privateKey, AbstractSCCCiphertext ciphertext) {
+	public PlaintextContainerInterface asymmetricDecrypt(AbstractSCCKeyPair privateKey, AbstractSCCCiphertext ciphertext) {
 		// TODO Auto-generated method stub
 		return null;
 	}

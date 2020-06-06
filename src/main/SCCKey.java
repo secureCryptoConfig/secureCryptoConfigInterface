@@ -39,24 +39,6 @@ public class SCCKey extends main.AbstractSCCKey {
 
 	}
 	
-	//not working
-	public static SCCKey[] createKeyPair() {
-		try {
-			  KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
-		      keyPairGenerator.initialize(4096);
-		      KeyPair keyPair = keyPairGenerator.generateKeyPair();
-		      SCCKey privateKey = new SCCKey(keyPair.getPrivate().getEncoded(), "RSA");
-		      SCCKey publicKey = new SCCKey(keyPair.getPublic().getEncoded(), "RSA");
-		      SCCKey[] pair = new SCCKey[2];
-		      pair[0] = privateKey;
-		      pair[1] = publicKey;
-		      return pair;
-			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
-			}
-			return null;  
-
-	}
 
 
 	@Override

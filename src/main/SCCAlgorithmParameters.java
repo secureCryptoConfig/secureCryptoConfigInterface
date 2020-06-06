@@ -8,7 +8,7 @@ public class SCCAlgorithmParameters extends AbstractSCCAlgorithmParameters {
 	}
 	
 	//for asymmetric
-	SCCAlgorithmParameters(AbstractSCCKey[] keyPair, String algo) {
+	SCCAlgorithmParameters(AbstractSCCKeyPair keyPair, String algo) {
 		super(keyPair, algo);
 	}
 

@@ -1,5 +1,7 @@
 package main;
 
+import java.security.Key;
+import java.security.KeyPairGeneratorSpi;
 import java.util.stream.Stream;
 
 import javax.crypto.spec.SecretKeySpec;
@@ -23,11 +25,11 @@ abstract interface SecureCryptoConfigInterface {
 
 	// Asymmetric
 	
-	public AbstractSCCCiphertext asymmetricEncrypt(AbstractSCCKey[] publicKey, PlaintextContainerInterface plaintext);
+	public AbstractSCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair publicKey, PlaintextContainerInterface plaintext);
 
-	public AbstractSCCCiphertext AsymmetricReEncrypt(AbstractSCCKey[] key, AbstractSCCCiphertext ciphertext);
+	public AbstractSCCCiphertext AsymmetricReEncrypt(AbstractSCCKeyPair key, AbstractSCCCiphertext ciphertext);
 
-	public PlaintextContainerInterface asymmetricDecrypt(AbstractSCCKey[] privateKey, AbstractSCCCiphertext ciphertext);
+	public PlaintextContainerInterface asymmetricDecrypt(AbstractSCCKeyPair privateKey, AbstractSCCCiphertext ciphertext);
 
 	// Hashing
 
@@ -77,7 +79,7 @@ abstract class AbstractSCCAlgorithmParameters {
 	byte[] nonce;
 	String algo;
 	AbstractSCCKey key;
-	AbstractSCCKey[] keyPair;
+	AbstractSCCKeyPair keyPair;
 	
     protected AbstractSCCAlgorithmParameters(AbstractSCCKey key, byte[] nonce, int tag, String algo ) {
 		this.key = key;
@@ -86,7 +88,7 @@ abstract class AbstractSCCAlgorithmParameters {
 		this.algo = algo;
 	}
     
-    protected AbstractSCCAlgorithmParameters(AbstractSCCKey[] keyPair, String algo ) {
+    protected AbstractSCCAlgorithmParameters(AbstractSCCKeyPair keyPair, String algo ) {
 		this.keyPair = keyPair;
 		this.algo = algo;
 	}
@@ -137,6 +139,17 @@ abstract class AbstractSCCKey extends SecretKeySpec {
 
 	abstract String getDefaultAlgorithm();
 
+}
+
+abstract class AbstractSCCKeyPair{
+	Key publicKey, privateKey;
+	String algorithm;
+
+	protected AbstractSCCKeyPair(Key publicKey, Key privateKey, String algorithm) {
+		this.algorithm = algorithm;
+		this.publicKey = publicKey;
+		this.privateKey = privateKey;
+	}
 }
 
 abstract class AbstractSCCHash {

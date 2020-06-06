@@ -13,6 +13,7 @@ import main.PlaintextContainer;
 import main.SCCCiphertext;
 import main.SCCHash;
 import main.SCCKey;
+import main.SCCKeyPair;
 import main.SecureCryptoConfig;
 import main.UseCases;
 
@@ -46,7 +47,7 @@ class SecureCryptoConfigTest {
 	
 	@Test
 	void testSCCasymmetricEncryption(){
-		SCCKey[] pair = SCCKey.createKeyPair();
+		SCCKeyPair pair = SCCKeyPair.createKeyPair();
 		SCCCiphertext encrypted = scc.asymmetricEncrypt(pair, plaintextContainer);
 		System.out.println(encrypted.toString());
 		assertEquals(1,1);
