@@ -1,5 +1,7 @@
 package main;
 
+import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -12,6 +14,7 @@ import java.util.HashSet;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
@@ -104,19 +107,22 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCCiphertextStream<?> streamEncrypt(AbstractSCCKey key, PlaintextContainerStream<?> plaintext) {
-		// TODO Auto-generated method stub
+	public AbstractSCCCiphertext streamEncrypt(AbstractSCCKey key, String filepath) {
+		//FileOutputStream fileOutputStream = new FileOutputStream(filepath);
+       // CipherOutputStream encryptedOutputStream = new CipherOutputStream(fileOutputStream, cipher);
+       // InputStream stringInputStream = new ByteArrayInputStream(plainText.getBytes(StandardCharsets.UTF_8))
 		return null;
 	}
 
 	@Override
-	public SCCCiphertextStream<?> streamReEncrypt(AbstractSCCKey key, SCCCiphertextStream<?> ciphertext) {
-		// TODO Auto-generated method stub
+	public AbstractSCCCiphertext streamReEncrypt(AbstractSCCKey key, String filepath) {
+	// TODO Auto-generated method stub
 		return null;
 	}
 
+	
 	@Override
-	public PlaintextContainerStream<?> streamDecrypt(AbstractSCCKey key, SCCCiphertextStream<?> ciphertext) {
+	public PlaintextContainerInterface streamDecrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext) {
 		// TODO Auto-generated method stub
 		return null;
 	}

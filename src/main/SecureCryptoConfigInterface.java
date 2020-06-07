@@ -14,12 +14,22 @@ abstract interface SecureCryptoConfigInterface {
 
 	public PlaintextContainerInterface symmetricDecrypt(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext);
 
-	public SCCCiphertextStream<?> streamEncrypt(AbstractSCCKey key, PlaintextContainerStream<?> plaintext);
+	//for file encryption?
+	/**
+	public AbstractSCCCiphertextStream streamEncrypt(AbstractSCCKey key, AbstractPlaintextContainerStream<?> plaintext);
 
-	public SCCCiphertextStream<?> streamReEncrypt(AbstractSCCKey key, SCCCiphertextStream<?> ciphertext);
+	public AbstractSCCCiphertextStream streamReEncrypt(AbstractSCCKey key, AbstractSCCCiphertextStream ciphertext);
 
-	public PlaintextContainerStream<?> streamDecrypt(AbstractSCCKey key, SCCCiphertextStream<?> ciphertext);
+	public AbstractPlaintextContainerStream<?> streamDecrypt(AbstractSCCKey key, AbstractSCCCiphertextStream ciphertext);
+	**/
+	
+	public AbstractSCCCiphertext streamEncrypt(AbstractSCCKey key, String filepath);
 
+	public AbstractSCCCiphertext streamReEncrypt(AbstractSCCKey key, String filepath);
+
+	public PlaintextContainerInterface streamDecrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext);
+	
+	
 	public AbstractSCCCiphertext[] encrypt(AbstractSCCKey[] key, PlaintextContainerInterface plaintext);
 
 	// Asymmetric
@@ -65,13 +75,15 @@ abstract interface PlaintextContainerInterface {
 	boolean verifyHash(AbstractSCCHash scchash);
 }
 
-abstract interface PlaintextContainerStream<T> {
+/**
+abstract interface AbstractPlaintextContainerStream<T> {
 	public Stream<T> getPlaintextStream();
 }
 
-abstract class SCCCiphertextStream<T> implements Stream<T> {
+abstract class AbstractSCCCiphertextStream implements Stream<SCCCiphertext>{
 
 }
+**/
 
 abstract class AbstractSCCAlgorithmParameters {
 	int tagLength;
