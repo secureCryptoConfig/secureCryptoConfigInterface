@@ -26,9 +26,11 @@ import COSE.*;
 
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
+	ArrayList<String> algorithms = new ArrayList<String>();
+
 	// TODO refactor in separate class?
 	static enum AlgorithmIDEnum {
-		AES_GCM_256_128_128, AES_GCM_256_256_128, SHA3_512, RSA_SHA3_256
+		AES_GCM_256_128_128, AES_GCM_256_128_256, SHA3_512, RSA_SHA3_256
 	}
 
 	public static HashSet<String> getEnums() {
@@ -45,57 +47,32 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	@Override
 	public SCCCiphertext symmetricEncrypt(AbstractSCCKey key, PlaintextContainerInterface plaintext) {
 
-		ArrayList<String> algorithms = new ArrayList<String>();
+		int nonceLength, tagLength;
+		String algo;
 
-		// read our Algorithms for symmetric encryption out of JSON
 		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
 
 		// get first one, later look what to do if first is not validate -> take next
-		String alg = algorithms.get(0);
-		// return new SCCCiphertext
-
-		// return doSymmetricEncryption(key, plaintext, alg);
-		// SCCCiphertext sccciphertext = SCCCiphertext.getSCCCiphertext();
-		// return sccciphertext;
-
-		String sccalgorithmID = "AES_GCM_256_128_128";
+		String sccalgorithmID = algorithms.get(1);
 
 		// TODO mapping from sting to enum:
 
 		if (getEnums().contains(sccalgorithmID)) {
 
 			AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
-			Cipher cipher;
-			int nonceLength;
-			int tagLength;
-			String algo;
-			final byte[] nonce;
 
 			switch (chosenAlgorithmID) {
 			case AES_GCM_256_128_128:
-				try {
-					nonceLength = 32;
-					tagLength = 128;
-					algo = "AES/GCM/NoPadding";
-					// ENCRYPTION
-					cipher = Cipher.getInstance(algo);
+				nonceLength = 16;
+				tagLength = 128;
+				algo = "AES/GCM/NoPadding";
+				return UseCases.symmetricEncryptWithParams(key, plaintext, nonceLength, tagLength, algo);
 
-					// GENERATE random nonce (number used once)
-					nonce = UseCases.generateNonce(nonceLength);
-
-					GCMParameterSpec spec = new GCMParameterSpec(tagLength, nonce);
-
-					cipher.init(Cipher.ENCRYPT_MODE, key, spec);
-
-					byte[] byteCipher = cipher.doFinal(plaintext.getByteArray());
-					SCCAlgorithmParameters param = new SCCAlgorithmParameters(key, nonce, tagLength, algo);
-					SCCCiphertext c = new SCCCiphertext(byteCipher, param);
-					return c;
-				} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
-						| InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
-					e.printStackTrace();
-					return null;
-				}
+			case AES_GCM_256_128_256:
+				nonceLength = 32;
+				tagLength = 128;
+				algo = "AES/GCM/NoPadding";
+				return UseCases.symmetricEncryptWithParams(key, plaintext, nonceLength, tagLength, algo);
 			default:
 
 				return null;
@@ -159,37 +136,24 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	@Override
 	public SCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext) {
 
-		ArrayList<String> algorithms = new ArrayList<String>();
-		// read our Algorithms for symmetric encryption out of JSON
+		String algo;
+
 		algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption);
 
 		// get first one, later look what to do if first is not validate -> take next
-		String alg = algorithms.get(0);
-
-		String sccalgorithmID = "RSA_SHA3_256";
+		String sccalgorithmID = algorithms.get(0);
 
 		// TODO mapping from sting to enum:
 
 		if (getEnums().contains(sccalgorithmID)) {
 
-			String algo;
-
 			AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
 
 			switch (chosenAlgorithmID) {
 			case RSA_SHA3_256:
-				try {
-					algo = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
-					Cipher cipher = Cipher.getInstance(algo);
-					cipher.init(Cipher.ENCRYPT_MODE, keyPair.publicKey);
-					byte[] cipherTextBytes = cipher.doFinal(plaintext.getByteArray());
-					SCCAlgorithmParameters parameters = new SCCAlgorithmParameters(keyPair, algo);
-					SCCCiphertext encrypted = new SCCCiphertext(cipherTextBytes, parameters);
-					return encrypted;
-				} catch (IllegalBlockSizeException | BadPaddingException | NoSuchAlgorithmException
-						| NoSuchPaddingException | InvalidKeyException e) {
-					e.printStackTrace();
-				}
+				algo = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
+				return UseCases.asymmetricEncryptWithParams(keyPair, plaintext, algo);
+
 			default:
 				return null;
 			}
@@ -206,7 +170,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			String decryptedCipherText = new String(decryptedCipher, StandardCharsets.UTF_8);
 			PlaintextContainer decrypted = new PlaintextContainer(decryptedCipherText);
 			return decrypted;
-		} catch (IllegalBlockSizeException | BadPaddingException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException e) {
+		} catch (IllegalBlockSizeException | BadPaddingException | InvalidKeyException | NoSuchAlgorithmException
+				| NoSuchPaddingException e) {
 			e.printStackTrace();
 		}
 
@@ -221,15 +186,14 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	@Override
 	public SCCHash hash(PlaintextContainerInterface plaintext) {
-		ArrayList<String> algorithms = new ArrayList<String>();
-
+		
+		String algo;
+		
 		// read our Algorithms for symmetric encryption out of JSON
 		algorithms = JSONReader.getAlgos(CryptoUseCase.Hashing);
 
 		// get first one, later look what to do if first is not validate -> take next
-		String alg = algorithms.get(0);
-
-		String sccalgorithmID = "SHA3_512";
+		String sccalgorithmID = algorithms.get(0);
 
 		// TODO mapping from sting to enum:
 
@@ -239,18 +203,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 			switch (chosenAlgorithmID) {
 			case SHA3_512:
-				try {
-					// Get MessageDigest Instance
-					MessageDigest messageDigest = MessageDigest.getInstance("SHA-512");
-
-					// CREATE HASH
-					byte[] hashBytes = messageDigest.digest(plaintext.getByteArray());
-					SCCHash hash = new SCCHash(hashBytes);
-					return hash;
-				} catch (NoSuchAlgorithmException e) {
-					e.printStackTrace();
-					return null;
-				}
+				algo = "SHA-512";
+				return UseCases.hashingWithParams(plaintext, algo);
 			default:
 				return null;
 			}
@@ -266,8 +220,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	@Override
 	public boolean verifyHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) {
-		// TODO Auto-generated method stub
-		return false;
+		// Hash same plain two times and look if it is the same
+		SCCHash hash1 = hash(plaintext);
+		return hash.toString().equals(hash1.toString());
 	}
 
 	@Override

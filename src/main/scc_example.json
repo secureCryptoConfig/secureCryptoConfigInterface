@@ -17,7 +17,7 @@
     "Usage" : {
         "SymmetricEncryption" : [
             "AES_GCM_256_128_128",
-            "AES_GCM_256_256_128"
+            "AES_GCM_256_128_256"
         ],
         "AsymmetricEncryption" : [
             "RSA_SHA3_256"

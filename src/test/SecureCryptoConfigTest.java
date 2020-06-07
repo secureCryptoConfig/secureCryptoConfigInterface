@@ -2,26 +2,15 @@ package test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
-
-import javax.crypto.SecretKey;
 
 import org.junit.jupiter.api.Test;
 
-import com.upokecenter.cbor.CBORObject;
-
-import COSE.Attribute;
-import COSE.CoseException;
-import COSE.Encrypt0Message;
-import COSE.HeaderKeys;
 import main.PlaintextContainer;
 import main.SCCCiphertext;
 import main.SCCHash;
 import main.SCCKey;
 import main.SCCKeyPair;
 import main.SecureCryptoConfig;
-import main.UseCases;
 
 class SecureCryptoConfigTest {
 
@@ -42,16 +31,17 @@ class SecureCryptoConfigTest {
 	}
 
 	// Test for Hashing / how to test?
-	//@Test
+	@Test
 	void testHashing() {
 		SCCHash hashed = scc.hash(plaintextContainer);
 		String s = hashed.toString();
 		SCCHash hashed1 = scc.hash(plaintextContainer);
 		String s1 = hashed1.toString();
+		System.out.println(scc.verifyHash(plaintextContainer, hashed));
 		assertEquals(s, s1);
 	}
 	
-	@Test
+	//@Test
 	void testSCCasymmetricEncryption(){
 		SCCKeyPair pair = SCCKeyPair.createKeyPair();
 		SCCCiphertext encrypted = scc.asymmetricEncrypt(pair, plaintextContainer);
