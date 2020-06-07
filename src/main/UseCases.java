@@ -4,7 +4,10 @@ import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.SecureRandom;
+import java.security.Signature;
+import java.security.SignatureException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -73,8 +76,24 @@ public class UseCases {
 		return null;
 	}
 	
+	public static SCCSignature signingingWithParams(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext, String algo)
+	{
+		try {
+			Signature signature = Signature.getInstance(algo);
+			signature.initSign((PrivateKey) keyPair.privateKey);
+			signature.update(plaintext.getByteArray());
+			byte[] s = signature.sign();
+			SCCAlgorithmParameters parameters = new SCCAlgorithmParameters(keyPair, algo, plaintext);
+			SCCSignature signed = new SCCSignature(s, parameters);
+			return signed;
+			} catch (SignatureException | InvalidKeyException | NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	/**
-	 * Generate Nonce with secure Random numer generator
+	 * Generate Nonce with secure Random number generator
 	 */
 	public static byte[] generateNonce(int nonceLength) {
 		try {

@@ -12,4 +12,8 @@ public class SCCAlgorithmParameters extends AbstractSCCAlgorithmParameters {
 		super(keyPair, algo);
 	}
 
+	//for signing
+		SCCAlgorithmParameters(AbstractSCCKeyPair keyPair, String algo, PlaintextContainerInterface plaintext) {
+			super(keyPair, algo, plaintext);
+		}
 }

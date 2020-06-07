@@ -41,11 +41,13 @@ abstract interface SecureCryptoConfigInterface {
 
 	// Digital Signature
 
-	public AbstractSCCSignature sign(AbstractSCCKey privateKey, PlaintextContainerInterface plaintext);
+	//private
+	public AbstractSCCSignature sign(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext);
 
-	public AbstractSCCSignature reSign(AbstractSCCKey privateKey, PlaintextContainerInterface plaintext);
+	public AbstractSCCSignature reSign(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext);
 
-	public boolean validteSignature(AbstractSCCKey publicKeyy, AbstractSCCSignature signature);
+	//public
+	public boolean validateSignature(AbstractSCCKeyPair keyPair, AbstractSCCSignature signature);
 
 	// Password Hashing
 
@@ -79,6 +81,7 @@ abstract class AbstractSCCAlgorithmParameters {
 	String algo;
 	AbstractSCCKey key;
 	AbstractSCCKeyPair keyPair;
+	PlaintextContainerInterface plain;
 	
     protected AbstractSCCAlgorithmParameters(AbstractSCCKey key, byte[] nonce, int tag, String algo ) {
 		this.key = key;
@@ -90,6 +93,12 @@ abstract class AbstractSCCAlgorithmParameters {
     protected AbstractSCCAlgorithmParameters(AbstractSCCKeyPair keyPair, String algo ) {
 		this.keyPair = keyPair;
 		this.algo = algo;
+	}
+    
+    protected AbstractSCCAlgorithmParameters(AbstractSCCKeyPair keyPair, String algo, PlaintextContainerInterface plain) {
+		this.keyPair = keyPair;
+		this.algo = algo;
+		this.plain = plain;
 	}
 
 }
@@ -163,5 +172,15 @@ abstract class AbstractSCCPasswordHash {
 }
 
 abstract class AbstractSCCSignature {
+	AbstractSCCAlgorithmParameters parameters;
+	byte[] signature;
+	
+	public AbstractSCCSignature(byte[] signature, AbstractSCCAlgorithmParameters parameters) {
+		this.signature = signature;
+		this.parameters = parameters;
+	}
+	
+	@Override
+	public abstract String toString();
 
 }

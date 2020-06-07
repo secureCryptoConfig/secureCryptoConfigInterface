@@ -10,6 +10,7 @@ import main.SCCCiphertext;
 import main.SCCHash;
 import main.SCCKey;
 import main.SCCKeyPair;
+import main.SCCSignature;
 import main.SecureCryptoConfig;
 
 class SecureCryptoConfigTest {
@@ -31,13 +32,12 @@ class SecureCryptoConfigTest {
 	}
 
 	// Test for Hashing / how to test?
-	@Test
+	//@Test
 	void testHashing() {
 		SCCHash hashed = scc.hash(plaintextContainer);
 		String s = hashed.toString();
 		SCCHash hashed1 = scc.hash(plaintextContainer);
 		String s1 = hashed1.toString();
-		System.out.println(scc.verifyHash(plaintextContainer, hashed));
 		assertEquals(s, s1);
 	}
 	
@@ -47,6 +47,13 @@ class SecureCryptoConfigTest {
 		SCCCiphertext encrypted = scc.asymmetricEncrypt(pair, plaintextContainer);
 		PlaintextContainer decrypted = scc.asymmetricDecrypt(pair, encrypted);
 		assertEquals(inputPlaintext,decrypted.getPlain());
+	}
+	
+	@Test
+	void testSCCSignature(){
+		SCCKeyPair pair = SCCKeyPair.createKeyPair();
+		SCCSignature s = scc.sign(pair, plaintextContainer);
+		assertEquals(true, scc.validateSignature(pair, s));
 	}
 	
 

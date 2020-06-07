@@ -8,7 +8,10 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Signature;
+import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashSet;
@@ -30,7 +33,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	// TODO refactor in separate class?
 	static enum AlgorithmIDEnum {
-		AES_GCM_256_128_128, AES_GCM_256_128_256, SHA3_512, RSA_SHA3_256
+		AES_GCM_256_128_128, AES_GCM_256_128_256, SHA3_512, RSA_SHA3_256, RSA_SHA3_512
 	}
 
 	public static HashSet<String> getEnums() {
@@ -186,9 +189,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	@Override
 	public SCCHash hash(PlaintextContainerInterface plaintext) {
-		
+
 		String algo;
-		
+
 		// read our Algorithms for symmetric encryption out of JSON
 		algorithms = JSONReader.getAlgos(CryptoUseCase.Hashing);
 
@@ -226,20 +229,51 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public AbstractSCCSignature sign(AbstractSCCKey privateKey, PlaintextContainerInterface plaintext) {
+	public SCCSignature sign(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext) {
+		String algo;
+
+		// read our Algorithms for symmetric encryption out of JSON
+		algorithms = JSONReader.getAlgos(CryptoUseCase.Signing);
+
+		// get first one, later look what to do if first is not validate -> take next
+		String sccalgorithmID = algorithms.get(0);
+
+		// TODO mapping from sting to enum:
+
+		if (getEnums().contains(sccalgorithmID)) {
+
+			AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+
+			switch (chosenAlgorithmID) {
+			case RSA_SHA3_512:
+				algo = "SHA512withRSA";
+				return UseCases.signingingWithParams(keyPair, plaintext, algo);
+
+			default:
+				return null;
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public AbstractSCCSignature reSign(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public AbstractSCCSignature reSign(AbstractSCCKey privateKey, PlaintextContainerInterface plaintext) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	public boolean validateSignature(AbstractSCCKeyPair keyPair, AbstractSCCSignature signature) {
 
-	@Override
-	public boolean validteSignature(AbstractSCCKey publicKeyy, AbstractSCCSignature signature) {
-		// TODO Auto-generated method stub
+		try {
+			Signature s = Signature.getInstance(signature.parameters.algo);
+			s.initVerify((PublicKey) keyPair.publicKey);
+			s.update(signature.parameters.plain.getByteArray());
+			return s.verify(signature.signature);
+			
+		} catch (InvalidKeyException | SignatureException | NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		}
 		return false;
 	}
 
