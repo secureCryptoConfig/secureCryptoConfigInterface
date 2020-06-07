@@ -51,33 +51,13 @@ class SecureCryptoConfigTest {
 		assertEquals(s, s1);
 	}
 	
-	//@Test
+	@Test
 	void testSCCasymmetricEncryption(){
 		SCCKeyPair pair = SCCKeyPair.createKeyPair();
 		SCCCiphertext encrypted = scc.asymmetricEncrypt(pair, plaintextContainer);
-		System.out.println(encrypted.toString());
-		assertEquals(1,1);
+		PlaintextContainer decrypted = scc.asymmetricDecrypt(pair, encrypted);
+		assertEquals(inputPlaintext,decrypted.getPlain());
 	}
-	@Test
-	void message() {
-		String nonce = "NONCE";
-		String algo ="AES";
-		Encrypt0Message o = new Encrypt0Message();
-		o.SetContent("Confidential");
-		CBORObject ob = CBORObject.FromObject(32);
-		CBORObject n = CBORObject.FromObject(nonce);
-		try {
-			o.addAttribute(n, ob, Attribute.PROTECTED);
-			o.addAttribute(HeaderKeys.Algorithm, CBORObject.FromObject(algo), Attribute.PROTECTED);
-		} catch (CoseException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		//CBORObject algX = findA;
-		System.out.println(o.findAttribute(HeaderKeys.Algorithm));
-		System.out.println(o.getProtectedAttributes());
-		System.out.println(o.findAttribute(n));
-		assertEquals(1, 1);
-	}
+	
 
 }

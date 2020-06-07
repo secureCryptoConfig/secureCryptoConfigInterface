@@ -24,11 +24,11 @@ abstract interface SecureCryptoConfigInterface {
 
 	// Asymmetric
 	
-	public AbstractSCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair publicKey, PlaintextContainerInterface plaintext);
+	public AbstractSCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext);
 
-	public AbstractSCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair key, AbstractSCCCiphertext ciphertext);
+	public AbstractSCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext);
 
-	public PlaintextContainerInterface asymmetricDecrypt(AbstractSCCKeyPair privateKey, AbstractSCCCiphertext ciphertext);
+	public PlaintextContainerInterface asymmetricDecrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext);
 
 	// Hashing
 

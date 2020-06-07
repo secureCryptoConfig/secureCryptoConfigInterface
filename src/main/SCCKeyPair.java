@@ -22,7 +22,7 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 			keyPairGenerator.initialize(4096);
 			KeyPair keyPair = keyPairGenerator.generateKeyPair();
 			SCCKeyPair pair = new SCCKeyPair(keyPair.getPublic(), keyPair.getPrivate(), "RSA");
-			Key p=keyPair.getPublic();
+			Key p = keyPair.getPublic();
 			return pair;
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();

@@ -70,8 +70,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			int tagLength;
 			String algo;
 			final byte[] nonce;
-			
-			
+
 			switch (chosenAlgorithmID) {
 			case AES_GCM_256_128_128:
 				try {
@@ -172,7 +171,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		// TODO mapping from sting to enum:
 
 		if (getEnums().contains(sccalgorithmID)) {
-			
+
 			String algo;
 
 			AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
@@ -180,14 +179,15 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			switch (chosenAlgorithmID) {
 			case RSA_SHA3_256:
 				try {
-				algo = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
-				Cipher cipher = Cipher.getInstance(algo);
-				cipher.init(Cipher.ENCRYPT_MODE, keyPair.publicKey);
-				byte[] cipherTextBytes = cipher.doFinal(plaintext.getByteArray());
-				SCCAlgorithmParameters parameters = new SCCAlgorithmParameters(keyPair, algo);
-				SCCCiphertext encrypted = new SCCCiphertext(cipherTextBytes, parameters);
-				return encrypted;
-				} catch (IllegalBlockSizeException | BadPaddingException | NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException e) {
+					algo = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
+					Cipher cipher = Cipher.getInstance(algo);
+					cipher.init(Cipher.ENCRYPT_MODE, keyPair.publicKey);
+					byte[] cipherTextBytes = cipher.doFinal(plaintext.getByteArray());
+					SCCAlgorithmParameters parameters = new SCCAlgorithmParameters(keyPair, algo);
+					SCCCiphertext encrypted = new SCCCiphertext(cipherTextBytes, parameters);
+					return encrypted;
+				} catch (IllegalBlockSizeException | BadPaddingException | NoSuchAlgorithmException
+						| NoSuchPaddingException | InvalidKeyException e) {
 					e.printStackTrace();
 				}
 			default:
@@ -197,20 +197,27 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		return null;
 	}
 
+	@Override
+	public PlaintextContainer asymmetricDecrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext) {
+		try {
+			Cipher cipher = Cipher.getInstance(ciphertext.parameters.algo);
+			cipher.init(Cipher.DECRYPT_MODE, keyPair.privateKey);
+			byte[] decryptedCipher = cipher.doFinal(ciphertext.ciphertext);
+			String decryptedCipherText = new String(decryptedCipher, StandardCharsets.UTF_8);
+			PlaintextContainer decrypted = new PlaintextContainer(decryptedCipherText);
+			return decrypted;
+		} catch (IllegalBlockSizeException | BadPaddingException | InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException e) {
+			e.printStackTrace();
+		}
 
+		return null;
+	}
 
 	@Override
-	public PlaintextContainerInterface asymmetricDecrypt(AbstractSCCKeyPair privateKey, AbstractSCCCiphertext ciphertext) {
+	public AbstractSCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext) {
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
-	@Override
-	public AbstractSCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair key, AbstractSCCCiphertext ciphertext) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 
 	@Override
 	public SCCHash hash(PlaintextContainerInterface plaintext) {
@@ -292,7 +299,5 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		// TODO Auto-generated method stub
 		return false;
 	}
-
-
 
 }

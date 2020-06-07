@@ -1,5 +1,7 @@
 package main;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -15,6 +17,15 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.GCMParameterSpec;
+
+import org.junit.jupiter.api.Test;
+
+import com.upokecenter.cbor.CBORObject;
+
+import COSE.Attribute;
+import COSE.CoseException;
+import COSE.Encrypt0Message;
+import COSE.HeaderKeys;
 
 	public class UseCases {
 	
@@ -111,6 +122,28 @@ import javax.crypto.spec.GCMParameterSpec;
 		}
 		
 	}
+	
+	//Some experiments with COSE
+			public void createMessage() {
+				String nonce = "NONCE";
+				String algo ="AES";
+				Encrypt0Message o = new Encrypt0Message();
+				o.SetContent("Confidential");
+				CBORObject ob = CBORObject.FromObject(32);
+				CBORObject n = CBORObject.FromObject(nonce);
+				try {
+					o.addAttribute(n, ob, Attribute.PROTECTED);
+					o.addAttribute(HeaderKeys.Algorithm, CBORObject.FromObject(algo), Attribute.PROTECTED);
+				} catch (CoseException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				//CBORObject algX = findA;
+				System.out.println(o.findAttribute(HeaderKeys.Algorithm));
+				System.out.println(o.getProtectedAttributes());
+				System.out.println(o.findAttribute(n));
+				assertEquals(1, 1);
+			}
 	
  
 }
