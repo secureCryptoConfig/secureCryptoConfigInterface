@@ -41,12 +41,10 @@ abstract interface SecureCryptoConfigInterface {
 
 	// Digital Signature
 
-	//private
 	public AbstractSCCSignature sign(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext);
 
 	public AbstractSCCSignature reSign(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext);
 
-	//public
 	public boolean validateSignature(AbstractSCCKeyPair keyPair, AbstractSCCSignature signature);
 
 	// Password Hashing

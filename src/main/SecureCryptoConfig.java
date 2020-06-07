@@ -3,17 +3,11 @@ package main;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashSet;
 
 import javax.crypto.BadPaddingException;
@@ -22,10 +16,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 
-import com.upokecenter.cbor.CBORObject;
-
 import main.JSONReader.CryptoUseCase;
-import COSE.*;
 
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
