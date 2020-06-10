@@ -54,7 +54,7 @@ class SecureCryptoConfigTest {
 	}
 
 	// Test for Hashing / how to test?
-	// @Test
+	//@Test
 	void testHashing() {
 		SCCHash hashed = scc.hash(plaintextContainer);
 		String s = hashed.toString();
@@ -71,14 +71,14 @@ class SecureCryptoConfigTest {
 		assertEquals(inputPlaintext, decrypted.getPlain());
 	}
 
-	// @Test
+	@Test
 	void testSCCSignature() {
 		SCCKeyPair pair = SCCKeyPair.createKeyPair();
 		SCCSignature s = scc.sign(pair, plaintextContainer);
 		assertEquals(true, scc.validateSignature(pair, s));
 	}
 
-	@Test
+	//@Test
 	void testFileEncryption() {
 		String filepath = ".\\src\\main\\Test.txt";
 		String fileInput = readFile(filepath).replace("\r", "").replace("\n", "").replace(" ", "");

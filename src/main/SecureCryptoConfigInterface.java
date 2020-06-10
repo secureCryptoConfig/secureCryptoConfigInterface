@@ -1,6 +1,7 @@
 package main;
 
 import java.security.Key;
+import java.util.HashMap;
 
 import javax.crypto.spec.SecretKeySpec;
 
@@ -109,6 +110,12 @@ abstract class AbstractSCCAlgorithmParameters {
 		this.algo = algo;
 		this.plain = plain;
 	}
+    
+    HashMap<String, String> params = new HashMap<>();
+    protected AbstractSCCAlgorithmParameters(HashMap<String, String> params)
+    {
+    	this.params = params;
+    }
 
 }
 

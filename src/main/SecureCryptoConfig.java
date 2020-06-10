@@ -41,39 +41,51 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		return values;
 	}
 
-	// Only draft
 	@Override
 	public SCCCiphertext symmetricEncrypt(AbstractSCCKey key, PlaintextContainerInterface plaintext) {
 
-		int nonceLength, tagLength;
-		String algo;
+		// Default Values : AES_GCM_256_128_128
+		int nonceLength = 16;
+		int tagLength = 128;
+		String algo = "AES/GCM/NoPadding";
 
 		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
 
 		// get first one, later look what to do if first is not validate -> take next
-		String sccalgorithmID = algorithms.get(1);
+		for (int i = 0; i < algorithms.size(); i++) {
 
-		// TODO mapping from sting to enum:
+			String sccalgorithmID = algorithms.get(i);
 
-		if (getEnums().contains(sccalgorithmID)) {
+			// TODO mapping from sting to enum:
 
-			AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+			if (getEnums().contains(sccalgorithmID)) {
 
-			switch (chosenAlgorithmID) {
-			case AES_GCM_256_128_128:
-				nonceLength = 16;
-				tagLength = 128;
-				algo = "AES/GCM/NoPadding";
+				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+
+				switch (chosenAlgorithmID) {
+				case AES_GCM_256_128_128:
+					nonceLength = 16;
+					tagLength = 128;
+					algo = "AES/GCM/NoPadding";
+					return UseCases.symmetricEncryptWithParams(key, plaintext, nonceLength, tagLength, algo);
+
+				case AES_GCM_256_128_256:
+					nonceLength = 32;
+					tagLength = 128;
+					algo = "AES/GCM/NoPadding";
+					return UseCases.symmetricEncryptWithParams(key, plaintext, nonceLength, tagLength, algo);
+
+				default:
+					break;
+
+				}
+			}
+			// last round and no corresponding match in Switch case found
+			// take default values for encryption
+			if (i == (algorithms.size() - 1)) {
+				System.out.println("No supported algorithms. Default values are used for encryption!");
+				System.out.println("Used: " + AlgorithmIDEnum.AES_GCM_256_128_128);
 				return UseCases.symmetricEncryptWithParams(key, plaintext, nonceLength, tagLength, algo);
-
-			case AES_GCM_256_128_256:
-				nonceLength = 32;
-				tagLength = 128;
-				algo = "AES/GCM/NoPadding";
-				return UseCases.symmetricEncryptWithParams(key, plaintext, nonceLength, tagLength, algo);
-			default:
-
-				return null;
 
 			}
 		}
@@ -109,36 +121,47 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	@Override
 	public SCCCiphertext streamEncrypt(AbstractSCCKey key, String filepath) {
-		int nonceLength, tagLength;
-		String algo;
+		// Default Values : AES_GCM_256_128_128
+		int nonceLength = 16;
+		int tagLength = 128;
+		String algo = "AES/GCM/NoPadding";
 
 		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
 
-		// get first one, later look what to do if first is not validate -> take next
-		String sccalgorithmID = algorithms.get(0);
+		for (int i = 0; i < algorithms.size(); i++) {
 
-		// TODO mapping from sting to enum:
+			// get first one, later look what to do if first is not validate -> take next
+			String sccalgorithmID = algorithms.get(i);
 
-		if (getEnums().contains(sccalgorithmID)) {
+			// TODO mapping from sting to enum:
 
-			AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+			if (getEnums().contains(sccalgorithmID)) {
 
-			switch (chosenAlgorithmID) {
-			case AES_GCM_256_128_128:
-				nonceLength = 16;
-				tagLength = 128;
-				algo = "AES/GCM/NoPadding";
+				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+
+				switch (chosenAlgorithmID) {
+				case AES_GCM_256_128_128:
+					nonceLength = 16;
+					tagLength = 128;
+					algo = "AES/GCM/NoPadding";
+					return UseCases.fileEncryptWithParams(key, filepath, nonceLength, tagLength, algo);
+
+				case AES_GCM_256_128_256:
+					nonceLength = 32;
+					tagLength = 128;
+					algo = "AES/GCM/NoPadding";
+					return UseCases.fileEncryptWithParams(key, filepath, nonceLength, tagLength, algo);
+				default:
+					break;
+
+				}
+			}
+			// last round and no corresponding match in Switch case found
+			// take default values for encryption
+			if (i == (algorithms.size() - 1)) {
+				System.out.println("No supported algorithms. Default values are used for encryption!");
+				System.out.println("Used: " + AlgorithmIDEnum.AES_GCM_256_128_128);
 				return UseCases.fileEncryptWithParams(key, filepath, nonceLength, tagLength, algo);
-
-			case AES_GCM_256_128_256:
-				nonceLength = 32;
-				tagLength = 128;
-				algo = "AES/GCM/NoPadding";
-				return UseCases.fileEncryptWithParams(key, filepath, nonceLength, tagLength, algo);
-			default:
-
-				return null;
-
 			}
 		}
 		return null;
@@ -190,27 +213,37 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	@Override
 	public SCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext) {
-
-		String algo;
+		// Default Values : RSA_SHA3_256
+		String algo = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
 
 		algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption);
 
-		// get first one, later look what to do if first is not validate -> take next
-		String sccalgorithmID = algorithms.get(0);
+		for (int i = 0; i < algorithms.size(); i++) {
 
-		// TODO mapping from sting to enum:
+			// get first one, later look what to do if first is not validate -> take next
+			String sccalgorithmID = algorithms.get(i);
 
-		if (getEnums().contains(sccalgorithmID)) {
+			// TODO mapping from sting to enum:
 
-			AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+			if (getEnums().contains(sccalgorithmID)) {
 
-			switch (chosenAlgorithmID) {
-			case RSA_SHA3_256:
-				algo = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
+				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+
+				switch (chosenAlgorithmID) {
+				case RSA_SHA3_256:
+					algo = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
+					return UseCases.asymmetricEncryptWithParams(keyPair, plaintext, algo);
+
+				default:
+					break;
+				}
+			}
+			// last round and no corresponding match in Switch case found
+			// take default values for encryption
+			if (i == (algorithms.size() - 1)) {
+				System.out.println("No supported algorithms. Default values are used for encryption!");
+				System.out.println("Used: " + AlgorithmIDEnum.RSA_SHA3_256);
 				return UseCases.asymmetricEncryptWithParams(keyPair, plaintext, algo);
-
-			default:
-				return null;
 			}
 		}
 		return null;
@@ -242,26 +275,36 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	@Override
 	public SCCHash hash(PlaintextContainerInterface plaintext) {
 
-		String algo;
+		// Default Values : SHA3_512
+		String algo = "SHA-512";
 
 		// read our Algorithms for symmetric encryption out of JSON
 		algorithms = JSONReader.getAlgos(CryptoUseCase.Hashing);
 
-		// get first one, later look what to do if first is not validate -> take next
-		String sccalgorithmID = algorithms.get(0);
+		for (int i = 0; i < algorithms.size(); i++) {
+			// get first one, later look what to do if first is not validate -> take next
+			String sccalgorithmID = algorithms.get(i);
 
-		// TODO mapping from sting to enum:
+			// TODO mapping from sting to enum:
 
-		if (getEnums().contains(sccalgorithmID)) {
+			if (getEnums().contains(sccalgorithmID)) {
 
-			AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
 
-			switch (chosenAlgorithmID) {
-			case SHA3_512:
-				algo = "SHA-512";
+				switch (chosenAlgorithmID) {
+				case SHA3_512:
+					algo = "SHA-512";
+					return UseCases.hashingWithParams(plaintext, algo);
+				default:
+					break;
+				}
+			}
+			// last round and no corresponding match in Switch case found
+			// take default values for hashing
+			if (i == (algorithms.size() - 1)) {
+				System.out.println("No supported algorithms. Default values are used for hashing!");
+				System.out.println("Used: " + AlgorithmIDEnum.SHA3_512);
 				return UseCases.hashingWithParams(plaintext, algo);
-			default:
-				return null;
 			}
 		}
 		return null;
@@ -282,27 +325,38 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	@Override
 	public SCCSignature sign(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext) {
-		String algo;
+		// Default Values : RSA_SHA3_512
+		String algo = "SHA512withRSA";
 
 		// read our Algorithms for symmetric encryption out of JSON
 		algorithms = JSONReader.getAlgos(CryptoUseCase.Signing);
 
-		// get first one, later look what to do if first is not validate -> take next
-		String sccalgorithmID = algorithms.get(0);
+		for (int i = 0; i < algorithms.size(); i++) {
+			// get first one, later look what to do if first is not validate -> take next
+			String sccalgorithmID = algorithms.get(i);
 
-		// TODO mapping from sting to enum:
+			// TODO mapping from sting to enum:
 
-		if (getEnums().contains(sccalgorithmID)) {
+			if (getEnums().contains(sccalgorithmID)) {
 
-			AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
 
-			switch (chosenAlgorithmID) {
-			case RSA_SHA3_512:
-				algo = "SHA512withRSA";
+				switch (chosenAlgorithmID) {
+				case RSA_SHA3_512:
+					algo = "SHA512withRSA";
+					return UseCases.signingingWithParams(keyPair, plaintext, algo);
+
+				default:
+					break;
+				}
+			}
+			// last round and no corresponding match in Switch case found
+			// take default values for hashing
+			if (i == (algorithms.size() - 1)) {
+				System.out.println("No supported algorithms. Default values are used for signing!");
+				System.out.println("Used: " + AlgorithmIDEnum.RSA_SHA3_512);
 				return UseCases.signingingWithParams(keyPair, plaintext, algo);
 
-			default:
-				return null;
 			}
 		}
 		return null;
