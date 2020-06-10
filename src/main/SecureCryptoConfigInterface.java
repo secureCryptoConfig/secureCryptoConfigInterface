@@ -1,7 +1,6 @@
 package main;
 
 import java.security.Key;
-import java.util.stream.Stream;
 
 import javax.crypto.spec.SecretKeySpec;
 
@@ -27,7 +26,7 @@ abstract interface SecureCryptoConfigInterface {
 
 	public AbstractSCCCiphertext streamReEncrypt(AbstractSCCKey key, String filepath);
 
-	public PlaintextContainerInterface streamDecrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext);
+	public PlaintextContainerInterface streamDecrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext, String filepath );
 	
 	
 	public AbstractSCCCiphertext[] encrypt(AbstractSCCKey[] key, PlaintextContainerInterface plaintext);

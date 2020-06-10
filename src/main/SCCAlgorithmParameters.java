@@ -16,4 +16,6 @@ public class SCCAlgorithmParameters extends AbstractSCCAlgorithmParameters {
 		SCCAlgorithmParameters(AbstractSCCKeyPair keyPair, String algo, PlaintextContainerInterface plaintext) {
 			super(keyPair, algo, plaintext);
 		}
+		
+	
 }
