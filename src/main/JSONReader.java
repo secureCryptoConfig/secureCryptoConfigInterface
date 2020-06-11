@@ -18,7 +18,7 @@ public class JSONReader {
 
 	// Enum representing supported crypto use cases
 	public enum CryptoUseCase {
-		SymmetricEncryption, Signing, Hashing, AsymmetricEncryption;
+		SymmetricEncryption, Signing, Hashing, AsymmetricEncryption, PasswordHashing, KeyGeneration;
 	}
 
 	/**

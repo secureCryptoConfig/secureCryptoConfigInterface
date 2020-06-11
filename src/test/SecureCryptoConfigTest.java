@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
+import main.JSONReader.CryptoUseCase;
 import main.PlaintextContainer;
 import main.SCCCiphertext;
 import main.SCCHash;
@@ -23,6 +24,7 @@ class SecureCryptoConfigTest {
 	String inputPlaintext = "very confidential";
 	PlaintextContainer plaintextContainer = new PlaintextContainer(inputPlaintext);
 	
+	//Method for getting file content. Content needed for comparing file encryption test
 	String readFile(String filepath)
 	{
 		String s = "";
@@ -41,7 +43,7 @@ class SecureCryptoConfigTest {
 		return null;
 	}
 
-	// @Test
+	@Test
 	void testSCCsymmetricEncryption() {
 		SCCKey scckey = SCCKey.createKey();
 
@@ -54,7 +56,7 @@ class SecureCryptoConfigTest {
 	}
 
 	// Test for Hashing / how to test?
-	//@Test
+	@Test
 	void testHashing() {
 		SCCHash hashed = scc.hash(plaintextContainer);
 		String s = hashed.toString();
@@ -63,9 +65,9 @@ class SecureCryptoConfigTest {
 		assertEquals(s, s1);
 	}
 
-	// @Test
+	@Test
 	void testSCCasymmetricEncryption() {
-		SCCKeyPair pair = SCCKeyPair.createKeyPair();
+		SCCKeyPair pair = SCCKeyPair.createKeyPair(CryptoUseCase.AsymmetricEncryption);
 		SCCCiphertext encrypted = scc.asymmetricEncrypt(pair, plaintextContainer);
 		PlaintextContainer decrypted = scc.asymmetricDecrypt(pair, encrypted);
 		assertEquals(inputPlaintext, decrypted.getPlain());
@@ -73,7 +75,7 @@ class SecureCryptoConfigTest {
 
 	@Test
 	void testSCCSignature() {
-		SCCKeyPair pair = SCCKeyPair.createKeyPair();
+		SCCKeyPair pair = SCCKeyPair.createKeyPair(CryptoUseCase.Signing);
 		SCCSignature s = scc.sign(pair, plaintextContainer);
 		assertEquals(true, scc.validateSignature(pair, s));
 	}

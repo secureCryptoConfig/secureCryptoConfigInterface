@@ -111,6 +111,7 @@ abstract class AbstractSCCAlgorithmParameters {
 		this.plain = plain;
 	}
     
+    //?
     HashMap<String, String> params = new HashMap<>();
     protected AbstractSCCAlgorithmParameters(HashMap<String, String> params)
     {
@@ -155,11 +156,12 @@ abstract class AbstractSCCKey extends SecretKeySpec {
 
 	}
 	
-	enum SCCKeyType {
-		Symmetric, Asymmetric
-	}
+	//enum SCCKeyType {
+	//	Symmetric, Asymmetric
+	//}
 
-	abstract AbstractSCCKey createKey(byte[] bytes);
+	//as static method in class
+	//abstract AbstractSCCKey createKey(byte[] bytes);
 
 	abstract String getDefaultAlgorithm();
 
@@ -174,6 +176,7 @@ abstract class AbstractSCCKeyPair{
 		this.publicKey = publicKey;
 		this.privateKey = privateKey;
 	}
+	
 }
 
 abstract class AbstractSCCHash {

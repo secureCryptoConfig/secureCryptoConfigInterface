@@ -31,7 +31,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		AES_GCM_256_128_128, AES_GCM_256_128_256, SHA3_512, RSA_SHA3_256, RSA_SHA3_512
 	}
 
-	public static HashSet<String> getEnums() {
+	protected static HashSet<String> getEnums() {
 		HashSet<String> values = new HashSet<String>();
 
 		for (AlgorithmIDEnum c : AlgorithmIDEnum.values()) {
