@@ -1,9 +1,11 @@
 package main;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.MessageDigest;
@@ -15,6 +17,7 @@ import java.security.SignatureException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
@@ -134,19 +137,24 @@ public class UseCases {
 			FileInputStream inputStream = new FileInputStream(inputFile);
 			byte[] inputBytes = new byte[(int) inputFile.length()];
 			inputStream.read(inputBytes);
-
-			byte[] outputBytes = cipher.doFinal(inputBytes);
-
-			FileOutputStream outputStream = new FileOutputStream(inputFile);
-			outputStream.write(outputBytes);
-
-			inputStream.close();
-			outputStream.close();
+			
+			FileOutputStream fileOutputStream = new FileOutputStream(filepath);
+	        CipherOutputStream encryptedOutputStream = new CipherOutputStream(fileOutputStream, cipher);
+	        InputStream stringInputStream = new ByteArrayInputStream(inputBytes);
+	      
+	        byte[] buffer = new byte[8192];
+	        int nread;
+	        while ((nread = stringInputStream.read(buffer)) > 0) {
+	          encryptedOutputStream.write(buffer, 0, nread);
+	        }
+	        encryptedOutputStream.flush();
+	        encryptedOutputStream.close();
+	        inputStream.close();
 			SCCAlgorithmParameters parameters = new SCCAlgorithmParameters(key, nonce, tagLength, algo);
-			SCCCiphertext c = new SCCCiphertext(outputBytes, parameters);
+			SCCCiphertext c = new SCCCiphertext(buffer, parameters);
 			return c;
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | IOException | InvalidKeyException
-				| InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+				| InvalidAlgorithmParameterException e) {
 
 			e.printStackTrace();
 		}

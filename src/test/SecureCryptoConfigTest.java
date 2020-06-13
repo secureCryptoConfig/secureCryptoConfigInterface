@@ -43,7 +43,7 @@ class SecureCryptoConfigTest {
 		return null;
 	}
 
-	@Test
+	//@Test
 	void testSCCsymmetricEncryption() {
 		PlaintextContainer p = new PlaintextContainer("Hello World");
 		SCCKey scckey = SCCKey.createKey(p);
@@ -82,7 +82,7 @@ class SecureCryptoConfigTest {
 		assertEquals(true, scc.validateSignature(pair, s));
 	}
 
-	// @Test
+	@Test
 	void testFileEncryption() {
 		String filepath = ".\\src\\main\\Test.txt";
 		String fileInput = readFile(filepath).replace("\r", "").replace("\n", "").replace(" ", "");

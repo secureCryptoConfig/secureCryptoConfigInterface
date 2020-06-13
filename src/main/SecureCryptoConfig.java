@@ -1,6 +1,6 @@
 package main;
 
-import java.io.File;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -16,6 +16,7 @@ import java.util.HashSet;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
@@ -181,24 +182,29 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			Cipher cipher = Cipher.getInstance(ciphertext.parameters.algo);
 			GCMParameterSpec spec = new GCMParameterSpec(ciphertext.parameters.tagLength, ciphertext.parameters.nonce);
 			cipher.init(Cipher.DECRYPT_MODE, key.key, spec);
-
-			File inputFile = new File(filepath);
-			FileInputStream inputStream = new FileInputStream(inputFile);
-			byte[] inputBytes = new byte[(int) inputFile.length()];
-			inputStream.read(inputBytes);
-
-			byte[] outputBytes = cipher.doFinal(inputBytes);
-
-			FileOutputStream outputStream = new FileOutputStream(inputFile);
-			outputStream.write(outputBytes);
-
-			inputStream.close();
-			outputStream.close();
-			decryptedCipherText = new String(outputBytes, StandardCharsets.UTF_8);
-			PlaintextContainer p = new PlaintextContainer(decryptedCipherText);
+			
+			FileInputStream fileInputStream = new FileInputStream(filepath);
+	        CipherInputStream cipherInputStream = new CipherInputStream(fileInputStream, cipher);
+	        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+	      
+	        byte[] buffer = new byte[8192];
+	        int nread;
+	        while ((nread = cipherInputStream.read(buffer)) > 0) {
+	          byteArrayOutputStream.write(buffer, 0, nread);
+	        }
+	        FileOutputStream fileOutputStream = new FileOutputStream(filepath);
+	        fileOutputStream.write(buffer);
+	        
+	        fileOutputStream.close();
+	        byteArrayOutputStream.flush();
+	        cipherInputStream.close();
+		
+	        decryptedCipherText = new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8);
+	        
+	        PlaintextContainer p = new PlaintextContainer(decryptedCipherText);
 			return p;
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | IOException | InvalidKeyException
-				| InvalidAlgorithmParameterException | IllegalBlockSizeException | BadPaddingException e) {
+				| InvalidAlgorithmParameterException e) {
 
 			e.printStackTrace();
 		}
