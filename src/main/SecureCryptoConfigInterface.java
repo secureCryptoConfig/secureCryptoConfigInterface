@@ -1,7 +1,6 @@
 package main;
 
 import java.security.Key;
-import java.util.HashMap;
 
 import javax.crypto.SecretKey;
 
@@ -14,26 +13,29 @@ abstract interface SecureCryptoConfigInterface {
 
 	public PlaintextContainerInterface symmetricDecrypt(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext);
 
-	//for file encryption?
+	// for file encryption?
 	/**
-	public AbstractSCCCiphertextStream streamEncrypt(AbstractSCCKey key, AbstractPlaintextContainerStream<?> plaintext);
+	 * public AbstractSCCCiphertextStream streamEncrypt(AbstractSCCKey key,
+	 * AbstractPlaintextContainerStream<?> plaintext);
+	 * 
+	 * public AbstractSCCCiphertextStream streamReEncrypt(AbstractSCCKey key,
+	 * AbstractSCCCiphertextStream ciphertext);
+	 * 
+	 * public AbstractPlaintextContainerStream<?> streamDecrypt(AbstractSCCKey key,
+	 * AbstractSCCCiphertextStream ciphertext);
+	 **/
 
-	public AbstractSCCCiphertextStream streamReEncrypt(AbstractSCCKey key, AbstractSCCCiphertextStream ciphertext);
-
-	public AbstractPlaintextContainerStream<?> streamDecrypt(AbstractSCCKey key, AbstractSCCCiphertextStream ciphertext);
-	**/
-	
 	public AbstractSCCCiphertext streamEncrypt(AbstractSCCKey key, String filepath);
 
 	public AbstractSCCCiphertext streamReEncrypt(AbstractSCCKey key, String filepath);
 
-	public PlaintextContainerInterface streamDecrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext, String filepath );
-	
-	
+	public PlaintextContainerInterface streamDecrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext,
+			String filepath);
+
 	public AbstractSCCCiphertext[] encrypt(AbstractSCCKey[] key, PlaintextContainerInterface plaintext);
 
 	// Asymmetric
-	
+
 	public AbstractSCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext);
 
 	public AbstractSCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext);
@@ -59,64 +61,60 @@ abstract interface SecureCryptoConfigInterface {
 
 	// Password Hashing
 
-	public AbstractSCCPasswordHash passwordHash(String password);
+	public AbstractSCCPasswordHash passwordHash(PlaintextContainerInterface password);
 
-	public boolean verifyPassword(String password, AbstractSCCPasswordHash passwordhash);
+	public boolean verifyPassword(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash);
 
 	// TODO methods for key generation? Returning of SCCKey?
-	
 
 }
 
 abstract interface PlaintextContainerInterface {
 
 	abstract byte[] getByteArray();
+
 	abstract String getPlain();
+
 	boolean verifyHash(AbstractSCCHash scchash);
 }
 
 /**
-abstract interface AbstractPlaintextContainerStream<T> {
-	public Stream<T> getPlaintextStream();
-}
-
-abstract class AbstractSCCCiphertextStream implements Stream<SCCCiphertext>{
-
-}
-**/
+ * abstract interface AbstractPlaintextContainerStream<T> { public Stream<T>
+ * getPlaintextStream(); }
+ * 
+ * abstract class AbstractSCCCiphertextStream implements Stream<SCCCiphertext>{
+ * 
+ * }
+ **/
 
 abstract class AbstractSCCAlgorithmParameters {
-	int tagLength;
 	byte[] nonce;
 	String algo;
-	AbstractSCCKey key;
-	AbstractSCCKeyPair keyPair;
 	PlaintextContainerInterface plain;
-	
-    protected AbstractSCCAlgorithmParameters(AbstractSCCKey key, byte[] nonce, int tag, String algo ) {
-		this.key = key;
+	byte[] salt;
+	int keysize, iterations, tagLength;
+
+	protected AbstractSCCAlgorithmParameters(byte[] nonce, int tag, String algo) {
 		this.nonce = nonce;
 		this.tagLength = tag;
 		this.algo = algo;
 	}
-    
-    protected AbstractSCCAlgorithmParameters(AbstractSCCKeyPair keyPair, String algo ) {
-		this.keyPair = keyPair;
+
+	protected AbstractSCCAlgorithmParameters(String algo) {
 		this.algo = algo;
 	}
-    
-    protected AbstractSCCAlgorithmParameters(AbstractSCCKeyPair keyPair, String algo, PlaintextContainerInterface plain) {
-		this.keyPair = keyPair;
+
+	protected AbstractSCCAlgorithmParameters(String algo, PlaintextContainerInterface plain) {
 		this.algo = algo;
 		this.plain = plain;
 	}
-    
-    //?
-    HashMap<String, String> params = new HashMap<>();
-    protected AbstractSCCAlgorithmParameters(HashMap<String, String> params)
-    {
-    	this.params = params;
-    }
+
+	protected AbstractSCCAlgorithmParameters(String algo, byte[] salt, int keysize, int iterations) {
+		this.algo = algo;
+		this.salt = salt;
+		this.keysize = keysize;
+		this.iterations = iterations;
+	}
 
 }
 
@@ -124,7 +122,7 @@ abstract class AbstractSCCCiphertext {
 
 	AbstractSCCAlgorithmParameters parameters;
 	byte[] ciphertext;
-	
+
 	public AbstractSCCCiphertext(byte[] ciphertext, AbstractSCCAlgorithmParameters parameters) {
 		this.ciphertext = ciphertext;
 		this.parameters = parameters;
@@ -135,9 +133,7 @@ abstract class AbstractSCCCiphertext {
 	@Override
 	public abstract String toString();
 
-
 }
-
 
 abstract class AbstractAlgorithmIdentifier {
 	// named defined in IANA registry
@@ -147,29 +143,28 @@ abstract class AbstractAlgorithmIdentifier {
 }
 
 //extends SecretKeySpec?
-abstract class AbstractSCCKey  {
+abstract class AbstractSCCKey {
 
-	SecretKey key; 
+	SecretKey key;
 	String algorithm;
-	
-	protected AbstractSCCKey(SecretKey key, String algorithm)
-	{
+
+	protected AbstractSCCKey(SecretKey key, String algorithm) {
 		this.key = key;
 		this.algorithm = algorithm;
 	}
-	
-	abstract String getAlgorithm();
-	
-	//enum SCCKeyType {
-	//	Symmetric, Asymmetric
-	//}
 
-	//as static method in class
-	//abstract AbstractSCCKey createKey(byte[] bytes);
+	abstract String getAlgorithm();
+
+	// enum SCCKeyType {
+	// Symmetric, Asymmetric
+	// }
+
+	// as static method in class
+	// abstract AbstractSCCKey createKey(byte[] bytes);
 
 }
 
-abstract class AbstractSCCKeyPair{
+abstract class AbstractSCCKeyPair {
 	Key publicKey, privateKey;
 	String algorithm;
 
@@ -178,29 +173,41 @@ abstract class AbstractSCCKeyPair{
 		this.publicKey = publicKey;
 		this.privateKey = privateKey;
 	}
-	
+
 }
 
 abstract class AbstractSCCHash {
 	abstract boolean verify(PlaintextContainer plaintext);
-	
+
 	@Override
 	public abstract String toString();
+	abstract String getAlgo();
 }
 
 abstract class AbstractSCCPasswordHash {
+	abstract boolean verify(PlaintextContainer plaintext);
+
+	@Override
+	public abstract String toString();
+
+	abstract String getAlgo();
+	abstract byte[] getSalt();
+	abstract int getKeySize();
+	abstract int getIterations();
+	
+
 
 }
 
 abstract class AbstractSCCSignature {
 	AbstractSCCAlgorithmParameters parameters;
 	byte[] signature;
-	
+
 	public AbstractSCCSignature(byte[] signature, AbstractSCCAlgorithmParameters parameters) {
 		this.signature = signature;
 		this.parameters = parameters;
 	}
-	
+
 	@Override
 	public abstract String toString();
 

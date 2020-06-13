@@ -14,13 +14,17 @@ import java.security.PrivateKey;
 import java.security.SecureRandom;
 import java.security.Signature;
 import java.security.SignatureException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.GCMParameterSpec;
+import javax.crypto.spec.PBEKeySpec;
 
 import com.upokecenter.cbor.CBORObject;
 
@@ -46,7 +50,7 @@ public class UseCases {
 			cipher.init(Cipher.ENCRYPT_MODE, key.key, spec);
 
 			byte[] byteCipher = cipher.doFinal(plaintext.getByteArray());
-			SCCAlgorithmParameters param = new SCCAlgorithmParameters(key, nonce, tagLength, algo);
+			SCCAlgorithmParameters param = new SCCAlgorithmParameters(nonce, tagLength, algo);
 			SCCCiphertext c = new SCCCiphertext(byteCipher, param);
 			return c;
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
@@ -62,7 +66,7 @@ public class UseCases {
 			Cipher cipher = Cipher.getInstance(algo);
 			cipher.init(Cipher.ENCRYPT_MODE, keyPair.publicKey);
 			byte[] cipherTextBytes = cipher.doFinal(plaintext.getByteArray());
-			SCCAlgorithmParameters parameters = new SCCAlgorithmParameters(keyPair, algo);
+			SCCAlgorithmParameters parameters = new SCCAlgorithmParameters(algo);
 			SCCCiphertext encrypted = new SCCCiphertext(cipherTextBytes, parameters);
 			return encrypted;
 		} catch (IllegalBlockSizeException | BadPaddingException | NoSuchAlgorithmException | NoSuchPaddingException
@@ -77,7 +81,8 @@ public class UseCases {
 		try {
 			MessageDigest messageDigest = MessageDigest.getInstance(algo);
 			byte[] hashBytes = messageDigest.digest(plaintext.getByteArray());
-			SCCHash hash = new SCCHash(hashBytes);
+			SCCAlgorithmParameters param = new SCCAlgorithmParameters(algo);
+			SCCHash hash = new SCCHash(hashBytes, param);
 			return hash;
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
@@ -92,7 +97,7 @@ public class UseCases {
 			signature.initSign((PrivateKey) keyPair.privateKey);
 			signature.update(plaintext.getByteArray());
 			byte[] s = signature.sign();
-			SCCAlgorithmParameters parameters = new SCCAlgorithmParameters(keyPair, algo, plaintext);
+			SCCAlgorithmParameters parameters = new SCCAlgorithmParameters(algo, plaintext);
 			SCCSignature signed = new SCCSignature(s, parameters);
 			return signed;
 		} catch (SignatureException | InvalidKeyException | NoSuchAlgorithmException e) {
@@ -150,7 +155,7 @@ public class UseCases {
 	        encryptedOutputStream.flush();
 	        encryptedOutputStream.close();
 	        inputStream.close();
-			SCCAlgorithmParameters parameters = new SCCAlgorithmParameters(key, nonce, tagLength, algo);
+			SCCAlgorithmParameters parameters = new SCCAlgorithmParameters(nonce, tagLength, algo);
 			SCCCiphertext c = new SCCCiphertext(buffer, parameters);
 			return c;
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | IOException | InvalidKeyException
@@ -180,6 +185,19 @@ public class UseCases {
 		System.out.println(o.findAttribute(HeaderKeys.Algorithm));
 		System.out.println(o.getProtectedAttributes());
 		System.out.println(o.findAttribute(n));
+	}
+
+	public static SCCPasswordHash passwordHashing(PlaintextContainerInterface password, String algo, byte[] salt, int keysize, int iterations) {
+		try {
+			KeySpec spec = new PBEKeySpec(password.getPlain().toCharArray(), salt, iterations, keysize);
+			SecretKeyFactory factory = SecretKeyFactory.getInstance(algo);
+			byte[]hash = factory.generateSecret(spec).getEncoded();
+			SCCAlgorithmParameters param = new SCCAlgorithmParameters(algo, salt, keysize, iterations);
+			return new SCCPasswordHash(hash, param);
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 }

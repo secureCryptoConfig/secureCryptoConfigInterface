@@ -1,26 +1,26 @@
 package main;
 
-import java.util.HashMap;
 
 public class SCCAlgorithmParameters extends AbstractSCCAlgorithmParameters {
 
-	// for symmetric
-	SCCAlgorithmParameters(AbstractSCCKey key, byte[] nonce, int tag, String algo) {
-		super(key, nonce, tag, algo);
+	// for symmetric 
+	SCCAlgorithmParameters(byte[] nonce, int tagLength, String algo) {
+		super(nonce, tagLength, algo);
 	}
 
 	// for asymmetric
-	SCCAlgorithmParameters(AbstractSCCKeyPair keyPair, String algo) {
-		super(keyPair, algo);
+	SCCAlgorithmParameters(String algo) {
+		super(algo);
 	}
 
 	// for signing
-	SCCAlgorithmParameters(AbstractSCCKeyPair keyPair, String algo, PlaintextContainerInterface plaintext) {
-		super(keyPair, algo, plaintext);
+	SCCAlgorithmParameters(String algo, PlaintextContainerInterface plaintext) {
+		super(algo, plaintext);
+	}
+	
+	//passwordHash
+	SCCAlgorithmParameters(String algo, byte[] salt, int keysize, int iterations) {
+		super(algo, salt, keysize, iterations);
 	}
 
-	SCCAlgorithmParameters(HashMap<String, String> params)
-	    {
-	    	super(params);
-	    }
 }

@@ -27,6 +27,9 @@
         ],
         "Signing" : [
             "RSA_SHA3_512"
+        ],
+        "PasswordHashing" : [
+        	"PBKDF_SHA3_256"
         ]
     }
   }

@@ -29,7 +29,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	// TODO refactor in separate class?
 	static enum AlgorithmIDEnum {
-		AES_GCM_256_128_128, AES_GCM_256_128_256, SHA3_512, RSA_SHA3_256, RSA_SHA3_512
+		AES_GCM_256_128_128, AES_GCM_256_128_256, SHA3_512, RSA_SHA3_256, RSA_SHA3_512, PBKDF_SHA3_256
 	}
 
 	protected static HashSet<String> getEnums() {
@@ -182,26 +182,26 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			Cipher cipher = Cipher.getInstance(ciphertext.parameters.algo);
 			GCMParameterSpec spec = new GCMParameterSpec(ciphertext.parameters.tagLength, ciphertext.parameters.nonce);
 			cipher.init(Cipher.DECRYPT_MODE, key.key, spec);
-			
+
 			FileInputStream fileInputStream = new FileInputStream(filepath);
-	        CipherInputStream cipherInputStream = new CipherInputStream(fileInputStream, cipher);
-	        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-	      
-	        byte[] buffer = new byte[8192];
-	        int nread;
-	        while ((nread = cipherInputStream.read(buffer)) > 0) {
-	          byteArrayOutputStream.write(buffer, 0, nread);
-	        }
-	        FileOutputStream fileOutputStream = new FileOutputStream(filepath);
-	        fileOutputStream.write(buffer);
-	        
-	        fileOutputStream.close();
-	        byteArrayOutputStream.flush();
-	        cipherInputStream.close();
-		
-	        decryptedCipherText = new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8);
-	        
-	        PlaintextContainer p = new PlaintextContainer(decryptedCipherText);
+			CipherInputStream cipherInputStream = new CipherInputStream(fileInputStream, cipher);
+			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+
+			byte[] buffer = new byte[8192];
+			int nread;
+			while ((nread = cipherInputStream.read(buffer)) > 0) {
+				byteArrayOutputStream.write(buffer, 0, nread);
+			}
+			FileOutputStream fileOutputStream = new FileOutputStream(filepath);
+			fileOutputStream.write(buffer);
+
+			fileOutputStream.close();
+			byteArrayOutputStream.flush();
+			cipherInputStream.close();
+
+			decryptedCipherText = new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8);
+
+			PlaintextContainer p = new PlaintextContainer(decryptedCipherText);
 			return p;
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | IOException | InvalidKeyException
 				| InvalidAlgorithmParameterException e) {
@@ -325,7 +325,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	@Override
 	public boolean verifyHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) {
 		// Hash same plain two times and look if it is the same
-		SCCHash hash1 = hash(plaintext);
+		SCCHash hash1 = UseCases.hashingWithParams(plaintext, hash.getAlgo());
 		return hash.toString().equals(hash1.toString());
 	}
 
@@ -390,15 +390,57 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public AbstractSCCPasswordHash passwordHash(String password) {
-		// TODO Auto-generated method stub
+	public SCCPasswordHash passwordHash(PlaintextContainerInterface password) {
+
+		// Default Values : "PBKDF_SHA3_256"
+		String algo = "PBKDF2WithHmacSHA512";
+		int saltLength = 64;
+		int keysize = 256;
+		int iterations = 10000;
+		byte salt[] = UseCases.generateRandomByteArray(saltLength);
+
+		// read our Algorithms for symmetric encryption out of JSON
+		algorithms = JSONReader.getAlgos(CryptoUseCase.PasswordHashing);
+		
+		for (int i = 0; i < algorithms.size(); i++) {
+			// get first one, later look what to do if first is not validate -> take next
+			String sccalgorithmID = algorithms.get(i);
+
+			// TODO mapping from sting to enum:
+
+			if (getEnums().contains(sccalgorithmID)) {
+
+				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+
+				switch (chosenAlgorithmID) {
+				case PBKDF_SHA3_256:
+					algo = "PBKDF2WithHmacSHA512";
+					saltLength = 64;
+					keysize = 256;
+					salt = UseCases.generateRandomByteArray(saltLength);
+					return UseCases.passwordHashing(password, algo, salt, keysize, iterations);
+				default:
+					break;
+				}
+			}
+			// last round and no corresponding match in Switch case found
+			// take default values for hashing
+			if (i == (algorithms.size() - 1)) {
+				System.out.println("No supported algorithms. Default values are used for hashing!");
+				System.out.println("Used: " + AlgorithmIDEnum.PBKDF_SHA3_256);
+				return UseCases.passwordHashing(password, algo, salt, keysize, iterations);
+			}
+		}
 		return null;
+
 	}
 
 	@Override
-	public boolean verifyPassword(String password, AbstractSCCPasswordHash passwordhash) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean verifyPassword(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash) {
+		SCCPasswordHash hash = passwordHash(password);
+		SCCPasswordHash hash1 = UseCases.passwordHashing(password, hash.param.algo, hash.param.salt, hash.param.keysize, hash.param.iterations);
+		return hash.toString().equals(hash1.toString());
 	}
+
 
 }
