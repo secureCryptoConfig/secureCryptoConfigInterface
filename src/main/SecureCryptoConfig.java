@@ -23,7 +23,6 @@ import javax.crypto.spec.GCMParameterSpec;
 
 import COSE.AlgorithmID;
 import COSE.CoseException;
-import COSE.Encrypt0Message;
 import main.JSONReader.CryptoUseCase;
 
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
@@ -32,11 +31,11 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	// TODO refactor in separate class?
 	static enum AlgorithmIDEnum {
-		//symmetric: 
-		//Algo_Mode_key_IV
+		// symmetric:
+		// Algo_Mode_key_IV
 		AES_GCM_256_96, AES_GCM_128_96,
-		
-		//Others
+
+		// Others
 		SHA3_512, RSA_SHA3_256, RSA_SHA3_512, PBKDF_SHA3_256
 	}
 
@@ -51,11 +50,11 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCCiphertext symmetricEncrypt(AbstractSCCKey key, PlaintextContainerInterface plaintext) throws CoseException {
+	public SCCCiphertext symmetricEncrypt(AbstractSCCKey key, PlaintextContainerInterface plaintext)
+			throws CoseException {
 
 		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
 
-		// get first one, later look what to do if first is not validate -> take next
 		for (int i = 0; i < algorithms.size(); i++) {
 
 			String sccalgorithmID = algorithms.get(i);
@@ -68,10 +67,6 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				switch (chosenAlgorithmID) {
 				case AES_GCM_256_96:
-					//nonceLength = 16;
-					//tagLength = 128;
-					//algo = "AES/GCM/NoPadding";
-					//return UseCases.symmetricEncryptWithParams(key, plaintext, nonceLength, tagLength, algo);
 					return UseCases.createMessage(plaintext.getPlain(), key.key, AlgorithmID.AES_GCM_256);
 				case AES_GCM_128_96:
 					return UseCases.createMessage(plaintext.getPlain(), key.key, AlgorithmID.AES_GCM_128);
@@ -80,14 +75,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				}
 			}
-			/**
-			if (i == (algorithms.size() - 1)) {
-				System.out.println("No supported algorithms. Default values are used for encryption!");
-				System.out.println("Used: " + AlgorithmIDEnum.AES_GCM_256_96);
-				return UseCases.symmetricEncryptWithParams(key, plaintext, nonceLength, tagLength, algo);
 
-			}
-			**/
 		}
 		throw new CoseException("No supported algorithms!");
 	}
@@ -95,38 +83,36 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	@Override
 	public PlaintextContainer symmetricDecrypt(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext) {
 		try {
-			Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(sccciphertext.ciphertext);
-			String s = new String(msg.decrypt(key.key.getEncoded()), StandardCharsets.UTF_8);
+			//Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(sccciphertext.ciphertext);
+			String s = new String(sccciphertext.msg.decrypt(key.key.getEncoded()), StandardCharsets.UTF_8);
 			return new PlaintextContainer(s);
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;
 		}
-		
-		/**
-		try {
-			byte[] nonce = sccciphertext.parameters.nonce;
-			int tagLength = sccciphertext.parameters.tagLength;
-			String algo = sccciphertext.parameters.algo;
 
-			Cipher cipher = Cipher.getInstance(algo);
-			GCMParameterSpec spec = new GCMParameterSpec(tagLength, nonce);
-			cipher.init(Cipher.DECRYPT_MODE, key.key, spec);
-			byte[] decryptedCipher = cipher.doFinal(sccciphertext.ciphertext);
-			String decryptedCipherText = new String(decryptedCipher, StandardCharsets.UTF_8);
-			PlaintextContainer plainText = new PlaintextContainer(decryptedCipherText);
-			return plainText;
-		} catch (IllegalBlockSizeException | BadPaddingException | InvalidKeyException
-				| InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchPaddingException e) {
-			e.printStackTrace();
-			return null;
-		}**/
+		/**
+		 * try { byte[] nonce = sccciphertext.parameters.nonce; int tagLength =
+		 * sccciphertext.parameters.tagLength; String algo =
+		 * sccciphertext.parameters.algo;
+		 * 
+		 * Cipher cipher = Cipher.getInstance(algo); GCMParameterSpec spec = new
+		 * GCMParameterSpec(tagLength, nonce); cipher.init(Cipher.DECRYPT_MODE, key.key,
+		 * spec); byte[] decryptedCipher = cipher.doFinal(sccciphertext.ciphertext);
+		 * String decryptedCipherText = new String(decryptedCipher,
+		 * StandardCharsets.UTF_8); PlaintextContainer plainText = new
+		 * PlaintextContainer(decryptedCipherText); return plainText; } catch
+		 * (IllegalBlockSizeException | BadPaddingException | InvalidKeyException |
+		 * InvalidAlgorithmParameterException | NoSuchAlgorithmException |
+		 * NoSuchPaddingException e) { e.printStackTrace(); return null; }
+		 **/
 	}
 
 	@Override
-	public AbstractSCCCiphertext symmetricReEncrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext) {
-		// TODO Auto-generated method stub
-		return null;
+	public SCCCiphertext symmetricReEncrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext) throws CoseException {
+		
+		PlaintextContainer decrypted = symmetricDecrypt(key, ciphertext);
+		return symmetricEncrypt(key, decrypted);
 	}
 
 	@Override
@@ -160,7 +146,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 					tagLength = 128;
 					algo = "AES/GCM/NoPadding";
 					return UseCases.fileEncryptWithParams(key, filepath, nonceLength, tagLength, algo);
-				
+
 				default:
 					break;
 
@@ -410,7 +396,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		// read our Algorithms for symmetric encryption out of JSON
 		algorithms = JSONReader.getAlgos(CryptoUseCase.PasswordHashing);
-		
+
 		for (int i = 0; i < algorithms.size(); i++) {
 			// get first one, later look what to do if first is not validate -> take next
 			String sccalgorithmID = algorithms.get(i);
@@ -447,9 +433,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	@Override
 	public boolean verifyPassword(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash) {
 		SCCPasswordHash hash = passwordHash(password);
-		SCCPasswordHash hash1 = UseCases.passwordHashing(password, hash.param.algo, hash.param.salt, hash.param.keysize, hash.param.iterations);
+		SCCPasswordHash hash1 = UseCases.passwordHashing(password, hash.param.algo, hash.param.salt, hash.param.keysize,
+				hash.param.iterations);
 		return hash.toString().equals(hash1.toString());
 	}
-
 
 }

@@ -9,7 +9,6 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
-import COSE.AlgorithmID;
 import COSE.CoseException;
 import main.JSONReader.CryptoUseCase;
 import main.PlaintextContainer;
@@ -47,7 +46,7 @@ class SecureCryptoConfigTest {
 		return null;
 	}
 
-	@Test
+	//@Test
 	void testSCCsymmetricEncryption() throws CoseException {
 		PlaintextContainer p = new PlaintextContainer("Hello World");
 		SCCKey scckey = SCCKey.createKey(p);
@@ -59,6 +58,7 @@ class SecureCryptoConfigTest {
 		assertEquals(inputPlaintext, decrypted);
 
 	}
+	
 
 	// Test for Hashing / how to test?
 	// @Test
@@ -86,7 +86,7 @@ class SecureCryptoConfigTest {
 	}
 
 	// @Test
-	void testFileEncryption() {
+	void testFileEncryption() throws CoseException {
 		String filepath = ".\\src\\main\\Test.txt";
 		String fileInput = readFile(filepath).replace("\r", "").replace("\n", "").replace(" ", "");
 		SCCKey scckey = SCCKey.createKey();

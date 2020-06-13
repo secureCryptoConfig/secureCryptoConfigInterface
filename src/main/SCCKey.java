@@ -11,34 +11,34 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import COSE.CoseException;
 import main.JSONReader.CryptoUseCase;
 import main.SecureCryptoConfig.AlgorithmIDEnum;
 
 public class SCCKey extends main.AbstractSCCKey {
-
 
 	protected SCCKey(SecretKey key, String algorithm) {
 		super(key, algorithm);
 	}
 
 	/**
-	protected SCCKey(byte[] key, String algorithm) {
-		super(key, algorithm);
-		// TODO Auto-generated constructor stub
-	}
-	**/
+	 * protected SCCKey(byte[] key, String algorithm) { super(key, algorithm); //
+	 * TODO Auto-generated constructor stub }
+	 **/
 	@Override
-	public SecretKey getKey()
-	{
+	public SecretKey getKey() {
 		return this.key;
 	}
-	public static SCCKey createKey() {
+	
+	@Override
+	String getAlgorithm() {
+		return this.algorithm;
+	}
+
+	public static SCCKey createKey() throws CoseException {
 
 		// possible: AES, DES, DESede, HmacSHA1, HmacSHA256
 		ArrayList<String> algorithms = new ArrayList<String>();
-		// Default values
-		int keysize = 256;
-		String algo = "AES";
 
 		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
 
@@ -54,43 +54,26 @@ public class SCCKey extends main.AbstractSCCKey {
 
 				switch (chosenAlgorithmID) {
 				case AES_GCM_256_96:
-					algo = "AES";
-					keysize = 256;
-					return keyWithParams(algo, keysize);
+					return keyWithParams("AES", 256);
 				case AES_GCM_128_96:
-					algo = "AES";
-					keysize = 128;
-					return keyWithParams(algo, keysize);
+					return keyWithParams("AES", 128);
 				default:
 					break;
 
 				}
 			}
-			// last round and no corresponding match in Switch case found
-			// take default values for encryption
-			if (i == (algorithms.size() - 1)) {
-				System.out.println("No supported algorithms. Default values are used for key creation!");
-				System.out.println("Used: " + algo);
-				return keyWithParams(algo, keysize);
 
-			}
 		}
 
-		return null;
+		throw new CoseException("No supported algorithms! Key creation not possible!");
 
 	}
 
-	public static SCCKey createKey(PlaintextContainer password) {
+	public static SCCKey createKey(PlaintextContainer password) throws CoseException {
 
 		// possible: AES, DES, DESede, HmacSHA1, HmacSHA256
 		ArrayList<String> algorithms = new ArrayList<String>();
-		// Default values
-		int keysize = 256;
-		String keyAlgo = "AES";
-		String algo = "PBKDF2WithHmacSHA512";
-		int saltLength = 64;
-		int iterations = 1000;
-
+		
 		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
 
 		for (int i = 0; i < algorithms.size(); i++) {
@@ -105,36 +88,19 @@ public class SCCKey extends main.AbstractSCCKey {
 
 				switch (chosenAlgorithmID) {
 				case AES_GCM_256_96:
-					keyAlgo = "AES";
-					keysize = 256;
-					algo = "PBKDF2WithHmacSHA512";
-					saltLength = 64;
-					iterations = 1000;
-					return keyWithPassword(password, algo, keyAlgo, keysize, iterations, saltLength);
-				
+					return keyWithPassword(password, "PBKDF2WithHmacSHA512", "AES", 256, 10000, 64);
+
 				case AES_GCM_128_96:
-					keyAlgo = "AES";
-					keysize = 128;
-					algo = "PBKDF2WithHmacSHA512";
-					saltLength = 64;
-					iterations = 1000;
-					return keyWithPassword(password, algo, keyAlgo, keysize, iterations, saltLength);
+					return keyWithPassword(password, "PBKDF2WithHmacSHA512", "AES", 128, 10000, 64);
 				default:
 					break;
 
 				}
 			}
-			// last round and no corresponding match in Switch case found
-			// take default values for encryption
-			if (i == (algorithms.size() - 1)) {
-				System.out.println("No supported algorithms. Default values are used for key creation!");
-				System.out.println("Used: " + algo);
-				return keyWithPassword(password, algo, keyAlgo, keysize, i, saltLength);
 
-			}
 		}
 
-		return null;
+		throw new CoseException("No supported algorithms! Key creation not possible!");
 
 	}
 
@@ -142,7 +108,7 @@ public class SCCKey extends main.AbstractSCCKey {
 			int iterations, int saltLength) {
 
 		try {
-			
+
 			byte[] salt = UseCases.generateRandomByteArray(saltLength);
 
 			SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(algo);
@@ -172,11 +138,6 @@ public class SCCKey extends main.AbstractSCCKey {
 		}
 	}
 
-	@Override
-	String getAlgorithm() {
-		return this.algorithm;
-	}
 
-	
 
 }

@@ -4,6 +4,7 @@ import java.security.Key;
 
 import javax.crypto.SecretKey;
 
+
 import COSE.CoseException;
 import COSE.Encrypt0Message;
 
@@ -12,7 +13,7 @@ abstract interface SecureCryptoConfigInterface {
 
 	public AbstractSCCCiphertext symmetricEncrypt(AbstractSCCKey key, PlaintextContainerInterface plaintext) throws CoseException;
 
-	public AbstractSCCCiphertext symmetricReEncrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext);
+	public AbstractSCCCiphertext symmetricReEncrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext) throws CoseException;
 
 	public PlaintextContainerInterface symmetricDecrypt(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext);
 
@@ -129,13 +130,21 @@ abstract class AbstractSCCCiphertext {
 
 	AbstractSCCAlgorithmParameters parameters;
 	byte[] ciphertext;
+	Encrypt0Message msg;
 
 	public AbstractSCCCiphertext(byte[] ciphertext, AbstractSCCAlgorithmParameters parameters) {
 		this.ciphertext = ciphertext;
 		this.parameters = parameters;
 	}
+	
+	public AbstractSCCCiphertext(byte[] ciphertext, Encrypt0Message msg) {
+		this.ciphertext = ciphertext;
+		this.msg = msg;
+	}
 
-	abstract AbstractAlgorithmIdentifier getAlgorithmIdentifier(AbstractSCCCiphertext sccciphertext);
+	abstract String getCiphertext();
+	abstract byte[] getCipherBytes();
+	//abstract CBORObject getAlgorithmIdentifier();
 
 	@Override
 	public abstract String toString();

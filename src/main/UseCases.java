@@ -171,7 +171,7 @@ public class UseCases {
 			encrypt0Message.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 
 			encrypt0Message.encrypt(key.getEncoded());
-			return new SCCCiphertext(encrypt0Message.EncodeToBytes(), null);
+			return new SCCCiphertext(encrypt0Message.getEncryptedContent(), encrypt0Message);
 
 		} catch (CoseException e) {
 			e.printStackTrace();
@@ -181,7 +181,8 @@ public class UseCases {
 
 	public static PlaintextContainer decodeMessage(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext) {
 		try {
-			Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(sccciphertext.ciphertext);
+			//Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(sccciphertext.ciphertext);
+			Encrypt0Message msg = sccciphertext.msg;
 			String s = new String(msg.decrypt(key.key.getEncoded()), StandardCharsets.UTF_8);
 			return new PlaintextContainer(s);
 		} catch (CoseException e) {
