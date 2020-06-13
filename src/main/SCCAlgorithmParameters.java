@@ -1,5 +1,6 @@
 package main;
 
+import COSE.Encrypt0Message;
 
 public class SCCAlgorithmParameters extends AbstractSCCAlgorithmParameters {
 
@@ -21,6 +22,10 @@ public class SCCAlgorithmParameters extends AbstractSCCAlgorithmParameters {
 	//passwordHash
 	SCCAlgorithmParameters(String algo, byte[] salt, int keysize, int iterations) {
 		super(algo, salt, keysize, iterations);
+	}
+	
+	SCCAlgorithmParameters(Encrypt0Message msg) {
+		super(msg);
 	}
 
 }

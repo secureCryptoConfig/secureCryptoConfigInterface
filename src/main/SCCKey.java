@@ -27,7 +27,11 @@ public class SCCKey extends main.AbstractSCCKey {
 		// TODO Auto-generated constructor stub
 	}
 	**/
-	
+	@Override
+	public SecretKey getKey()
+	{
+		return this.key;
+	}
 	public static SCCKey createKey() {
 
 		// possible: AES, DES, DESede, HmacSHA1, HmacSHA256
@@ -49,10 +53,13 @@ public class SCCKey extends main.AbstractSCCKey {
 				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
 
 				switch (chosenAlgorithmID) {
-				case AES_GCM_256_128_128:
-				case AES_GCM_256_128_256:
+				case AES_GCM_256_96:
 					algo = "AES";
 					keysize = 256;
+					return keyWithParams(algo, keysize);
+				case AES_GCM_128_96:
+					algo = "AES";
+					keysize = 128;
 					return keyWithParams(algo, keysize);
 				default:
 					break;
@@ -97,10 +104,17 @@ public class SCCKey extends main.AbstractSCCKey {
 				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
 
 				switch (chosenAlgorithmID) {
-				case AES_GCM_256_128_128:
-				case AES_GCM_256_128_256:
+				case AES_GCM_256_96:
 					keyAlgo = "AES";
 					keysize = 256;
+					algo = "PBKDF2WithHmacSHA512";
+					saltLength = 64;
+					iterations = 1000;
+					return keyWithPassword(password, algo, keyAlgo, keysize, iterations, saltLength);
+				
+				case AES_GCM_128_96:
+					keyAlgo = "AES";
+					keysize = 128;
 					algo = "PBKDF2WithHmacSHA512";
 					saltLength = 64;
 					iterations = 1000;

@@ -21,6 +21,9 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 
+import COSE.AlgorithmID;
+import COSE.CoseException;
+import COSE.Encrypt0Message;
 import main.JSONReader.CryptoUseCase;
 
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
@@ -29,7 +32,12 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	// TODO refactor in separate class?
 	static enum AlgorithmIDEnum {
-		AES_GCM_256_128_128, AES_GCM_256_128_256, SHA3_512, RSA_SHA3_256, RSA_SHA3_512, PBKDF_SHA3_256
+		//symmetric: 
+		//Algo_Mode_key_IV
+		AES_GCM_256_96, AES_GCM_128_96,
+		
+		//Others
+		SHA3_512, RSA_SHA3_256, RSA_SHA3_512, PBKDF_SHA3_256
 	}
 
 	protected static HashSet<String> getEnums() {
@@ -43,12 +51,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCCiphertext symmetricEncrypt(AbstractSCCKey key, PlaintextContainerInterface plaintext) {
-
-		// Default Values : AES_GCM_256_128_128
-		int nonceLength = 16;
-		int tagLength = 128;
-		String algo = "AES/GCM/NoPadding";
+	public SCCCiphertext symmetricEncrypt(AbstractSCCKey key, PlaintextContainerInterface plaintext) throws CoseException {
 
 		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
 
@@ -64,37 +67,43 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
 
 				switch (chosenAlgorithmID) {
-				case AES_GCM_256_128_128:
-					nonceLength = 16;
-					tagLength = 128;
-					algo = "AES/GCM/NoPadding";
-					return UseCases.symmetricEncryptWithParams(key, plaintext, nonceLength, tagLength, algo);
-
-				case AES_GCM_256_128_256:
-					nonceLength = 32;
-					tagLength = 128;
-					algo = "AES/GCM/NoPadding";
-					return UseCases.symmetricEncryptWithParams(key, plaintext, nonceLength, tagLength, algo);
-
+				case AES_GCM_256_96:
+					//nonceLength = 16;
+					//tagLength = 128;
+					//algo = "AES/GCM/NoPadding";
+					//return UseCases.symmetricEncryptWithParams(key, plaintext, nonceLength, tagLength, algo);
+					return UseCases.createMessage(plaintext.getPlain(), key.key, AlgorithmID.AES_GCM_256);
+				case AES_GCM_128_96:
+					return UseCases.createMessage(plaintext.getPlain(), key.key, AlgorithmID.AES_GCM_128);
 				default:
 					break;
 
 				}
 			}
-			// last round and no corresponding match in Switch case found
-			// take default values for encryption
+			/**
 			if (i == (algorithms.size() - 1)) {
 				System.out.println("No supported algorithms. Default values are used for encryption!");
-				System.out.println("Used: " + AlgorithmIDEnum.AES_GCM_256_128_128);
+				System.out.println("Used: " + AlgorithmIDEnum.AES_GCM_256_96);
 				return UseCases.symmetricEncryptWithParams(key, plaintext, nonceLength, tagLength, algo);
 
 			}
+			**/
 		}
-		return null;
+		throw new CoseException("No supported algorithms!");
 	}
 
 	@Override
 	public PlaintextContainer symmetricDecrypt(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext) {
+		try {
+			Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(sccciphertext.ciphertext);
+			String s = new String(msg.decrypt(key.key.getEncoded()), StandardCharsets.UTF_8);
+			return new PlaintextContainer(s);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+		
+		/**
 		try {
 			byte[] nonce = sccciphertext.parameters.nonce;
 			int tagLength = sccciphertext.parameters.tagLength;
@@ -111,7 +120,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				| InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchPaddingException e) {
 			e.printStackTrace();
 			return null;
-		}
+		}**/
 	}
 
 	@Override
@@ -141,17 +150,17 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
 
 				switch (chosenAlgorithmID) {
-				case AES_GCM_256_128_128:
+				case AES_GCM_256_96:
 					nonceLength = 16;
 					tagLength = 128;
 					algo = "AES/GCM/NoPadding";
 					return UseCases.fileEncryptWithParams(key, filepath, nonceLength, tagLength, algo);
-
-				case AES_GCM_256_128_256:
+				case AES_GCM_128_96:
 					nonceLength = 32;
 					tagLength = 128;
 					algo = "AES/GCM/NoPadding";
 					return UseCases.fileEncryptWithParams(key, filepath, nonceLength, tagLength, algo);
+				
 				default:
 					break;
 
@@ -161,7 +170,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			// take default values for encryption
 			if (i == (algorithms.size() - 1)) {
 				System.out.println("No supported algorithms. Default values are used for encryption!");
-				System.out.println("Used: " + AlgorithmIDEnum.AES_GCM_256_128_128);
+				System.out.println("Used: " + AlgorithmIDEnum.AES_GCM_256_96);
 				return UseCases.fileEncryptWithParams(key, filepath, nonceLength, tagLength, algo);
 			}
 		}

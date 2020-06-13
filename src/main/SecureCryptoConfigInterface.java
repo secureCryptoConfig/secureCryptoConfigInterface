@@ -4,10 +4,13 @@ import java.security.Key;
 
 import javax.crypto.SecretKey;
 
+import COSE.CoseException;
+import COSE.Encrypt0Message;
+
 abstract interface SecureCryptoConfigInterface {
 	// Symmetric Encryption
 
-	public AbstractSCCCiphertext symmetricEncrypt(AbstractSCCKey key, PlaintextContainerInterface plaintext);
+	public AbstractSCCCiphertext symmetricEncrypt(AbstractSCCKey key, PlaintextContainerInterface plaintext) throws CoseException;
 
 	public AbstractSCCCiphertext symmetricReEncrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext);
 
@@ -93,7 +96,11 @@ abstract class AbstractSCCAlgorithmParameters {
 	PlaintextContainerInterface plain;
 	byte[] salt;
 	int keysize, iterations, tagLength;
-
+	Encrypt0Message msg;
+	
+	protected AbstractSCCAlgorithmParameters(Encrypt0Message msg) {
+		this.msg = msg;
+	}
 	protected AbstractSCCAlgorithmParameters(byte[] nonce, int tag, String algo) {
 		this.nonce = nonce;
 		this.tagLength = tag;
@@ -154,6 +161,8 @@ abstract class AbstractSCCKey {
 	}
 
 	abstract String getAlgorithm();
+
+	abstract SecretKey getKey();
 
 	// enum SCCKeyType {
 	// Symmetric, Asymmetric

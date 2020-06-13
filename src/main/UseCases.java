@@ -6,8 +6,10 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+import java.security.Key;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
@@ -26,12 +28,7 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 
-import com.upokecenter.cbor.CBORObject;
-
-import COSE.Attribute;
-import COSE.CoseException;
-import COSE.Encrypt0Message;
-import COSE.HeaderKeys;
+import COSE.*;
 
 public class UseCases {
 
@@ -124,7 +121,6 @@ public class UseCases {
 
 	}
 
-
 	public static SCCCiphertext fileEncryptWithParams(AbstractSCCKey key, String filepath, int nonceLength,
 			int tagLength, String algo) {
 
@@ -137,24 +133,24 @@ public class UseCases {
 			byte[] nonce = UseCases.generateRandomByteArray(nonceLength);
 			GCMParameterSpec spec = new GCMParameterSpec(tagLength, nonce);
 			cipher.init(Cipher.ENCRYPT_MODE, key.key, spec);
-			
+
 			File inputFile = new File(filepath);
 			FileInputStream inputStream = new FileInputStream(inputFile);
 			byte[] inputBytes = new byte[(int) inputFile.length()];
 			inputStream.read(inputBytes);
-			
+
 			FileOutputStream fileOutputStream = new FileOutputStream(filepath);
-	        CipherOutputStream encryptedOutputStream = new CipherOutputStream(fileOutputStream, cipher);
-	        InputStream stringInputStream = new ByteArrayInputStream(inputBytes);
-	      
-	        byte[] buffer = new byte[8192];
-	        int nread;
-	        while ((nread = stringInputStream.read(buffer)) > 0) {
-	          encryptedOutputStream.write(buffer, 0, nread);
-	        }
-	        encryptedOutputStream.flush();
-	        encryptedOutputStream.close();
-	        inputStream.close();
+			CipherOutputStream encryptedOutputStream = new CipherOutputStream(fileOutputStream, cipher);
+			InputStream stringInputStream = new ByteArrayInputStream(inputBytes);
+
+			byte[] buffer = new byte[8192];
+			int nread;
+			while ((nread = stringInputStream.read(buffer)) > 0) {
+				encryptedOutputStream.write(buffer, 0, nread);
+			}
+			encryptedOutputStream.flush();
+			encryptedOutputStream.close();
+			inputStream.close();
 			SCCAlgorithmParameters parameters = new SCCAlgorithmParameters(nonce, tagLength, algo);
 			SCCCiphertext c = new SCCCiphertext(buffer, parameters);
 			return c;
@@ -165,33 +161,42 @@ public class UseCases {
 		}
 		return null;
 	}
-	
-	// Some experiments with COSE
-	public void createMessage() {
-		String nonce = "NONCE";
-		String algo = "AES";
-		Encrypt0Message o = new Encrypt0Message();
-		o.SetContent("Confidential");
-		CBORObject ob = CBORObject.FromObject(32);
-		CBORObject n = CBORObject.FromObject(nonce);
+
+	// creation of COSE msg
+	public static SCCCiphertext createMessage(String plaintext, Key key, AlgorithmID id) {
 		try {
-			o.addAttribute(n, ob, Attribute.PROTECTED);
-			o.addAttribute(HeaderKeys.Algorithm, CBORObject.FromObject(algo), Attribute.PROTECTED);
-		} catch (CoseException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
+			Encrypt0Message encrypt0Message = new Encrypt0Message();
+			encrypt0Message.SetContent(plaintext.getBytes());
+
+			encrypt0Message.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
+
+			encrypt0Message.encrypt(key.getEncoded());
+			return new SCCCiphertext(encrypt0Message.EncodeToBytes(), null);
+
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
 		}
-		// CBORObject algX = findA;
-		System.out.println(o.findAttribute(HeaderKeys.Algorithm));
-		System.out.println(o.getProtectedAttributes());
-		System.out.println(o.findAttribute(n));
 	}
 
-	public static SCCPasswordHash passwordHashing(PlaintextContainerInterface password, String algo, byte[] salt, int keysize, int iterations) {
+	public static PlaintextContainer decodeMessage(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext) {
+		try {
+			Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(sccciphertext.ciphertext);
+			String s = new String(msg.decrypt(key.key.getEncoded()), StandardCharsets.UTF_8);
+			return new PlaintextContainer(s);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
+	public static SCCPasswordHash passwordHashing(PlaintextContainerInterface password, String algo, byte[] salt,
+			int keysize, int iterations) {
 		try {
 			KeySpec spec = new PBEKeySpec(password.getPlain().toCharArray(), salt, iterations, keysize);
 			SecretKeyFactory factory = SecretKeyFactory.getInstance(algo);
-			byte[]hash = factory.generateSecret(spec).getEncoded();
+			byte[] hash = factory.generateSecret(spec).getEncoded();
 			SCCAlgorithmParameters param = new SCCAlgorithmParameters(algo, salt, keysize, iterations);
 			return new SCCPasswordHash(hash, param);
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {

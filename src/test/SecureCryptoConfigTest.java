@@ -9,6 +9,8 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.Test;
 
+import COSE.AlgorithmID;
+import COSE.CoseException;
 import main.JSONReader.CryptoUseCase;
 import main.PlaintextContainer;
 import main.SCCCiphertext;
@@ -45,14 +47,13 @@ class SecureCryptoConfigTest {
 		return null;
 	}
 
-	// @Test
-	void testSCCsymmetricEncryption() {
+	@Test
+	void testSCCsymmetricEncryption() throws CoseException {
 		PlaintextContainer p = new PlaintextContainer("Hello World");
 		SCCKey scckey = SCCKey.createKey(p);
-
-		// SCCKey scckey = SCCKey.createKey();
+		//SCCKey scckey = SCCKey.createKey();
 		SCCCiphertext sccciphertext = scc.symmetricEncrypt(scckey, plaintextContainer);
-		// String encryptedPlaintext = sccciphertext.toString();
+		//String encryptedPlaintext = sccciphertext.toString();
 		PlaintextContainer plain = scc.symmetricDecrypt(scckey, sccciphertext);
 		String decrypted = plain.getPlain();
 		assertEquals(inputPlaintext, decrypted);
@@ -95,7 +96,7 @@ class SecureCryptoConfigTest {
 		assertEquals(decrypted.equals(fileInput), true);
 	}
 
-	@Test
+	//@Test
 	void testPasswordHash() {
 
 		SCCPasswordHash hash = scc.passwordHash(plaintextContainer);
@@ -104,4 +105,6 @@ class SecureCryptoConfigTest {
 		assertEquals(hash.toString().equals(hash1.toString()), true);
 
 	}
+	
+
 }
