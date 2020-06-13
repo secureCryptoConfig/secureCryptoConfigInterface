@@ -101,7 +101,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 			Cipher cipher = Cipher.getInstance(algo);
 			GCMParameterSpec spec = new GCMParameterSpec(tagLength, nonce);
-			cipher.init(Cipher.DECRYPT_MODE, key, spec);
+			cipher.init(Cipher.DECRYPT_MODE, key.key, spec);
 			byte[] decryptedCipher = cipher.doFinal(sccciphertext.ciphertext);
 			String decryptedCipherText = new String(decryptedCipher, StandardCharsets.UTF_8);
 			PlaintextContainer plainText = new PlaintextContainer(decryptedCipherText);
@@ -180,7 +180,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 			Cipher cipher = Cipher.getInstance(ciphertext.parameters.algo);
 			GCMParameterSpec spec = new GCMParameterSpec(ciphertext.parameters.tagLength, ciphertext.parameters.nonce);
-			cipher.init(Cipher.DECRYPT_MODE, key, spec);
+			cipher.init(Cipher.DECRYPT_MODE, key.key, spec);
 
 			File inputFile = new File(filepath);
 			FileInputStream inputStream = new FileInputStream(inputFile);

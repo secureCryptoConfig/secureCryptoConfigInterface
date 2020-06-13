@@ -36,11 +36,11 @@ public class UseCases {
 			Cipher cipher = Cipher.getInstance(algo);
 
 			// GENERATE random nonce (number used once)
-			byte[] nonce = UseCases.generateNonce(nonceLength);
+			byte[] nonce = UseCases.generateRandomByteArray(nonceLength);
 
 			GCMParameterSpec spec = new GCMParameterSpec(tagLength, nonce);
 
-			cipher.init(Cipher.ENCRYPT_MODE, key, spec);
+			cipher.init(Cipher.ENCRYPT_MODE, key.key, spec);
 
 			byte[] byteCipher = cipher.doFinal(plaintext.getByteArray());
 			SCCAlgorithmParameters param = new SCCAlgorithmParameters(key, nonce, tagLength, algo);
@@ -101,10 +101,10 @@ public class UseCases {
 	/**
 	 * Generate Nonce with secure Random number generator
 	 */
-	public static byte[] generateNonce(int nonceLength) {
+	public static byte[] generateRandomByteArray(int length) {
 		try {
 			// GENERATE random nonce (number used once)
-			final byte[] nonce = new byte[nonceLength];
+			final byte[] nonce = new byte[length];
 			SecureRandom random;
 			random = SecureRandom.getInstanceStrong();
 			random.nextBytes(nonce);
@@ -126,9 +126,9 @@ public class UseCases {
 			cipher = Cipher.getInstance(algo);
 
 			// GENERATE random nonce (number used once)
-			byte[] nonce = UseCases.generateNonce(nonceLength);
+			byte[] nonce = UseCases.generateRandomByteArray(nonceLength);
 			GCMParameterSpec spec = new GCMParameterSpec(tagLength, nonce);
-			cipher.init(Cipher.ENCRYPT_MODE, key, spec);
+			cipher.init(Cipher.ENCRYPT_MODE, key.key, spec);
 			
 			File inputFile = new File(filepath);
 			FileInputStream inputStream = new FileInputStream(inputFile);

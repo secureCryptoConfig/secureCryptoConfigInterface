@@ -3,7 +3,7 @@ package main;
 import java.security.Key;
 import java.util.HashMap;
 
-import javax.crypto.spec.SecretKeySpec;
+import javax.crypto.SecretKey;
 
 abstract interface SecureCryptoConfigInterface {
 	// Symmetric Encryption
@@ -147,14 +147,18 @@ abstract class AbstractAlgorithmIdentifier {
 }
 
 //extends SecretKeySpec?
-abstract class AbstractSCCKey extends SecretKeySpec {
+abstract class AbstractSCCKey  {
 
-	private static final long serialVersionUID = -5728367200343756529L;
-
-	protected AbstractSCCKey(byte[] key, String algorithm) {
-		super(key, algorithm);
-
+	SecretKey key; 
+	String algorithm;
+	
+	protected AbstractSCCKey(SecretKey key, String algorithm)
+	{
+		this.key = key;
+		this.algorithm = algorithm;
 	}
+	
+	abstract String getAlgorithm();
 	
 	//enum SCCKeyType {
 	//	Symmetric, Asymmetric
@@ -162,8 +166,6 @@ abstract class AbstractSCCKey extends SecretKeySpec {
 
 	//as static method in class
 	//abstract AbstractSCCKey createKey(byte[] bytes);
-
-	abstract String getDefaultAlgorithm();
 
 }
 
