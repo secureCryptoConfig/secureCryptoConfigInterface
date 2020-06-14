@@ -7,6 +7,7 @@ import javax.crypto.SecretKey;
 
 import COSE.CoseException;
 import COSE.Encrypt0Message;
+import COSE.OneKey;
 
 abstract interface SecureCryptoConfigInterface {
 	// Symmetric Encryption
@@ -97,10 +98,10 @@ abstract class AbstractSCCAlgorithmParameters {
 	PlaintextContainerInterface plain;
 	byte[] salt;
 	int keysize, iterations, tagLength;
-	Encrypt0Message msg;
+	OneKey k;
 	
-	protected AbstractSCCAlgorithmParameters(Encrypt0Message msg) {
-		this.msg = msg;
+	protected AbstractSCCAlgorithmParameters(OneKey k) {
+		this.k = k;
 	}
 	protected AbstractSCCAlgorithmParameters(byte[] nonce, int tag, String algo) {
 		this.nonce = nonce;
@@ -130,15 +131,14 @@ abstract class AbstractSCCCiphertext {
 
 	AbstractSCCAlgorithmParameters parameters;
 	byte[] ciphertext;
-	Encrypt0Message msg;
+	byte[] msg;
 
 	public AbstractSCCCiphertext(byte[] ciphertext, AbstractSCCAlgorithmParameters parameters) {
 		this.ciphertext = ciphertext;
 		this.parameters = parameters;
 	}
 	
-	public AbstractSCCCiphertext(byte[] ciphertext, Encrypt0Message msg) {
-		this.ciphertext = ciphertext;
+	public AbstractSCCCiphertext(byte[] msg) {
 		this.msg = msg;
 	}
 

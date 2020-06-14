@@ -22,7 +22,12 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 
 import COSE.AlgorithmID;
+import COSE.Attribute;
 import COSE.CoseException;
+import COSE.Encrypt0Message;
+import COSE.HeaderKeys;
+import COSE.OneKey;
+import COSE.Sign1Message;
 import main.JSONReader.CryptoUseCase;
 
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
@@ -34,7 +39,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		// symmetric:
 		// Algo_Mode_key_IV
 		AES_GCM_256_96, AES_GCM_128_96,
-
+		//Digital Signature
+		ECDSA_512,
 		// Others
 		SHA3_512, RSA_SHA3_256, RSA_SHA3_512, PBKDF_SHA3_256
 	}
@@ -83,8 +89,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	@Override
 	public PlaintextContainer symmetricDecrypt(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext) {
 		try {
-			//Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(sccciphertext.ciphertext);
-			String s = new String(sccciphertext.msg.decrypt(key.key.getEncoded()), StandardCharsets.UTF_8);
+			Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(sccciphertext.msg);
+			String s = new String(msg.decrypt(key.key.getEncoded()), StandardCharsets.UTF_8);
 			return new PlaintextContainer(s);
 		} catch (CoseException e) {
 			e.printStackTrace();
@@ -346,7 +352,20 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				case RSA_SHA3_512:
 					algo = "SHA512withRSA";
 					return UseCases.signingingWithParams(keyPair, plaintext, algo);
-
+				case ECDSA_512:
+					
+					Sign1Message m = new Sign1Message();
+					m.SetContent(plaintext.getByteArray());
+					try {
+						m.addAttribute(HeaderKeys.Algorithm, AlgorithmID.ECDSA_512.AsCBOR(), Attribute.PROTECTED);
+						OneKey k = OneKey.generateKey(AlgorithmID.ECDSA_512);
+						m.sign(k);
+						SCCAlgorithmParameters p = new SCCAlgorithmParameters(k);
+						return new SCCSignature(m.EncodeToBytes(), p);
+					} catch (CoseException e) {
+						e.printStackTrace();
+					}
+					
 				default:
 					break;
 				}
@@ -373,6 +392,15 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	public boolean validateSignature(AbstractSCCKeyPair keyPair, AbstractSCCSignature signature) {
 
 		try {
+			Sign1Message msg = (Sign1Message) Sign1Message.DecodeFromBytes(signature.signature);
+			//Encrypt0Message msg = sccciphertext.msg;
+			return msg.validate(signature.parameters.k);
+			
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return false;
+		}
+		/**try {
 			Signature s = Signature.getInstance(signature.parameters.algo);
 			s.initVerify((PublicKey) keyPair.publicKey);
 			s.update(signature.parameters.plain.getByteArray());
@@ -380,8 +408,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		} catch (InvalidKeyException | SignatureException | NoSuchAlgorithmException e) {
 			e.printStackTrace();
-		}
-		return false;
+		}**/
+		
 	}
 
 	@Override

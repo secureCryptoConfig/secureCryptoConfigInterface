@@ -1,6 +1,7 @@
 package main;
 
 import COSE.Encrypt0Message;
+import COSE.OneKey;
 
 public class SCCAlgorithmParameters extends AbstractSCCAlgorithmParameters {
 
@@ -24,8 +25,8 @@ public class SCCAlgorithmParameters extends AbstractSCCAlgorithmParameters {
 		super(algo, salt, keysize, iterations);
 	}
 	
-	SCCAlgorithmParameters(Encrypt0Message msg) {
-		super(msg);
+	SCCAlgorithmParameters(OneKey k) {
+		super(k);
 	}
 
 }

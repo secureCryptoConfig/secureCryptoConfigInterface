@@ -6,8 +6,9 @@ import COSE.Encrypt0Message;
 
 public class SCCCiphertext extends AbstractSCCCiphertext {
 
-	public SCCCiphertext(byte[] ciphertext, Encrypt0Message msg) {
-		super(ciphertext, msg);
+	//for COSE
+	public SCCCiphertext(byte[] msg) {
+		super(msg);
 	}
 	
 	public SCCCiphertext(byte[] ciphertext, AbstractSCCAlgorithmParameters parameters) {

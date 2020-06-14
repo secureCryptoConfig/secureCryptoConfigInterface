@@ -94,6 +94,7 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
 
 				switch (chosenAlgorithmID) {
+				case ECDSA_512:
 				case RSA_SHA3_512:
 					algo = "RSA";
 					keysize = 4096;

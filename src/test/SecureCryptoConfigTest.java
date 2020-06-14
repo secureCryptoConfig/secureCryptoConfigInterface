@@ -70,7 +70,7 @@ class SecureCryptoConfigTest {
 		assertEquals(s, s1);
 	}
 
-	// @Test
+	//@Test
 	void testSCCasymmetricEncryption() {
 		SCCKeyPair pair = SCCKeyPair.createKeyPair(CryptoUseCase.AsymmetricEncryption);
 		SCCCiphertext encrypted = scc.asymmetricEncrypt(pair, plaintextContainer);
@@ -78,7 +78,7 @@ class SecureCryptoConfigTest {
 		assertEquals(inputPlaintext, decrypted.getPlain());
 	}
 
-	// @Test
+	@Test
 	void testSCCSignature() {
 		SCCKeyPair pair = SCCKeyPair.createKeyPair(CryptoUseCase.Signing);
 		SCCSignature s = scc.sign(pair, plaintextContainer);
