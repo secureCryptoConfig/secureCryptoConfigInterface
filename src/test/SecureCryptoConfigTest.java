@@ -10,7 +10,7 @@ import java.io.IOException;
 import org.junit.jupiter.api.Test;
 
 import COSE.CoseException;
-import main.JSONReader.CryptoUseCase;
+import COSE.OneKey;
 import main.PlaintextContainer;
 import main.SCCCiphertext;
 import main.SCCHash;
@@ -72,17 +72,17 @@ class SecureCryptoConfigTest {
 
 	//@Test
 	void testSCCasymmetricEncryption() {
-		SCCKeyPair pair = SCCKeyPair.createKeyPair(CryptoUseCase.AsymmetricEncryption);
+		SCCKeyPair pair = SCCKeyPair.createAsymmetricKey();
 		SCCCiphertext encrypted = scc.asymmetricEncrypt(pair, plaintextContainer);
 		PlaintextContainer decrypted = scc.asymmetricDecrypt(pair, encrypted);
 		assertEquals(inputPlaintext, decrypted.getPlain());
 	}
 
 	@Test
-	void testSCCSignature() {
-		SCCKeyPair pair = SCCKeyPair.createKeyPair(CryptoUseCase.Signing);
-		SCCSignature s = scc.sign(pair, plaintextContainer);
-		assertEquals(true, scc.validateSignature(pair, s));
+	void testSCCSignature() throws CoseException {
+		OneKey k = SCCKeyPair.createSigningKey();
+		SCCSignature s = scc.sign(k, plaintextContainer);
+		assertEquals(true, scc.validateSignature(k, s));
 	}
 
 	// @Test

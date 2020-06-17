@@ -1,6 +1,5 @@
 package main;
 
-import COSE.Encrypt0Message;
 import COSE.OneKey;
 
 public class SCCAlgorithmParameters extends AbstractSCCAlgorithmParameters {

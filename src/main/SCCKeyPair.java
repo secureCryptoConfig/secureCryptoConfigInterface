@@ -6,6 +6,9 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 
+import COSE.AlgorithmID;
+import COSE.CoseException;
+import COSE.OneKey;
 import main.JSONReader.CryptoUseCase;
 import main.SecureCryptoConfig.AlgorithmIDEnum;
 
@@ -19,6 +22,7 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 		return this.publicKey;
 	}
 
+	/**
 	public static SCCKeyPair createKeyPair(CryptoUseCase useCase) {
 
 		// possible values: DiffieHellman, DSA, RSA
@@ -33,8 +37,9 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 		}
 
 	}
+	**/
 
-	private static SCCKeyPair createAsymmetricKey() {
+	public static SCCKeyPair createAsymmetricKey() {
 		ArrayList<String> algorithms = new ArrayList<String>();
 
 		// Default value
@@ -55,9 +60,7 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 
 				switch (chosenAlgorithmID) {
 				case RSA_SHA3_256:
-					algo = "RSA";
-					keysize = 4096;
-					return keyPairWithParams(algo, keysize);
+					return keyPairWithParams("RSA", 4096);
 
 				default:
 					break;
@@ -74,12 +77,21 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 		return null;
 	}
 	
-	private static SCCKeyPair createSigningKey() {
+	private static SCCKeyPair keyPairWithParams(String algo, int keysize) {
+		try {
+			KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algo);
+			keyPairGenerator.initialize(keysize);
+			KeyPair keyPair = keyPairGenerator.generateKeyPair();
+			SCCKeyPair pair = new SCCKeyPair(keyPair.getPublic(), keyPair.getPrivate(), algo);
+			return pair;
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public static OneKey createSigningKey() throws CoseException {
 		ArrayList<String> algorithms = new ArrayList<String>();
-
-		// Default value
-		String algo = "RSA";
-		int keysize = 4096;
 
 		algorithms = JSONReader.getAlgos(CryptoUseCase.Signing);
 
@@ -95,37 +107,20 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 
 				switch (chosenAlgorithmID) {
 				case ECDSA_512:
-				case RSA_SHA3_512:
-					algo = "RSA";
-					keysize = 4096;
-					return keyPairWithParams(algo, keysize);
-
+					try {
+						return OneKey.generateKey(AlgorithmID.ECDSA_512);
+					} catch (CoseException e) {
+						e.printStackTrace();
+					}
 				default:
 					break;
 				}
 			}
-			// last round and no corresponding match in Switch case found
-			// take default values for generation
-			if (i == (algorithms.size() - 1)) {
-				System.out.println("No supported algorithms. Default values are used for key generation!");
-				System.out.println("Used: " + algo);
-				return keyPairWithParams(algo, keysize);
-			}
+			
 		}
-		return null;
+		throw new CoseException("No supported algorithm for key Generation!");
 	}
 
-	private static SCCKeyPair keyPairWithParams(String algo, int keysize) {
-		try {
-			KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algo);
-			keyPairGenerator.initialize(keysize);
-			KeyPair keyPair = keyPairGenerator.generateKeyPair();
-			SCCKeyPair pair = new SCCKeyPair(keyPair.getPublic(), keyPair.getPrivate(), algo);
-			return pair;
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+	
 
 }

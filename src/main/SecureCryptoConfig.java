@@ -8,9 +8,6 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.Signature;
-import java.security.SignatureException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -22,10 +19,8 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 
 import COSE.AlgorithmID;
-import COSE.Attribute;
 import COSE.CoseException;
 import COSE.Encrypt0Message;
-import COSE.HeaderKeys;
 import COSE.OneKey;
 import COSE.Sign1Message;
 import main.JSONReader.CryptoUseCase;
@@ -39,7 +34,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		// symmetric:
 		// Algo_Mode_key_IV
 		AES_GCM_256_96, AES_GCM_128_96,
-		//Digital Signature
+		// Digital Signature
 		ECDSA_512,
 		// Others
 		SHA3_512, RSA_SHA3_256, RSA_SHA3_512, PBKDF_SHA3_256
@@ -96,27 +91,11 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			e.printStackTrace();
 			return null;
 		}
-
-		/**
-		 * try { byte[] nonce = sccciphertext.parameters.nonce; int tagLength =
-		 * sccciphertext.parameters.tagLength; String algo =
-		 * sccciphertext.parameters.algo;
-		 * 
-		 * Cipher cipher = Cipher.getInstance(algo); GCMParameterSpec spec = new
-		 * GCMParameterSpec(tagLength, nonce); cipher.init(Cipher.DECRYPT_MODE, key.key,
-		 * spec); byte[] decryptedCipher = cipher.doFinal(sccciphertext.ciphertext);
-		 * String decryptedCipherText = new String(decryptedCipher,
-		 * StandardCharsets.UTF_8); PlaintextContainer plainText = new
-		 * PlaintextContainer(decryptedCipherText); return plainText; } catch
-		 * (IllegalBlockSizeException | BadPaddingException | InvalidKeyException |
-		 * InvalidAlgorithmParameterException | NoSuchAlgorithmException |
-		 * NoSuchPaddingException e) { e.printStackTrace(); return null; }
-		 **/
 	}
 
 	@Override
 	public SCCCiphertext symmetricReEncrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext) throws CoseException {
-		
+
 		PlaintextContainer decrypted = symmetricDecrypt(key, ciphertext);
 		return symmetricEncrypt(key, decrypted);
 	}
@@ -331,10 +310,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCSignature sign(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext) {
-		// Default Values : RSA_SHA3_512
-		String algo = "SHA512withRSA";
-
+	public SCCSignature sign(OneKey k, PlaintextContainerInterface plaintext) throws CoseException {
 		// read our Algorithms for symmetric encryption out of JSON
 		algorithms = JSONReader.getAlgos(CryptoUseCase.Signing);
 
@@ -342,74 +318,39 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			// get first one, later look what to do if first is not validate -> take next
 			String sccalgorithmID = algorithms.get(i);
 
-			// TODO mapping from sting to enum:
-
 			if (getEnums().contains(sccalgorithmID)) {
 
 				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
 
 				switch (chosenAlgorithmID) {
-				case RSA_SHA3_512:
-					algo = "SHA512withRSA";
-					return UseCases.signingingWithParams(keyPair, plaintext, algo);
 				case ECDSA_512:
-					
-					Sign1Message m = new Sign1Message();
-					m.SetContent(plaintext.getByteArray());
-					try {
-						m.addAttribute(HeaderKeys.Algorithm, AlgorithmID.ECDSA_512.AsCBOR(), Attribute.PROTECTED);
-						OneKey k = OneKey.generateKey(AlgorithmID.ECDSA_512);
-						m.sign(k);
-						SCCAlgorithmParameters p = new SCCAlgorithmParameters(k);
-						return new SCCSignature(m.EncodeToBytes(), p);
-					} catch (CoseException e) {
-						e.printStackTrace();
-					}
-					
+					return UseCases.createSignMessage(plaintext, k, AlgorithmID.ECDSA_512);
 				default:
 					break;
 				}
 			}
-			// last round and no corresponding match in Switch case found
-			// take default values for hashing
-			if (i == (algorithms.size() - 1)) {
-				System.out.println("No supported algorithms. Default values are used for signing!");
-				System.out.println("Used: " + AlgorithmIDEnum.RSA_SHA3_512);
-				return UseCases.signingingWithParams(keyPair, plaintext, algo);
 
-			}
 		}
-		return null;
+		throw new CoseException("No supported algorithm!");
 	}
 
 	@Override
-	public AbstractSCCSignature reSign(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext) {
-		// TODO Auto-generated method stub
-		return null;
+	public AbstractSCCSignature reSign(OneKey key, PlaintextContainerInterface plaintext) throws CoseException {
+		return sign(key, plaintext);
 	}
 
 	@Override
-	public boolean validateSignature(AbstractSCCKeyPair keyPair, AbstractSCCSignature signature) {
+	public boolean validateSignature(OneKey key, AbstractSCCSignature signature) {
 
 		try {
 			Sign1Message msg = (Sign1Message) Sign1Message.DecodeFromBytes(signature.signature);
-			//Encrypt0Message msg = sccciphertext.msg;
-			return msg.validate(signature.parameters.k);
-			
+			return msg.validate(key);
+
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return false;
 		}
-		/**try {
-			Signature s = Signature.getInstance(signature.parameters.algo);
-			s.initVerify((PublicKey) keyPair.publicKey);
-			s.update(signature.parameters.plain.getByteArray());
-			return s.verify(signature.signature);
 
-		} catch (InvalidKeyException | SignatureException | NoSuchAlgorithmException e) {
-			e.printStackTrace();
-		}**/
-		
 	}
 
 	@Override

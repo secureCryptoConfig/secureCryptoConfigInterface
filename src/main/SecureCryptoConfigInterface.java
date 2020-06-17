@@ -6,7 +6,6 @@ import javax.crypto.SecretKey;
 
 
 import COSE.CoseException;
-import COSE.Encrypt0Message;
 import COSE.OneKey;
 
 abstract interface SecureCryptoConfigInterface {
@@ -57,12 +56,19 @@ abstract interface SecureCryptoConfigInterface {
 	public boolean verifyHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash);
 
 	// Digital Signature
-
+	/**
 	public AbstractSCCSignature sign(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext);
 
 	public AbstractSCCSignature reSign(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext);
 
 	public boolean validateSignature(AbstractSCCKeyPair keyPair, AbstractSCCSignature signature);
+	**/
+	public AbstractSCCSignature sign(OneKey key, PlaintextContainerInterface plaintext) throws CoseException;
+
+	//same as sign?
+	public AbstractSCCSignature reSign(OneKey key, PlaintextContainerInterface plaintext) throws CoseException;
+
+	public boolean validateSignature(OneKey key, AbstractSCCSignature signature);
 
 	// Password Hashing
 

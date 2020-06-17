@@ -223,5 +223,19 @@ public class UseCases {
 			return null;
 		}
 	}
+	
+	public static SCCSignature createSignMessage(PlaintextContainerInterface plaintext, OneKey key, AlgorithmID id) {
+		Sign1Message m = new Sign1Message();
+		m.SetContent(plaintext.getByteArray());
+		try {
+			m.addAttribute(HeaderKeys.Algorithm, AlgorithmID.ECDSA_512.AsCBOR(), Attribute.PROTECTED);
+			m.sign(key);
+			SCCAlgorithmParameters p = null;
+			return new SCCSignature(m.EncodeToBytes(), p);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 }
