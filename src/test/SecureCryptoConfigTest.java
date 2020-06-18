@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 
 
 import COSE.CoseException;
-import COSE.Encrypt0Message;
 import COSE.HashMessage;
 
 import COSE.OneKey;
@@ -25,7 +24,6 @@ import main.SCCKeyPair;
 import main.SCCPasswordHash;
 import main.SCCSignature;
 import main.SecureCryptoConfig;
-import main.UseCases;
 
 class SecureCryptoConfigTest {
 
