@@ -2,7 +2,6 @@ package main;
 
 import java.util.Base64;
 
-import COSE.Encrypt0Message;
 
 public class SCCCiphertext extends AbstractSCCCiphertext {
 
@@ -24,7 +23,7 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	@Override 
 	public byte[] getCipherBytes()
 	{
-		return this.ciphertext;
+		return this.msg;
 	}
 
 	

@@ -27,6 +27,14 @@ public class SCCHash extends AbstractSCCHash{
 	@Override
 	public String getAlgo()
 	{
+		
 		return this.param.algo;
+	}
+	
+	@Override
+	public byte[] getByteArray()
+	{
+		
+		return this.hash;
 	}
 }

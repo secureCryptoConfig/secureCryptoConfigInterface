@@ -1,11 +1,12 @@
 package main;
 
-import java.security.Key;
+import java.security.KeyPair;
 
 import javax.crypto.SecretKey;
 
 
 import COSE.CoseException;
+
 import COSE.OneKey;
 
 abstract interface SecureCryptoConfigInterface {
@@ -15,7 +16,7 @@ abstract interface SecureCryptoConfigInterface {
 
 	public AbstractSCCCiphertext symmetricReEncrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext) throws CoseException;
 
-	public PlaintextContainerInterface symmetricDecrypt(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext);
+	public PlaintextContainerInterface symmetricDecrypt(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext) throws CoseException;
 
 	// for file encryption?
 	/**
@@ -40,20 +41,20 @@ abstract interface SecureCryptoConfigInterface {
 
 	// Asymmetric
 
-	public AbstractSCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext);
+	public AbstractSCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext) throws CoseException;
 
-	public AbstractSCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext);
+	public AbstractSCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext) throws CoseException;
 
-	public PlaintextContainerInterface asymmetricDecrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext);
+	public PlaintextContainerInterface asymmetricDecrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext) throws CoseException;
 
 	// Hashing
 
-	public AbstractSCCHash hash(PlaintextContainerInterface plaintext);
+	public AbstractSCCHash hash(PlaintextContainerInterface plaintext) throws CoseException;
 
-	public AbstractSCCHash reHash(PlaintextContainerInterface plaintext);
+	public AbstractSCCHash reHash(PlaintextContainerInterface plaintext) throws CoseException;
 
 	// How to verify Hash?
-	public boolean verifyHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash);
+	public boolean verifyHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException;
 
 	// Digital Signature
 	/**
@@ -189,13 +190,12 @@ abstract class AbstractSCCKey {
 }
 
 abstract class AbstractSCCKeyPair {
-	Key publicKey, privateKey;
+	KeyPair pair;
 	String algorithm;
 
-	protected AbstractSCCKeyPair(Key publicKey, Key privateKey, String algorithm) {
+	protected AbstractSCCKeyPair(KeyPair pair, String algorithm) {
 		this.algorithm = algorithm;
-		this.publicKey = publicKey;
-		this.privateKey = privateKey;
+		this.pair = pair;
 	}
 
 }
@@ -206,6 +206,9 @@ abstract class AbstractSCCHash {
 	@Override
 	public abstract String toString();
 	abstract String getAlgo();
+
+	abstract byte[] getByteArray();
+		
 }
 
 abstract class AbstractSCCPasswordHash {

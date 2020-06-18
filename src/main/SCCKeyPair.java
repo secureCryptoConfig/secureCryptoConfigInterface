@@ -1,9 +1,10 @@
 package main;
 
-import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.ArrayList;
 
 import COSE.AlgorithmID;
@@ -14,12 +15,16 @@ import main.SecureCryptoConfig.AlgorithmIDEnum;
 
 public class SCCKeyPair extends AbstractSCCKeyPair {
 
-	protected SCCKeyPair(Key publicKey, Key privateKey, String algorithm) {
-		super(publicKey, privateKey, algorithm);
+	protected SCCKeyPair(KeyPair pair, String algorithm) {
+		super(pair, algorithm);
 	}
 
-	protected Key getPublic() {
-		return this.publicKey;
+	protected PublicKey getPublic() {
+		return this.pair.getPublic();
+	}
+	
+	protected PrivateKey getPrivate() {
+		return this.pair.getPrivate();
 	}
 
 	/**
@@ -82,7 +87,7 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 			KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algo);
 			keyPairGenerator.initialize(keysize);
 			KeyPair keyPair = keyPairGenerator.generateKeyPair();
-			SCCKeyPair pair = new SCCKeyPair(keyPair.getPublic(), keyPair.getPrivate(), algo);
+			SCCKeyPair pair = new SCCKeyPair(keyPair, algo);
 			return pair;
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();

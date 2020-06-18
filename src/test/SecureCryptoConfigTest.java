@@ -6,10 +6,15 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
 
+
 import COSE.CoseException;
+
+import COSE.HashMessage;
+
 import COSE.OneKey;
 import main.PlaintextContainer;
 import main.SCCCiphertext;
@@ -61,24 +66,29 @@ class SecureCryptoConfigTest {
 	
 
 	// Test for Hashing / how to test?
-	// @Test
-	void testHashing() {
-		SCCHash hashed = scc.hash(plaintextContainer);
-		String s = hashed.toString();
-		SCCHash hashed1 = scc.hash(plaintextContainer);
-		String s1 = hashed1.toString();
-		assertEquals(s, s1);
-	}
-
 	//@Test
-	void testSCCasymmetricEncryption() {
-		SCCKeyPair pair = SCCKeyPair.createAsymmetricKey();
-		SCCCiphertext encrypted = scc.asymmetricEncrypt(pair, plaintextContainer);
-		PlaintextContainer decrypted = scc.asymmetricDecrypt(pair, encrypted);
-		assertEquals(inputPlaintext, decrypted.getPlain());
+	void testHashing() throws CoseException {
+		SCCHash hashed = scc.hash(plaintextContainer);
+		HashMessage msg = (HashMessage) HashMessage.DecodeFromBytes(hashed.getByteArray());	
+		String s = new String(msg.getEncryptedContent(), StandardCharsets.UTF_8);
+		SCCHash hashed1 = scc.hash(plaintextContainer);
+		HashMessage msg1 = (HashMessage) HashMessage.DecodeFromBytes(hashed1.getByteArray());	
+		String s1 = new String(msg1.getEncryptedContent(), StandardCharsets.UTF_8);
+		assertEquals(s, s1);
+		
 	}
 
 	@Test
+	void testSCCasymmetricEncryption() throws CoseException {
+		SCCKeyPair pair = SCCKeyPair.createAsymmetricKey();
+		
+		SCCCiphertext encrypted = scc.asymmetricEncrypt(pair, plaintextContainer);
+		PlaintextContainer decrypted = scc.asymmetricDecrypt(pair, encrypted);
+		assertEquals(inputPlaintext, decrypted.getPlain());
+		
+	}
+
+	//@Test
 	void testSCCSignature() throws CoseException {
 		OneKey k = SCCKeyPair.createSigningKey();
 		SCCSignature s = scc.sign(k, plaintextContainer);
@@ -95,6 +105,7 @@ class SecureCryptoConfigTest {
 		String decrypted = p.getPlain().replace("\r", "").replace("\n", "").replace(" ", "");
 		assertEquals(decrypted.equals(fileInput), true);
 	}
+	
 
 	//@Test
 	void testPasswordHash() {

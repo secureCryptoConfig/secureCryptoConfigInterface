@@ -7,20 +7,22 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
+
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
-import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 
+
 import COSE.AlgorithmID;
+import COSE.AsymMessage;
 import COSE.CoseException;
 import COSE.Encrypt0Message;
+import COSE.HashMessage;
 import COSE.OneKey;
 import COSE.Sign1Message;
 import main.JSONReader.CryptoUseCase;
@@ -36,8 +38,12 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		AES_GCM_256_96, AES_GCM_128_96,
 		// Digital Signature
 		ECDSA_512,
-		// Others
-		SHA3_512, RSA_SHA3_256, RSA_SHA3_512, PBKDF_SHA3_256
+		// Hash
+		SHA3_512, 
+		//asymmetric:
+		RSA_SHA3_256, 
+		//others
+		PBKDF_SHA3_256
 	}
 
 	protected static HashSet<String> getEnums() {
@@ -82,14 +88,15 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public PlaintextContainer symmetricDecrypt(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext) {
+	public PlaintextContainer symmetricDecrypt(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext)
+			throws CoseException {
 		try {
 			Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(sccciphertext.msg);
 			String s = new String(msg.decrypt(key.key.getEncoded()), StandardCharsets.UTF_8);
 			return new PlaintextContainer(s);
 		} catch (CoseException e) {
 			e.printStackTrace();
-			return null;
+			throw new CoseException("No supported algorithm!");
 		}
 	}
 
@@ -198,10 +205,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext) {
-		// Default Values : RSA_SHA3_256
-		String algo = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
-
+	public SCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext) throws CoseException {
+		
 		algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption);
 
 		for (int i = 0; i < algorithms.size(); i++) {
@@ -217,52 +222,43 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				switch (chosenAlgorithmID) {
 				case RSA_SHA3_256:
+					return UseCases.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_256, keyPair);
+					/**
 					algo = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
 					return UseCases.asymmetricEncryptWithParams(keyPair, plaintext, algo);
-
+					**/
 				default:
 					break;
 				}
 			}
-			// last round and no corresponding match in Switch case found
-			// take default values for encryption
-			if (i == (algorithms.size() - 1)) {
-				System.out.println("No supported algorithms. Default values are used for encryption!");
-				System.out.println("Used: " + AlgorithmIDEnum.RSA_SHA3_256);
-				return UseCases.asymmetricEncryptWithParams(keyPair, plaintext, algo);
+			
+		}
+		throw new CoseException("No supported algorithm!");
+	}
+
+	@Override
+	public PlaintextContainer asymmetricDecrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext) throws CoseException {
+		
+			try {
+				AsymMessage msg = (AsymMessage) AsymMessage.DecodeFromBytes(ciphertext.msg);
+				String s = new String(msg.decrypt(keyPair.pair), StandardCharsets.UTF_8);
+				return new PlaintextContainer(s);
+			} catch (CoseException e) {
+				e.printStackTrace();
+				
 			}
-		}
-		return null;
+			throw new CoseException("No supported algorithm!");
+	
 	}
 
 	@Override
-	public PlaintextContainer asymmetricDecrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext) {
-		try {
-			Cipher cipher = Cipher.getInstance(ciphertext.parameters.algo);
-			cipher.init(Cipher.DECRYPT_MODE, keyPair.privateKey);
-			byte[] decryptedCipher = cipher.doFinal(ciphertext.ciphertext);
-			String decryptedCipherText = new String(decryptedCipher, StandardCharsets.UTF_8);
-			PlaintextContainer decrypted = new PlaintextContainer(decryptedCipherText);
-			return decrypted;
-		} catch (IllegalBlockSizeException | BadPaddingException | InvalidKeyException | NoSuchAlgorithmException
-				| NoSuchPaddingException e) {
-			e.printStackTrace();
-		}
-
-		return null;
+	public AbstractSCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext) throws CoseException {
+		PlaintextContainer decrypted = asymmetricDecrypt(keyPair, ciphertext);
+		return asymmetricEncrypt(keyPair, decrypted);
 	}
 
 	@Override
-	public AbstractSCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public SCCHash hash(PlaintextContainerInterface plaintext) {
-
-		// Default Values : SHA3_512
-		String algo = "SHA-512";
+	public SCCHash hash(PlaintextContainerInterface plaintext) throws CoseException {
 
 		// read our Algorithms for symmetric encryption out of JSON
 		algorithms = JSONReader.getAlgos(CryptoUseCase.Hashing);
@@ -279,34 +275,33 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				switch (chosenAlgorithmID) {
 				case SHA3_512:
-					algo = "SHA-512";
-					return UseCases.hashingWithParams(plaintext, algo);
+					return UseCases.createHashMessage(plaintext.getPlain(), AlgorithmID.SHA_512);
 				default:
 					break;
 				}
 			}
-			// last round and no corresponding match in Switch case found
-			// take default values for hashing
-			if (i == (algorithms.size() - 1)) {
-				System.out.println("No supported algorithms. Default values are used for hashing!");
-				System.out.println("Used: " + AlgorithmIDEnum.SHA3_512);
-				return UseCases.hashingWithParams(plaintext, algo);
-			}
+
 		}
-		return null;
+		throw new CoseException("No supported algorithm!");
 	}
 
+	// Einfach nochmal hashen?
 	@Override
-	public AbstractSCCHash reHash(PlaintextContainerInterface plaintext) {
-		// TODO Auto-generated method stub
-		return null;
+	public AbstractSCCHash reHash(PlaintextContainerInterface plaintext) throws CoseException {
+		return hash(plaintext);
 	}
 
+	// Hash same plain two times and look if it is the same?
 	@Override
-	public boolean verifyHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) {
-		// Hash same plain two times and look if it is the same
-		SCCHash hash1 = UseCases.hashingWithParams(plaintext, hash.getAlgo());
-		return hash.toString().equals(hash1.toString());
+	public boolean verifyHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException {
+		HashMessage msg = (HashMessage) HashMessage.DecodeFromBytes(hash.getByteArray());	
+		String s = new String(msg.getEncryptedContent(), StandardCharsets.UTF_8);
+		
+		SCCHash hash1 = hash(plaintext);
+		HashMessage msg1 = (HashMessage) HashMessage.DecodeFromBytes(hash1.getByteArray());	
+		String s1 = new String(msg1.getEncryptedContent(), StandardCharsets.UTF_8);
+		
+		return s.equals(s1);
 	}
 
 	@Override
@@ -334,6 +329,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		throw new CoseException("No supported algorithm!");
 	}
 
+	//Sign again?
 	@Override
 	public AbstractSCCSignature reSign(OneKey key, PlaintextContainerInterface plaintext) throws CoseException {
 		return sign(key, plaintext);
