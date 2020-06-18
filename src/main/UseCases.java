@@ -175,7 +175,8 @@ public class UseCases {
 			SecretKeyFactory factory = SecretKeyFactory.getInstance(algo);
 			byte[] hash = factory.generateSecret(spec).getEncoded();
 			SCCAlgorithmParameters param = new SCCAlgorithmParameters(algo, salt, keysize, iterations);
-			return new SCCPasswordHash(hash, param);
+			//return new SCCPasswordHash(hash, param);
+			return new SCCPasswordHash(hash, null);
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
 			e.printStackTrace();
 			return null;
@@ -214,6 +215,25 @@ public class UseCases {
 			return null;
 		}
 	}
+	
+	
+	//Cose msg for Hashing
+		public static SCCPasswordHash createPasswordHashMessage(String plaintext, AlgorithmID id, int saltLength) {
+			
+			try {
+				byte[] salt = generateRandomByteArray(saltLength);
+				PasswordHashMessage m = new PasswordHashMessage();
+				m.SetContent(plaintext.getBytes());
+				m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
+				m.passwordHash(salt);
+				
+				return new SCCPasswordHash(m.EncodeToBytes(), salt);
+
+			} catch (CoseException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
 	
 	//Cose msg for Asym
 		public static SCCCiphertext createAsymMessage(PlaintextContainerInterface plaintext, AlgorithmID id, AbstractSCCKeyPair keyPair) {

@@ -12,10 +12,11 @@ import org.junit.jupiter.api.Test;
 
 
 import COSE.CoseException;
-
+import COSE.Encrypt0Message;
 import COSE.HashMessage;
 
 import COSE.OneKey;
+import COSE.PasswordHashMessage;
 import main.PlaintextContainer;
 import main.SCCCiphertext;
 import main.SCCHash;
@@ -78,7 +79,7 @@ class SecureCryptoConfigTest {
 		
 	}
 
-	@Test
+	//@Test
 	void testSCCasymmetricEncryption() throws CoseException {
 		SCCKeyPair pair = SCCKeyPair.createAsymmetricKey();
 		
@@ -107,14 +108,20 @@ class SecureCryptoConfigTest {
 	}
 	
 
-	//@Test
-	void testPasswordHash() {
+	@Test
+	void testPasswordHash() throws CoseException {
 
-		SCCPasswordHash hash = scc.passwordHash(plaintextContainer);
-		SCCPasswordHash hash1 = UseCases.passwordHashing(plaintextContainer, hash.getAlgo(), hash.getSalt(),
-				hash.getKeySize(), hash.getIterations());
-		assertEquals(hash.toString().equals(hash1.toString()), true);
-
+		SCCPasswordHash hashed = scc.passwordHash(plaintextContainer);
+		PasswordHashMessage msg = (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(hashed.getByteArray());	
+		String s = new String(msg.getEncryptedContent(), StandardCharsets.UTF_8);
+		System.out.println(s);
+		
+		//SCCPasswordHash hashed1 = scc.passwordHash(plaintextContainer);
+		//PasswordHashMessage msg1 = (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(hashed1.getByteArray());	
+		//String s1 = new String(msg1.getEncryptedContent(), StandardCharsets.UTF_8);
+		//System.out.println(s1);
+		//assertEquals(s, s1);
+		
 	}
 	
 

@@ -73,9 +73,9 @@ abstract interface SecureCryptoConfigInterface {
 
 	// Password Hashing
 
-	public AbstractSCCPasswordHash passwordHash(PlaintextContainerInterface password);
+	public AbstractSCCPasswordHash passwordHash(PlaintextContainerInterface password) throws CoseException;
 
-	public boolean verifyPassword(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash);
+	public boolean verifyPassword(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash) throws CoseException;
 
 	// TODO methods for key generation? Returning of SCCKey?
 
@@ -217,10 +217,8 @@ abstract class AbstractSCCPasswordHash {
 	@Override
 	public abstract String toString();
 
-	abstract String getAlgo();
-	abstract byte[] getSalt();
-	abstract int getKeySize();
-	abstract int getIterations();
+	abstract byte[] getByteArray();
+	
 	
 
 

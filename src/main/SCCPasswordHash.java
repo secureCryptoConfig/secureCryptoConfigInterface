@@ -5,11 +5,11 @@ import java.util.Base64;
 public class SCCPasswordHash extends AbstractSCCPasswordHash {
 
 	byte[] hash;
-	SCCAlgorithmParameters param;
+	byte[] salt;
 
-	public SCCPasswordHash(byte[] hash, SCCAlgorithmParameters param) {
+	public SCCPasswordHash(byte[] hash, byte[] salt) {
 		this.hash = hash;
-		this.param = param;
+		this.salt = salt;
 	}
 
 	@Override
@@ -24,26 +24,11 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	}
 	
 	@Override
-	public String getAlgo()
+	public byte[] getByteArray()
 	{
-		return this.param.algo;
-	}
-	
-	@Override
-	public byte[] getSalt()
-	{
-		return this.param.salt;
-	}
-	
-	@Override
-	public int getKeySize()
-	{
-		return this.param.keysize;
+		
+		return this.hash;
 	}
 
-	@Override
-	public int getIterations()
-	{
-		return this.param.iterations;
-	}
+	
 }

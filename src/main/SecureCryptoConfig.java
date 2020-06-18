@@ -350,15 +350,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCPasswordHash passwordHash(PlaintextContainerInterface password) {
+	public SCCPasswordHash passwordHash(PlaintextContainerInterface password) throws CoseException {
 
-		// Default Values : "PBKDF_SHA3_256"
-		String algo = "PBKDF2WithHmacSHA512";
-		int saltLength = 64;
-		int keysize = 256;
-		int iterations = 10000;
-		byte salt[] = UseCases.generateRandomByteArray(saltLength);
-
+		int saltLength;
 		// read our Algorithms for symmetric encryption out of JSON
 		algorithms = JSONReader.getAlgos(CryptoUseCase.PasswordHashing);
 
@@ -374,33 +368,25 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				switch (chosenAlgorithmID) {
 				case PBKDF_SHA3_256:
-					algo = "PBKDF2WithHmacSHA512";
 					saltLength = 64;
-					keysize = 256;
-					salt = UseCases.generateRandomByteArray(saltLength);
-					return UseCases.passwordHashing(password, algo, salt, keysize, iterations);
+					return UseCases.createPasswordHashMessage(password.getPlain(), AlgorithmID.PBKDF_SHA3_256, saltLength);
 				default:
 					break;
 				}
 			}
-			// last round and no corresponding match in Switch case found
-			// take default values for hashing
-			if (i == (algorithms.size() - 1)) {
-				System.out.println("No supported algorithms. Default values are used for hashing!");
-				System.out.println("Used: " + AlgorithmIDEnum.PBKDF_SHA3_256);
-				return UseCases.passwordHashing(password, algo, salt, keysize, iterations);
-			}
+			
 		}
-		return null;
+		throw new CoseException("No supported algorithm!");
 
 	}
 
 	@Override
-	public boolean verifyPassword(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash) {
-		SCCPasswordHash hash = passwordHash(password);
+	public boolean verifyPassword(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash) throws CoseException {
+		/**SCCPasswordHash hash = passwordHash(password);
 		SCCPasswordHash hash1 = UseCases.passwordHashing(password, hash.param.algo, hash.param.salt, hash.param.keysize,
 				hash.param.iterations);
-		return hash.toString().equals(hash1.toString());
+		return hash.toString().equals(hash1.toString());**/
+		return false;
 	}
 
 }
