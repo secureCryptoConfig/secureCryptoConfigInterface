@@ -4,8 +4,8 @@ import java.util.Base64;
 
 public class SCCSignature extends AbstractSCCSignature{
 
-	public SCCSignature(byte[] signature, AbstractSCCAlgorithmParameters parameters) {
-		super(signature, parameters);
+	public SCCSignature(byte[] signature) {
+		super(signature);
 	}
 
 	@Override

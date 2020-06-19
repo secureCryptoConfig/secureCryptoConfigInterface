@@ -4,7 +4,6 @@ import java.security.KeyPair;
 
 import javax.crypto.SecretKey;
 
-
 import COSE.CoseException;
 
 import COSE.OneKey;
@@ -12,11 +11,14 @@ import COSE.OneKey;
 abstract interface SecureCryptoConfigInterface {
 	// Symmetric Encryption
 
-	public AbstractSCCCiphertext symmetricEncrypt(AbstractSCCKey key, PlaintextContainerInterface plaintext) throws CoseException;
+	public AbstractSCCCiphertext symmetricEncrypt(AbstractSCCKey key, PlaintextContainerInterface plaintext)
+			throws CoseException;
 
-	public AbstractSCCCiphertext symmetricReEncrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext) throws CoseException;
+	public AbstractSCCCiphertext symmetricReEncrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext)
+			throws CoseException;
 
-	public PlaintextContainerInterface symmetricDecrypt(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext) throws CoseException;
+	public PlaintextContainerInterface symmetricDecrypt(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext)
+			throws CoseException;
 
 	// for file encryption?
 	/**
@@ -41,11 +43,14 @@ abstract interface SecureCryptoConfigInterface {
 
 	// Asymmetric
 
-	public AbstractSCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext) throws CoseException;
+	public AbstractSCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext)
+			throws CoseException;
 
-	public AbstractSCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext) throws CoseException;
+	public AbstractSCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext)
+			throws CoseException;
 
-	public PlaintextContainerInterface asymmetricDecrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext) throws CoseException;
+	public PlaintextContainerInterface asymmetricDecrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext)
+			throws CoseException;
 
 	// Hashing
 
@@ -58,15 +63,18 @@ abstract interface SecureCryptoConfigInterface {
 
 	// Digital Signature
 	/**
-	public AbstractSCCSignature sign(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext);
-
-	public AbstractSCCSignature reSign(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext);
-
-	public boolean validateSignature(AbstractSCCKeyPair keyPair, AbstractSCCSignature signature);
-	**/
+	 * public AbstractSCCSignature sign(AbstractSCCKeyPair keyPair,
+	 * PlaintextContainerInterface plaintext);
+	 * 
+	 * public AbstractSCCSignature reSign(AbstractSCCKeyPair keyPair,
+	 * PlaintextContainerInterface plaintext);
+	 * 
+	 * public boolean validateSignature(AbstractSCCKeyPair keyPair,
+	 * AbstractSCCSignature signature);
+	 **/
 	public AbstractSCCSignature sign(OneKey key, PlaintextContainerInterface plaintext) throws CoseException;
 
-	//same as sign?
+	// same as sign?
 	public AbstractSCCSignature reSign(OneKey key, PlaintextContainerInterface plaintext) throws CoseException;
 
 	public boolean validateSignature(OneKey key, AbstractSCCSignature signature);
@@ -75,7 +83,8 @@ abstract interface SecureCryptoConfigInterface {
 
 	public AbstractSCCPasswordHash passwordHash(PlaintextContainerInterface password) throws CoseException;
 
-	public boolean verifyPassword(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash) throws CoseException;
+	public boolean verifyPassword(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash)
+			throws CoseException;
 
 	// TODO methods for key generation? Returning of SCCKey?
 
@@ -106,10 +115,11 @@ abstract class AbstractSCCAlgorithmParameters {
 	byte[] salt;
 	int keysize, iterations, tagLength;
 	OneKey k;
-	
+
 	protected AbstractSCCAlgorithmParameters(OneKey k) {
 		this.k = k;
 	}
+
 	protected AbstractSCCAlgorithmParameters(byte[] nonce, int tag, String algo) {
 		this.nonce = nonce;
 		this.tagLength = tag;
@@ -144,28 +154,21 @@ abstract class AbstractSCCCiphertext {
 		this.ciphertext = ciphertext;
 		this.parameters = parameters;
 	}
-	
+
 	public AbstractSCCCiphertext(byte[] msg) {
 		this.msg = msg;
 	}
 
 	abstract String getCiphertext();
+
 	abstract byte[] getCipherBytes();
-	//abstract CBORObject getAlgorithmIdentifier();
+	// abstract CBORObject getAlgorithmIdentifier();
 
 	@Override
 	public abstract String toString();
 
 }
 
-abstract class AbstractAlgorithmIdentifier {
-	// named defined in IANA registry
-	enum AlgorithmID {
-		AEAD_AES_256_GCM, AEAD_AES_512_GCM, SHA3_512,
-	}
-}
-
-//extends SecretKeySpec?
 abstract class AbstractSCCKey {
 
 	SecretKey key;
@@ -179,10 +182,6 @@ abstract class AbstractSCCKey {
 	abstract String getAlgorithm();
 
 	abstract SecretKey getKey();
-
-	// enum SCCKeyType {
-	// Symmetric, Asymmetric
-	// }
 
 	// as static method in class
 	// abstract AbstractSCCKey createKey(byte[] bytes);
@@ -205,10 +204,11 @@ abstract class AbstractSCCHash {
 
 	@Override
 	public abstract String toString();
+
 	abstract String getAlgo();
 
 	abstract byte[] getByteArray();
-		
+
 }
 
 abstract class AbstractSCCPasswordHash {
@@ -218,22 +218,22 @@ abstract class AbstractSCCPasswordHash {
 	public abstract String toString();
 
 	abstract byte[] getByteArray();
-	
-	
-
 
 }
 
 abstract class AbstractSCCSignature {
-	AbstractSCCAlgorithmParameters parameters;
 	byte[] signature;
 
-	public AbstractSCCSignature(byte[] signature, AbstractSCCAlgorithmParameters parameters) {
+	public AbstractSCCSignature(byte[] signature) {
 		this.signature = signature;
-		this.parameters = parameters;
 	}
 
 	@Override
 	public abstract String toString();
 
 }
+
+/**
+ * abstract class AbstractAlgorithmIdentifier { // named defined in IANA
+ * registry enum AlgorithmID { AEAD_AES_256_GCM, AEAD_AES_512_GCM, SHA3_512, } }
+ **/

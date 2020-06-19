@@ -1,15 +1,23 @@
 package main;
 
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+
+import com.mifmif.common.regex.Generex;
 
 public class JSONReader {
 
@@ -119,11 +127,135 @@ public class JSONReader {
 		}
 	}
 
-	public static void main(String[] args) {
-		String s = "AES_GCM_256_128_128";
-		String[] parameters = s.split("_");
-		for (int i = 0; i < parameters.length; i++) {
-			System.out.println(parameters[i]);
+	final static String UrlJSON = "https://raw.githubusercontent.com/secureCryptoConfig/secureCryptoConfig/master/src/";
+
+	public static void downloadAllJSONFile() {
+		String s, url, filename = "";
+		String prefix = "SCC_SecurityLevel_";
+		Generex generex = new Generex("[1-5]_(2020|2023|2026|2027|2030)-([0-9]|[1-9][0-9])");
+		// Generex generex = new
+		// Generex("(scc_example|scc_example_extended|scc_general)");
+
+		// Using Generex iterator
+		com.mifmif.common.regex.util.Iterator iterator = generex.iterator();
+		while (iterator.hasNext()) {
+			s = prefix + iterator.next();
+			// s = iterator.next();
+			filename = s + ".json";
+			url = UrlJSON + filename;
+			System.out.println(filename);
+
+			try {
+				BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
+				File f = new File(".\\src\\main\\" + filename);
+				f.createNewFile();
+				FileOutputStream fileOutputStream = new FileOutputStream(".\\src\\main\\" + filename);
+				byte dataBuffer[] = new byte[1024];
+				int bytesRead;
+				while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+					fileOutputStream.write(dataBuffer, 0, bytesRead);
+				}
+				fileOutputStream.close();
+			} catch (IOException e) {
+				continue;
+			}
+
 		}
+
+	}
+
+	public static String getLatestSCC(int securityLevel) {
+		HashMap<String, String> one = new HashMap<String, String>();
+		HashMap<String, String> two = new HashMap<String, String>();
+		HashMap<String, String> three = new HashMap<String, String>();
+		HashMap<String, String> four = new HashMap<String, String>();
+		HashMap<String, String> five = new HashMap<String, String>();
+		ArrayList<String> existingFiles = null;
+		String[] result;
+		Generex generex = new Generex("[1-5]_(2020|2023|2026|2027|2030)-([0-9]|[1-9][0-9])");
+		String prefix = "SCC_SecurityLevel_";
+		String filename = "";
+		String latest = null;
+		int highestYear = 2020;
+		int highestPatch = 0;
+
+		HashMap<String, String> list = null;
+
+		switch (securityLevel) {
+		case 1:
+			list = one;
+			latest = "SCC_SecurityLevel_1_2020-0";
+		case 2:
+			list = two;
+			latest = "SCC_SecurityLevel_2_2020-0";
+		case 3:
+			list = three;
+			latest = "SCC_SecurityLevel_3_2020-0";
+		case 4:
+			list = four;
+			latest = "SCC_SecurityLevel_4_2020-0";
+		case 5:
+			list = five;
+			latest = "SCC_SecurityLevel_5_2020-0";
+
+		}
+
+		// For all names
+		com.mifmif.common.regex.util.Iterator iterator = generex.iterator();
+		while (iterator.hasNext()) {
+			filename = prefix + iterator.next();
+			System.out.println(filename);
+			File f = new File(".\\src\\main\\" + filename + ".json");
+			if (f.exists()) {
+
+				result = filename.split("_");
+				switch (result[2]) {
+				case "1":
+					one.put(filename, result[3]);
+				case "2":
+					two.put(filename, result[3]);
+				case "3":
+					three.put(filename, result[3]);
+				case "4":
+					four.put(filename, result[3]);
+				case "5":
+					five.put(filename, result[3]);
+				}
+			}
+		}
+
+		com.mifmif.common.regex.util.Iterator iterator1 = generex.iterator();
+		while (iterator1.hasNext()) {
+			filename = prefix + iterator1.next();
+			for (int i = 0; i < list.size(); i++) {
+				if (list.containsKey(filename)) {
+					String nmb = list.get(filename);
+					String version[] = nmb.split("-");
+					Integer versionInt[] = new Integer[2];
+					versionInt[0] = Integer.parseInt(version[0]);
+					versionInt[1] = Integer.parseInt(version[1]);
+					if (highestYear < versionInt[0]) {
+						latest = filename;
+						highestYear = versionInt[0];
+
+					} else if (highestYear == versionInt[0]) {
+						if (highestPatch < versionInt[1]) {
+							highestPatch = versionInt[1];
+							latest = filename;
+						}
+					}
+				}
+			}
+		}
+
+		return latest;
+
+	}
+
+	public static void main(String[] args) {
+		// downloadAllJSONFile();
+		String i = getLatestSCC(5);
+		System.out.println(i);
+
 	}
 }
