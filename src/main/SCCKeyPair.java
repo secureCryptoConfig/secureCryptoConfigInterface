@@ -64,7 +64,7 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
 
 				switch (chosenAlgorithmID) {
-				case RSA_SHA3_256:
+				case RSA_SHA_256:
 					return keyPairWithParams("RSA", 4096);
 
 				default:

@@ -39,11 +39,11 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		// Digital Signature
 		ECDSA_512,
 		// Hash
-		SHA3_512, 
+		SHA_512, 
 		//asymmetric:
-		RSA_SHA3_256, 
+		RSA_SHA_256, 
 		//others
-		PBKDF_SHA3_256
+		PBKDF_SHA_256
 	}
 
 	protected static HashSet<String> getEnums() {
@@ -221,7 +221,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
 
 				switch (chosenAlgorithmID) {
-				case RSA_SHA3_256:
+				case RSA_SHA_256:
 					return UseCases.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_256, keyPair);
 					/**
 					algo = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
@@ -274,7 +274,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
 
 				switch (chosenAlgorithmID) {
-				case SHA3_512:
+				case SHA_512:
 					return UseCases.createHashMessage(plaintext.getPlain(), AlgorithmID.SHA_512);
 				default:
 					break;
@@ -367,9 +367,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
 
 				switch (chosenAlgorithmID) {
-				case PBKDF_SHA3_256:
+				case PBKDF_SHA_256:
 					saltLength = 64;
-					return UseCases.createPasswordHashMessage(password.getPlain(), AlgorithmID.PBKDF_SHA3_256, saltLength);
+					return UseCases.createPasswordHashMessage(password.getPlain(), AlgorithmID.PBKDF_SHA_256, saltLength);
 				default:
 					break;
 				}
