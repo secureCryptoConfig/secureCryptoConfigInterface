@@ -367,7 +367,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	public boolean validateSignature(OneKey key, AbstractSCCSignature signature) {
 
 		try {
-			Sign1Message msg = (Sign1Message) Sign1Message.DecodeFromBytes(signature.signature);
+			Sign1Message msg = (Sign1Message) Sign1Message.DecodeFromBytes(signature.signatureMsg);
 			return msg.validate(key);
 
 		} catch (CoseException e) {

@@ -222,14 +222,16 @@ abstract class AbstractSCCPasswordHash {
 }
 
 abstract class AbstractSCCSignature {
-	byte[] signature;
+	byte[] signatureMsg;
 
-	public AbstractSCCSignature(byte[] signature) {
-		this.signature = signature;
+	public AbstractSCCSignature(byte[] signatureMsg) {
+		this.signatureMsg = signatureMsg;
 	}
 
 	@Override
 	public abstract String toString();
+	
+	abstract byte[] getSignatureMsg();
 
 }
 

@@ -7,15 +7,18 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 import org.junit.jupiter.api.Test;
 
 
 import COSE.CoseException;
+import COSE.Encrypt0Message;
 import COSE.HashMessage;
 
 import COSE.OneKey;
 import COSE.PasswordHashMessage;
+import COSE.Sign1Message;
 import main.PlaintextContainer;
 import main.SCCCiphertext;
 import main.SCCHash;
@@ -27,7 +30,7 @@ import main.SecureCryptoConfig;
 
 class SecureCryptoConfigTest {
 
-	SecureCryptoConfig scc = new SecureCryptoConfig(1);
+	SecureCryptoConfig scc = new SecureCryptoConfig();
 	String inputPlaintext = "very confidential";
 	PlaintextContainer plaintextContainer = new PlaintextContainer(inputPlaintext);
 
@@ -50,7 +53,7 @@ class SecureCryptoConfigTest {
 		return null;
 	}
 
-	@Test
+	//@Test
 	void testSCCsymmetricEncryption() throws CoseException {
 		PlaintextContainer p = new PlaintextContainer("Hello World");
 		SCCKey scckey = SCCKey.createKey(p);
@@ -69,10 +72,10 @@ class SecureCryptoConfigTest {
 	void testHashing() throws CoseException {
 		SCCHash hashed = scc.hash(plaintextContainer);
 		HashMessage msg = (HashMessage) HashMessage.DecodeFromBytes(hashed.getByteArray());	
-		String s = new String(msg.getHashedContent(), StandardCharsets.UTF_8);
+		String s = Base64.getEncoder().encodeToString(msg.getHashedContent());
 		SCCHash hashed1 = scc.hash(plaintextContainer);
 		HashMessage msg1 = (HashMessage) HashMessage.DecodeFromBytes(hashed1.getByteArray());	
-		String s1 = new String(msg1.getHashedContent(), StandardCharsets.UTF_8);
+		String s1 = Base64.getEncoder().encodeToString(msg1.getHashedContent());
 		assertEquals(s, s1);
 		
 	}
@@ -87,10 +90,14 @@ class SecureCryptoConfigTest {
 		
 	}
 
-	//@Test
+	@Test
 	void testSCCSignature() throws CoseException {
 		OneKey k = SCCKeyPair.createSigningKey();
 		SCCSignature s = scc.sign(k, plaintextContainer);
+		Sign1Message msg = (Sign1Message) Sign1Message.DecodeFromBytes(s.getSignatureMsg());
+		String signature = Base64.getEncoder().encodeToString(msg.getSignature());
+		System.out.println(signature);
+		
 		assertEquals(true, scc.validateSignature(k, s));
 	}
 
