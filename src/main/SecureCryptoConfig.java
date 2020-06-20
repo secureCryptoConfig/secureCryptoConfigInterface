@@ -1,6 +1,7 @@
 package main;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -29,7 +30,7 @@ import main.JSONReader.CryptoUseCase;
 
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
-	ArrayList<String> algorithms = new ArrayList<String>();
+	public static String sccFileName;
 
 	// TODO refactor in separate class?
 	static enum AlgorithmIDEnum {
@@ -42,8 +43,29 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		SHA_512, 
 		//asymmetric:
 		RSA_SHA_256, 
-		//others
+		//PasswordHash
 		PBKDF_SHA_256
+	}
+	
+	public SecureCryptoConfig() {
+		SecureCryptoConfig.sccFileName = JSONReader.getLatestSCC(5);
+	}
+	
+	public SecureCryptoConfig(String sccFileName)
+	{
+		SecureCryptoConfig.sccFileName = sccFileName;
+		System.out.println(sccFileName);
+	}
+	
+	public SecureCryptoConfig(int securityLevel)
+	{
+		SecureCryptoConfig.sccFileName = JSONReader.getLatestSCC(securityLevel);
+		System.out.println(sccFileName);
+	}
+	
+	public String getSccFile()
+	{
+		return SecureCryptoConfig.sccFileName;
 	}
 
 	protected static HashSet<String> getEnums() {
@@ -60,7 +82,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	public SCCCiphertext symmetricEncrypt(AbstractSCCKey key, PlaintextContainerInterface plaintext)
 			throws CoseException {
 
-		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
+		ArrayList<String> algorithms = new ArrayList<String>();
+		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, ".\\src\\main\\" + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 
@@ -114,7 +137,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		int tagLength = 128;
 		String algo = "AES/GCM/NoPadding";
 
-		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
+		ArrayList<String> algorithms = new ArrayList<String>();
+		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, ".\\src\\main\\" + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 
@@ -207,7 +231,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	@Override
 	public SCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext) throws CoseException {
 		
-		algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption);
+		ArrayList<String> algorithms = new ArrayList<String>();
+		algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption, ".\\src\\main\\" + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 
@@ -260,8 +285,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	@Override
 	public SCCHash hash(PlaintextContainerInterface plaintext) throws CoseException {
 
+		ArrayList<String> algorithms = new ArrayList<String>();
 		// read our Algorithms for symmetric encryption out of JSON
-		algorithms = JSONReader.getAlgos(CryptoUseCase.Hashing);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.Hashing, ".\\src\\main\\" + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 			// get first one, later look what to do if first is not validate -> take next
@@ -295,19 +321,21 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	@Override
 	public boolean verifyHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException {
 		HashMessage msg = (HashMessage) HashMessage.DecodeFromBytes(hash.getByteArray());	
-		String s = new String(msg.getEncryptedContent(), StandardCharsets.UTF_8);
+		String s = new String(msg.getHashedContent(), StandardCharsets.UTF_8);
 		
 		SCCHash hash1 = hash(plaintext);
 		HashMessage msg1 = (HashMessage) HashMessage.DecodeFromBytes(hash1.getByteArray());	
-		String s1 = new String(msg1.getEncryptedContent(), StandardCharsets.UTF_8);
+		String s1 = new String(msg1.getHashedContent(), StandardCharsets.UTF_8);
 		
 		return s.equals(s1);
 	}
 
 	@Override
 	public SCCSignature sign(OneKey k, PlaintextContainerInterface plaintext) throws CoseException {
+		
+		ArrayList<String> algorithms = new ArrayList<String>();
 		// read our Algorithms for symmetric encryption out of JSON
-		algorithms = JSONReader.getAlgos(CryptoUseCase.Signing);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.Signing, ".\\src\\main\\" + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 			// get first one, later look what to do if first is not validate -> take next
@@ -353,8 +381,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	public SCCPasswordHash passwordHash(PlaintextContainerInterface password) throws CoseException {
 
 		int saltLength;
+		ArrayList<String> algorithms = new ArrayList<String>();
 		// read our Algorithms for symmetric encryption out of JSON
-		algorithms = JSONReader.getAlgos(CryptoUseCase.PasswordHashing);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.PasswordHashing, ".\\src\\main\\" + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 			// get first one, later look what to do if first is not validate -> take next

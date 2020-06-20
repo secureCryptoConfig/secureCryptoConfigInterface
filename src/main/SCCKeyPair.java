@@ -51,7 +51,7 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 		String algo = "RSA";
 		int keysize = 4096;
 
-		algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption, ".\\src\\main\\" + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 
@@ -98,7 +98,7 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 	public static OneKey createSigningKey() throws CoseException {
 		ArrayList<String> algorithms = new ArrayList<String>();
 
-		algorithms = JSONReader.getAlgos(CryptoUseCase.Signing);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.Signing, ".\\src\\main\\" + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 

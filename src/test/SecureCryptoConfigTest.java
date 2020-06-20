@@ -27,7 +27,7 @@ import main.SecureCryptoConfig;
 
 class SecureCryptoConfigTest {
 
-	SecureCryptoConfig scc = new SecureCryptoConfig();
+	SecureCryptoConfig scc = new SecureCryptoConfig(1);
 	String inputPlaintext = "very confidential";
 	PlaintextContainer plaintextContainer = new PlaintextContainer(inputPlaintext);
 
@@ -50,7 +50,7 @@ class SecureCryptoConfigTest {
 		return null;
 	}
 
-	//@Test
+	@Test
 	void testSCCsymmetricEncryption() throws CoseException {
 		PlaintextContainer p = new PlaintextContainer("Hello World");
 		SCCKey scckey = SCCKey.createKey(p);
@@ -69,10 +69,10 @@ class SecureCryptoConfigTest {
 	void testHashing() throws CoseException {
 		SCCHash hashed = scc.hash(plaintextContainer);
 		HashMessage msg = (HashMessage) HashMessage.DecodeFromBytes(hashed.getByteArray());	
-		String s = new String(msg.getEncryptedContent(), StandardCharsets.UTF_8);
+		String s = new String(msg.getHashedContent(), StandardCharsets.UTF_8);
 		SCCHash hashed1 = scc.hash(plaintextContainer);
 		HashMessage msg1 = (HashMessage) HashMessage.DecodeFromBytes(hashed1.getByteArray());	
-		String s1 = new String(msg1.getEncryptedContent(), StandardCharsets.UTF_8);
+		String s1 = new String(msg1.getHashedContent(), StandardCharsets.UTF_8);
 		assertEquals(s, s1);
 		
 	}
@@ -106,7 +106,7 @@ class SecureCryptoConfigTest {
 	}
 	
 
-	@Test
+	//@Test
 	void testPasswordHash() throws CoseException {
 
 		SCCPasswordHash hashed = scc.passwordHash(plaintextContainer);

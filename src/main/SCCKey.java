@@ -40,7 +40,7 @@ public class SCCKey extends main.AbstractSCCKey {
 		// possible: AES, DES, DESede, HmacSHA1, HmacSHA256
 		ArrayList<String> algorithms = new ArrayList<String>();
 
-		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, ".\\src\\main\\" + SecureCryptoConfig.sccFileName );
 
 		for (int i = 0; i < algorithms.size(); i++) {
 
@@ -74,7 +74,7 @@ public class SCCKey extends main.AbstractSCCKey {
 		// possible: AES, DES, DESede, HmacSHA1, HmacSHA256
 		ArrayList<String> algorithms = new ArrayList<String>();
 		
-		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, ".\\src\\main\\" + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 

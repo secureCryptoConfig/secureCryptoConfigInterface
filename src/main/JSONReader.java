@@ -10,8 +10,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
-
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -34,9 +32,9 @@ public class JSONReader {
 	 * 
 	 * @param useCase, value from Enum
 	 */
-	public static ArrayList<String> getAlgos(CryptoUseCase useCase) {
+	public static ArrayList<String> getAlgos(CryptoUseCase useCase, String sccFilePath) {
 		ArrayList<String> algos = new ArrayList<String>();
-		try (FileReader reader = new FileReader(".\\src\\main\\scc_example.json")) {
+		try (FileReader reader = new FileReader(sccFilePath)) {
 			// Read JSON file
 			Object obj = jsonParser.parse(reader);
 			JSONArray sccList = (JSONArray) obj;
@@ -128,10 +126,9 @@ public class JSONReader {
 	}
 
 	final static String UrlJSON = "https://raw.githubusercontent.com/secureCryptoConfig/secureCryptoConfig/master/src/";
-
+	final static String prefix = "SCC_SecurityLevel_";
 	public static void downloadAllJSONFile() {
 		String s, url, filename = "";
-		String prefix = "SCC_SecurityLevel_";
 		Generex generex = new Generex("[1-5]_(2020|2023|2026|2027|2030)-([0-9]|[1-9][0-9])");
 		// Generex generex = new
 		// Generex("(scc_example|scc_example_extended|scc_general)");
@@ -170,41 +167,45 @@ public class JSONReader {
 		HashMap<String, String> three = new HashMap<String, String>();
 		HashMap<String, String> four = new HashMap<String, String>();
 		HashMap<String, String> five = new HashMap<String, String>();
-		ArrayList<String> existingFiles = null;
 		String[] result;
-		Generex generex = new Generex("[1-5]_(2020|2023|2026|2027|2030)-([0-9]|[1-9][0-9])");
-		String prefix = "SCC_SecurityLevel_";
 		String filename = "";
 		String latest = null;
+		
 		int highestYear = 2020;
 		int highestPatch = 0;
-
 		HashMap<String, String> list = null;
+		
+		Generex generex = new Generex("[1-5]_(2020|2023|2026|2027|2030)-([0-9]|[1-9][0-9])");
+		
+
 
 		switch (securityLevel) {
 		case 1:
 			list = one;
 			latest = "SCC_SecurityLevel_1_2020-0";
+			break;
 		case 2:
 			list = two;
 			latest = "SCC_SecurityLevel_2_2020-0";
+			break;
 		case 3:
 			list = three;
 			latest = "SCC_SecurityLevel_3_2020-0";
+			break;
 		case 4:
 			list = four;
 			latest = "SCC_SecurityLevel_4_2020-0";
+			break;
 		case 5:
 			list = five;
 			latest = "SCC_SecurityLevel_5_2020-0";
-
+			break;
 		}
 
 		// For all names
 		com.mifmif.common.regex.util.Iterator iterator = generex.iterator();
 		while (iterator.hasNext()) {
 			filename = prefix + iterator.next();
-			System.out.println(filename);
 			File f = new File(".\\src\\main\\" + filename + ".json");
 			if (f.exists()) {
 
@@ -248,14 +249,14 @@ public class JSONReader {
 			}
 		}
 
-		return latest;
+		return latest + ".json";
 
 	}
 
 	public static void main(String[] args) {
 		// downloadAllJSONFile();
-		String i = getLatestSCC(5);
+		String i = getLatestSCC(2);
 		System.out.println(i);
-
+		
 	}
 }
