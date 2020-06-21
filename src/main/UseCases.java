@@ -96,7 +96,7 @@ public class UseCases {
 			byte[] hash = factory.generateSecret(spec).getEncoded();
 			//SCCAlgorithmParameters param = new SCCAlgorithmParameters(algo, salt, keysize, iterations);
 			//return new SCCPasswordHash(hash, param);
-			return new SCCPasswordHash(hash, null);
+			return new SCCPasswordHash(hash);
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
 			e.printStackTrace();
 			return null;
@@ -138,22 +138,37 @@ public class UseCases {
 	
 	
 	//Cose msg for Hashing
-		public static SCCPasswordHash createPasswordHashMessage(String plaintext, AlgorithmID id, int saltLength) {
+		public static SCCPasswordHash createPasswordHashMessage(String plaintext, AlgorithmID id) {
 			
 			try {
-				byte[] salt = generateRandomByteArray(saltLength);
 				PasswordHashMessage m = new PasswordHashMessage();
 				m.SetContent(plaintext.getBytes());
 				m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
-				m.passwordHash(salt);
+				m.passwordHash();
 				
-				return new SCCPasswordHash(m.EncodeToBytes(), salt);
+				return new SCCPasswordHash(m.EncodeToBytes());
 
 			} catch (CoseException e) {
 				e.printStackTrace();
 				return null;
 			}
 		}
+		
+		public static SCCPasswordHash createPasswordHashMessageSalt(String plaintext, AlgorithmID id, byte[] salt) {
+			try {
+				PasswordHashMessage m = new PasswordHashMessage();
+				m.SetContent(plaintext.getBytes());
+				m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
+				m.passwordHashWithSalt(salt);
+				
+				return new SCCPasswordHash(m.EncodeToBytes());
+
+			} catch (CoseException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+		
 	
 	//Cose msg for Asym
 		public static SCCCiphertext createAsymMessage(PlaintextContainerInterface plaintext, AlgorithmID id, AbstractSCCKeyPair keyPair) {
@@ -197,5 +212,8 @@ public class UseCases {
 			return null;
 		}
 	}
+
+	
+	//public static SCCPasswordHash passwordHashWithParams()
 
 }

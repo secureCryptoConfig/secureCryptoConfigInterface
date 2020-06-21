@@ -1,7 +1,6 @@
 package main;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -11,6 +10,7 @@ import java.security.InvalidKeyException;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.HashSet;
 
 import javax.crypto.Cipher;
@@ -18,13 +18,16 @@ import javax.crypto.CipherInputStream;
 import javax.crypto.NoSuchPaddingException;
 import javax.crypto.spec.GCMParameterSpec;
 
+import com.upokecenter.cbor.CBORObject;
 
 import COSE.AlgorithmID;
 import COSE.AsymMessage;
 import COSE.CoseException;
 import COSE.Encrypt0Message;
 import COSE.HashMessage;
+import COSE.HeaderKeys;
 import COSE.OneKey;
+import COSE.PasswordHashMessage;
 import COSE.Sign1Message;
 import main.JSONReader.CryptoUseCase;
 
@@ -380,7 +383,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	@Override
 	public SCCPasswordHash passwordHash(PlaintextContainerInterface password) throws CoseException {
 
-		int saltLength;
+		
 		ArrayList<String> algorithms = new ArrayList<String>();
 		// read our Algorithms for symmetric encryption out of JSON
 		algorithms = JSONReader.getAlgos(CryptoUseCase.PasswordHashing, ".\\src\\main\\" + SecureCryptoConfig.sccFileName);
@@ -397,8 +400,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				switch (chosenAlgorithmID) {
 				case PBKDF_SHA_256:
-					saltLength = 64;
-					return UseCases.createPasswordHashMessage(password.getPlain(), AlgorithmID.PBKDF_SHA_256, saltLength);
+					return UseCases.createPasswordHashMessage(password.getPlain(), AlgorithmID.PBKDF_SHA_256);
 				default:
 					break;
 				}
@@ -411,11 +413,18 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	@Override
 	public boolean verifyPassword(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash) throws CoseException {
-		/**SCCPasswordHash hash = passwordHash(password);
-		SCCPasswordHash hash1 = UseCases.passwordHashing(password, hash.param.algo, hash.param.salt, hash.param.keysize,
-				hash.param.iterations);
-		return hash.toString().equals(hash1.toString());**/
-		return false;
+		PasswordHashMessage msg = (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(passwordhash.getByteArray());	
+		CBORObject algX = msg.findAttribute(HeaderKeys.Algorithm);
+        AlgorithmID alg = AlgorithmID.FromCBOR(algX);
+        
+        SCCPasswordHash hash = UseCases.createPasswordHashMessageSalt(password.getPlain(), alg, msg.getSalt());
+        PasswordHashMessage msg1 = (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(hash.getByteArray());	
+		
+        String hash1 = Base64.getEncoder().encodeToString(msg.getHashedContent());
+		String hash2 = Base64.getEncoder().encodeToString(msg1.getHashedContent());
+		
+		return hash1.equals(hash2);
+		
 	}
 
 }

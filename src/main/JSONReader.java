@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -127,6 +129,7 @@ public class JSONReader {
 
 	final static String UrlJSON = "https://raw.githubusercontent.com/secureCryptoConfig/secureCryptoConfig/master/src/";
 	final static String prefix = "SCC_SecurityLevel_";
+
 	public static void downloadAllJSONFile() {
 		String s, url, filename = "";
 		Generex generex = new Generex("[1-5]_(2020|2023|2026|2027|2030)-([0-9]|[1-9][0-9])");
@@ -140,8 +143,7 @@ public class JSONReader {
 			// s = iterator.next();
 			filename = s + ".json";
 			url = UrlJSON + filename;
-			System.out.println(filename);
-
+		
 			try {
 				BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
 				File f = new File(".\\src\\main\\" + filename);
@@ -170,14 +172,10 @@ public class JSONReader {
 		String[] result;
 		String filename = "";
 		String latest = null;
-		
+
 		int highestYear = 2020;
 		int highestPatch = 0;
 		HashMap<String, String> list = null;
-		
-		Generex generex = new Generex("[1-5]_(2020|2023|2026|2027|2030)-([0-9]|[1-9][0-9])");
-		
-
 
 		switch (securityLevel) {
 		case 1:
@@ -202,12 +200,15 @@ public class JSONReader {
 			break;
 		}
 
-		// For all names
-		com.mifmif.common.regex.util.Iterator iterator = generex.iterator();
-		while (iterator.hasNext()) {
-			filename = prefix + iterator.next();
-			File f = new File(".\\src\\main\\" + filename + ".json");
-			if (f.exists()) {
+		//Folder path depending on where SCC will be stored
+		File folder = new File(".\\src\\main");
+		File[] listOfFiles = folder.listFiles();
+
+		for (int i = 0; i < listOfFiles.length; i++) {
+			if (listOfFiles[i].isFile() && listOfFiles[i].getName().contains(".json")) {
+
+				String[] file = listOfFiles[i].getName().split(".json");
+				filename = file[0];
 
 				result = filename.split("_");
 				switch (result[2]) {
@@ -224,27 +225,22 @@ public class JSONReader {
 				}
 			}
 		}
+		
+		Set<String> keys = list.keySet();
+		for (String s : keys) {
+			String nmb = list.get(s);
+			String version[] = nmb.split("-");
+			Integer versionInt[] = new Integer[2];
+			versionInt[0] = Integer.parseInt(version[0]);
+			versionInt[1] = Integer.parseInt(version[1]);
+			if (highestYear < versionInt[0]) {
+				latest = s;
+				highestYear = versionInt[0];
 
-		com.mifmif.common.regex.util.Iterator iterator1 = generex.iterator();
-		while (iterator1.hasNext()) {
-			filename = prefix + iterator1.next();
-			for (int i = 0; i < list.size(); i++) {
-				if (list.containsKey(filename)) {
-					String nmb = list.get(filename);
-					String version[] = nmb.split("-");
-					Integer versionInt[] = new Integer[2];
-					versionInt[0] = Integer.parseInt(version[0]);
-					versionInt[1] = Integer.parseInt(version[1]);
-					if (highestYear < versionInt[0]) {
-						latest = filename;
-						highestYear = versionInt[0];
-
-					} else if (highestYear == versionInt[0]) {
-						if (highestPatch < versionInt[1]) {
-							highestPatch = versionInt[1];
-							latest = filename;
-						}
-					}
+			} else if (highestYear == versionInt[0]) {
+				if (highestPatch < versionInt[1]) {
+					highestPatch = versionInt[1];
+					latest = s;
 				}
 			}
 		}
@@ -254,9 +250,7 @@ public class JSONReader {
 	}
 
 	public static void main(String[] args) {
-		// downloadAllJSONFile();
-		String i = getLatestSCC(2);
-		System.out.println(i);
+	
 		
 	}
 }

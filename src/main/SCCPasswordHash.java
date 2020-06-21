@@ -5,11 +5,9 @@ import java.util.Base64;
 public class SCCPasswordHash extends AbstractSCCPasswordHash {
 
 	byte[] hash;
-	byte[] salt;
-
-	public SCCPasswordHash(byte[] hash, byte[] salt) {
+	
+	public SCCPasswordHash(byte[] hash) {
 		this.hash = hash;
-		this.salt = salt;
 	}
 
 	@Override

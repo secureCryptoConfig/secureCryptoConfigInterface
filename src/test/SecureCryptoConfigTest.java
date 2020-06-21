@@ -6,18 +6,13 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 import org.junit.jupiter.api.Test;
 
-
 import COSE.CoseException;
-import COSE.Encrypt0Message;
 import COSE.HashMessage;
-
 import COSE.OneKey;
-import COSE.PasswordHashMessage;
 import COSE.Sign1Message;
 import main.PlaintextContainer;
 import main.SCCCiphertext;
@@ -90,7 +85,7 @@ class SecureCryptoConfigTest {
 		
 	}
 
-	@Test
+	//@Test
 	void testSCCSignature() throws CoseException {
 		OneKey k = SCCKeyPair.createSigningKey();
 		SCCSignature s = scc.sign(k, plaintextContainer);
@@ -113,19 +108,14 @@ class SecureCryptoConfigTest {
 	}
 	
 
-	//@Test
+	@Test
 	void testPasswordHash() throws CoseException {
 
 		SCCPasswordHash hashed = scc.passwordHash(plaintextContainer);
-		PasswordHashMessage msg = (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(hashed.getByteArray());	
-		String s = new String(msg.getEncryptedContent(), StandardCharsets.UTF_8);
-		System.out.println(s);
+		//PasswordHashMessage msg = (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(hashed.getByteArray());	
+		//String s = new String(msg.GetContent(), StandardCharsets.UTF_8);
 		
-		//SCCPasswordHash hashed1 = scc.passwordHash(plaintextContainer);
-		//PasswordHashMessage msg1 = (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(hashed1.getByteArray());	
-		//String s1 = new String(msg1.getEncryptedContent(), StandardCharsets.UTF_8);
-		//System.out.println(s1);
-		//assertEquals(s, s1);
+		assertEquals(scc.verifyPassword(plaintextContainer, hashed), true);	
 		
 	}
 	
