@@ -1,6 +1,5 @@
 package main;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -26,8 +25,6 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
-import com.mifmif.common.regex.Generex;
 
 public class JSONReader {
 
@@ -175,7 +172,7 @@ public class JSONReader {
 		}
 
 		// Folder path depending on where SCC will be stored
-		//File folder = new File(".\\src\\main\\SCC");
+		// File folder = new File(".\\src\\main\\SCC");
 		File folder = new File(".\\src\\main");
 		File[] listOfFiles = folder.listFiles();
 
@@ -271,8 +268,8 @@ public class JSONReader {
 		String newDirName = "SCC";
 		File newDir = new File(dir.getParent() + "\\" + newDirName);
 		dir.renameTo(newDir);
-		
-		//delete downloaded ZIP
+
+		// delete downloaded ZIP
 		try {
 			deleteDirectoryRecursion(Paths.get(".\\src\\main\\scc.zip"));
 		} catch (IOException e1) {
@@ -280,8 +277,6 @@ public class JSONReader {
 		}
 
 	}
-
-	
 
 	private static void deleteDirectoryRecursion(Path path) throws IOException {
 		if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
@@ -293,44 +288,5 @@ public class JSONReader {
 		}
 		Files.delete(path);
 	}
-
-	final static String UrlJSON = "https://raw.githubusercontent.com/secureCryptoConfig/secureCryptoConfig/master/src/";
-	final static String prefix = "SCC_SecurityLevel_";
-
-	// first try of getting SCCs
-	public static void downloadAllJSONFile() {
-		String s, url, filename = "";
-		Generex generex = new Generex("[1-5]_(2020|2023|2026|2027|2030)-([0-9]|[1-9][0-9])");
-		// Generex generex = new
-		// Generex("(scc_example|scc_example_extended|scc_general)");
-
-		// Using Generex iterator
-		com.mifmif.common.regex.util.Iterator iterator = generex.iterator();
-		while (iterator.hasNext()) {
-			s = prefix + iterator.next();
-			// s = iterator.next();
-			filename = s + ".json";
-			url = UrlJSON + filename;
-
-			try {
-				BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
-				File f = new File(".\\src\\main\\" + filename);
-				f.createNewFile();
-				FileOutputStream fileOutputStream = new FileOutputStream(".\\src\\main\\" + filename);
-				byte dataBuffer[] = new byte[1024];
-				int bytesRead;
-				while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
-					fileOutputStream.write(dataBuffer, 0, bytesRead);
-				}
-				fileOutputStream.close();
-			} catch (IOException e) {
-				continue;
-			}
-
-		}
-
-	}
-
-	
 
 }
