@@ -22,6 +22,7 @@ import main.SCCKeyPair;
 import main.SCCPasswordHash;
 import main.SCCSignature;
 import main.SecureCryptoConfig;
+import main.UseCases;
 
 class SecureCryptoConfigTest {
 
@@ -29,24 +30,7 @@ class SecureCryptoConfigTest {
 	String inputPlaintext = "very confidential";
 	PlaintextContainer plaintextContainer = new PlaintextContainer(inputPlaintext);
 
-	// Method for getting file content. Content needed for comparing file encryption
-	// test
-	String readFile(String filepath) {
-		String s = "";
-		try {
-			File file = new File(filepath);
-			BufferedReader br = new BufferedReader(new FileReader(file));
-			String st;
-			while ((st = br.readLine()) != null) {
-				s = s + st + "\n";
-			}
-			br.close();
-			return s;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
+	
 
 	//@Test
 	void testSCCsymmetricEncryption() throws CoseException {
@@ -99,7 +83,7 @@ class SecureCryptoConfigTest {
 	// @Test
 	void testFileEncryption() throws CoseException {
 		String filepath = ".\\src\\main\\Test.txt";
-		String fileInput = readFile(filepath).replace("\r", "").replace("\n", "").replace(" ", "");
+		String fileInput = UseCases.readFile(filepath).replace("\r", "").replace("\n", "").replace(" ", "");
 		SCCKey scckey = SCCKey.createKey();
 		SCCCiphertext c = scc.streamEncrypt(scckey, filepath);
 		PlaintextContainer p = scc.streamDecrypt(scckey, c, filepath);

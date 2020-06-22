@@ -2,15 +2,25 @@ package main;
 
 import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.channels.Channels;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -127,42 +137,6 @@ public class JSONReader {
 		}
 	}
 
-	final static String UrlJSON = "https://raw.githubusercontent.com/secureCryptoConfig/secureCryptoConfig/master/src/";
-	final static String prefix = "SCC_SecurityLevel_";
-
-	public static void downloadAllJSONFile() {
-		String s, url, filename = "";
-		Generex generex = new Generex("[1-5]_(2020|2023|2026|2027|2030)-([0-9]|[1-9][0-9])");
-		// Generex generex = new
-		// Generex("(scc_example|scc_example_extended|scc_general)");
-
-		// Using Generex iterator
-		com.mifmif.common.regex.util.Iterator iterator = generex.iterator();
-		while (iterator.hasNext()) {
-			s = prefix + iterator.next();
-			// s = iterator.next();
-			filename = s + ".json";
-			url = UrlJSON + filename;
-		
-			try {
-				BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
-				File f = new File(".\\src\\main\\" + filename);
-				f.createNewFile();
-				FileOutputStream fileOutputStream = new FileOutputStream(".\\src\\main\\" + filename);
-				byte dataBuffer[] = new byte[1024];
-				int bytesRead;
-				while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
-					fileOutputStream.write(dataBuffer, 0, bytesRead);
-				}
-				fileOutputStream.close();
-			} catch (IOException e) {
-				continue;
-			}
-
-		}
-
-	}
-
 	public static String getLatestSCC(int securityLevel) {
 		HashMap<String, String> one = new HashMap<String, String>();
 		HashMap<String, String> two = new HashMap<String, String>();
@@ -200,7 +174,8 @@ public class JSONReader {
 			break;
 		}
 
-		//Folder path depending on where SCC will be stored
+		// Folder path depending on where SCC will be stored
+		//File folder = new File(".\\src\\main\\SCC");
 		File folder = new File(".\\src\\main");
 		File[] listOfFiles = folder.listFiles();
 
@@ -225,7 +200,7 @@ public class JSONReader {
 				}
 			}
 		}
-		
+
 		Set<String> keys = list.keySet();
 		for (String s : keys) {
 			String nmb = list.get(s);
@@ -249,8 +224,113 @@ public class JSONReader {
 
 	}
 
-	public static void main(String[] args) {
-	
+	public static void downloadSCCs() {
+		// first delete old SCCs before getting new ones
+		File f = new File(".\\src\\main\\SCC");
+		if (f.exists()) {
+			try {
+				deleteDirectoryRecursion(Paths.get(".\\src\\main\\SCC"));
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+
+		// retrieve Repo as ZIP
+		try {
+			// Path to repo with SCCs
+			String url = "https://github.com/secureCryptoConfig/secureCryptoConfig/zipball/master/";
+			FileOutputStream fileOutputStream = new FileOutputStream(".\\src\\main\\scc.zip");
+			fileOutputStream.getChannel().transferFrom(Channels.newChannel(new URL(url).openStream()), 0,
+					Long.MAX_VALUE);
+			fileOutputStream.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		// Unzip ZIP file
+		try {
+			Path targetDir = Paths.get(".\\src\\main\\");
+			InputStream is = new FileInputStream(".\\src\\main\\scc.zip");
+			ZipInputStream zipIn = new ZipInputStream(is);
+			for (ZipEntry ze; (ze = zipIn.getNextEntry()) != null;) {
+				Path resolvedPath = targetDir.resolve(ze.getName());
+				if (ze.isDirectory()) {
+					Files.createDirectories(resolvedPath);
+				} else {
+					Files.createDirectories(resolvedPath.getParent());
+					Files.copy(zipIn, resolvedPath);
+				}
+			}
+			zipIn.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		// Rename unzipped file
+		File dir = new File(".\\src\\main\\secureCryptoConfig-secureCryptoConfig-356bdde");
+		String newDirName = "SCC";
+		File newDir = new File(dir.getParent() + "\\" + newDirName);
+		dir.renameTo(newDir);
 		
+		//delete downloaded ZIP
+		try {
+			deleteDirectoryRecursion(Paths.get(".\\src\\main\\scc.zip"));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+
 	}
+
+	
+
+	private static void deleteDirectoryRecursion(Path path) throws IOException {
+		if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)) {
+			try (DirectoryStream<Path> entries = Files.newDirectoryStream(path)) {
+				for (Path entry : entries) {
+					deleteDirectoryRecursion(entry);
+				}
+			}
+		}
+		Files.delete(path);
+	}
+
+	final static String UrlJSON = "https://raw.githubusercontent.com/secureCryptoConfig/secureCryptoConfig/master/src/";
+	final static String prefix = "SCC_SecurityLevel_";
+
+	// first try of getting SCCs
+	public static void downloadAllJSONFile() {
+		String s, url, filename = "";
+		Generex generex = new Generex("[1-5]_(2020|2023|2026|2027|2030)-([0-9]|[1-9][0-9])");
+		// Generex generex = new
+		// Generex("(scc_example|scc_example_extended|scc_general)");
+
+		// Using Generex iterator
+		com.mifmif.common.regex.util.Iterator iterator = generex.iterator();
+		while (iterator.hasNext()) {
+			s = prefix + iterator.next();
+			// s = iterator.next();
+			filename = s + ".json";
+			url = UrlJSON + filename;
+
+			try {
+				BufferedInputStream in = new BufferedInputStream(new URL(url).openStream());
+				File f = new File(".\\src\\main\\" + filename);
+				f.createNewFile();
+				FileOutputStream fileOutputStream = new FileOutputStream(".\\src\\main\\" + filename);
+				byte dataBuffer[] = new byte[1024];
+				int bytesRead;
+				while ((bytesRead = in.read(dataBuffer, 0, 1024)) != -1) {
+					fileOutputStream.write(dataBuffer, 0, bytesRead);
+				}
+				fileOutputStream.close();
+			} catch (IOException e) {
+				continue;
+			}
+
+		}
+
+	}
+
+	
+
 }
