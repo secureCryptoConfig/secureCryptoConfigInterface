@@ -1,7 +1,14 @@
 package main;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
 
+import javax.crypto.Cipher;
+import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKey;
 
 import COSE.CoseException;
@@ -20,23 +27,17 @@ abstract interface SecureCryptoConfigInterface {
 	public PlaintextContainerInterface symmetricDecrypt(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext)
 			throws CoseException;
 
-	// for file encryption?
-	/**
-	 * public AbstractSCCCiphertextStream streamEncrypt(AbstractSCCKey key,
-	 * AbstractPlaintextContainerStream<?> plaintext);
-	 * 
-	 * public AbstractSCCCiphertextStream streamReEncrypt(AbstractSCCKey key,
-	 * AbstractSCCCiphertextStream ciphertext);
-	 * 
-	 * public AbstractPlaintextContainerStream<?> streamDecrypt(AbstractSCCKey key,
-	 * AbstractSCCCiphertextStream ciphertext);
-	 **/
+	// for file encryption
+	public AbstractSCCCiphertextStream streamEncrypt(AbstractSCCKey key, AbstractPlaintextContainerStream plaintext) throws NoSuchAlgorithmException;
 
-	public AbstractSCCCiphertext streamEncrypt(AbstractSCCKey key, String filepath);
+	public AbstractSCCCiphertextStream streamReEncrypt(AbstractSCCKey key, AbstractSCCCiphertextStream ciphertext);
 
-	public AbstractSCCCiphertext streamReEncrypt(AbstractSCCKey key, String filepath);
+	public AbstractPlaintextContainerStream streamDecrypt(AbstractSCCKey key, AbstractSCCCiphertextStream ciphertext);
 
-	public PlaintextContainerInterface streamDecrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext,
+	// simple File encryption
+	public AbstractSCCCiphertext fileEncrypt(AbstractSCCKey key, String filepath) throws NoSuchAlgorithmException;
+
+	public PlaintextContainerInterface fileDecrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext,
 			String filepath);
 
 	public AbstractSCCCiphertext[] encrypt(AbstractSCCKey[] key, PlaintextContainerInterface plaintext);
@@ -230,9 +231,25 @@ abstract class AbstractSCCSignature {
 
 	@Override
 	public abstract String toString();
-	
+
 	abstract byte[] getSignatureMsg();
 
+}
+
+abstract class AbstractSCCCiphertextStream extends CipherOutputStream{
+	SCCAlgorithmParameters param;
+	public AbstractSCCCiphertextStream(OutputStream os, Cipher c, SCCAlgorithmParameters param) {
+		super(os, c);
+		this.param = param;
+	}
+
+}
+
+abstract class AbstractPlaintextContainerStream extends FileOutputStream{
+
+	public AbstractPlaintextContainerStream(File file) throws FileNotFoundException {
+		super(file);
+	}
 }
 
 /**

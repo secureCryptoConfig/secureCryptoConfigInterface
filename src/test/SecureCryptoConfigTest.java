@@ -3,10 +3,18 @@ package test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+
+import javax.crypto.CipherOutputStream;
 
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +23,10 @@ import COSE.HashMessage;
 import COSE.OneKey;
 import COSE.Sign1Message;
 import main.PlaintextContainer;
+import main.PlaintextContainerStream;
+import main.SCCAlgorithmParameters;
 import main.SCCCiphertext;
+import main.SCCCiphertextStream;
 import main.SCCHash;
 import main.SCCKey;
 import main.SCCKeyPair;
@@ -80,19 +91,38 @@ class SecureCryptoConfigTest {
 		assertEquals(true, scc.validateSignature(k, s));
 	}
 
-	// @Test
-	void testFileEncryption() throws CoseException {
+	//@Test
+	void testFileEncryption() throws NoSuchAlgorithmException, CoseException {
 		String filepath = ".\\src\\main\\Test.txt";
-		String fileInput = UseCases.readFile(filepath).replace("\r", "").replace("\n", "").replace(" ", "");
+		String fileInput = UseCases.readFile(filepath).replace("\r", "").replace("\n", "");
 		SCCKey scckey = SCCKey.createKey();
-		SCCCiphertext c = scc.streamEncrypt(scckey, filepath);
-		PlaintextContainer p = scc.streamDecrypt(scckey, c, filepath);
-		String decrypted = p.getPlain().replace("\r", "").replace("\n", "").replace(" ", "");
+		SCCCiphertext c = scc.fileEncrypt(scckey, filepath);
+		PlaintextContainer p = scc.fileDecrypt(scckey, c, filepath);
+		String decrypted = p.getPlain().replace("\r", "").replace("\n", "");
+		System.out.println(fileInput);
+		System.out.println(decrypted);
 		assertEquals(decrypted.equals(fileInput), true);
 	}
 	
-
 	@Test
+	void testFileEncryptionStream() throws NoSuchAlgorithmException, CoseException {
+		File file = new File(".\\src\\main\\Test.txt");
+		SCCKey scckey = SCCKey.createKey();
+		PlaintextContainerStream plainStream;
+		SCCCiphertextStream s = null;
+		try {
+			plainStream = new PlaintextContainerStream(file);
+			s = scc.streamEncrypt(scckey, plainStream);
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		
+		
+	}
+	
+
+	//@Test
 	void testPasswordHash() throws CoseException {
 
 		SCCPasswordHash hashed = scc.passwordHash(plaintextContainer);

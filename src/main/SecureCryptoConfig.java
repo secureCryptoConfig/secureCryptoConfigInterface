@@ -43,31 +43,28 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		// Digital Signature
 		ECDSA_512,
 		// Hash
-		SHA_512, 
-		//asymmetric:
-		RSA_SHA_256, 
-		//PasswordHash
+		SHA_512,
+		// asymmetric:
+		RSA_SHA_256,
+		// PasswordHash
 		PBKDF_SHA_256
 	}
-	
+
 	public SecureCryptoConfig() {
 		SecureCryptoConfig.sccFileName = JSONReader.getLatestSCC(5);
 	}
-	
-	public SecureCryptoConfig(String sccFileName)
-	{
+
+	public SecureCryptoConfig(String sccFileName) {
 		SecureCryptoConfig.sccFileName = sccFileName;
 		System.out.println(sccFileName);
 	}
-	
-	public SecureCryptoConfig(int securityLevel)
-	{
+
+	public SecureCryptoConfig(int securityLevel) {
 		SecureCryptoConfig.sccFileName = JSONReader.getLatestSCC(securityLevel);
 		System.out.println(sccFileName);
 	}
-	
-	public String getSccFile()
-	{
+
+	public String getSccFile() {
 		return SecureCryptoConfig.sccFileName;
 	}
 
@@ -86,7 +83,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			throws CoseException {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
-		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, ".\\src\\main\\" + SecureCryptoConfig.sccFileName);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption,
+				".\\src\\main\\" + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 
@@ -134,14 +132,15 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCCiphertext streamEncrypt(AbstractSCCKey key, String filepath) {
+	public SCCCiphertext fileEncrypt(AbstractSCCKey key, String filepath) throws NoSuchAlgorithmException {
 		// Default Values : AES_GCM_256_128_128
 		int nonceLength = 16;
 		int tagLength = 128;
 		String algo = "AES/GCM/NoPadding";
 
 		ArrayList<String> algorithms = new ArrayList<String>();
-		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, ".\\src\\main\\" + SecureCryptoConfig.sccFileName);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption,
+				".\\src\\main\\" + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 
@@ -171,25 +170,13 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				}
 			}
-			// last round and no corresponding match in Switch case found
-			// take default values for encryption
-			if (i == (algorithms.size() - 1)) {
-				System.out.println("No supported algorithms. Default values are used for encryption!");
-				System.out.println("Used: " + AlgorithmIDEnum.AES_GCM_256_96);
-				return UseCases.fileEncryptWithParams(key, filepath, nonceLength, tagLength, algo);
-			}
+
 		}
-		return null;
+		throw new NoSuchAlgorithmException();
 	}
 
 	@Override
-	public AbstractSCCCiphertext streamReEncrypt(AbstractSCCKey key, String filepath) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public PlaintextContainer streamDecrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext, String filepath) {
+	public PlaintextContainer fileDecrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext, String filepath) {
 		String decryptedCipherText;
 		try {
 
@@ -232,10 +219,12 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext) throws CoseException {
-		
+	public SCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext)
+			throws CoseException {
+
 		ArrayList<String> algorithms = new ArrayList<String>();
-		algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption, ".\\src\\main\\" + SecureCryptoConfig.sccFileName);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption,
+				".\\src\\main\\" + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 
@@ -251,36 +240,34 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				switch (chosenAlgorithmID) {
 				case RSA_SHA_256:
 					return UseCases.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_256, keyPair);
-					/**
-					algo = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
-					return UseCases.asymmetricEncryptWithParams(keyPair, plaintext, algo);
-					**/
 				default:
 					break;
 				}
 			}
-			
+
 		}
 		throw new CoseException("No supported algorithm!");
 	}
 
 	@Override
-	public PlaintextContainer asymmetricDecrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext) throws CoseException {
-		
-			try {
-				AsymMessage msg = (AsymMessage) AsymMessage.DecodeFromBytes(ciphertext.msg);
-				String s = new String(msg.decrypt(keyPair.pair), StandardCharsets.UTF_8);
-				return new PlaintextContainer(s);
-			} catch (CoseException e) {
-				e.printStackTrace();
-				
-			}
-			throw new CoseException("No supported algorithm!");
-	
+	public PlaintextContainer asymmetricDecrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext)
+			throws CoseException {
+
+		try {
+			AsymMessage msg = (AsymMessage) AsymMessage.DecodeFromBytes(ciphertext.msg);
+			String s = new String(msg.decrypt(keyPair.pair), StandardCharsets.UTF_8);
+			return new PlaintextContainer(s);
+		} catch (CoseException e) {
+			e.printStackTrace();
+
+		}
+		throw new CoseException("No supported algorithm!");
+
 	}
 
 	@Override
-	public AbstractSCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext) throws CoseException {
+	public AbstractSCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext)
+			throws CoseException {
 		PlaintextContainer decrypted = asymmetricDecrypt(keyPair, ciphertext);
 		return asymmetricEncrypt(keyPair, decrypted);
 	}
@@ -323,19 +310,19 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	// Hash same plain two times and look if it is the same?
 	@Override
 	public boolean verifyHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException {
-		HashMessage msg = (HashMessage) HashMessage.DecodeFromBytes(hash.getByteArray());	
+		HashMessage msg = (HashMessage) HashMessage.DecodeFromBytes(hash.getByteArray());
 		String s = new String(msg.getHashedContent(), StandardCharsets.UTF_8);
-		
+
 		SCCHash hash1 = hash(plaintext);
-		HashMessage msg1 = (HashMessage) HashMessage.DecodeFromBytes(hash1.getByteArray());	
+		HashMessage msg1 = (HashMessage) HashMessage.DecodeFromBytes(hash1.getByteArray());
 		String s1 = new String(msg1.getHashedContent(), StandardCharsets.UTF_8);
-		
+
 		return s.equals(s1);
 	}
 
 	@Override
 	public SCCSignature sign(OneKey k, PlaintextContainerInterface plaintext) throws CoseException {
-		
+
 		ArrayList<String> algorithms = new ArrayList<String>();
 		// read our Algorithms for symmetric encryption out of JSON
 		algorithms = JSONReader.getAlgos(CryptoUseCase.Signing, ".\\src\\main\\" + SecureCryptoConfig.sccFileName);
@@ -360,7 +347,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		throw new CoseException("No supported algorithm!");
 	}
 
-	//Sign again?
+	// Sign again?
 	@Override
 	public AbstractSCCSignature reSign(OneKey key, PlaintextContainerInterface plaintext) throws CoseException {
 		return sign(key, plaintext);
@@ -383,10 +370,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	@Override
 	public SCCPasswordHash passwordHash(PlaintextContainerInterface password) throws CoseException {
 
-		
 		ArrayList<String> algorithms = new ArrayList<String>();
 		// read our Algorithms for symmetric encryption out of JSON
-		algorithms = JSONReader.getAlgos(CryptoUseCase.PasswordHashing, ".\\src\\main\\" + SecureCryptoConfig.sccFileName);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.PasswordHashing,
+				".\\src\\main\\" + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 			// get first one, later look what to do if first is not validate -> take next
@@ -405,26 +392,82 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 					break;
 				}
 			}
-			
+
 		}
 		throw new CoseException("No supported algorithm!");
 
 	}
 
 	@Override
-	public boolean verifyPassword(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash) throws CoseException {
-		PasswordHashMessage msg = (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(passwordhash.getByteArray());	
+	public boolean verifyPassword(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash)
+			throws CoseException {
+		PasswordHashMessage msg = (PasswordHashMessage) PasswordHashMessage
+				.DecodeFromBytes(passwordhash.getByteArray());
 		CBORObject algX = msg.findAttribute(HeaderKeys.Algorithm);
-        AlgorithmID alg = AlgorithmID.FromCBOR(algX);
-        
-        SCCPasswordHash hash = UseCases.createPasswordHashMessageSalt(password.getPlain(), alg, msg.getSalt());
-        PasswordHashMessage msg1 = (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(hash.getByteArray());	
-		
-        String hash1 = Base64.getEncoder().encodeToString(msg.getHashedContent());
+		AlgorithmID alg = AlgorithmID.FromCBOR(algX);
+
+		SCCPasswordHash hash = UseCases.createPasswordHashMessageSalt(password.getPlain(), alg, msg.getSalt());
+		PasswordHashMessage msg1 = (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(hash.getByteArray());
+
+		String hash1 = Base64.getEncoder().encodeToString(msg.getHashedContent());
 		String hash2 = Base64.getEncoder().encodeToString(msg1.getHashedContent());
-		
+
 		return hash1.equals(hash2);
-		
+
+	}
+
+	@Override
+	public SCCCiphertextStream streamEncrypt(AbstractSCCKey key, AbstractPlaintextContainerStream plaintext) throws NoSuchAlgorithmException {
+		int nonceLength, tagLength;
+		String algo;
+
+		ArrayList<String> algorithms = new ArrayList<String>();
+		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption,
+				".\\src\\main\\" + SecureCryptoConfig.sccFileName);
+
+		for (int i = 0; i < algorithms.size(); i++) {
+
+			// get first one, later look what to do if first is not validate -> take next
+			String sccalgorithmID = algorithms.get(i);
+
+			// TODO mapping from sting to enum:
+
+			if (getEnums().contains(sccalgorithmID)) {
+
+				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+
+				switch (chosenAlgorithmID) {
+				case AES_GCM_256_96:
+					nonceLength = 16;
+					tagLength = 128;
+					algo = "AES/GCM/NoPadding";
+					return UseCases.fileEncryptStream(key, plaintext, nonceLength, tagLength, algo);
+				case AES_GCM_128_96:
+					nonceLength = 32;
+					tagLength = 128;
+					algo = "AES/GCM/NoPadding";
+					return UseCases.fileEncryptStream(key, plaintext, nonceLength, tagLength, algo);
+
+				default:
+					break;
+
+				}
+			}
+
+		}
+		throw new NoSuchAlgorithmException();
+	}
+
+	@Override
+	public AbstractSCCCiphertextStream streamReEncrypt(AbstractSCCKey key, AbstractSCCCiphertextStream ciphertext) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public AbstractPlaintextContainerStream streamDecrypt(AbstractSCCKey key, AbstractSCCCiphertextStream ciphertext) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

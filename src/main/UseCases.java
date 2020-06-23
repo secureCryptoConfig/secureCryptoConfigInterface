@@ -24,29 +24,28 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.GCMParameterSpec;
 import javax.crypto.spec.PBEKeySpec;
 
-
 import COSE.*;
 
 public class UseCases {
 
 	// Method for getting file content. Content needed for comparing file encryption
-		// test
-		public static String readFile(String filepath) {
-			String s = "";
-			try {
-				File file = new File(filepath);
-				BufferedReader br = new BufferedReader(new FileReader(file));
-				String st;
-				while ((st = br.readLine()) != null) {
-					s = s + st + "\n";
-				}
-				br.close();
-				return s;
-			} catch (IOException e) {
-				e.printStackTrace();
+	// test
+	public static String readFile(String filepath) {
+		String s = "";
+		try {
+			File file = new File(filepath);
+			BufferedReader br = new BufferedReader(new FileReader(file));
+			String st;
+			while ((st = br.readLine()) != null) {
+				s = s + st + "\n";
 			}
-			return null;
+			br.close();
+			return s;
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
+		return null;
+	}
 
 	/**
 	 * Generate Nonce with secure Random number generator
@@ -106,15 +105,40 @@ public class UseCases {
 		}
 		return null;
 	}
+
+	public static SCCCiphertextStream fileEncryptStream(AbstractSCCKey key, AbstractPlaintextContainerStream fileOutputStream, int nonceLength,
+			int tagLength, String algo) {
 	
+		Cipher cipher;
+		try {
+			cipher = Cipher.getInstance(algo);
+
+			// GENERATE random nonce (number used once)
+			byte[] nonce = UseCases.generateRandomByteArray(nonceLength);
+			GCMParameterSpec spec = new GCMParameterSpec(tagLength, nonce);
+			cipher.init(Cipher.ENCRYPT_MODE, key.key, spec);
+
+			SCCAlgorithmParameters param = new SCCAlgorithmParameters(nonce, tagLength, algo);
+			SCCCiphertextStream stream = new SCCCiphertextStream(fileOutputStream, cipher, param);
+			return stream;
+			
+			} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
+						| InvalidAlgorithmParameterException e) {
+
+				e.printStackTrace();
+			}
+			return null;
+	}
+
 	public static SCCPasswordHash passwordHashing(PlaintextContainerInterface password, String algo, byte[] salt,
 			int keysize, int iterations) {
 		try {
 			KeySpec spec = new PBEKeySpec(password.getPlain().toCharArray(), salt, iterations, keysize);
 			SecretKeyFactory factory = SecretKeyFactory.getInstance(algo);
 			byte[] hash = factory.generateSecret(spec).getEncoded();
-			//SCCAlgorithmParameters param = new SCCAlgorithmParameters(algo, salt, keysize, iterations);
-			//return new SCCPasswordHash(hash, param);
+			// SCCAlgorithmParameters param = new SCCAlgorithmParameters(algo, salt,
+			// keysize, iterations);
+			// return new SCCPasswordHash(hash, param);
 			return new SCCPasswordHash(hash);
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
 			e.printStackTrace();
@@ -129,7 +153,7 @@ public class UseCases {
 			encrypt0Message.SetContent(plaintext.getBytes());
 
 			encrypt0Message.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
-			
+
 			encrypt0Message.encrypt(key.getEncoded());
 			return new SCCCiphertext(encrypt0Message.EncodeToBytes());
 
@@ -138,14 +162,14 @@ public class UseCases {
 			return null;
 		}
 	}
-	
-	//Cose msg for Hashing
+
+	// Cose msg for Hashing
 	public static SCCHash createHashMessage(String plaintext, AlgorithmID id) {
 		try {
 			HashMessage hashMessage = new HashMessage();
 			hashMessage.SetContent(plaintext.getBytes());
 			hashMessage.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
-		
+
 			hashMessage.hash();
 			return new SCCHash(hashMessage.EncodeToBytes(), null);
 
@@ -154,61 +178,59 @@ public class UseCases {
 			return null;
 		}
 	}
-	
-	
-	//Cose msg for Hashing
-		public static SCCPasswordHash createPasswordHashMessage(String plaintext, AlgorithmID id) {
-			
-			try {
-				PasswordHashMessage m = new PasswordHashMessage();
-				m.SetContent(plaintext.getBytes());
-				m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
-				m.passwordHash();
-				
-				return new SCCPasswordHash(m.EncodeToBytes());
 
-			} catch (CoseException e) {
-				e.printStackTrace();
-				return null;
-			}
-		}
-		
-		public static SCCPasswordHash createPasswordHashMessageSalt(String plaintext, AlgorithmID id, byte[] salt) {
-			try {
-				PasswordHashMessage m = new PasswordHashMessage();
-				m.SetContent(plaintext.getBytes());
-				m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
-				m.passwordHashWithSalt(salt);
-				
-				return new SCCPasswordHash(m.EncodeToBytes());
+	// Cose msg for Hashing
+	public static SCCPasswordHash createPasswordHashMessage(String plaintext, AlgorithmID id) {
 
-			} catch (CoseException e) {
-				e.printStackTrace();
-				return null;
-			}
-		}
-		
-	
-	//Cose msg for Asym
-		public static SCCCiphertext createAsymMessage(PlaintextContainerInterface plaintext, AlgorithmID id, AbstractSCCKeyPair keyPair) {
-			try {
-				AsymMessage m3 = new AsymMessage();
-				m3.SetContent(plaintext.getByteArray());
-				m3.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
-				m3.encrypt(keyPair.pair);
-				return new SCCCiphertext(m3.EncodeToBytes());
+		try {
+			PasswordHashMessage m = new PasswordHashMessage();
+			m.SetContent(plaintext.getBytes());
+			m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
+			m.passwordHash();
 
-			} catch (CoseException e) {
-				e.printStackTrace();
-				return null;
-			}
+			return new SCCPasswordHash(m.EncodeToBytes());
+
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
 		}
-	
+	}
+
+	public static SCCPasswordHash createPasswordHashMessageSalt(String plaintext, AlgorithmID id, byte[] salt) {
+		try {
+			PasswordHashMessage m = new PasswordHashMessage();
+			m.SetContent(plaintext.getBytes());
+			m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
+			m.passwordHashWithSalt(salt);
+
+			return new SCCPasswordHash(m.EncodeToBytes());
+
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	// Cose msg for Asym
+	public static SCCCiphertext createAsymMessage(PlaintextContainerInterface plaintext, AlgorithmID id,
+			AbstractSCCKeyPair keyPair) {
+		try {
+			AsymMessage m3 = new AsymMessage();
+			m3.SetContent(plaintext.getByteArray());
+			m3.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
+			m3.encrypt(keyPair.pair);
+			return new SCCCiphertext(m3.EncodeToBytes());
+
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 	public static PlaintextContainer decodeMessage(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext) {
 		try {
 			Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(sccciphertext.msg);
-			//Encrypt0Message msg = sccciphertext.msg;
+			// Encrypt0Message msg = sccciphertext.msg;
 			String s = new String(msg.decrypt(key.key.getEncoded()), StandardCharsets.UTF_8);
 			return new PlaintextContainer(s);
 		} catch (CoseException e) {
@@ -218,7 +240,6 @@ public class UseCases {
 
 	}
 
-	
 	public static SCCSignature createSignMessage(PlaintextContainerInterface plaintext, OneKey key, AlgorithmID id) {
 		Sign1Message m = new Sign1Message();
 		m.SetContent(plaintext.getByteArray());
@@ -232,7 +253,6 @@ public class UseCases {
 		}
 	}
 
-	
-	//public static SCCPasswordHash passwordHashWithParams()
+	// public static SCCPasswordHash passwordHashWithParams()
 
 }
