@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -106,7 +107,7 @@ public class UseCases {
 		return null;
 	}
 
-	public static SCCCiphertextStream fileEncryptStream(AbstractSCCKey key, AbstractPlaintextContainerStream fileOutputStream, int nonceLength,
+	public static SCCCiphertextOutputStream fileEncryptStream(AbstractSCCKey key, OutputStream outputStream, int nonceLength,
 			int tagLength, String algo) {
 	
 		Cipher cipher;
@@ -119,7 +120,7 @@ public class UseCases {
 			cipher.init(Cipher.ENCRYPT_MODE, key.key, spec);
 
 			SCCAlgorithmParameters param = new SCCAlgorithmParameters(nonce, tagLength, algo);
-			SCCCiphertextStream stream = new SCCCiphertextStream(fileOutputStream, cipher, param);
+			SCCCiphertextOutputStream stream = new SCCCiphertextOutputStream(outputStream, cipher, param);
 			return stream;
 			
 			} catch (NoSuchAlgorithmException | NoSuchPaddingException | InvalidKeyException
@@ -253,6 +254,5 @@ public class UseCases {
 		}
 	}
 
-	// public static SCCPasswordHash passwordHashWithParams()
 
 }

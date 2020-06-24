@@ -4,6 +4,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -33,7 +35,7 @@ import main.JSONReader.CryptoUseCase;
 
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
-	public static String sccFileName;
+	protected static String sccFileName;
 
 	// TODO refactor in separate class?
 	static enum AlgorithmIDEnum {
@@ -124,19 +126,26 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		}
 	}
 
+	
+	
+	
 	@Override
 	public SCCCiphertext symmetricReEncrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext) throws CoseException {
 
 		PlaintextContainer decrypted = symmetricDecrypt(key, ciphertext);
 		return symmetricEncrypt(key, decrypted);
 	}
+	
+	@Override
+	public AbstractSCCCiphertext[] encrypt(AbstractSCCKey[] key, PlaintextContainerInterface plaintext) {
+		
+		return null;
+	}
 
 	@Override
 	public SCCCiphertext fileEncrypt(AbstractSCCKey key, String filepath) throws NoSuchAlgorithmException {
-		// Default Values : AES_GCM_256_128_128
-		int nonceLength = 16;
-		int tagLength = 128;
-		String algo = "AES/GCM/NoPadding";
+		int nonceLength, tagLength;
+		String algo;
 
 		ArrayList<String> algorithms = new ArrayList<String>();
 		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption,
@@ -212,11 +221,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		return null;
 	}
 
-	@Override
-	public AbstractSCCCiphertext[] encrypt(AbstractSCCKey[] key, PlaintextContainerInterface plaintext) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 	@Override
 	public SCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext)
@@ -417,7 +422,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCCiphertextStream streamEncrypt(AbstractSCCKey key, AbstractPlaintextContainerStream plaintext) throws NoSuchAlgorithmException {
+	public SCCCiphertextOutputStream streamEncrypt(AbstractSCCKey key, OutputStream outputstream) throws NoSuchAlgorithmException {
 		int nonceLength, tagLength;
 		String algo;
 
@@ -441,12 +446,12 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 					nonceLength = 16;
 					tagLength = 128;
 					algo = "AES/GCM/NoPadding";
-					return UseCases.fileEncryptStream(key, plaintext, nonceLength, tagLength, algo);
+					return UseCases.fileEncryptStream(key, outputstream, nonceLength, tagLength, algo);
 				case AES_GCM_128_96:
 					nonceLength = 32;
 					tagLength = 128;
 					algo = "AES/GCM/NoPadding";
-					return UseCases.fileEncryptStream(key, plaintext, nonceLength, tagLength, algo);
+					return UseCases.fileEncryptStream(key, outputstream, nonceLength, tagLength, algo);
 
 				default:
 					break;
@@ -459,14 +464,27 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public AbstractSCCCiphertextStream streamReEncrypt(AbstractSCCKey key, AbstractSCCCiphertextStream ciphertext) {
+	public AbstractSCCCiphertextOutputStream streamReEncrypt(AbstractSCCKey key, AbstractSCCCiphertextOutputStream ciphertext) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public AbstractPlaintextContainerStream streamDecrypt(AbstractSCCKey key, AbstractSCCCiphertextStream ciphertext) {
-		// TODO Auto-generated method stub
+	public PlaintextOutputStream streamDecrypt(AbstractSCCKey key, AbstractSCCCiphertextOutputStream ciphertext, InputStream inputStream) {
+		try {
+			
+			Cipher cipher = Cipher.getInstance(ciphertext.param.algo);
+			GCMParameterSpec spec = new GCMParameterSpec(ciphertext.param.tagLength, ciphertext.param.nonce);
+			cipher.init(Cipher.DECRYPT_MODE, key.key, spec);
+
+
+			PlaintextOutputStream plaintextStream = new PlaintextOutputStream(inputStream, cipher);
+			return plaintextStream;
+			
+		} catch (InvalidKeyException | InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchPaddingException e) {
+
+			e.printStackTrace();
+		}
 		return null;
 	}
 

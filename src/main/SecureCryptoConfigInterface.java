@@ -3,11 +3,13 @@ package main;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Cipher;
+import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKey;
 
@@ -26,21 +28,22 @@ abstract interface SecureCryptoConfigInterface {
 
 	public PlaintextContainerInterface symmetricDecrypt(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext)
 			throws CoseException;
+	
+	public AbstractSCCCiphertext[] encrypt(AbstractSCCKey[] key, PlaintextContainerInterface plaintext);
+
 
 	// for file encryption
-	public AbstractSCCCiphertextStream streamEncrypt(AbstractSCCKey key, AbstractPlaintextContainerStream plaintext) throws NoSuchAlgorithmException;
+	public AbstractSCCCiphertextOutputStream streamEncrypt(AbstractSCCKey key, OutputStream outputStream) throws NoSuchAlgorithmException;
 
-	public AbstractSCCCiphertextStream streamReEncrypt(AbstractSCCKey key, AbstractSCCCiphertextStream ciphertext);
+	public AbstractSCCCiphertextOutputStream streamReEncrypt(AbstractSCCKey key, AbstractSCCCiphertextOutputStream ciphertext);
 
-	public AbstractPlaintextContainerStream streamDecrypt(AbstractSCCKey key, AbstractSCCCiphertextStream ciphertext);
+	public AbstractPlaintextOutputStream streamDecrypt(AbstractSCCKey key, AbstractSCCCiphertextOutputStream outputStream, InputStream inputStream);
 
 	// simple File encryption
 	public AbstractSCCCiphertext fileEncrypt(AbstractSCCKey key, String filepath) throws NoSuchAlgorithmException;
 
 	public PlaintextContainerInterface fileDecrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext,
 			String filepath);
-
-	public AbstractSCCCiphertext[] encrypt(AbstractSCCKey[] key, PlaintextContainerInterface plaintext);
 
 	// Asymmetric
 
@@ -236,21 +239,25 @@ abstract class AbstractSCCSignature {
 
 }
 
-abstract class AbstractSCCCiphertextStream extends CipherOutputStream{
+abstract class AbstractSCCCiphertextOutputStream extends CipherOutputStream{
 	SCCAlgorithmParameters param;
-	public AbstractSCCCiphertextStream(OutputStream os, Cipher c, SCCAlgorithmParameters param) {
+	Cipher c;
+	public AbstractSCCCiphertextOutputStream(OutputStream os, Cipher c, SCCAlgorithmParameters param) {
 		super(os, c);
 		this.param = param;
+		this.c = c;
 	}
 
 }
 
-abstract class AbstractPlaintextContainerStream extends FileOutputStream{
+abstract class AbstractPlaintextOutputStream extends CipherInputStream{
 
-	public AbstractPlaintextContainerStream(File file) throws FileNotFoundException {
-		super(file);
+	public AbstractPlaintextOutputStream(InputStream is, Cipher c) {
+		super(is, c);
 	}
+
 }
+
 
 /**
  * abstract class AbstractAlgorithmIdentifier { // named defined in IANA
