@@ -19,30 +19,28 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 		super(pair, algorithm);
 	}
 
-	protected PublicKey getPublic() {
+	@Override
+	PublicKey getPublic() {
 		return this.pair.getPublic();
 	}
 	
-	protected PrivateKey getPrivate() {
+	@Override
+	PrivateKey getPrivate() {
 		return this.pair.getPrivate();
 	}
+	
 
-	/**
-	public static SCCKeyPair createKeyPair(CryptoUseCase useCase) {
-
-		// possible values: DiffieHellman, DSA, RSA
-		
-		if (useCase == CryptoUseCase.AsymmetricEncryption) {
-			return createAsymmetricKey();
-		} else if (useCase == CryptoUseCase.Signing) {
-			return createSigningKey();
-		} else {
-			System.out.println("Not right Method for key creation for your UseCase");
-			return null;
-		}
-
+	@Override
+	String getAlgorithm() {
+		return this.algorithm;
 	}
-	**/
+
+
+	@Override
+	KeyPair getKeyPair() {
+		return this.pair;
+	}
+
 
 	public static SCCKeyPair createAsymmetricKey() {
 		ArrayList<String> algorithms = new ArrayList<String>();
@@ -126,6 +124,5 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 		throw new CoseException("No supported algorithm for key Generation!");
 	}
 
-	
 
 }

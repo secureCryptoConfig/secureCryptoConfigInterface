@@ -100,9 +100,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				switch (chosenAlgorithmID) {
 				case AES_GCM_256_96:
-					return UseCases.createMessage(plaintext.getPlain(), key.key, AlgorithmID.AES_GCM_256);
+					return UseCases.createMessage(plaintext.getString(), key.key, AlgorithmID.AES_GCM_256);
 				case AES_GCM_128_96:
-					return UseCases.createMessage(plaintext.getPlain(), key.key, AlgorithmID.AES_GCM_128);
+					return UseCases.createMessage(plaintext.getString(), key.key, AlgorithmID.AES_GCM_128);
 				default:
 					break;
 
@@ -135,12 +135,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		PlaintextContainer decrypted = symmetricDecrypt(key, ciphertext);
 		return symmetricEncrypt(key, decrypted);
 	}
-	
-	@Override
-	public AbstractSCCCiphertext[] encrypt(AbstractSCCKey[] key, PlaintextContainerInterface plaintext) {
-		
-		return null;
-	}
+
 
 	@Override
 	public SCCCiphertext fileEncrypt(AbstractSCCKey key, String filepath) throws NoSuchAlgorithmException {
@@ -296,7 +291,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				switch (chosenAlgorithmID) {
 				case SHA_512:
-					return UseCases.createHashMessage(plaintext.getPlain(), AlgorithmID.SHA_512);
+					return UseCases.createHashMessage(plaintext.getString(), AlgorithmID.SHA_512);
 				default:
 					break;
 				}
@@ -315,11 +310,11 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	// Hash same plain two times and look if it is the same?
 	@Override
 	public boolean verifyHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException {
-		HashMessage msg = (HashMessage) HashMessage.DecodeFromBytes(hash.getByteArray());
+		HashMessage msg = (HashMessage) HashMessage.DecodeFromBytes(hash.getMessageBytes());
 		String s = new String(msg.getHashedContent(), StandardCharsets.UTF_8);
 
 		SCCHash hash1 = hash(plaintext);
-		HashMessage msg1 = (HashMessage) HashMessage.DecodeFromBytes(hash1.getByteArray());
+		HashMessage msg1 = (HashMessage) HashMessage.DecodeFromBytes(hash1.getMessageBytes());
 		String s1 = new String(msg1.getHashedContent(), StandardCharsets.UTF_8);
 
 		return s.equals(s1);
@@ -392,7 +387,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				switch (chosenAlgorithmID) {
 				case PBKDF_SHA_256:
-					return UseCases.createPasswordHashMessage(password.getPlain(), AlgorithmID.PBKDF_SHA_256);
+					return UseCases.createPasswordHashMessage(password.getString(), AlgorithmID.PBKDF_SHA_256);
 				default:
 					break;
 				}
@@ -407,12 +402,12 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	public boolean verifyPassword(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash)
 			throws CoseException {
 		PasswordHashMessage msg = (PasswordHashMessage) PasswordHashMessage
-				.DecodeFromBytes(passwordhash.getByteArray());
+				.DecodeFromBytes(passwordhash.getMessageBytes());
 		CBORObject algX = msg.findAttribute(HeaderKeys.Algorithm);
 		AlgorithmID alg = AlgorithmID.FromCBOR(algX);
 
-		SCCPasswordHash hash = UseCases.createPasswordHashMessageSalt(password.getPlain(), alg, msg.getSalt());
-		PasswordHashMessage msg1 = (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(hash.getByteArray());
+		SCCPasswordHash hash = UseCases.createPasswordHashMessageSalt(password.getString(), alg, msg.getSalt());
+		PasswordHashMessage msg1 = (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(hash.getMessageBytes());
 
 		String hash1 = Base64.getEncoder().encodeToString(msg.getHashedContent());
 		String hash2 = Base64.getEncoder().encodeToString(msg1.getHashedContent());
@@ -463,11 +458,6 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		throw new NoSuchAlgorithmException();
 	}
 
-	@Override
-	public AbstractSCCCiphertextOutputStream streamReEncrypt(AbstractSCCKey key, AbstractSCCCiphertextOutputStream ciphertext) {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public PlaintextOutputStream streamDecrypt(AbstractSCCKey key, AbstractSCCCiphertextOutputStream ciphertext, InputStream inputStream) {

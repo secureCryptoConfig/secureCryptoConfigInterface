@@ -29,6 +29,7 @@ import COSE.*;
 
 public class UseCases {
 
+	
 	// Method for getting file content. Content needed for comparing file encryption
 	// test
 	public static String readFile(String filepath) {
@@ -134,7 +135,7 @@ public class UseCases {
 	public static SCCPasswordHash passwordHashing(PlaintextContainerInterface password, String algo, byte[] salt,
 			int keysize, int iterations) {
 		try {
-			KeySpec spec = new PBEKeySpec(password.getPlain().toCharArray(), salt, iterations, keysize);
+			KeySpec spec = new PBEKeySpec(password.getString().toCharArray(), salt, iterations, keysize);
 			SecretKeyFactory factory = SecretKeyFactory.getInstance(algo);
 			byte[] hash = factory.generateSecret(spec).getEncoded();
 			// SCCAlgorithmParameters param = new SCCAlgorithmParameters(algo, salt,
@@ -172,7 +173,7 @@ public class UseCases {
 			hashMessage.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 
 			hashMessage.hash();
-			return new SCCHash(hashMessage.EncodeToBytes(), null);
+			return new SCCHash(hashMessage.EncodeToBytes());
 
 		} catch (CoseException e) {
 			e.printStackTrace();
@@ -254,5 +255,6 @@ public class UseCases {
 		}
 	}
 
+	
 
 }

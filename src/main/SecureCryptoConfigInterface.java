@@ -1,25 +1,28 @@
 package main;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 import javax.crypto.Cipher;
 import javax.crypto.CipherInputStream;
 import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKey;
 
-import COSE.CoseException;
+import com.upokecenter.cbor.CBORObject;
 
+import COSE.CoseException;
+import COSE.HashMessage;
 import COSE.OneKey;
+import COSE.PasswordHashMessage;
+import COSE.Sign1Message;
 
 abstract interface SecureCryptoConfigInterface {
+	
 	// Symmetric Encryption
-
 	public AbstractSCCCiphertext symmetricEncrypt(AbstractSCCKey key, PlaintextContainerInterface plaintext)
 			throws CoseException;
 
@@ -29,24 +32,20 @@ abstract interface SecureCryptoConfigInterface {
 	public PlaintextContainerInterface symmetricDecrypt(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext)
 			throws CoseException;
 	
-	public AbstractSCCCiphertext[] encrypt(AbstractSCCKey[] key, PlaintextContainerInterface plaintext);
 
-
-	// for file encryption
+	// File encryption working with Streams
 	public AbstractSCCCiphertextOutputStream streamEncrypt(AbstractSCCKey key, OutputStream outputStream) throws NoSuchAlgorithmException;
-
-	public AbstractSCCCiphertextOutputStream streamReEncrypt(AbstractSCCKey key, AbstractSCCCiphertextOutputStream ciphertext);
 
 	public AbstractPlaintextOutputStream streamDecrypt(AbstractSCCKey key, AbstractSCCCiphertextOutputStream outputStream, InputStream inputStream);
 
-	// simple File encryption
+	// Simple File encryption 
 	public AbstractSCCCiphertext fileEncrypt(AbstractSCCKey key, String filepath) throws NoSuchAlgorithmException;
 
 	public PlaintextContainerInterface fileDecrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext,
 			String filepath);
 
+	
 	// Asymmetric
-
 	public AbstractSCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext)
 			throws CoseException;
 
@@ -56,73 +55,46 @@ abstract interface SecureCryptoConfigInterface {
 	public PlaintextContainerInterface asymmetricDecrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext)
 			throws CoseException;
 
+	
 	// Hashing
-
 	public AbstractSCCHash hash(PlaintextContainerInterface plaintext) throws CoseException;
 
 	public AbstractSCCHash reHash(PlaintextContainerInterface plaintext) throws CoseException;
 
-	// How to verify Hash?
 	public boolean verifyHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException;
 
+	
 	// Digital Signature
-	/**
-	 * public AbstractSCCSignature sign(AbstractSCCKeyPair keyPair,
-	 * PlaintextContainerInterface plaintext);
-	 * 
-	 * public AbstractSCCSignature reSign(AbstractSCCKeyPair keyPair,
-	 * PlaintextContainerInterface plaintext);
-	 * 
-	 * public boolean validateSignature(AbstractSCCKeyPair keyPair,
-	 * AbstractSCCSignature signature);
-	 **/
 	public AbstractSCCSignature sign(OneKey key, PlaintextContainerInterface plaintext) throws CoseException;
 
-	// same as sign?
 	public AbstractSCCSignature reSign(OneKey key, PlaintextContainerInterface plaintext) throws CoseException;
 
 	public boolean validateSignature(OneKey key, AbstractSCCSignature signature);
 
 	// Password Hashing
-
 	public AbstractSCCPasswordHash passwordHash(PlaintextContainerInterface password) throws CoseException;
 
 	public boolean verifyPassword(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash)
 			throws CoseException;
 
-	// TODO methods for key generation? Returning of SCCKey?
 
 }
 
 abstract interface PlaintextContainerInterface {
 
 	abstract byte[] getByteArray();
+	abstract String getString();
+	
+	abstract boolean verifyHash(SCCHash hash);
 
-	abstract String getPlain();
-
-	boolean verifyHash(AbstractSCCHash scchash);
 }
 
-/**
- * abstract interface AbstractPlaintextContainerStream<T> { public Stream<T>
- * getPlaintextStream(); }
- * 
- * abstract class AbstractSCCCiphertextStream implements Stream<SCCCiphertext>{
- * 
- * }
- **/
 
+//currently only needed for file en/decryption (no COSE support)
 abstract class AbstractSCCAlgorithmParameters {
 	byte[] nonce;
 	String algo;
-	PlaintextContainerInterface plain;
-	byte[] salt;
-	int keysize, iterations, tagLength;
-	OneKey k;
-
-	protected AbstractSCCAlgorithmParameters(OneKey k) {
-		this.k = k;
-	}
+	int tagLength;
 
 	protected AbstractSCCAlgorithmParameters(byte[] nonce, int tag, String algo) {
 		this.nonce = nonce;
@@ -130,30 +102,15 @@ abstract class AbstractSCCAlgorithmParameters {
 		this.algo = algo;
 	}
 
-	protected AbstractSCCAlgorithmParameters(String algo) {
-		this.algo = algo;
-	}
-
-	protected AbstractSCCAlgorithmParameters(String algo, PlaintextContainerInterface plain) {
-		this.algo = algo;
-		this.plain = plain;
-	}
-
-	protected AbstractSCCAlgorithmParameters(String algo, byte[] salt, int keysize, int iterations) {
-		this.algo = algo;
-		this.salt = salt;
-		this.keysize = keysize;
-		this.iterations = iterations;
-	}
-
 }
 
 abstract class AbstractSCCCiphertext {
-
+	
 	AbstractSCCAlgorithmParameters parameters;
 	byte[] ciphertext;
 	byte[] msg;
 
+	//only for file encryption (no COSE support)
 	public AbstractSCCCiphertext(byte[] ciphertext, AbstractSCCAlgorithmParameters parameters) {
 		this.ciphertext = ciphertext;
 		this.parameters = parameters;
@@ -163,13 +120,16 @@ abstract class AbstractSCCCiphertext {
 		this.msg = msg;
 	}
 
-	abstract String getCiphertext();
+	abstract byte[] getMessageBytes();
+	abstract CBORObject getAlgorithmIdentifier();
+	
+	abstract String getPlain();
+	abstract PlaintextContainer getAsymmetricCipher();
+	abstract PlaintextContainer getSymmetricCipher();
 
-	abstract byte[] getCipherBytes();
-	// abstract CBORObject getAlgorithmIdentifier();
-
-	@Override
-	public abstract String toString();
+	abstract PlaintextContainer symmetricDecrypt(SCCKey key);
+	abstract PlaintextContainer asymmetricDecrypt(SCCKeyPair keyPair);
+	
 
 }
 
@@ -184,11 +144,8 @@ abstract class AbstractSCCKey {
 	}
 
 	abstract String getAlgorithm();
+	abstract SecretKey getSecretKey();
 
-	abstract SecretKey getKey();
-
-	// as static method in class
-	// abstract AbstractSCCKey createKey(byte[] bytes);
 
 }
 
@@ -200,28 +157,36 @@ abstract class AbstractSCCKeyPair {
 		this.algorithm = algorithm;
 		this.pair = pair;
 	}
+	
+	abstract String getAlgorithm();
+	abstract KeyPair getKeyPair();
+	abstract PrivateKey getPrivate();
+	abstract PublicKey getPublic();
 
 }
 
 abstract class AbstractSCCHash {
-	abstract boolean verify(PlaintextContainer plaintext);
+	
+	abstract boolean verifyHash(PlaintextContainer plain);
 
-	@Override
-	public abstract String toString();
-
-	abstract String getAlgo();
-
-	abstract byte[] getByteArray();
+	abstract byte[] getMessageBytes();
+	abstract HashMessage convertByteToMsg();
+	abstract CBORObject getAlgorithmIdentifier();
+	
+	abstract String getPlain();
+	abstract PlaintextContainer getHashedContent();
 
 }
 
 abstract class AbstractSCCPasswordHash {
-	abstract boolean verify(PlaintextContainer plaintext);
+	abstract boolean verifyHash(PlaintextContainer password);
 
-	@Override
-	public abstract String toString();
-
-	abstract byte[] getByteArray();
+	abstract byte[] getMessageBytes();
+	abstract PasswordHashMessage convertByteToMsg();
+	abstract CBORObject getAlgorithmIdentifier();
+	
+	abstract String getPlain();
+	abstract PlaintextContainer getHashedContent();
 
 }
 
@@ -232,10 +197,14 @@ abstract class AbstractSCCSignature {
 		this.signatureMsg = signatureMsg;
 	}
 
-	@Override
-	public abstract String toString();
-
-	abstract byte[] getSignatureMsg();
+	abstract byte[] getMessageBytes();
+	abstract Sign1Message convertByteToMsg();
+	abstract CBORObject getAlgorithmIdentifier();
+	
+	abstract boolean validateSignature(OneKey key);
+	
+	abstract String getPlain();
+	abstract PlaintextContainer getSignature();
 
 }
 
@@ -258,8 +227,3 @@ abstract class AbstractPlaintextOutputStream extends CipherInputStream{
 
 }
 
-
-/**
- * abstract class AbstractAlgorithmIdentifier { // named defined in IANA
- * registry enum AlgorithmID { AEAD_AES_256_GCM, AEAD_AES_512_GCM, SHA3_512, } }
- **/

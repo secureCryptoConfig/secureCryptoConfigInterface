@@ -2,39 +2,69 @@ package main;
 
 import java.util.Base64;
 
+import com.upokecenter.cbor.CBORObject;
+
+import COSE.CoseException;
+import COSE.HashMessage;
+import COSE.HeaderKeys;
+
 public class SCCHash extends AbstractSCCHash{
 
-	byte[] hash;
-	SCCAlgorithmParameters param;
+	SecureCryptoConfig scc = new SecureCryptoConfig();
+	byte[] hashMsg;
 	
-	public SCCHash(byte[] hash, SCCAlgorithmParameters param)
+	public SCCHash(byte[] hashMsg)
 	{
-		this.hash = hash;
-		this.param = param;
+		this.hashMsg = hashMsg;
 	}
 	
 	@Override
-	boolean verify(PlaintextContainer plaintext) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean verifyHash(PlaintextContainer plain) {
+		try {
+			return scc.verifyHash(plain, this);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 
 	@Override
-	public String toString() {
-		return Base64.getEncoder().encodeToString(this.hash);
+	public byte[] getMessageBytes() {
+		return this.hashMsg;
 	}
-	
+
 	@Override
-	public String getAlgo()
-	{
-		
-		return this.param.algo;
+	public CBORObject getAlgorithmIdentifier() {
+		HashMessage msg = convertByteToMsg();
+		CBORObject obj = msg.findAttribute(HeaderKeys.Algorithm);
+		return obj;
 	}
-	
+
 	@Override
-	public byte[] getByteArray()
-	{
-		
-		return this.hash;
+	public String getPlain() {
+		HashMessage m = convertByteToMsg();
+		return Base64.getEncoder().encodeToString(m.GetContent());
+	}
+
+	@Override
+	public PlaintextContainer getHashedContent() {
+		try {
+			HashMessage m = convertByteToMsg();
+			return new PlaintextContainer(Base64.getEncoder().encodeToString(m.getHashedContent()));
+
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public HashMessage convertByteToMsg() {
+		try {
+			return (HashMessage) HashMessage.DecodeFromBytes(this.hashMsg);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

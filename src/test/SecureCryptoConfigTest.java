@@ -44,7 +44,7 @@ class SecureCryptoConfigTest {
 		SCCCiphertext sccciphertext = scc.symmetricEncrypt(scckey, plaintextContainer);
 		// String encryptedPlaintext = sccciphertext.toString();
 		PlaintextContainer plain = scc.symmetricDecrypt(scckey, sccciphertext);
-		String decrypted = plain.getPlain();
+		String decrypted = plain.getString();
 		assertEquals(inputPlaintext, decrypted);
 
 	}
@@ -53,10 +53,10 @@ class SecureCryptoConfigTest {
 	// @Test
 	void testHashing() throws CoseException {
 		SCCHash hashed = scc.hash(plaintextContainer);
-		HashMessage msg = (HashMessage) HashMessage.DecodeFromBytes(hashed.getByteArray());
+		HashMessage msg = (HashMessage) HashMessage.DecodeFromBytes(hashed.getMessageBytes());
 		String s = Base64.getEncoder().encodeToString(msg.getHashedContent());
 		SCCHash hashed1 = scc.hash(plaintextContainer);
-		HashMessage msg1 = (HashMessage) HashMessage.DecodeFromBytes(hashed1.getByteArray());
+		HashMessage msg1 = (HashMessage) HashMessage.DecodeFromBytes(hashed1.getMessageBytes());
 		String s1 = Base64.getEncoder().encodeToString(msg1.getHashedContent());
 		assertEquals(s, s1);
 
@@ -68,7 +68,7 @@ class SecureCryptoConfigTest {
 
 		SCCCiphertext encrypted = scc.asymmetricEncrypt(pair, plaintextContainer);
 		PlaintextContainer decrypted = scc.asymmetricDecrypt(pair, encrypted);
-		assertEquals(inputPlaintext, decrypted.getPlain());
+		assertEquals(inputPlaintext, decrypted.getString());
 
 	}
 
@@ -76,7 +76,7 @@ class SecureCryptoConfigTest {
 	void testSCCSignature() throws CoseException {
 		OneKey k = SCCKeyPair.createSigningKey();
 		SCCSignature s = scc.sign(k, plaintextContainer);
-		Sign1Message msg = (Sign1Message) Sign1Message.DecodeFromBytes(s.getSignatureMsg());
+		Sign1Message msg = (Sign1Message) Sign1Message.DecodeFromBytes(s.getMessageBytes());
 		String signature = Base64.getEncoder().encodeToString(msg.getSignature());
 		System.out.println(signature);
 
@@ -89,7 +89,7 @@ class SecureCryptoConfigTest {
 		SCCKey scckey = SCCKey.createKey();
 		SCCCiphertext c = scc.fileEncrypt(scckey, filepath);
 		PlaintextContainer p = scc.fileDecrypt(scckey, c, filepath);
-		String decrypted = p.getPlain().replace("\r", "").replace("\n", "");
+		String decrypted = p.getString().replace("\r", "").replace("\n", "");
 		System.out.println(fileInput);
 		System.out.println(decrypted);
 		assertEquals(decrypted.equals(fileInput), true);

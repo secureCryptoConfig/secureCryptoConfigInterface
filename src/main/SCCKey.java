@@ -21,17 +21,14 @@ public class SCCKey extends main.AbstractSCCKey {
 		super(key, algorithm);
 	}
 
-	/**
-	 * protected SCCKey(byte[] key, String algorithm) { super(key, algorithm); //
-	 * TODO Auto-generated constructor stub }
-	 **/
+
 	@Override
-	public SecretKey getKey() {
+	public SecretKey getSecretKey() {
 		return this.key;
 	}
 	
 	@Override
-	String getAlgorithm() {
+	public String getAlgorithm() {
 		return this.algorithm;
 	}
 
@@ -112,7 +109,7 @@ public class SCCKey extends main.AbstractSCCKey {
 			byte[] salt = UseCases.generateRandomByteArray(saltLength);
 
 			SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(algo);
-			KeySpec passwordBasedEncryptionKeySpec = new PBEKeySpec(password.getPlain().toCharArray(), salt, iterations,
+			KeySpec passwordBasedEncryptionKeySpec = new PBEKeySpec(password.getString().toCharArray(), salt, iterations,
 					keysize);
 			SecretKey secretKeyFromPBKDF2 = secretKeyFactory.generateSecret(passwordBasedEncryptionKeySpec);
 			SecretKey key = new SecretKeySpec(secretKeyFromPBKDF2.getEncoded(), keyAlgo);
