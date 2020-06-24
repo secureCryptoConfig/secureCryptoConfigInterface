@@ -32,7 +32,7 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	}
 
 	@Override
-	public PlaintextContainer getSymmetricCipher() {
+	public PlaintextContainer getAsymmetricCipher() {
 		try {
 			AsymMessage m = (AsymMessage) AsymMessage.DecodeFromBytes(this.msg);
 			return new PlaintextContainer(Base64.getEncoder().encodeToString(m.getEncryptedContent()));
@@ -45,7 +45,7 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	}
 
 	@Override
-	public PlaintextContainer getAsymmetricCipher() {
+	public PlaintextContainer getSymmetricCipher() {
 		try {
 			Encrypt0Message m = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(this.msg);
 			return new PlaintextContainer(Base64.getEncoder().encodeToString(m.getEncryptedContent()));

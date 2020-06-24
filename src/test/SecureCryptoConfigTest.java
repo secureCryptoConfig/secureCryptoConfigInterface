@@ -9,12 +9,9 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.security.NoSuchAlgorithmException;
-import java.util.Base64;
-
 import org.junit.jupiter.api.Test;
 
 import COSE.CoseException;
-import COSE.HashMessage;
 import COSE.OneKey;
 import COSE.Sign1Message;
 import main.PlaintextContainer;
@@ -36,66 +33,95 @@ class SecureCryptoConfigTest {
 	PlaintextContainer plaintextContainer = new PlaintextContainer(inputPlaintext);
 	String filepath = ".\\src\\main\\Test.txt";
 
-	// @Test
+	@Test
 	void testSCCsymmetricEncryption() throws CoseException {
-		PlaintextContainer p = new PlaintextContainer("Hello World");
-		SCCKey scckey = SCCKey.createKey(p);
+		
+		//Key creation with Password
+		PlaintextContainer password = new PlaintextContainer("Hello World");
+		SCCKey scckey = SCCKey.createKey(password);
+		
+		//Key creation without a password 
 		// SCCKey scckey = SCCKey.createKey();
+		
 		SCCCiphertext sccciphertext = scc.symmetricEncrypt(scckey, plaintextContainer);
-		// String encryptedPlaintext = sccciphertext.toString();
+		
 		PlaintextContainer plain = scc.symmetricDecrypt(scckey, sccciphertext);
-		String decrypted = plain.getString();
-		assertEquals(inputPlaintext, decrypted);
+		//PlaintextContainer plain = sccciphertext.symmetricDecrypt(scckey);
+	
+		assertEquals(inputPlaintext, plain.getString());
 
 	}
 
-	// Test for Hashing / how to test?
-	// @Test
+	// Test for Hashing -> hash two times same plain
+	//@Test
 	void testHashing() throws CoseException {
+		
 		SCCHash hashed = scc.hash(plaintextContainer);
-		HashMessage msg = (HashMessage) HashMessage.DecodeFromBytes(hashed.getMessageBytes());
-		String s = Base64.getEncoder().encodeToString(msg.getHashedContent());
+		String hash = hashed.getHashedContent().getString();
+		
 		SCCHash hashed1 = scc.hash(plaintextContainer);
-		HashMessage msg1 = (HashMessage) HashMessage.DecodeFromBytes(hashed1.getMessageBytes());
-		String s1 = Base64.getEncoder().encodeToString(msg1.getHashedContent());
-		assertEquals(s, s1);
+		String hash2 = hashed1.getHashedContent().getString();
+		
+		assertEquals(hash, hash2);
 
 	}
 
-	// @Test
+	//@Test
 	void testSCCasymmetricEncryption() throws CoseException {
+		
 		SCCKeyPair pair = SCCKeyPair.createAsymmetricKey();
 
 		SCCCiphertext encrypted = scc.asymmetricEncrypt(pair, plaintextContainer);
 		PlaintextContainer decrypted = scc.asymmetricDecrypt(pair, encrypted);
+		//PlaintextContainer decrypted = encrypted.asymmetricDecrypt(pair);
+		
 		assertEquals(inputPlaintext, decrypted.getString());
 
 	}
 
-	// @Test
+	//@Test
 	void testSCCSignature() throws CoseException {
 		OneKey k = SCCKeyPair.createSigningKey();
 		SCCSignature s = scc.sign(k, plaintextContainer);
-		Sign1Message msg = (Sign1Message) Sign1Message.DecodeFromBytes(s.getMessageBytes());
-		String signature = Base64.getEncoder().encodeToString(msg.getSignature());
-		System.out.println(signature);
+		//Sign1Message msg = s.convertByteToMsg();
+		//String signature = s.getSignature().getString();
+		
+		boolean result = scc.validateSignature(k, s);
+		//boolean result = s.validateSignature(k);
 
-		assertEquals(true, scc.validateSignature(k, s));
+		assertEquals(true, result);
 	}
 
-	// @Test
+
+	//@Test
+	void testPasswordHash() throws CoseException {
+
+		SCCPasswordHash hashed = scc.passwordHash(plaintextContainer);
+
+		//String hash = hashed.getHashedContent().getString();
+
+		boolean result = scc.verifyPassword(plaintextContainer, hashed);
+		//boolean result = hashed.verifyHash(plaintextContainer);
+		
+		assertEquals(result, true);
+
+	}
+	
+	//@Test
 	void testFileEncryption() throws NoSuchAlgorithmException, CoseException {
+		//retrieve content of file for encryption for later comparison
 		String fileInput = UseCases.readFile(filepath).replace("\r", "").replace("\n", "");
+		
 		SCCKey scckey = SCCKey.createKey();
 		SCCCiphertext c = scc.fileEncrypt(scckey, filepath);
 		PlaintextContainer p = scc.fileDecrypt(scckey, c, filepath);
 		String decrypted = p.getString().replace("\r", "").replace("\n", "");
-		System.out.println(fileInput);
-		System.out.println(decrypted);
+		
 		assertEquals(decrypted.equals(fileInput), true);
 	}
 
-	@Test
+	
+	//@Test
 	void testFileStream() throws NoSuchAlgorithmException, CoseException {
 		File file = new File(filepath);
 		SCCKey scckey = SCCKey.createKey();
@@ -110,18 +136,6 @@ class SecureCryptoConfigTest {
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
-	}
-
-	// @Test
-	void testPasswordHash() throws CoseException {
-
-		SCCPasswordHash hashed = scc.passwordHash(plaintextContainer);
-		// PasswordHashMessage msg = (PasswordHashMessage)
-		// PasswordHashMessage.DecodeFromBytes(hashed.getByteArray());
-		// String s = new String(msg.GetContent(), StandardCharsets.UTF_8);
-
-		assertEquals(scc.verifyPassword(plaintextContainer, hashed), true);
-
 	}
 
 }

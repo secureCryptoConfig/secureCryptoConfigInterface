@@ -266,7 +266,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public AbstractSCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext)
+	public SCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext)
 			throws CoseException {
 		PlaintextContainer decrypted = asymmetricDecrypt(keyPair, ciphertext);
 		return asymmetricEncrypt(keyPair, decrypted);
@@ -301,21 +301,19 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		throw new CoseException("No supported algorithm!");
 	}
 
-	// Einfach nochmal hashen?
+	// Hash again
 	@Override
 	public AbstractSCCHash reHash(PlaintextContainerInterface plaintext) throws CoseException {
 		return hash(plaintext);
 	}
 
-	// Hash same plain two times and look if it is the same?
+	// Hash same plain two times and look if it is the same
 	@Override
 	public boolean verifyHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException {
-		HashMessage msg = (HashMessage) HashMessage.DecodeFromBytes(hash.getMessageBytes());
-		String s = new String(msg.getHashedContent(), StandardCharsets.UTF_8);
+		String s = hash.getHashedContent().getString();
 
 		SCCHash hash1 = hash(plaintext);
-		HashMessage msg1 = (HashMessage) HashMessage.DecodeFromBytes(hash1.getMessageBytes());
-		String s1 = new String(msg1.getHashedContent(), StandardCharsets.UTF_8);
+		String s1 = hash1.getHashedContent().getString();
 
 		return s.equals(s1);
 	}
@@ -349,7 +347,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	// Sign again?
 	@Override
-	public AbstractSCCSignature reSign(OneKey key, PlaintextContainerInterface plaintext) throws CoseException {
+	public SCCSignature reSign(OneKey key, PlaintextContainerInterface plaintext) throws CoseException {
 		return sign(key, plaintext);
 	}
 
@@ -357,7 +355,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	public boolean validateSignature(OneKey key, AbstractSCCSignature signature) {
 
 		try {
-			Sign1Message msg = (Sign1Message) Sign1Message.DecodeFromBytes(signature.signatureMsg);
+			Sign1Message msg = signature.convertByteToMsg();
 			return msg.validate(key);
 
 		} catch (CoseException e) {
