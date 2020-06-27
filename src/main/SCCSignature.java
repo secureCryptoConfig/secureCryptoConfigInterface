@@ -1,13 +1,10 @@
 package main;
 
-import java.util.Base64;
-
 import com.upokecenter.cbor.CBORObject;
 
 import COSE.AlgorithmID;
 import COSE.CoseException;
 import COSE.HeaderKeys;
-import COSE.OneKey;
 import COSE.Sign1Message;
 
 public class SCCSignature extends AbstractSCCSignature{

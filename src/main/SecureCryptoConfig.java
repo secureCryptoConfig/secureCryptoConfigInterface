@@ -1,23 +1,12 @@
 package main;
 
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
-import java.security.InvalidAlgorithmParameterException;
-import java.security.InvalidKeyException;
-
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashSet;
-
-import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.GCMParameterSpec;
 
 import com.upokecenter.cbor.CBORObject;
 
@@ -134,9 +123,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	@Override
 	public SCCCiphertext fileEncrypt(AbstractSCCKey key, String filepath) throws NoSuchAlgorithmException {
-		int nonceLength, tagLength;
-		String algo;
-
+		
 		ArrayList<String> algorithms = new ArrayList<String>();
 		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption,
 				".\\src\\main\\" + SecureCryptoConfig.sccFileName);
@@ -154,16 +141,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				switch (chosenAlgorithmID) {
 				case AES_GCM_256_96:
-					nonceLength = 16;
-					tagLength = 128;
-					algo = "AES/GCM/NoPadding";
-					return UseCases.fileEncryptWithParams(key, filepath, nonceLength, tagLength, algo);
+					return UseCases.fileEncryptWithParams(key, filepath, AlgorithmID.AES_GCM_256);
 				case AES_GCM_128_96:
-					nonceLength = 32;
-					tagLength = 128;
-					algo = "AES/GCM/NoPadding";
-					return UseCases.fileEncryptWithParams(key, filepath, nonceLength, tagLength, algo);
-
+					return UseCases.fileEncryptWithParams(key, filepath, AlgorithmID.AES_GCM_256);
 				default:
 					break;
 
@@ -173,37 +153,22 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		}
 		throw new NoSuchAlgorithmException();
 	}
-
+	
 	@Override
 	public PlaintextContainer fileDecrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext, String filepath) {
 		try {
-
-			Cipher cipher = Cipher.getInstance(ciphertext.parameters.algo);
-			GCMParameterSpec spec = new GCMParameterSpec(ciphertext.parameters.tagLength, ciphertext.parameters.nonce);
-			cipher.init(Cipher.DECRYPT_MODE, key.getSecretKey(), spec);
-
-			FileInputStream fileInputStream = new FileInputStream(filepath);
-			CipherInputStream cipherInputStream = new CipherInputStream(fileInputStream, cipher);
-			ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-
-			byte[] buffer = new byte[8192];
-			int nread;
-			while ((nread = cipherInputStream.read(buffer)) > 0) {
-				byteArrayOutputStream.write(buffer, 0, nread);
-			}
+			Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(ciphertext.msg);
+			// Encrypt0Message msg = sccciphertext.msg;
+			byte[] decrypted = msg.decrypt(key.getByteArray());
+			PlaintextContainer p = new PlaintextContainer(decrypted);
+			
 			FileOutputStream fileOutputStream = new FileOutputStream(filepath);
-			fileOutputStream.write(buffer);
+			fileOutputStream.write(decrypted);
 
 			fileOutputStream.close();
-			byteArrayOutputStream.flush();
-			cipherInputStream.close();
-
 			
-			PlaintextContainer p = new PlaintextContainer(byteArrayOutputStream.toByteArray());
 			return p;
-		} catch (NoSuchAlgorithmException | NoSuchPaddingException | IOException | InvalidKeyException
-				| InvalidAlgorithmParameterException e) {
-
+		} catch (IOException | CoseException e) {
 			e.printStackTrace();
 		}
 		return null;
@@ -409,9 +374,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCCiphertextOutputStream streamEncrypt(AbstractSCCKey key, OutputStream outputstream) throws NoSuchAlgorithmException {
-		int nonceLength, tagLength;
-		String algo;
+	public SCCCiphertextOutputStream streamEncrypt(AbstractSCCKey key, InputStream inputStream) throws NoSuchAlgorithmException {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
 		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption,
@@ -430,15 +393,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				switch (chosenAlgorithmID) {
 				case AES_GCM_256_96:
-					nonceLength = 16;
-					tagLength = 128;
-					algo = "AES/GCM/NoPadding";
-					return UseCases.fileEncryptStream(key, outputstream, nonceLength, tagLength, algo);
+					return UseCases.fileEncryptStream(key, AlgorithmID.AES_GCM_256, inputStream);
 				case AES_GCM_128_96:
-					nonceLength = 32;
-					tagLength = 128;
-					algo = "AES/GCM/NoPadding";
-					return UseCases.fileEncryptStream(key, outputstream, nonceLength, tagLength, algo);
+					return UseCases.fileEncryptStream(key, AlgorithmID.AES_GCM_128, inputStream);
 
 				default:
 					break;
@@ -451,6 +408,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 
+/**
 	@Override
 	public PlaintextOutputStream streamDecrypt(AbstractSCCKey key, AbstractSCCCiphertextOutputStream ciphertext, InputStream inputStream) {
 		try {
@@ -469,5 +427,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		}
 		return null;
 	}
+	**/
 
 }
+

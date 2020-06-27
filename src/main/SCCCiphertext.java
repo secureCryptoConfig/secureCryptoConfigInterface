@@ -1,13 +1,9 @@
 package main;
 
-import java.util.Base64;
-
 import com.upokecenter.cbor.CBORObject;
 
 import COSE.AlgorithmID;
-import COSE.AsymMessage;
 import COSE.CoseException;
-import COSE.Encrypt0Message;
 import COSE.HeaderKeys;
 import COSE.Message;
 
@@ -55,11 +51,6 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	@Override
 	public PlaintextContainerInterface getPlain() {
 		return this.plain;
-	}
-
-	// Only necessary for file encrypt (no COSE support)
-	public SCCCiphertext(byte[] ciphertext, AbstractSCCAlgorithmParameters parameters) {
-		super(ciphertext, parameters);
 	}
 
 

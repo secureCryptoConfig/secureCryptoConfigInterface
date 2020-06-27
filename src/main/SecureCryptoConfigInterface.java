@@ -1,23 +1,17 @@
 package main;
 
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
-import javax.crypto.Cipher;
-import javax.crypto.CipherInputStream;
-import javax.crypto.CipherOutputStream;
 import javax.crypto.SecretKey;
-
-import com.upokecenter.cbor.CBORObject;
 
 import COSE.AlgorithmID;
 import COSE.CoseException;
-import COSE.Encrypt0Message;
 import COSE.HashMessage;
 import COSE.Message;
 import COSE.PasswordHashMessage;
@@ -36,11 +30,11 @@ abstract interface SecureCryptoConfigInterface {
 			throws CoseException;
 
 	// File encryption working with Streams
-	public AbstractSCCCiphertextOutputStream streamEncrypt(AbstractSCCKey key, OutputStream outputStream)
+	public AbstractSCCCiphertextOutputStream streamEncrypt(AbstractSCCKey key, InputStream inputStream)
 			throws NoSuchAlgorithmException;
 
-	public AbstractPlaintextOutputStream streamDecrypt(AbstractSCCKey key,
-			AbstractSCCCiphertextOutputStream outputStream, InputStream inputStream);
+	// public AbstractPlaintextOutputStream streamDecrypt(AbstractSCCKey key,
+	// AbstractSCCCiphertextOutputStream outputStream, InputStream inputStream);
 
 	// Simple File encryption
 	public AbstractSCCCiphertext fileEncrypt(AbstractSCCKey key, String filepath) throws NoSuchAlgorithmException;
@@ -82,7 +76,7 @@ abstract interface SecureCryptoConfigInterface {
 
 }
 
- abstract interface PlaintextContainerInterface {
+abstract interface PlaintextContainerInterface {
 
 	abstract byte[] getByteArray();
 
@@ -94,34 +88,14 @@ abstract interface SecureCryptoConfigInterface {
 
 }
 
-//currently only needed for file en/decryption (no COSE support)
-abstract class AbstractSCCAlgorithmParameters {
-	byte[] nonce;
-	String algo;
-	int tagLength;
-
-	protected AbstractSCCAlgorithmParameters(byte[] nonce, int tag, String algo) {
-		this.nonce = nonce;
-		this.tagLength = tag;
-		this.algo = algo;
-	}
-
-}
 
 abstract class AbstractSCCCiphertext {
-
-	AbstractSCCAlgorithmParameters parameters;
+	
 	byte[] cipher;
 	byte[] msg;
 	PlaintextContainerInterface plain;
 	AbstractSCCKey key;
 	AbstractSCCKeyPair keyPair;
-
-	// only for file encryption (no COSE support)
-	public AbstractSCCCiphertext(byte[] cipher, AbstractSCCAlgorithmParameters parameters) {
-		this.cipher = cipher;
-		this.parameters = parameters;
-	}
 
 	public AbstractSCCCiphertext(PlaintextContainerInterface plain, byte[] cipher, AbstractSCCKey key, byte[] msg) {
 		this.plain = plain;
@@ -129,8 +103,9 @@ abstract class AbstractSCCCiphertext {
 		this.key = key;
 		this.msg = msg;
 	}
-	
-	public AbstractSCCCiphertext(PlaintextContainerInterface plain, byte[] cipher, AbstractSCCKeyPair keyPair, byte[] msg) {
+
+	public AbstractSCCCiphertext(PlaintextContainerInterface plain, byte[] cipher, AbstractSCCKeyPair keyPair,
+			byte[] msg) {
 		this.plain = plain;
 		this.cipher = cipher;
 		this.keyPair = keyPair;
@@ -138,6 +113,7 @@ abstract class AbstractSCCCiphertext {
 	}
 
 	abstract byte[] getMessageBytes();
+
 	abstract Message convertByteToMsg();
 
 	abstract AlgorithmID getAlgorithmIdentifier() throws CoseException;
@@ -145,8 +121,9 @@ abstract class AbstractSCCCiphertext {
 	abstract PlaintextContainerInterface getPlain();
 
 	abstract byte[] getCipherBytes();
-	
+
 	abstract PlaintextContainer asymmetricDecrypt(SCCKeyPair keyPair);
+
 	abstract PlaintextContainer symmetricDecrypt(SCCKey key);
 
 }
@@ -244,22 +221,16 @@ abstract class AbstractSCCSignature {
 
 }
 
-abstract class AbstractSCCCiphertextOutputStream extends CipherOutputStream {
-	SCCAlgorithmParameters param;
-	Cipher c;
+abstract class AbstractSCCCiphertextOutputStream {
+	
+	abstract ByteArrayOutputStream getStream();
 
-	public AbstractSCCCiphertextOutputStream(OutputStream os, Cipher c, SCCAlgorithmParameters param) {
-		super(os, c);
-		this.param = param;
-		this.c = c;
-	}
+	abstract String getEncryptedContent();
+
+	abstract byte[] getEncryptedBytes();
 
 }
 
-abstract class AbstractPlaintextOutputStream extends CipherInputStream {
-
-	public AbstractPlaintextOutputStream(InputStream is, Cipher c) {
-		super(is, c);
-	}
+abstract class AbstractPlaintextOutputStream {
 
 }
