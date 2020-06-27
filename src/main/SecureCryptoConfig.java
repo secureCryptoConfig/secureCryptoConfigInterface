@@ -248,7 +248,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		try {
 			AsymMessage msg = (AsymMessage) AsymMessage.DecodeFromBytes(ciphertext.msg);
-			return new PlaintextContainer(msg.decrypt(keyPair.pair));
+			return new PlaintextContainer(msg.decrypt(keyPair.getKeyPair()));
 		} catch (CoseException e) {
 			e.printStackTrace();
 

@@ -13,8 +13,6 @@ import java.security.NoSuchAlgorithmException;
 import org.junit.jupiter.api.Test;
 
 import COSE.CoseException;
-import COSE.OneKey;
-import COSE.Sign1Message;
 import main.PlaintextContainer;
 import main.PlaintextOutputStream;
 import main.SCCCiphertext;
@@ -22,6 +20,7 @@ import main.SCCCiphertextOutputStream;
 import main.SCCHash;
 import main.SCCKey;
 import main.SCCKeyPair;
+import main.SCCKeyPair.keyPairUseCase;
 import main.SCCPasswordHash;
 import main.SCCSignature;
 import main.SecureCryptoConfig;
@@ -124,19 +123,19 @@ class SecureCryptoConfigTest {
 	//@Test
 	void testSCCasymmetricEncryption() throws CoseException, NoSuchAlgorithmException {
 		
-		SCCKeyPair pair = SCCKeyPair.createAsymmetricKey();
-
+		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.AsymmetricEncryption);
+		
 		SCCCiphertext encrypted = scc.asymmetricEncrypt(pair, plaintextContainer);
 		PlaintextContainer decrypted = scc.asymmetricDecrypt(pair, encrypted);
 		//PlaintextContainer decrypted = encrypted.asymmetricDecrypt(pair);
 		
-		assertEquals(inputPlaintext, decrypted.getBase64());
+		assertEquals(inputPlaintext, decrypted.getString(StandardCharsets.UTF_8));
 
 	}
 
-	//@Test
-	void testSCCSignature() throws CoseException {
-		SCCKeyPair k = SCCKeyPair.createSigningKey();
+	@Test
+	void testSCCSignature() throws CoseException, NoSuchAlgorithmException {
+		SCCKeyPair k = SCCKeyPair.createKeyPair(keyPairUseCase.Signing);
 		SCCSignature s = scc.sign(k, plaintextContainer);
 		//Sign1Message msg = s.convertByteToMsg();
 		//String signature = s.getSignature().getString();

@@ -222,7 +222,7 @@ public class UseCases {
 			AsymMessage m3 = new AsymMessage();
 			m3.SetContent(plaintext.getByteArray());
 			m3.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
-			m3.encrypt(keyPair.pair);
+			m3.encrypt(keyPair.getKeyPair());
 			byte[] encrypted = m3.getEncryptedContent();
 			
 			return new SCCCiphertext(plaintext, encrypted, keyPair, m3.EncodeToBytes());
