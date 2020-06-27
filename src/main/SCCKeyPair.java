@@ -42,12 +42,9 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 	}
 
 
-	public static SCCKeyPair createAsymmetricKey() {
+	public static SCCKeyPair createAsymmetricKey() throws NoSuchAlgorithmException {
 		ArrayList<String> algorithms = new ArrayList<String>();
 
-		// Default value
-		String algo = "RSA";
-		int keysize = 4096;
 
 		algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption, ".\\src\\main\\" + SecureCryptoConfig.sccFileName);
 
@@ -69,15 +66,9 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 					break;
 				}
 			}
-			// last round and no corresponding match in Switch case found
-			// take default values for generation
-			if (i == (algorithms.size() - 1)) {
-				System.out.println("No supported algorithms. Default values are used for key generation!");
-				System.out.println("Used: " + algo);
-				return keyPairWithParams(algo, keysize);
-			}
+			
 		}
-		return null;
+		throw new NoSuchAlgorithmException();
 	}
 	
 	private static SCCKeyPair keyPairWithParams(String algo, int keysize) {
@@ -93,7 +84,7 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 		}
 	}
 	
-	public static OneKey createSigningKey() throws CoseException {
+	public static SCCKeyPair createSigningKey() throws CoseException {
 		ArrayList<String> algorithms = new ArrayList<String>();
 
 		algorithms = JSONReader.getAlgos(CryptoUseCase.Signing, ".\\src\\main\\" + SecureCryptoConfig.sccFileName);
@@ -111,7 +102,9 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 				switch (chosenAlgorithmID) {
 				case ECDSA_512:
 					try {
-						return OneKey.generateKey(AlgorithmID.ECDSA_512);
+						OneKey oneKey = OneKey.generateKey(AlgorithmID.ECDSA_512);
+						KeyPair p = new KeyPair(oneKey.AsPublicKey(), oneKey.AsPrivateKey());
+						return new SCCKeyPair(p, AlgorithmID.ECDSA_512.toString());
 					} catch (CoseException e) {
 						e.printStackTrace();
 					}

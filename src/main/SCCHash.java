@@ -21,7 +21,7 @@ public class SCCHash extends AbstractSCCHash{
 	@Override
 	public boolean verifyHash(PlaintextContainer plain) {
 		try {
-			return scc.verifyHash(plain, this);
+			return scc.validateHash(plain, this);
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return false;
@@ -50,7 +50,7 @@ public class SCCHash extends AbstractSCCHash{
 	public PlaintextContainer getHashedContent() {
 		try {
 			HashMessage m = convertByteToMsg();
-			return new PlaintextContainer(Base64.getEncoder().encodeToString(m.getHashedContent()));
+			return new PlaintextContainer(m.getHashedContent());
 
 		} catch (CoseException e) {
 			e.printStackTrace();

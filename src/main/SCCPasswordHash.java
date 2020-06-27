@@ -20,7 +20,7 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	@Override
 	public boolean verifyHash(PlaintextContainer password) {
 		try {
-			return scc.verifyPassword(password, this);
+			return scc.validatePasswordHash(password, this);
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return false;
@@ -49,7 +49,7 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	public PlaintextContainer getHashedContent() {
 		try {
 			PasswordHashMessage m = convertByteToMsg();
-			return new PlaintextContainer(Base64.getEncoder().encodeToString(m.getHashedContent()));
+			return new PlaintextContainer(m.getHashedContent());
 
 		} catch (CoseException e) {
 			e.printStackTrace();

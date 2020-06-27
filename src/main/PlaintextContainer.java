@@ -1,32 +1,41 @@
 package main;
 
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset;
+import java.util.Base64;
 
 import COSE.CoseException;
 
 public class PlaintextContainer implements PlaintextContainerInterface {
 
-	private String plaintext;
+	private byte[] plaintext;
 	SecureCryptoConfig scc = new SecureCryptoConfig();
 	
-	public PlaintextContainer(String plaintext) {
+	public PlaintextContainer(byte[] plaintext) {
 		this.plaintext = plaintext;
 	}
+	
 
 	@Override
 	public byte[] getByteArray() {
-		return plaintext.getBytes(StandardCharsets.UTF_8);
+		return plaintext;
 	}
 
 	@Override
-	public String getString() {
-		return this.plaintext;
+	public String getBase64() {
+		return Base64.getEncoder().encodeToString(this.plaintext);
+
+	}
+	
+	@Override
+	public String getString(Charset c) {
+		return new String(this.plaintext, c);
+
 	}
 
 	@Override
 	public boolean verifyHash(SCCHash hash) {
 		try {
-			return scc.verifyHash(this, hash);
+			return scc.validateHash(this, hash);
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return false;

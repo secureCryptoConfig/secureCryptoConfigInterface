@@ -4,7 +4,6 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.ArrayList;
-
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -15,15 +14,20 @@ import COSE.CoseException;
 import main.JSONReader.CryptoUseCase;
 import main.SecureCryptoConfig.AlgorithmIDEnum;
 
-public class SCCKey extends main.AbstractSCCKey {
+public class SCCKey extends AbstractSCCKey {
 
-	protected SCCKey(SecretKey key, String algorithm) {
+	public SCCKey(byte[] key, String algorithm) {
 		super(key, algorithm);
 	}
 
 
 	@Override
 	public SecretKey getSecretKey() {
+		return new SecretKeySpec(key, 0, key.length, this.algorithm);
+	}
+	
+	@Override
+	public byte[] getByteArray() {
 		return this.key;
 	}
 	
@@ -32,7 +36,7 @@ public class SCCKey extends main.AbstractSCCKey {
 		return this.algorithm;
 	}
 
-	public static SCCKey createKey() throws CoseException {
+	public static SCCKey createSymmetricKey() throws CoseException {
 
 		// possible: AES, DES, DESede, HmacSHA1, HmacSHA256
 		ArrayList<String> algorithms = new ArrayList<String>();
@@ -109,11 +113,11 @@ public class SCCKey extends main.AbstractSCCKey {
 			byte[] salt = UseCases.generateRandomByteArray(saltLength);
 
 			SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(algo);
-			KeySpec passwordBasedEncryptionKeySpec = new PBEKeySpec(password.getString().toCharArray(), salt, iterations,
+			KeySpec passwordBasedEncryptionKeySpec = new PBEKeySpec(password.getBase64().toCharArray(), salt, iterations,
 					keysize);
 			SecretKey secretKeyFromPBKDF2 = secretKeyFactory.generateSecret(passwordBasedEncryptionKeySpec);
 			SecretKey key = new SecretKeySpec(secretKeyFromPBKDF2.getEncoded(), keyAlgo);
-			return new SCCKey(key, algo);
+			return new SCCKey(key.getEncoded(), algo);
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
 			e.printStackTrace();
 			return null;
@@ -128,13 +132,11 @@ public class SCCKey extends main.AbstractSCCKey {
 			keyGen = KeyGenerator.getInstance(algo);
 			keyGen.init(keysize);
 			SecretKey key = keyGen.generateKey();
-			return new SCCKey(key, algo);
+			return new SCCKey(key.getEncoded(), algo);
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
-
-
 
 }

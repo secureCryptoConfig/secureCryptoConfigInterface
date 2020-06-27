@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 
@@ -26,7 +25,6 @@ import COSE.AlgorithmID;
 import COSE.AsymMessage;
 import COSE.CoseException;
 import COSE.Encrypt0Message;
-import COSE.HashMessage;
 import COSE.HeaderKeys;
 import COSE.OneKey;
 import COSE.PasswordHashMessage;
@@ -58,12 +56,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	public SecureCryptoConfig(String sccFileName) {
 		SecureCryptoConfig.sccFileName = sccFileName;
-		System.out.println(sccFileName);
 	}
 
 	public SecureCryptoConfig(int securityLevel) {
 		SecureCryptoConfig.sccFileName = JSONReader.getLatestSCC(securityLevel);
-		System.out.println(sccFileName);
 	}
 
 	public String getSccFile() {
@@ -100,9 +96,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				switch (chosenAlgorithmID) {
 				case AES_GCM_256_96:
-					return UseCases.createMessage(plaintext.getString(), key.key, AlgorithmID.AES_GCM_256);
+					return UseCases.createMessage(plaintext, key, AlgorithmID.AES_GCM_256);
 				case AES_GCM_128_96:
-					return UseCases.createMessage(plaintext.getString(), key.key, AlgorithmID.AES_GCM_128);
+					return UseCases.createMessage(plaintext, key, AlgorithmID.AES_GCM_128);
 				default:
 					break;
 
@@ -118,8 +114,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			throws CoseException {
 		try {
 			Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(sccciphertext.msg);
-			String s = new String(msg.decrypt(key.key.getEncoded()), StandardCharsets.UTF_8);
-			return new PlaintextContainer(s);
+			return new PlaintextContainer(msg.decrypt(key.getByteArray()));
 		} catch (CoseException e) {
 			e.printStackTrace();
 			throw new CoseException("No supported algorithm!");
@@ -181,12 +176,11 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	@Override
 	public PlaintextContainer fileDecrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext, String filepath) {
-		String decryptedCipherText;
 		try {
 
 			Cipher cipher = Cipher.getInstance(ciphertext.parameters.algo);
 			GCMParameterSpec spec = new GCMParameterSpec(ciphertext.parameters.tagLength, ciphertext.parameters.nonce);
-			cipher.init(Cipher.DECRYPT_MODE, key.key, spec);
+			cipher.init(Cipher.DECRYPT_MODE, key.getSecretKey(), spec);
 
 			FileInputStream fileInputStream = new FileInputStream(filepath);
 			CipherInputStream cipherInputStream = new CipherInputStream(fileInputStream, cipher);
@@ -204,9 +198,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			byteArrayOutputStream.flush();
 			cipherInputStream.close();
 
-			decryptedCipherText = new String(byteArrayOutputStream.toByteArray(), StandardCharsets.UTF_8);
-
-			PlaintextContainer p = new PlaintextContainer(decryptedCipherText);
+			
+			PlaintextContainer p = new PlaintextContainer(byteArrayOutputStream.toByteArray());
 			return p;
 		} catch (NoSuchAlgorithmException | NoSuchPaddingException | IOException | InvalidKeyException
 				| InvalidAlgorithmParameterException e) {
@@ -255,8 +248,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		try {
 			AsymMessage msg = (AsymMessage) AsymMessage.DecodeFromBytes(ciphertext.msg);
-			String s = new String(msg.decrypt(keyPair.pair), StandardCharsets.UTF_8);
-			return new PlaintextContainer(s);
+			return new PlaintextContainer(msg.decrypt(keyPair.pair));
 		} catch (CoseException e) {
 			e.printStackTrace();
 
@@ -291,7 +283,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				switch (chosenAlgorithmID) {
 				case SHA_512:
-					return UseCases.createHashMessage(plaintext.getString(), AlgorithmID.SHA_512);
+					return UseCases.createHashMessage(plaintext, AlgorithmID.SHA_512);
 				default:
 					break;
 				}
@@ -303,23 +295,24 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	// Hash again
 	@Override
-	public AbstractSCCHash reHash(PlaintextContainerInterface plaintext) throws CoseException {
+	public AbstractSCCHash updateHash(PlaintextContainerInterface plaintext) throws CoseException {
 		return hash(plaintext);
 	}
 
 	// Hash same plain two times and look if it is the same
 	@Override
-	public boolean verifyHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException {
-		String s = hash.getHashedContent().getString();
+	public boolean validateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException {
+		String s = Base64.getEncoder().encodeToString(hash.getHashedContent().getByteArray());
 
 		SCCHash hash1 = hash(plaintext);
-		String s1 = hash1.getHashedContent().getString();
+		String s1 = Base64.getEncoder().encodeToString(hash1.getHashedContent().getByteArray());
+
 
 		return s.equals(s1);
 	}
 
 	@Override
-	public SCCSignature sign(OneKey k, PlaintextContainerInterface plaintext) throws CoseException {
+	public SCCSignature sign(AbstractSCCKeyPair k, PlaintextContainerInterface plaintext) throws CoseException {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
 		// read our Algorithms for symmetric encryption out of JSON
@@ -347,17 +340,17 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	// Sign again?
 	@Override
-	public SCCSignature reSign(OneKey key, PlaintextContainerInterface plaintext) throws CoseException {
+	public SCCSignature updateSignature(AbstractSCCKeyPair key, PlaintextContainerInterface plaintext) throws CoseException {
 		return sign(key, plaintext);
 	}
 
 	@Override
-	public boolean validateSignature(OneKey key, AbstractSCCSignature signature) {
+	public boolean validateSignature(AbstractSCCKeyPair key, AbstractSCCSignature signature) {
 
 		try {
 			Sign1Message msg = signature.convertByteToMsg();
-			return msg.validate(key);
-
+			OneKey oneKey = new OneKey(key.getPublic(), key.getPrivate());
+			return msg.validate(oneKey);
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return false;
@@ -385,7 +378,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				switch (chosenAlgorithmID) {
 				case PBKDF_SHA_256:
-					return UseCases.createPasswordHashMessage(password.getString(), AlgorithmID.PBKDF_SHA_256);
+					return UseCases.createPasswordHashMessage(password, AlgorithmID.PBKDF_SHA_256);
 				default:
 					break;
 				}
@@ -397,14 +390,14 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public boolean verifyPassword(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash)
+	public boolean validatePasswordHash(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash)
 			throws CoseException {
 		PasswordHashMessage msg = (PasswordHashMessage) PasswordHashMessage
 				.DecodeFromBytes(passwordhash.getMessageBytes());
 		CBORObject algX = msg.findAttribute(HeaderKeys.Algorithm);
 		AlgorithmID alg = AlgorithmID.FromCBOR(algX);
 
-		SCCPasswordHash hash = UseCases.createPasswordHashMessageSalt(password.getString(), alg, msg.getSalt());
+		SCCPasswordHash hash = UseCases.createPasswordHashMessageSalt(password, alg, msg.getSalt());
 		PasswordHashMessage msg1 = (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(hash.getMessageBytes());
 
 		String hash1 = Base64.getEncoder().encodeToString(msg.getHashedContent());
@@ -463,7 +456,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			
 			Cipher cipher = Cipher.getInstance(ciphertext.param.algo);
 			GCMParameterSpec spec = new GCMParameterSpec(ciphertext.param.tagLength, ciphertext.param.nonce);
-			cipher.init(Cipher.DECRYPT_MODE, key.key, spec);
+			cipher.init(Cipher.DECRYPT_MODE, key.getSecretKey(), spec);
 
 
 			PlaintextOutputStream plaintextStream = new PlaintextOutputStream(inputStream, cipher);

@@ -17,7 +17,7 @@ public class SCCSignature extends AbstractSCCSignature{
 	}
 
 	@Override
-	public boolean validateSignature(OneKey key) {
+	public boolean validateSignature(SCCKeyPair key) {
 		return scc.validateSignature(key, this);
 	}
 
@@ -42,7 +42,7 @@ public class SCCSignature extends AbstractSCCSignature{
 	@Override
 	public PlaintextContainer getSignature() {
 		Sign1Message m = convertByteToMsg();
-		return new PlaintextContainer(Base64.getEncoder().encodeToString(m.getSignature()));
+		return new PlaintextContainer(m.getSignature());
 	}
 
 	@Override

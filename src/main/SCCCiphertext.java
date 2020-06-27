@@ -4,6 +4,7 @@ import java.util.Base64;
 
 import com.upokecenter.cbor.CBORObject;
 
+import COSE.AlgorithmID;
 import COSE.AsymMessage;
 import COSE.CoseException;
 import COSE.Encrypt0Message;
@@ -15,8 +16,12 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	SecureCryptoConfig scc = new SecureCryptoConfig();
 	
 	// for COSE
-	public SCCCiphertext(byte[] msg) {
-		super(msg);
+	public SCCCiphertext(PlaintextContainerInterface plaintext, byte[] cipher, AbstractSCCKey keyPair, byte[] msg) {
+		super(plaintext, cipher, keyPair, msg);
+	}
+	
+	public SCCCiphertext(PlaintextContainerInterface plain, byte[] cipher, AbstractSCCKeyPair keyPair, byte[] msg) {
+		super(plain, cipher, keyPair, msg);
 	}
 
 	@Override
@@ -25,35 +30,16 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	}
 
 	@Override
-	public CBORObject getAlgorithmIdentifier() {
+	public AlgorithmID getAlgorithmIdentifier() throws CoseException {
 		Message msg = convertByteToMsg();
 		CBORObject obj = msg.findAttribute(HeaderKeys.Algorithm);
-		return obj;
+		AlgorithmID alg = AlgorithmID.FromCBOR(obj);
+		return alg;
 	}
 
 	@Override
-	public PlaintextContainer getAsymmetricCipher() {
-		try {
-			AsymMessage m = (AsymMessage) AsymMessage.DecodeFromBytes(this.msg);
-			return new PlaintextContainer(Base64.getEncoder().encodeToString(m.getEncryptedContent()));
-
-		} catch (CoseException e) {
-			e.printStackTrace();
-			return null;
-		}
-
-	}
-
-	@Override
-	public PlaintextContainer getSymmetricCipher() {
-		try {
-			Encrypt0Message m = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(this.msg);
-			return new PlaintextContainer(Base64.getEncoder().encodeToString(m.getEncryptedContent()));
-
-		} catch (CoseException e) {
-			e.printStackTrace();
-			return null;
-		}
+	public byte[] getCipherBytes() {
+		return this.cipher;
 	}
 
 	private Message convertByteToMsg() {
@@ -66,9 +52,8 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	}
 
 	@Override
-	public String getPlain() {
-		Message m = convertByteToMsg();
-		return Base64.getEncoder().encodeToString(m.GetContent());
+	public PlaintextContainerInterface getPlain() {
+		return this.plain;
 	}
 
 	// Only necessary for file encrypt (no COSE support)
