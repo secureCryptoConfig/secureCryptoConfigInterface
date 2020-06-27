@@ -283,7 +283,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				switch (chosenAlgorithmID) {
 				case SHA_512:
-					return UseCases.createHashMessage(plaintext, AlgorithmID.SHA_512);
+					PlaintextContainer p = new PlaintextContainer(plaintext.getByteArray());
+					return UseCases.createHashMessage(p, AlgorithmID.SHA_512);
 				default:
 					break;
 				}
@@ -302,10 +303,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	// Hash same plain two times and look if it is the same
 	@Override
 	public boolean validateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException {
-		String s = Base64.getEncoder().encodeToString(hash.getHashedContent().getByteArray());
+		String s = hash.getHashedContent().getBase64();
 
 		SCCHash hash1 = hash(plaintext);
-		String s1 = Base64.getEncoder().encodeToString(hash1.getHashedContent().getByteArray());
+		String s1 = hash1.getHashedContent().getBase64();
 
 
 		return s.equals(s1);

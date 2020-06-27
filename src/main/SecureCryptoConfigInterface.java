@@ -17,8 +17,9 @@ import com.upokecenter.cbor.CBORObject;
 
 import COSE.AlgorithmID;
 import COSE.CoseException;
+import COSE.Encrypt0Message;
 import COSE.HashMessage;
-import COSE.OneKey;
+import COSE.Message;
 import COSE.PasswordHashMessage;
 import COSE.Sign1Message;
 
@@ -81,7 +82,7 @@ abstract interface SecureCryptoConfigInterface {
 
 }
 
-abstract interface PlaintextContainerInterface {
+ abstract interface PlaintextContainerInterface {
 
 	abstract byte[] getByteArray();
 
@@ -137,6 +138,7 @@ abstract class AbstractSCCCiphertext {
 	}
 
 	abstract byte[] getMessageBytes();
+	abstract Message convertByteToMsg();
 
 	abstract AlgorithmID getAlgorithmIdentifier() throws CoseException;
 
@@ -189,51 +191,54 @@ abstract class AbstractSCCKeyPair {
 
 abstract class AbstractSCCHash {
 
-	abstract boolean verifyHash(PlaintextContainer plain);
+	abstract boolean validateHash(PlaintextContainer plain);
 
 	abstract byte[] getMessageBytes();
 
 	abstract HashMessage convertByteToMsg();
 
-	abstract CBORObject getAlgorithmIdentifier();
+	abstract AlgorithmID getAlgorithmIdentifier() throws CoseException;
 
-	abstract String getPlain();
+	abstract PlaintextContainerInterface getPlain();
 
-	abstract PlaintextContainer getHashedContent();
+	abstract PlaintextContainerInterface getHashedContent();
 
 }
 
 abstract class AbstractSCCPasswordHash {
-	abstract boolean verifyHash(PlaintextContainer password);
+	abstract boolean validatePasswordHash(PlaintextContainer password);
 
 	abstract byte[] getMessageBytes();
 
 	abstract PasswordHashMessage convertByteToMsg();
 
-	abstract CBORObject getAlgorithmIdentifier();
+	abstract AlgorithmID getAlgorithmIdentifier() throws CoseException;
 
-	abstract String getPlain();
+	abstract PlaintextContainerInterface getPlain();
 
-	abstract PlaintextContainer getHashedContent();
+	abstract PlaintextContainerInterface getHashedContent();
 
 }
 
 abstract class AbstractSCCSignature {
 	byte[] signatureMsg;
+	PlaintextContainerInterface plaintext, signature;
 
-	public AbstractSCCSignature(byte[] signatureMsg) {
+	public AbstractSCCSignature(PlaintextContainer plaintext, PlaintextContainer signature, byte[] signatureMsg) {
 		this.signatureMsg = signatureMsg;
+		this.plaintext = plaintext;
+		this.signature = signature;
 	}
 
 	abstract byte[] getMessageBytes();
 
 	abstract Sign1Message convertByteToMsg();
 
-	abstract CBORObject getAlgorithmIdentifier();
+	abstract AlgorithmID getAlgorithmIdentifier() throws CoseException;
 
 	abstract boolean validateSignature(SCCKeyPair key);
 
-	abstract String getPlain();
+	abstract PlaintextContainerInterface getPlain();
 
 	abstract PlaintextContainer getSignature();
 

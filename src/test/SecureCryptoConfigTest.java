@@ -111,6 +111,7 @@ class SecureCryptoConfigTest {
 	void testHashing() throws CoseException {
 		
 		SCCHash hashed = scc.hash(plaintextContainer);
+		
 		String hash = hashed.getHashedContent().getBase64();
 		
 		SCCHash hashed1 = scc.hash(plaintextContainer);
@@ -133,7 +134,7 @@ class SecureCryptoConfigTest {
 
 	}
 
-	@Test
+	//@Test
 	void testSCCSignature() throws CoseException, NoSuchAlgorithmException {
 		SCCKeyPair k = SCCKeyPair.createKeyPair(keyPairUseCase.Signing);
 		SCCSignature s = scc.sign(k, plaintextContainer);

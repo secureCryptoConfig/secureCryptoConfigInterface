@@ -4,6 +4,7 @@ import java.util.Base64;
 
 import com.upokecenter.cbor.CBORObject;
 
+import COSE.AlgorithmID;
 import COSE.CoseException;
 import COSE.HeaderKeys;
 import COSE.OneKey;
@@ -12,8 +13,8 @@ import COSE.Sign1Message;
 public class SCCSignature extends AbstractSCCSignature{
 
 	SecureCryptoConfig scc = new SecureCryptoConfig();
-	public SCCSignature(byte[] signatureMsg) {
-		super(signatureMsg);
+	public SCCSignature(PlaintextContainer plaintext, PlaintextContainer signature, byte[] signatureMsg) {
+		super(plaintext, signature, signatureMsg);
 	}
 
 	@Override
@@ -27,22 +28,21 @@ public class SCCSignature extends AbstractSCCSignature{
 	}
 
 	@Override
-	public CBORObject getAlgorithmIdentifier() {
+	public AlgorithmID getAlgorithmIdentifier() throws CoseException  {
 		Sign1Message msg = convertByteToMsg();
 		CBORObject obj = msg.findAttribute(HeaderKeys.Algorithm);
-		return obj;
+		AlgorithmID alg = AlgorithmID.FromCBOR(obj);
+		return alg;
 	}
 
 	@Override
-	public String getPlain() {
-		Sign1Message m = convertByteToMsg();
-		return Base64.getEncoder().encodeToString(m.GetContent());
+	public PlaintextContainer getPlain() {
+		return (PlaintextContainer) this.plaintext;
 	}
 
 	@Override
 	public PlaintextContainer getSignature() {
-		Sign1Message m = convertByteToMsg();
-		return new PlaintextContainer(m.getSignature());
+		return (PlaintextContainer) this.signature;
 	}
 
 	@Override

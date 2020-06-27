@@ -42,7 +42,8 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 		return this.cipher;
 	}
 
-	private Message convertByteToMsg() {
+	@Override
+	public Message convertByteToMsg() {
 		try {
 			return (Message) Message.DecodeFromBytes(this.msg);
 		} catch (CoseException e) {

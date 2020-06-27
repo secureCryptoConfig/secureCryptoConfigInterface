@@ -131,21 +131,6 @@ public class UseCases {
 			return null;
 	}
 
-	public static SCCPasswordHash passwordHashing(PlaintextContainerInterface password, String algo, byte[] salt,
-			int keysize, int iterations) {
-		try {
-			KeySpec spec = new PBEKeySpec(password.getBase64().toCharArray(), salt, iterations, keysize);
-			SecretKeyFactory factory = SecretKeyFactory.getInstance(algo);
-			byte[] hash = factory.generateSecret(spec).getEncoded();
-			// SCCAlgorithmParameters param = new SCCAlgorithmParameters(algo, salt,
-			// keysize, iterations);
-			// return new SCCPasswordHash(hash, param);
-			return new SCCPasswordHash(hash);
-		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
 
 	// creation of COSE msg for symmetric Encryption
 	public static SCCCiphertext createMessage(PlaintextContainerInterface plaintext, AbstractSCCKey key, AlgorithmID id) {
@@ -168,14 +153,16 @@ public class UseCases {
 	}
 
 	// Cose msg for Hashing
-	public static SCCHash createHashMessage(PlaintextContainerInterface plaintext, AlgorithmID id) {
+	public static SCCHash createHashMessage(PlaintextContainer plaintext, AlgorithmID id) {
 		try {
 			HashMessage hashMessage = new HashMessage();
 			hashMessage.SetContent(plaintext.getByteArray());
+			
 			hashMessage.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 
 			hashMessage.hash();
-			return new SCCHash(hashMessage.EncodeToBytes());
+			
+			return new SCCHash(plaintext, new PlaintextContainer(hashMessage.getHashedContent()), hashMessage.EncodeToBytes());
 
 		} catch (CoseException e) {
 			e.printStackTrace();
@@ -191,8 +178,8 @@ public class UseCases {
 			m.SetContent(password.getByteArray());
 			m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 			m.passwordHash();
-
-			return new SCCPasswordHash(m.EncodeToBytes());
+			PlaintextContainer hashed = new PlaintextContainer(m.getHashedContent());
+			return new SCCPasswordHash((PlaintextContainer) password, hashed, m.EncodeToBytes());
 
 		} catch (CoseException e) {
 			e.printStackTrace();
@@ -206,9 +193,9 @@ public class UseCases {
 			m.SetContent(password.getByteArray());
 			m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 			m.passwordHashWithSalt(salt);
-
-			return new SCCPasswordHash(m.EncodeToBytes());
-
+			
+			PlaintextContainer hashed = new PlaintextContainer(m.getHashedContent());
+			return new SCCPasswordHash((PlaintextContainer) password, hashed, m.EncodeToBytes());
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;
@@ -251,7 +238,7 @@ public class UseCases {
 			m.addAttribute(HeaderKeys.Algorithm, AlgorithmID.ECDSA_512.AsCBOR(), Attribute.PROTECTED);
 			OneKey oneKey = new OneKey(key.getPublic(), key.getPrivate());
 			m.sign(oneKey);
-			return new SCCSignature(m.EncodeToBytes());
+			return new SCCSignature((PlaintextContainer) plaintext, new PlaintextContainer(m.getSignature()), m.EncodeToBytes());
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;
