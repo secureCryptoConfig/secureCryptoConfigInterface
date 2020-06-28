@@ -43,7 +43,7 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	}
 
 	@Override
-	public PlaintextContainerInterface getPlain() {
+	public PlaintextContainer getPlain() {
 		
 		return this.plaintext;
 	}

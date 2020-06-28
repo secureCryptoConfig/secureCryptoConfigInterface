@@ -76,7 +76,7 @@ class SecureCryptoConfigTest {
 	 *       cipherText.decrypt(password); }
 	 **/
 
-	// @Test
+	//@Test
 	void testSCCsymmetricEncryption() throws CoseException {
 
 		// Key creation with Password
@@ -95,7 +95,7 @@ class SecureCryptoConfigTest {
 	}
 
 	// Test for Hashing -> hash two times same plain
-	// @Test
+	//@Test
 	void testHashing() throws CoseException {
 
 		SCCHash hashed = scc.hash(plaintextContainer);
@@ -135,7 +135,7 @@ class SecureCryptoConfigTest {
 		assertEquals(true, result);
 	}
 
-	// @Test
+	//@Test
 	void testPasswordHash() throws CoseException {
 
 		SCCPasswordHash hashed = scc.passwordHash(plaintextContainer);
@@ -149,7 +149,7 @@ class SecureCryptoConfigTest {
 
 	}
 
-	@Test
+	//@Test
 	void testFileEncryption() throws NoSuchAlgorithmException, CoseException {
 		// retrieve content of file for encryption for later comparison
 		String fileInput = UseCases.readFile(filepath).replace("\r", "").replace("\n", "");

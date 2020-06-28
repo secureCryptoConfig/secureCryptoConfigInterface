@@ -71,7 +71,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
 		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption,
-				".\\src\\main\\" + SecureCryptoConfig.sccFileName);
+				JSONReader.basePath + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 
@@ -126,7 +126,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		
 		ArrayList<String> algorithms = new ArrayList<String>();
 		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption,
-				".\\src\\main\\" + SecureCryptoConfig.sccFileName);
+				JSONReader.basePath + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 
@@ -182,7 +182,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
 		algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption,
-				".\\src\\main\\" + SecureCryptoConfig.sccFileName);
+				JSONReader.basePath + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 
@@ -234,7 +234,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
 		// read our Algorithms for symmetric encryption out of JSON
-		algorithms = JSONReader.getAlgos(CryptoUseCase.Hashing, ".\\src\\main\\" + SecureCryptoConfig.sccFileName);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.Hashing, JSONReader.basePath + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 			// get first one, later look what to do if first is not validate -> take next
@@ -282,7 +282,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
 		// read our Algorithms for symmetric encryption out of JSON
-		algorithms = JSONReader.getAlgos(CryptoUseCase.Signing, ".\\src\\main\\" + SecureCryptoConfig.sccFileName);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.Signing, JSONReader.basePath + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 			// get first one, later look what to do if first is not validate -> take next
@@ -330,7 +330,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		ArrayList<String> algorithms = new ArrayList<String>();
 		// read our Algorithms for symmetric encryption out of JSON
 		algorithms = JSONReader.getAlgos(CryptoUseCase.PasswordHashing,
-				".\\src\\main\\" + SecureCryptoConfig.sccFileName);
+				JSONReader.basePath + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 			// get first one, later look what to do if first is not validate -> take next
@@ -378,7 +378,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
 		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption,
-				".\\src\\main\\" + SecureCryptoConfig.sccFileName);
+				JSONReader.basePath + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 

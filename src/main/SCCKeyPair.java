@@ -65,7 +65,7 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 		ArrayList<String> algorithms = new ArrayList<String>();
 
 
-		algorithms = JSONReader.getAlgos(c, ".\\src\\main\\" + SecureCryptoConfig.sccFileName);
+		algorithms = JSONReader.getAlgos(c, JSONReader.basePath + SecureCryptoConfig.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 

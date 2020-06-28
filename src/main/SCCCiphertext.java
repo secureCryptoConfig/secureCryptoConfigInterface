@@ -49,8 +49,8 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	}
 
 	@Override
-	public PlaintextContainerInterface getPlain() {
-		return this.plain;
+	public PlaintextContainer getPlain() {
+		return (PlaintextContainer) this.plain;
 	}
 
 

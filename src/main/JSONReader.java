@@ -6,6 +6,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.file.DirectoryStream;
@@ -28,6 +29,7 @@ import org.json.simple.parser.ParseException;
 
 public class JSONReader {
 
+	public static String basePath = null;
 	// JSON parser object to parse read file
 	static JSONParser jsonParser = new JSONParser();
 
@@ -171,9 +173,14 @@ public class JSONReader {
 			break;
 		}
 
-		// Folder path depending on where SCC will be stored
-		// File folder = new File(".\\src\\main\\SCC");
-		File folder = new File(".\\src\\main");
+		try {
+			basePath = new File(JSONReader.class.getProtectionDomain().getCodeSource().getLocation()
+				    .toURI()).getPath().replace("\\target\\classes", "");
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		basePath = basePath + "\\src\\main\\";
+		File folder = new File(basePath);
 		File[] listOfFiles = folder.listFiles();
 
 		for (int i = 0; i < listOfFiles.length; i++) {
