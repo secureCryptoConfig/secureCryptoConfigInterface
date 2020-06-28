@@ -15,15 +15,20 @@ import main.JSONReader.CryptoUseCase;
 import main.SecureCryptoConfig.AlgorithmIDEnum;
 
 public class SCCKey extends AbstractSCCKey {
+	
+	public enum SCCKeyAlgorithm{
+		AES, Blowfish, ARCFOUR,  DES, DESede, HmacMD5, HmacSHA1,
+		HmacSHA224, HmacSHA256, HmacSHA384, HmacSHA512, RC2
+	}
 
-	public SCCKey(byte[] key, String algorithm) {
+	public SCCKey(byte[] key, SCCKeyAlgorithm algorithm) {
 		super(key, algorithm);
 	}
 
 
 	@Override
 	public SecretKey getSecretKey() {
-		return new SecretKeySpec(key, 0, key.length, this.algorithm);
+		return new SecretKeySpec(key, 0, key.length, this.algorithm.toString());
 	}
 	
 	@Override
@@ -33,7 +38,7 @@ public class SCCKey extends AbstractSCCKey {
 	
 	@Override
 	public String getAlgorithm() {
-		return this.algorithm;
+		return this.algorithm.toString();
 	}
 
 	public static SCCKey createSymmetricKey() throws CoseException {
@@ -55,9 +60,9 @@ public class SCCKey extends AbstractSCCKey {
 
 				switch (chosenAlgorithmID) {
 				case AES_GCM_256_96:
-					return keyWithParams("AES", 256);
+					return keyWithParams(SCCKeyAlgorithm.AES, 256);
 				case AES_GCM_128_96:
-					return keyWithParams("AES", 128);
+					return keyWithParams(SCCKeyAlgorithm.AES, 128);
 				default:
 					break;
 
@@ -89,10 +94,10 @@ public class SCCKey extends AbstractSCCKey {
 
 				switch (chosenAlgorithmID) {
 				case AES_GCM_256_96:
-					return keyWithPassword(password, "PBKDF2WithHmacSHA512", "AES", 256, 10000, 64);
+					return keyWithPassword(password, "PBKDF2WithHmacSHA512", SCCKeyAlgorithm.AES, 256, 10000, 64);
 
 				case AES_GCM_128_96:
-					return keyWithPassword(password, "PBKDF2WithHmacSHA512", "AES", 128, 10000, 64);
+					return keyWithPassword(password, "PBKDF2WithHmacSHA512", SCCKeyAlgorithm.AES, 128, 10000, 64);
 				default:
 					break;
 
@@ -105,7 +110,7 @@ public class SCCKey extends AbstractSCCKey {
 
 	}
 
-	private static SCCKey keyWithPassword(PlaintextContainer password, String algo, String keyAlgo, int keysize,
+	private static SCCKey keyWithPassword(PlaintextContainer password, String algo, SCCKeyAlgorithm keyAlgo, int keysize,
 			int iterations, int saltLength) {
 
 		try {
@@ -116,8 +121,8 @@ public class SCCKey extends AbstractSCCKey {
 			KeySpec passwordBasedEncryptionKeySpec = new PBEKeySpec(password.getBase64().toCharArray(), salt, iterations,
 					keysize);
 			SecretKey secretKeyFromPBKDF2 = secretKeyFactory.generateSecret(passwordBasedEncryptionKeySpec);
-			SecretKey key = new SecretKeySpec(secretKeyFromPBKDF2.getEncoded(), keyAlgo);
-			return new SCCKey(key.getEncoded(), algo);
+			SecretKey key = new SecretKeySpec(secretKeyFromPBKDF2.getEncoded(), keyAlgo.toString());
+			return new SCCKey(key.getEncoded(), keyAlgo);
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
 			e.printStackTrace();
 			return null;
@@ -126,10 +131,10 @@ public class SCCKey extends AbstractSCCKey {
 
 	}
 
-	private static SCCKey keyWithParams(String algo, int keysize) {
+	private static SCCKey keyWithParams(SCCKeyAlgorithm algo, int keysize) {
 		KeyGenerator keyGen;
 		try {
-			keyGen = KeyGenerator.getInstance(algo);
+			keyGen = KeyGenerator.getInstance(algo.toString());
 			keyGen.init(keysize);
 			SecretKey key = keyGen.generateKey();
 			return new SCCKey(key.getEncoded(), algo);

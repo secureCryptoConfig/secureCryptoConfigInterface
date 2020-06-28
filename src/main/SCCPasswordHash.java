@@ -20,7 +20,7 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	}
 
 	@Override
-	public boolean validatePasswordHash(PlaintextContainer password) {
+	public boolean validatePasswordHash(PlaintextContainerInterface password) {
 		try {
 			return scc.validatePasswordHash(password, this);
 		} catch (CoseException e) {

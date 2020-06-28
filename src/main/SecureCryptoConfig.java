@@ -8,6 +8,8 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashSet;
 
+import javax.management.openmbean.InvalidKeyException;
+
 import com.upokecenter.cbor.CBORObject;
 
 import COSE.AlgorithmID;
@@ -24,7 +26,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	protected static String sccFileName;
 
-	// TODO refactor in separate class?
+	public static enum SecurityLevel
+	{
+		SecurityLevel_1, SecurityLevel_2, SecurityLevel_3, SecurityLevel_4, SecurityLevel_5
+	}
 	static enum AlgorithmIDEnum {
 		// symmetric:
 		// Algo_Mode_key_IV
@@ -34,21 +39,22 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		// Hash
 		SHA_512,
 		// asymmetric:
-		RSA_SHA_256,
+		RSA_SHA_512,
 		// PasswordHash
 		PBKDF_SHA_256
 	}
 
 	public SecureCryptoConfig() {
-		SecureCryptoConfig.sccFileName = JSONReader.getLatestSCC(5);
+		SecurityLevel level = SecurityLevel.SecurityLevel_5;
+		SecureCryptoConfig.sccFileName = JSONReader.getLatestSCC(level);
 	}
 
-	public SecureCryptoConfig(String sccFileName) {
+	public void setSCCFile(String sccFileName) {
 		SecureCryptoConfig.sccFileName = sccFileName;
 	}
 
-	public SecureCryptoConfig(int securityLevel) {
-		SecureCryptoConfig.sccFileName = JSONReader.getLatestSCC(securityLevel);
+	public void setSecurityLevel(SecurityLevel level) {
+		SecureCryptoConfig.sccFileName = JSONReader.getLatestSCC(level);
 	}
 
 	public String getSccFile() {
@@ -87,6 +93,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				case AES_GCM_256_96:
 					return UseCases.createMessage(plaintext, key, AlgorithmID.AES_GCM_256);
 				case AES_GCM_128_96:
+					if (key.getByteArray().length < 16)
+					{
+						throw new InvalidKeyException("Key has not the correct size. At least 256 bit are needed!");
+					}
 					return UseCases.createMessage(plaintext, key, AlgorithmID.AES_GCM_128);
 				default:
 					break;
@@ -141,8 +151,16 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				switch (chosenAlgorithmID) {
 				case AES_GCM_256_96:
+					if (key.getByteArray().length < 32)
+					{
+						throw new SecurityException("Key has not the correct size. At least 256 bit are needed!");
+					}
 					return UseCases.fileEncryptWithParams(key, filepath, AlgorithmID.AES_GCM_256);
 				case AES_GCM_128_96:
+					if (key.getByteArray().length < 16)
+					{
+						throw new SecurityException("Key has not the correct size. At least 256 bit are needed!");
+					}
 					return UseCases.fileEncryptWithParams(key, filepath, AlgorithmID.AES_GCM_256);
 				default:
 					break;
@@ -196,8 +214,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
 
 				switch (chosenAlgorithmID) {
-				case RSA_SHA_256:
-					return UseCases.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_256, keyPair);
+				case RSA_SHA_512:
+					return UseCases.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_512, keyPair);
 				default:
 					break;
 				}
@@ -261,8 +279,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	// Hash again
 	@Override
-	public AbstractSCCHash updateHash(PlaintextContainerInterface plaintext) throws CoseException {
-		return hash(plaintext);
+	public AbstractSCCHash updateHash(AbstractSCCHash hash) throws CoseException {
+		return hash(hash.getPlain());
 	}
 
 	// Hash same plain two times and look if it is the same
@@ -306,8 +324,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	// Sign again?
 	@Override
-	public SCCSignature updateSignature(AbstractSCCKeyPair key, PlaintextContainerInterface plaintext) throws CoseException {
-		return sign(key, plaintext);
+	public SCCSignature updateSignature(AbstractSCCKeyPair key, AbstractSCCSignature signature) throws CoseException {
+		return sign(key, signature.plaintext);
 	}
 
 	@Override

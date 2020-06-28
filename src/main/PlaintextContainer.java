@@ -33,13 +33,54 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	}
 
 	@Override
-	public boolean verifyHash(SCCHash hash) {
+	public boolean validateHash(AbstractSCCHash hash) {
 		try {
 			return scc.validateHash(this, hash);
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return false;
 		}
+	}
+
+
+	@Override
+	public boolean validatePasswordHash(AbstractSCCPasswordHash passwordHash) {
+		try {
+			return scc.validatePasswordHash(this, passwordHash);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
+
+
+	@Override
+	public SCCCiphertext symmetricEncrypt(AbstractSCCKey key, SecureCryptoConfig scc) throws CoseException {
+		return scc.symmetricEncrypt(key, this);
+	}
+
+
+	@Override
+	public SCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, SecureCryptoConfig scc) throws CoseException {
+		return scc.asymmetricEncrypt(keyPair, this);
+	}
+
+
+	@Override
+	public SCCSignature sign(AbstractSCCKeyPair keyPair, SecureCryptoConfig scc) throws CoseException {
+		return scc.sign(keyPair, this);
+	}
+
+
+	@Override
+	public SCCHash hash(SecureCryptoConfig scc) throws CoseException {
+		return scc.hash(this);
+	}
+
+
+	@Override
+	public SCCPasswordHash passwordHash(SecureCryptoConfig scc) throws CoseException {
+		return scc.passwordHash(this);
 	}
 
 

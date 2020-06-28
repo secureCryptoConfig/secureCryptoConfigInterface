@@ -52,7 +52,7 @@ public class UseCases {
 
 	}
 
-	public static SCCCiphertext fileEncryptWithParams(AbstractSCCKey key, String filepath, AlgorithmID algo) {
+	protected static SCCCiphertext fileEncryptWithParams(AbstractSCCKey key, String filepath, AlgorithmID algo) {
 
 		try {
 			
@@ -89,7 +89,7 @@ public class UseCases {
 		
 	}
 
-	public static SCCCiphertextOutputStream fileEncryptStream(AbstractSCCKey key, AlgorithmID algo,
+	protected static SCCCiphertextOutputStream fileEncryptStream(AbstractSCCKey key, AlgorithmID algo,
 			InputStream inputStream) {
 		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 		try {
@@ -117,7 +117,7 @@ public class UseCases {
 	}
 
 	// creation of COSE msg for symmetric Encryption
-	public static SCCCiphertext createMessage(PlaintextContainerInterface plaintext, AbstractSCCKey key,
+	protected static SCCCiphertext createMessage(PlaintextContainerInterface plaintext, AbstractSCCKey key,
 			AlgorithmID id) {
 		try {
 			Encrypt0Message encrypt0Message = new Encrypt0Message();
@@ -137,7 +137,7 @@ public class UseCases {
 	}
 
 	// Cose msg for Hashing
-	public static SCCHash createHashMessage(PlaintextContainer plaintext, AlgorithmID id) {
+	protected static SCCHash createHashMessage(PlaintextContainer plaintext, AlgorithmID id) {
 		try {
 			HashMessage hashMessage = new HashMessage();
 			hashMessage.SetContent(plaintext.getByteArray());
@@ -156,7 +156,7 @@ public class UseCases {
 	}
 
 	// Cose msg for Hashing
-	public static SCCPasswordHash createPasswordHashMessage(PlaintextContainerInterface password, AlgorithmID id) {
+	protected static SCCPasswordHash createPasswordHashMessage(PlaintextContainerInterface password, AlgorithmID id) {
 
 		try {
 			PasswordHashMessage m = new PasswordHashMessage();
@@ -172,7 +172,7 @@ public class UseCases {
 		}
 	}
 
-	public static SCCPasswordHash createPasswordHashMessageSalt(PlaintextContainerInterface password, AlgorithmID id,
+	protected static SCCPasswordHash createPasswordHashMessageSalt(PlaintextContainerInterface password, AlgorithmID id,
 			byte[] salt) {
 		try {
 			PasswordHashMessage m = new PasswordHashMessage();
@@ -189,7 +189,7 @@ public class UseCases {
 	}
 
 	// Cose msg for Asym
-	public static SCCCiphertext createAsymMessage(PlaintextContainerInterface plaintext, AlgorithmID id,
+	protected static SCCCiphertext createAsymMessage(PlaintextContainerInterface plaintext, AlgorithmID id,
 			AbstractSCCKeyPair keyPair) {
 		try {
 			AsymMessage m3 = new AsymMessage();
@@ -205,7 +205,7 @@ public class UseCases {
 		}
 	}
 
-	public static PlaintextContainer decodeMessage(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext) {
+	protected static PlaintextContainer decodeMessage(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext) {
 		try {
 			Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(sccciphertext.msg);
 			// Encrypt0Message msg = sccciphertext.msg;
@@ -217,7 +217,7 @@ public class UseCases {
 
 	}
 
-	public static SCCSignature createSignMessage(PlaintextContainerInterface plaintext, AbstractSCCKeyPair key,
+	protected static SCCSignature createSignMessage(PlaintextContainerInterface plaintext, AbstractSCCKeyPair key,
 			AlgorithmID id) {
 		Sign1Message m = new Sign1Message();
 		m.SetContent(plaintext.getByteArray());

@@ -27,6 +27,8 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
+import main.SecureCryptoConfig.SecurityLevel;
+
 public class JSONReader {
 
 	public static String basePath = null;
@@ -43,7 +45,7 @@ public class JSONReader {
 	 * 
 	 * @param useCase, value from Enum
 	 */
-	public static ArrayList<String> getAlgos(CryptoUseCase useCase, String sccFilePath) {
+	protected static ArrayList<String> getAlgos(CryptoUseCase useCase, String sccFilePath) {
 		ArrayList<String> algos = new ArrayList<String>();
 		try (FileReader reader = new FileReader(sccFilePath)) {
 			// Read JSON file
@@ -60,6 +62,26 @@ public class JSONReader {
 			}
 			return algos;
 		} catch (IOException | ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
+	private static String getVersionSecurityLevel(String sccFilePath) {
+		String result = "";
+		try {
+		FileReader reader = new FileReader(sccFilePath);
+			// Read JSON file
+			Object obj = jsonParser.parse(reader);
+			JSONArray sccList = (JSONArray) obj;
+			JSONObject scc = (JSONObject) sccList.get(0);
+			
+			result = result + (String) scc.get("Version");
+			result = result + "," + (String) scc.get("SecurityLevel");
+			return result;
+		}catch(IOException | ParseException e)
+		{
 			e.printStackTrace();
 			return null;
 		}
@@ -102,9 +124,9 @@ public class JSONReader {
 	 * Prints all data contained in the JSON file
 	 */
 	@SuppressWarnings("unchecked")
-	public static void readJSON() {
+	private static void readJSON() {
 
-		try (FileReader reader = new FileReader(".\\src\\main\\scc_example.json")) {
+		try (FileReader reader = new FileReader(basePath + "SCC_Security_Level_5_2020-0.json")) {
 			// Read JSON file
 			Object obj = jsonParser.parse(reader);
 
@@ -136,71 +158,70 @@ public class JSONReader {
 		}
 	}
 
-	public static String getLatestSCC(int securityLevel) {
+	protected static String getLatestSCC(SecurityLevel level) {
 		HashMap<String, String> one = new HashMap<String, String>();
 		HashMap<String, String> two = new HashMap<String, String>();
 		HashMap<String, String> three = new HashMap<String, String>();
 		HashMap<String, String> four = new HashMap<String, String>();
 		HashMap<String, String> five = new HashMap<String, String>();
 		String[] result;
-		String filename = "";
 		String latest = null;
 
 		int highestYear = 2020;
 		int highestPatch = 0;
 		HashMap<String, String> list = null;
 
-		switch (securityLevel) {
-		case 1:
+		switch (level) {
+		case SecurityLevel_1:
 			list = one;
 			latest = "SCC_SecurityLevel_1_2020-0";
 			break;
-		case 2:
+		case SecurityLevel_2:
 			list = two;
 			latest = "SCC_SecurityLevel_2_2020-0";
 			break;
-		case 3:
+		case SecurityLevel_3:
 			list = three;
 			latest = "SCC_SecurityLevel_3_2020-0";
 			break;
-		case 4:
+		case SecurityLevel_4:
 			list = four;
 			latest = "SCC_SecurityLevel_4_2020-0";
 			break;
-		case 5:
+		case SecurityLevel_5:
 			list = five;
 			latest = "SCC_SecurityLevel_5_2020-0";
 			break;
 		}
 
-		try {
-			basePath = new File(JSONReader.class.getProtectionDomain().getCodeSource().getLocation()
-				    .toURI()).getPath().replace("\\target\\classes", "");
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-		basePath = basePath + "\\src\\main\\";
-		File folder = new File(basePath);
+		File folder = new File(getBasePath());
 		File[] listOfFiles = folder.listFiles();
+		//Define path of SCC files
+		basePath = getBasePath();
 
 		for (int i = 0; i < listOfFiles.length; i++) {
 			if (listOfFiles[i].isFile() && listOfFiles[i].getName().contains(".json")) {
-
-				String[] file = listOfFiles[i].getName().split(".json");
-				filename = file[0];
-
-				result = filename.split("_");
-				switch (result[2]) {
+				String fileName = listOfFiles[i].getName();
+				String path = basePath + fileName;
+				String versionAndLevel = getVersionSecurityLevel(path);
+				
+				result = versionAndLevel.split(",");
+			
+				switch (result[1]) {
 				case "1":
-					one.put(filename, result[3]);
+					one.put(fileName, result[0]);
+					break;
 				case "2":
-					two.put(filename, result[3]);
+					two.put(fileName, result[0]);
 				case "3":
-					three.put(filename, result[3]);
+					three.put(fileName, result[0]);
+					break;
 				case "4":
-					four.put(filename, result[3]);
+					four.put(fileName, result[0]);
+					break;
 				case "5":
-					five.put(filename, result[3]);
+					five.put(fileName, result[0]);
+					break;
 				}
 			}
 		}
@@ -230,10 +251,12 @@ public class JSONReader {
 
 	public static void downloadSCCs() {
 		// first delete old SCCs before getting new ones
-		File f = new File(".\\src\\main\\SCC");
+		basePath = getBasePath();
+
+		File f = new File(basePath + "SCC");
 		if (f.exists()) {
 			try {
-				deleteDirectoryRecursion(Paths.get(".\\src\\main\\SCC"));
+				deleteDirectoryRecursion(Paths.get(basePath + "SCC"));
 			} catch (IOException e1) {
 				e1.printStackTrace();
 			}
@@ -243,7 +266,7 @@ public class JSONReader {
 		try {
 			// Path to repo with SCCs
 			String url = "https://github.com/secureCryptoConfig/secureCryptoConfig/zipball/master/";
-			FileOutputStream fileOutputStream = new FileOutputStream(".\\src\\main\\scc.zip");
+			FileOutputStream fileOutputStream = new FileOutputStream(basePath + "scc.zip");
 			fileOutputStream.getChannel().transferFrom(Channels.newChannel(new URL(url).openStream()), 0,
 					Long.MAX_VALUE);
 			fileOutputStream.close();
@@ -253,8 +276,8 @@ public class JSONReader {
 
 		// Unzip ZIP file
 		try {
-			Path targetDir = Paths.get(".\\src\\main\\");
-			InputStream is = new FileInputStream(".\\src\\main\\scc.zip");
+			Path targetDir = Paths.get(basePath);
+			InputStream is = new FileInputStream(basePath + "scc.zip");
 			ZipInputStream zipIn = new ZipInputStream(is);
 			for (ZipEntry ze; (ze = zipIn.getNextEntry()) != null;) {
 				Path resolvedPath = targetDir.resolve(ze.getName());
@@ -270,15 +293,9 @@ public class JSONReader {
 			e.printStackTrace();
 		}
 
-		// Rename unzipped file
-		File dir = new File(".\\src\\main\\secureCryptoConfig-secureCryptoConfig-356bdde");
-		String newDirName = "SCC";
-		File newDir = new File(dir.getParent() + "\\" + newDirName);
-		dir.renameTo(newDir);
-
 		// delete downloaded ZIP
 		try {
-			deleteDirectoryRecursion(Paths.get(".\\src\\main\\scc.zip"));
+			deleteDirectoryRecursion(Paths.get(basePath + "scc.zip"));
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
@@ -295,5 +312,16 @@ public class JSONReader {
 		}
 		Files.delete(path);
 	}
+
+	private static String getBasePath() {
+		try {
+			basePath = new File(JSONReader.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath()
+					.replace("\\target\\classes", "");
+		} catch (URISyntaxException e) {
+			e.printStackTrace();
+		}
+		return basePath = basePath + "\\src\\main\\";
+	}
+
 
 }

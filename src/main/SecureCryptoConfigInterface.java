@@ -16,6 +16,7 @@ import COSE.HashMessage;
 import COSE.Message;
 import COSE.PasswordHashMessage;
 import COSE.Sign1Message;
+import main.SCCKey.SCCKeyAlgorithm;
 
 abstract interface SecureCryptoConfigInterface {
 
@@ -55,7 +56,7 @@ abstract interface SecureCryptoConfigInterface {
 	// Hashing
 	public AbstractSCCHash hash(PlaintextContainerInterface plaintext) throws CoseException;
 
-	public AbstractSCCHash updateHash(PlaintextContainerInterface plaintext) throws CoseException;
+	public AbstractSCCHash updateHash(AbstractSCCHash hash) throws CoseException;
 
 	public boolean validateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException;
 
@@ -63,7 +64,7 @@ abstract interface SecureCryptoConfigInterface {
 	public AbstractSCCSignature sign(AbstractSCCKeyPair key, PlaintextContainerInterface plaintext)
 			throws CoseException;
 
-	public AbstractSCCSignature updateSignature(AbstractSCCKeyPair key, PlaintextContainerInterface plaintext)
+	public AbstractSCCSignature updateSignature(AbstractSCCKeyPair key, AbstractSCCSignature signature)
 			throws CoseException;
 
 	public boolean validateSignature(AbstractSCCKeyPair key, AbstractSCCSignature signature);
@@ -84,8 +85,20 @@ abstract interface PlaintextContainerInterface {
 
 	abstract String getString(Charset c);
 
-	abstract boolean verifyHash(SCCHash hash);
-
+	abstract boolean validateHash(AbstractSCCHash hash);
+	
+	abstract boolean validatePasswordHash(AbstractSCCPasswordHash passwordHash);
+	
+	abstract SCCCiphertext symmetricEncrypt(AbstractSCCKey key, SecureCryptoConfig scc) throws CoseException;
+	
+	abstract SCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, SecureCryptoConfig scc) throws CoseException;
+	
+	abstract SCCSignature sign(AbstractSCCKeyPair keyPair, SecureCryptoConfig scc) throws CoseException;
+	
+	abstract SCCHash hash(SecureCryptoConfig scc) throws CoseException;
+	
+	abstract SCCPasswordHash passwordHash(SecureCryptoConfig scc) throws CoseException;
+	
 }
 
 
@@ -122,18 +135,22 @@ abstract class AbstractSCCCiphertext {
 
 	abstract byte[] getCipherBytes();
 
-	abstract PlaintextContainer asymmetricDecrypt(SCCKeyPair keyPair);
+	abstract PlaintextContainer asymmetricDecrypt(AbstractSCCKeyPair keyPair);
 
-	abstract PlaintextContainer symmetricDecrypt(SCCKey key);
+	abstract PlaintextContainer symmetricDecrypt(AbstractSCCKey key);
+	
+	abstract SCCCiphertext symmetricReEncrypt(AbstractSCCKey key, SecureCryptoConfig scc) throws CoseException ;
+	
+	abstract SCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair, SecureCryptoConfig scc) throws CoseException;
 
 }
 
 abstract class AbstractSCCKey {
 
 	byte[] key;
-	String algorithm;
+	SCCKeyAlgorithm algorithm;
 
-	protected AbstractSCCKey(byte[] key, String algorithm) {
+	protected AbstractSCCKey(byte[] key, SCCKeyAlgorithm algorithm) {
 		this.key = key;
 		this.algorithm = algorithm;
 
@@ -149,14 +166,10 @@ abstract class AbstractSCCKey {
 
 abstract class AbstractSCCKeyPair {
 	KeyPair pair;
-	String algorithm;
 
-	protected AbstractSCCKeyPair(KeyPair pair, String algorithm) {
-		this.algorithm = algorithm;
+	protected AbstractSCCKeyPair(KeyPair pair) {
 		this.pair = pair;
 	}
-
-	abstract String getAlgorithm();
 
 	abstract KeyPair getKeyPair();
 
@@ -168,8 +181,10 @@ abstract class AbstractSCCKeyPair {
 
 abstract class AbstractSCCHash {
 
-	abstract boolean validateHash(PlaintextContainer plain);
+	abstract boolean validateHash(PlaintextContainerInterface plain);
 
+	abstract SCCHash updateHash() throws CoseException;
+	
 	abstract byte[] getMessageBytes();
 
 	abstract HashMessage convertByteToMsg();
@@ -183,7 +198,8 @@ abstract class AbstractSCCHash {
 }
 
 abstract class AbstractSCCPasswordHash {
-	abstract boolean validatePasswordHash(PlaintextContainer password);
+	
+	abstract boolean validatePasswordHash(PlaintextContainerInterface password);
 
 	abstract byte[] getMessageBytes();
 
@@ -213,11 +229,13 @@ abstract class AbstractSCCSignature {
 
 	abstract AlgorithmID getAlgorithmIdentifier() throws CoseException;
 
-	abstract boolean validateSignature(SCCKeyPair key);
+	abstract boolean validateSignature(AbstractSCCKeyPair key);
 
 	abstract PlaintextContainerInterface getPlain();
 
 	abstract PlaintextContainer getSignature();
+	
+	abstract SCCSignature updateSignature (AbstractSCCKeyPair keyPair, SecureCryptoConfig scc) throws CoseException;
 
 }
 

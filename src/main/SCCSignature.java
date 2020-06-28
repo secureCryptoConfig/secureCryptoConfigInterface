@@ -15,7 +15,7 @@ public class SCCSignature extends AbstractSCCSignature{
 	}
 
 	@Override
-	public boolean validateSignature(SCCKeyPair key) {
+	public boolean validateSignature(AbstractSCCKeyPair key) {
 		return scc.validateSignature(key, this);
 	}
 
@@ -50,6 +50,11 @@ public class SCCSignature extends AbstractSCCSignature{
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@Override
+	public SCCSignature updateSignature(AbstractSCCKeyPair keyPair, SecureCryptoConfig scc) throws CoseException {
+		return scc.updateSignature(keyPair, this);
 	}
 
 }

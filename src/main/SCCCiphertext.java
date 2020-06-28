@@ -12,8 +12,8 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	SecureCryptoConfig scc = new SecureCryptoConfig();
 	
 	// for COSE
-	public SCCCiphertext(PlaintextContainerInterface plaintext, byte[] cipher, AbstractSCCKey keyPair, byte[] msg) {
-		super(plaintext, cipher, keyPair, msg);
+	public SCCCiphertext(PlaintextContainerInterface plaintext, byte[] cipher, AbstractSCCKey key, byte[] msg) {
+		super(plaintext, cipher, key, msg);
 	}
 	
 	public SCCCiphertext(PlaintextContainerInterface plain, byte[] cipher, AbstractSCCKeyPair keyPair, byte[] msg) {
@@ -55,7 +55,7 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 
 
 	@Override
-	public PlaintextContainer symmetricDecrypt(SCCKey key) {
+	public PlaintextContainer symmetricDecrypt(AbstractSCCKey key) {
 		try {
 			return scc.symmetricDecrypt(key, this);
 		} catch (CoseException e) {
@@ -65,13 +65,23 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	}
 
 	@Override
-	public PlaintextContainer asymmetricDecrypt(SCCKeyPair keyPair) {
+	public PlaintextContainer asymmetricDecrypt(AbstractSCCKeyPair keyPair) {
 		try {
 			return scc.asymmetricDecrypt(keyPair, this);
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@Override
+	public SCCCiphertext symmetricReEncrypt(AbstractSCCKey key, SecureCryptoConfig scc) throws CoseException  {
+		return scc.symmetricReEncrypt(key, this);
+	}
+
+	@Override
+	public SCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair, SecureCryptoConfig scc) throws CoseException {
+		return scc.asymmetricReEncrypt(keyPair, this);
 	}
 
 }

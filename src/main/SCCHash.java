@@ -21,7 +21,7 @@ public class SCCHash extends AbstractSCCHash{
 	}
 	
 	@Override
-	public boolean validateHash(PlaintextContainer plain) {
+	public boolean validateHash(PlaintextContainerInterface plain) {
 		try {
 			return scc.validateHash(plain, this);
 		} catch (CoseException e) {
@@ -61,5 +61,10 @@ public class SCCHash extends AbstractSCCHash{
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@Override
+	public SCCHash updateHash() throws CoseException {
+		return scc.hash(this.plaintext);
 	}
 }

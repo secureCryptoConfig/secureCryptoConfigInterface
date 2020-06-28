@@ -19,8 +19,8 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 		AsymmetricEncryption, Signing
 	}
 
-	protected SCCKeyPair(KeyPair pair, String algorithm) {
-		super(pair, algorithm);
+	public SCCKeyPair(KeyPair pair) {
+		super(pair);
 	}
 
 	@Override
@@ -33,12 +33,6 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 		return this.pair.getPrivate();
 	}
 	
-
-	@Override
-	public String getAlgorithm() {
-		return this.algorithm;
-	}
-
 
 	@Override
 	public KeyPair getKeyPair() {
@@ -79,13 +73,13 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 
 				switch (chosenAlgorithmID) {
 				//Asymmetric
-				case RSA_SHA_256:
+				case RSA_SHA_512:
 					return createAsymmetricKeyPair("RSA", 4096);
 				//Signing
 				case ECDSA_512:
 					try {
 						OneKey oneKey = OneKey.generateKey(AlgorithmID.ECDSA_512);
-						return new SCCKeyPair(new KeyPair(oneKey.AsPublicKey(), oneKey.AsPrivateKey()), AlgorithmID.ECDSA_512.toString());
+						return new SCCKeyPair(new KeyPair(oneKey.AsPublicKey(), oneKey.AsPrivateKey()));
 					} catch (CoseException e) {
 						e.printStackTrace();
 					}
@@ -103,7 +97,7 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 			KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algo);
 			keyPairGenerator.initialize(keysize);
 			KeyPair keyPair = keyPairGenerator.generateKeyPair();
-			SCCKeyPair pair = new SCCKeyPair(keyPair, algo);
+			SCCKeyPair pair = new SCCKeyPair(keyPair);
 			return pair;
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
