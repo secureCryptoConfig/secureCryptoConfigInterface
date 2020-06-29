@@ -88,7 +88,7 @@ class SecureCryptoConfigTest {
 		byte[] password = "Password!".getBytes(StandardCharsets.UTF_8);
 		SCCKey key = scc.createKey(new PlaintextContainer(password));
 		SCCCiphertext cipherText = scc.symmetricEncrypt(key, new PlaintextContainer(plaintext));
-		byte[] ciphertextBytes = cipher.getCipherBytes();
+		byte[] ciphertextBytes = cipherText.getCipherBytes();
 	}
 
 	// - String encrypt, return: encrypted String + new key
@@ -108,7 +108,7 @@ class SecureCryptoConfigTest {
 		SCCKey key = scc.createKey(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)));
 		SCCCiphertext cipherText = scc.symmetricEncrypt(key,
 				new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
-		String ciphertextBytes = cipher.getCipherAsString(StandardCharsets.UTF_8);
+		String ciphertextBytes = cipherText.getCipherAsString(StandardCharsets.UTF_8);
 	}
 
 	// - byte[] encrypt + key, return: encrypted byte[]
@@ -122,7 +122,7 @@ class SecureCryptoConfigTest {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCKey key = new SCCKey(existingKeyBytes, SCCKeyAlgorithm.AES);
 		SCCCiphertext cipherText = scc.symmetricEncrypt(key, new PlaintextContainer(plaintext));
-		byte[] ciphertextBytes = cipher.getCipherBytes();
+		byte[] ciphertextBytes = cipherText.getCipherBytes();
 
 	}
 
@@ -138,7 +138,7 @@ class SecureCryptoConfigTest {
 		SCCKey key = new SCCKey(existingKeyBytes, SCCKeyAlgorithm.AES);
 		SCCCiphertext cipherText = scc.symmetricEncrypt(key,
 				new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
-		String ciphertextBytes = cipher.getCipherAsString(StandardCharsets.UTF_8);
+		String ciphertextBytes = cipherText.getCipherAsString(StandardCharsets.UTF_8);
 	}
 
 	// - encrypted byte[] decrypt + key, return: decrypted byte[]
@@ -149,7 +149,7 @@ class SecureCryptoConfigTest {
 		// Encryption
 		SCCCiphertext cipherText = scc.symmetricEncrypt(key, plaintextContainer);
 		// Decryption
-		PlaintextContainer plain = cipher.symmetricDecrypt(key);
+		PlaintextContainer plain = cipherText.symmetricDecrypt(key);
 		byte[] decrypted = plain.getByteArray();
 	}
 
@@ -162,7 +162,7 @@ class SecureCryptoConfigTest {
 		SCCCiphertext cipherText = scc.symmetricEncrypt(key,
 				new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
 		// Decryption
-		PlaintextContainer plain = cipher.symmetricDecrypt(key);
+		PlaintextContainer plain = cipherText.symmetricDecrypt(key);
 		String decrypted = plain.getString(StandardCharsets.UTF_8);
 	}
 
@@ -176,7 +176,7 @@ class SecureCryptoConfigTest {
 		// Encryption
 		SCCCiphertext cipherText = scc.symmetricEncrypt(key, plaintextContainer);
 		// Decryption
-		PlaintextContainer plain = cipher.symmetricDecrypt(key);
+		PlaintextContainer plain = cipherText.symmetricDecrypt(key);
 		byte[] decrypted = plain.getByteArray();
 	}
 
@@ -190,7 +190,7 @@ class SecureCryptoConfigTest {
 		SCCCiphertext cipherText = scc.symmetricEncrypt(key,
 				new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
 		// Decryption
-		PlaintextContainer plain = cipher.symmetricDecrypt(key);
+		PlaintextContainer plain = cipherText.symmetricDecrypt(key);
 		String decrypted = plain.getString(StandardCharsets.UTF_8);
 	}
 
@@ -202,7 +202,7 @@ class SecureCryptoConfigTest {
 		// Encryption
 		SCCCiphertext cipherText = scc.symmetricEncrypt(key, new PlaintextContainer(plaintext));
 		// ReEncryption
-		SCCCiphertext updatedCiphertext = scc.symmetricReEncrypt(key, cipher);
+		SCCCiphertext updatedCiphertext = scc.symmetricReEncrypt(key, cipherText);
 		byte[] updatedCiphertextBytes = updatedCiphertext.getCipherBytes();
 	}
 
@@ -215,7 +215,7 @@ class SecureCryptoConfigTest {
 		SCCCiphertext cipherText = scc.symmetricEncrypt(key,
 				new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
 		// ReEncryption
-		SCCCiphertext updatedCiphertext = scc.symmetricReEncrypt(key, cipher);
+		SCCCiphertext updatedCiphertext = scc.symmetricReEncrypt(key, cipherText);
 		String updatedCiphertextBytes = updatedCiphertext.getCipherAsString(StandardCharsets.UTF_8);
 	}
 
@@ -228,7 +228,7 @@ class SecureCryptoConfigTest {
 		// Encryption
 		SCCCiphertext cipherText = scc.symmetricEncrypt(key, plaintextContainer);
 		// ReEncryption
-		SCCCiphertext updatedCiphertext = scc.symmetricReEncrypt(key, cipher);
+		SCCCiphertext updatedCiphertext = scc.symmetricReEncrypt(key, cipherText);
 		byte[] updatedCiphertextBytes = updatedCiphertext.getCipherBytes();
 	}
 
@@ -242,7 +242,7 @@ class SecureCryptoConfigTest {
 		SCCCiphertext cipherText = scc.symmetricEncrypt(key,
 				new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
 		// ReEncryption
-		SCCCiphertext updatedCiphertext = scc.symmetricReEncrypt(key, cipher);
+		SCCCiphertext updatedCiphertext = scc.symmetricReEncrypt(key, cipherText);
 		String updatedCiphertextBytes = updatedCiphertext.getCipherAsString(StandardCharsets.UTF_8);
 	}
 
@@ -275,7 +275,7 @@ class SecureCryptoConfigTest {
 		SCCKeyPair pair = scc.createKeyPair(keyPairUseCase.AsymmetricEncryption);
 
 		SCCCiphertext ciphertextBytes = scc.asymmetricEncrypt(pair, plaintextContainer);
-		PlaintextContainer decrypted = scc.asymmetricDecrypt(pair, encrypted);
+		PlaintextContainer decrypted = scc.asymmetricDecrypt(pair, ciphertextBytes);
 		// PlaintextContainer decrypted = encrypted.asymmetricDecrypt(pair);
 
 		assertEquals(inputPlaintext, decrypted.getString(StandardCharsets.UTF_8));
