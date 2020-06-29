@@ -1,5 +1,7 @@
 package main;
 
+import java.nio.charset.Charset;
+
 import com.upokecenter.cbor.CBORObject;
 
 import COSE.AlgorithmID;
@@ -7,9 +9,10 @@ import COSE.CoseException;
 import COSE.HeaderKeys;
 import COSE.Sign1Message;
 
-public class SCCSignature extends AbstractSCCSignature{
+public class SCCSignature extends AbstractSCCSignature {
 
 	SecureCryptoConfig scc = new SecureCryptoConfig();
+
 	public SCCSignature(PlaintextContainer plaintext, PlaintextContainer signature, byte[] signatureMsg) {
 		super(plaintext, signature, signatureMsg);
 	}
@@ -25,20 +28,20 @@ public class SCCSignature extends AbstractSCCSignature{
 	}
 
 	@Override
-	public AlgorithmID getAlgorithmIdentifier() throws CoseException  {
-		Sign1Message msg = convertByteToMsg();
-		CBORObject obj = msg.findAttribute(HeaderKeys.Algorithm);
-		AlgorithmID alg = AlgorithmID.FromCBOR(obj);
-		return alg;
+	public AlgorithmID getAlgorithmIdentifier() {
+		try {
+			Sign1Message msg = convertByteToMsg();
+			CBORObject obj = msg.findAttribute(HeaderKeys.Algorithm);
+			AlgorithmID alg = AlgorithmID.FromCBOR(obj);
+			return alg;
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Override
-	public PlaintextContainer getPlain() {
-		return (PlaintextContainer) this.plaintext;
-	}
-
-	@Override
-	public PlaintextContainer getSignature() {
+	public PlaintextContainer getSignatureAsPlaintextContainer() {
 		return (PlaintextContainer) this.signature;
 	}
 
@@ -53,8 +56,28 @@ public class SCCSignature extends AbstractSCCSignature{
 	}
 
 	@Override
-	public SCCSignature updateSignature(AbstractSCCKeyPair keyPair, SecureCryptoConfig scc) throws CoseException {
-		return scc.updateSignature(keyPair, this);
+	public SCCSignature updateSignature(AbstractSCCKeyPair keyPair, SecureCryptoConfig scc) {
+		try {
+			return scc.updateSignature(keyPair, this);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	PlaintextContainerInterface getPlaintextAsPlaintextContainer() {
+		return this.plaintext;
+	}
+
+	@Override
+	String getPlaintextAsString(Charset c) {
+		return new String(this.plaintext.getByteArray(), c);
+	}
+
+	@Override
+	String getSignatureAsPlaintextContainer(Charset c) {
+		return new String(this.signature.getByteArray(), c);
 	}
 
 }

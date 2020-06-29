@@ -1,5 +1,7 @@
 package main;
 
+import java.nio.charset.Charset;
+
 import com.upokecenter.cbor.CBORObject;
 
 import COSE.AlgorithmID;
@@ -9,14 +11,8 @@ import COSE.PasswordHashMessage;
 
 public class SCCPasswordHash extends AbstractSCCPasswordHash {
 
-	byte[] hashMsg;
-	PlaintextContainer plaintext, hash;
-	SecureCryptoConfig scc = new SecureCryptoConfig();
-	
 	public SCCPasswordHash(PlaintextContainer password, PlaintextContainer hash, byte[] hashMsg) {
-		this.hashMsg = hashMsg;
-		this.hash = hash;
-		this.plaintext = password;
+		super(password, hash, hashMsg);
 	}
 
 	@Override
@@ -35,22 +31,21 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	}
 
 	@Override
-	public AlgorithmID getAlgorithmIdentifier() throws CoseException {
-		PasswordHashMessage msg = convertByteToMsg();
-		CBORObject obj = msg.findAttribute(HeaderKeys.Algorithm);
-		AlgorithmID alg = AlgorithmID.FromCBOR(obj);
-		return alg;
+	public AlgorithmID getAlgorithmIdentifier() {
+		try {
+			PasswordHashMessage msg = convertByteToMsg();
+			CBORObject obj = msg.findAttribute(HeaderKeys.Algorithm);
+			AlgorithmID alg = AlgorithmID.FromCBOR(obj);
+			return alg;
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Override
-	public PlaintextContainer getPlain() {
-		
-		return this.plaintext;
-	}
-
-	@Override
-	public PlaintextContainer getHashedContent() {
-		return this.hash;
+	public PlaintextContainer getHashAsPlaintextContainer() {
+		return (PlaintextContainer) this.hash;
 	}
 
 	@Override
@@ -61,5 +56,20 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@Override
+	PlaintextContainerInterface getPlaintextAsPlaintextContainer() {
+		return this.plaintext;
+	}
+
+	@Override
+	String getPlaintextAsString(Charset c) {
+		return new String(this.plaintext.getByteArray(), c);
+	}
+
+	@Override
+	String getHashAsString(Charset c) {
+		return new String(this.hash.getByteArray(), c);
 	}
 }

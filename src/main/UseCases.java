@@ -79,7 +79,7 @@ public class UseCases {
 			
 			fileOutputStream.close();
 			inputStream.close();
-			SCCCiphertext s = new SCCCiphertext(new PlaintextContainer(plain), encrypted, key, encrypt0Message.EncodeToBytes());
+			SCCCiphertext s = new SCCCiphertext(new PlaintextContainer(plain), encrypted, encrypt0Message.EncodeToBytes());
 			return s;
 		} catch (IOException | CoseException e) {
 
@@ -128,7 +128,7 @@ public class UseCases {
 			encrypt0Message.encrypt(key.key);
 			byte[] encrypted = encrypt0Message.getEncryptedContent();
 
-			return new SCCCiphertext(plaintext, encrypted, key, encrypt0Message.EncodeToBytes());
+			return new SCCCiphertext(plaintext, encrypted, encrypt0Message.EncodeToBytes());
 
 		} catch (CoseException e) {
 			e.printStackTrace();
@@ -198,7 +198,7 @@ public class UseCases {
 			m3.encrypt(keyPair.getKeyPair());
 			byte[] encrypted = m3.getEncryptedContent();
 
-			return new SCCCiphertext(plaintext, encrypted, keyPair, m3.EncodeToBytes());
+			return new SCCCiphertext(plaintext, encrypted, m3.EncodeToBytes());
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;

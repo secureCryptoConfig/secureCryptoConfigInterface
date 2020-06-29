@@ -1,5 +1,7 @@
 package main;
 
+import java.nio.charset.Charset;
+
 import com.upokecenter.cbor.CBORObject;
 
 import COSE.AlgorithmID;
@@ -10,14 +12,10 @@ import COSE.HeaderKeys;
 public class SCCHash extends AbstractSCCHash{
 
 	SecureCryptoConfig scc = new SecureCryptoConfig();
-	public byte[] hashMsg;
-	PlaintextContainer plaintext, hash;
 	
 	public SCCHash(PlaintextContainer plaintext, PlaintextContainer hash, byte[] hashMsg)
 	{
-		this.hashMsg = hashMsg;
-		this.hash = hash;
-		this.plaintext = plaintext;
+		super(plaintext, hash, hashMsg);
 	}
 	
 	@Override
@@ -36,21 +34,23 @@ public class SCCHash extends AbstractSCCHash{
 	}
 
 	@Override
-	public AlgorithmID getAlgorithmIdentifier() throws CoseException {
+	public AlgorithmID getAlgorithmIdentifier() {
+		try {
 		HashMessage msg = convertByteToMsg();
 		CBORObject obj = msg.findAttribute(HeaderKeys.Algorithm);
 		AlgorithmID alg = AlgorithmID.FromCBOR(obj);
 		return alg;
+		}catch(CoseException e)	
+		{
+			e.printStackTrace();
+			return null;
+		}
 	}
 
-	@Override
-	public PlaintextContainerInterface getPlain() {
-		return this.plaintext;
-	}
 
 	@Override
-	public PlaintextContainer getHashedContent() {
-		return this.hash;
+	public PlaintextContainer getHashAsPlaintextContainer() {
+		return (PlaintextContainer) this.hash;
 	}
 
 	@Override
@@ -64,7 +64,27 @@ public class SCCHash extends AbstractSCCHash{
 	}
 
 	@Override
-	public SCCHash updateHash() throws CoseException {
-		return scc.hash(this.plaintext);
+	public SCCHash updateHash() {
+		try {
+			return scc.hash(this.plaintext);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public PlaintextContainerInterface getPlaintextAsPlaintextContainer() {
+		return this.plaintext;
+	}
+
+	@Override
+	public String getPlaintextAsString(Charset c) {
+		return new String (this.plaintext.getByteArray(), c);
+	}
+	
+	public String getHashAsString(Charset c)
+	{
+		return new String (this.hash.getByteArray(), c);
 	}
 }

@@ -174,23 +174,23 @@ public class JSONReader {
 		switch (level) {
 		case SecurityLevel_1:
 			list = one;
-			latest = "SCC_SecurityLevel_1_2020-0";
+			latest = "SCC_SecurityLevel_1_2020-0.json";
 			break;
 		case SecurityLevel_2:
 			list = two;
-			latest = "SCC_SecurityLevel_2_2020-0";
+			latest = "SCC_SecurityLevel_2_2020-0.json";
 			break;
 		case SecurityLevel_3:
 			list = three;
-			latest = "SCC_SecurityLevel_3_2020-0";
+			latest = "SCC_SecurityLevel_3_2020-0.json";
 			break;
 		case SecurityLevel_4:
 			list = four;
-			latest = "SCC_SecurityLevel_4_2020-0";
+			latest = "SCC_SecurityLevel_4_2020-0.json";
 			break;
 		case SecurityLevel_5:
 			list = five;
-			latest = "SCC_SecurityLevel_5_2020-0";
+			latest = "SCC_SecurityLevel_5_2020-0.json";
 			break;
 		}
 
@@ -245,7 +245,7 @@ public class JSONReader {
 			}
 		}
 
-		return latest + ".json";
+		return latest ;
 
 	}
 

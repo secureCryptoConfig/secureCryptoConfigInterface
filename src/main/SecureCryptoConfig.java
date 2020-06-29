@@ -3,11 +3,20 @@ package main;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.security.KeyPair;
+import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.KeySpec;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashSet;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
+import javax.crypto.spec.SecretKeySpec;
 import javax.management.openmbean.InvalidKeyException;
 
 import com.upokecenter.cbor.CBORObject;
@@ -21,15 +30,17 @@ import COSE.OneKey;
 import COSE.PasswordHashMessage;
 import COSE.Sign1Message;
 import main.JSONReader.CryptoUseCase;
+import main.SCCKey.SCCKeyAlgorithm;
+import main.SCCKeyPair.keyPairUseCase;
 
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
-	protected static String sccFileName;
+	public String sccFileName;
 
-	public static enum SecurityLevel
-	{
+	public static enum SecurityLevel {
 		SecurityLevel_1, SecurityLevel_2, SecurityLevel_3, SecurityLevel_4, SecurityLevel_5
 	}
+
 	static enum AlgorithmIDEnum {
 		// symmetric:
 		// Algo_Mode_key_IV
@@ -46,19 +57,19 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	public SecureCryptoConfig() {
 		SecurityLevel level = SecurityLevel.SecurityLevel_5;
-		SecureCryptoConfig.sccFileName = JSONReader.getLatestSCC(level);
+		this.sccFileName = JSONReader.getLatestSCC(level);
 	}
 
-	public void setSCCFile(String sccFileName) {
-		SecureCryptoConfig.sccFileName = sccFileName;
+	public void setSCCFile(String sccFileNameNew) {
+		this.sccFileName = sccFileNameNew;
 	}
 
 	public void setSecurityLevel(SecurityLevel level) {
-		SecureCryptoConfig.sccFileName = JSONReader.getLatestSCC(level);
+		this.sccFileName = JSONReader.getLatestSCC(level);
 	}
 
 	public String getSccFile() {
-		return SecureCryptoConfig.sccFileName;
+		return this.sccFileName;
 	}
 
 	protected static HashSet<String> getEnums() {
@@ -76,9 +87,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			throws CoseException {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
-		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption,
-				JSONReader.basePath + SecureCryptoConfig.sccFileName);
-
+		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, JSONReader.basePath + this.sccFileName);
 		for (int i = 0; i < algorithms.size(); i++) {
 
 			String sccalgorithmID = algorithms.get(i);
@@ -93,8 +102,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				case AES_GCM_256_96:
 					return UseCases.createMessage(plaintext, key, AlgorithmID.AES_GCM_256);
 				case AES_GCM_128_96:
-					if (key.getByteArray().length < 16)
-					{
+					if (key.getByteArray().length < 16) {
 						throw new InvalidKeyException("Key has not the correct size. At least 256 bit are needed!");
 					}
 					return UseCases.createMessage(plaintext, key, AlgorithmID.AES_GCM_128);
@@ -120,9 +128,6 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		}
 	}
 
-	
-	
-	
 	@Override
 	public SCCCiphertext symmetricReEncrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext) throws CoseException {
 
@@ -130,13 +135,11 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		return symmetricEncrypt(key, decrypted);
 	}
 
-
 	@Override
 	public SCCCiphertext fileEncrypt(AbstractSCCKey key, String filepath) throws NoSuchAlgorithmException {
-		
+
 		ArrayList<String> algorithms = new ArrayList<String>();
-		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption,
-				JSONReader.basePath + SecureCryptoConfig.sccFileName);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, JSONReader.basePath + this.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 
@@ -151,14 +154,12 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				switch (chosenAlgorithmID) {
 				case AES_GCM_256_96:
-					if (key.getByteArray().length < 32)
-					{
+					if (key.getByteArray().length < 32) {
 						throw new SecurityException("Key has not the correct size. At least 256 bit are needed!");
 					}
 					return UseCases.fileEncryptWithParams(key, filepath, AlgorithmID.AES_GCM_256);
 				case AES_GCM_128_96:
-					if (key.getByteArray().length < 16)
-					{
+					if (key.getByteArray().length < 16) {
 						throw new SecurityException("Key has not the correct size. At least 256 bit are needed!");
 					}
 					return UseCases.fileEncryptWithParams(key, filepath, AlgorithmID.AES_GCM_256);
@@ -171,7 +172,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		}
 		throw new NoSuchAlgorithmException();
 	}
-	
+
 	@Override
 	public PlaintextContainer fileDecrypt(AbstractSCCKey key, AbstractSCCCiphertext ciphertext, String filepath) {
 		try {
@@ -179,12 +180,12 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			// Encrypt0Message msg = sccciphertext.msg;
 			byte[] decrypted = msg.decrypt(key.getByteArray());
 			PlaintextContainer p = new PlaintextContainer(decrypted);
-			
+
 			FileOutputStream fileOutputStream = new FileOutputStream(filepath);
 			fileOutputStream.write(decrypted);
 
 			fileOutputStream.close();
-			
+
 			return p;
 		} catch (IOException | CoseException e) {
 			e.printStackTrace();
@@ -192,15 +193,12 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		return null;
 	}
 
-
-
 	@Override
 	public SCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext)
 			throws CoseException {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
-		algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption,
-				JSONReader.basePath + SecureCryptoConfig.sccFileName);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption, JSONReader.basePath + this.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 
@@ -252,7 +250,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
 		// read our Algorithms for symmetric encryption out of JSON
-		algorithms = JSONReader.getAlgos(CryptoUseCase.Hashing, JSONReader.basePath + SecureCryptoConfig.sccFileName);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.Hashing, JSONReader.basePath + this.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 			// get first one, later look what to do if first is not validate -> take next
@@ -280,17 +278,16 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	// Hash again
 	@Override
 	public AbstractSCCHash updateHash(AbstractSCCHash hash) throws CoseException {
-		return hash(hash.getPlain());
+		return hash(hash.getPlaintextAsPlaintextContainer());
 	}
 
 	// Hash same plain two times and look if it is the same
 	@Override
 	public boolean validateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException {
-		String s = hash.getHashedContent().getBase64();
+		String s = hash.getHashAsPlaintextContainer().getBase64();
 
 		SCCHash hash1 = hash(plaintext);
-		String s1 = hash1.getHashedContent().getBase64();
-
+		String s1 = hash1.getHashAsPlaintextContainer().getBase64();
 
 		return s.equals(s1);
 	}
@@ -300,7 +297,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
 		// read our Algorithms for symmetric encryption out of JSON
-		algorithms = JSONReader.getAlgos(CryptoUseCase.Signing, JSONReader.basePath + SecureCryptoConfig.sccFileName);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.Signing, JSONReader.basePath + this.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 			// get first one, later look what to do if first is not validate -> take next
@@ -347,8 +344,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
 		// read our Algorithms for symmetric encryption out of JSON
-		algorithms = JSONReader.getAlgos(CryptoUseCase.PasswordHashing,
-				JSONReader.basePath + SecureCryptoConfig.sccFileName);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.PasswordHashing, JSONReader.basePath + this.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 			// get first one, later look what to do if first is not validate -> take next
@@ -392,11 +388,11 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCCiphertextOutputStream streamEncrypt(AbstractSCCKey key, InputStream inputStream) throws NoSuchAlgorithmException {
+	public SCCCiphertextOutputStream streamEncrypt(AbstractSCCKey key, InputStream inputStream)
+			throws NoSuchAlgorithmException {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
-		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption,
-				JSONReader.basePath + SecureCryptoConfig.sccFileName);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, JSONReader.basePath + this.sccFileName);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 
@@ -425,27 +421,199 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		throw new NoSuchAlgorithmException();
 	}
 
+	/**
+	 * @Override public PlaintextOutputStream streamDecrypt(AbstractSCCKey key,
+	 *           AbstractSCCCiphertextOutputStream ciphertext, InputStream
+	 *           inputStream) { try {
+	 * 
+	 *           Cipher cipher = Cipher.getInstance(ciphertext.param.algo);
+	 *           GCMParameterSpec spec = new
+	 *           GCMParameterSpec(ciphertext.param.tagLength,
+	 *           ciphertext.param.nonce); cipher.init(Cipher.DECRYPT_MODE,
+	 *           key.getSecretKey(), spec);
+	 * 
+	 * 
+	 *           PlaintextOutputStream plaintextStream = new
+	 *           PlaintextOutputStream(inputStream, cipher); return plaintextStream;
+	 * 
+	 *           } catch (InvalidKeyException | InvalidAlgorithmParameterException |
+	 *           NoSuchAlgorithmException | NoSuchPaddingException e) {
+	 * 
+	 *           e.printStackTrace(); } return null; }
+	 **/
 
-/**
-	@Override
-	public PlaintextOutputStream streamDecrypt(AbstractSCCKey key, AbstractSCCCiphertextOutputStream ciphertext, InputStream inputStream) {
-		try {
-			
-			Cipher cipher = Cipher.getInstance(ciphertext.param.algo);
-			GCMParameterSpec spec = new GCMParameterSpec(ciphertext.param.tagLength, ciphertext.param.nonce);
-			cipher.init(Cipher.DECRYPT_MODE, key.getSecretKey(), spec);
+	public SCCKey createSymmetricKey() throws CoseException {
 
+		SCCKeyAlgorithm algo = null;
+		int keysize = 0;
+		ArrayList<String> algorithms = new ArrayList<String>();
 
-			PlaintextOutputStream plaintextStream = new PlaintextOutputStream(inputStream, cipher);
-			return plaintextStream;
-			
-		} catch (InvalidKeyException | InvalidAlgorithmParameterException | NoSuchAlgorithmException | NoSuchPaddingException e) {
+		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, JSONReader.basePath + this.getSccFile());
+		for (int i = 0; i < algorithms.size(); i++) {
 
-			e.printStackTrace();
+			String sccalgorithmID = algorithms.get(i);
+
+			// TODO mapping from sting to enum:
+
+			if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
+
+				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+
+				switch (chosenAlgorithmID) {
+				case AES_GCM_256_96:
+					algo = SCCKeyAlgorithm.AES;
+					keysize = 256;
+					break;
+				case AES_GCM_128_96:
+					algo = SCCKeyAlgorithm.AES;
+					keysize = 128;
+					break;
+				default:
+					break;
+
+				}
+
+				KeyGenerator keyGen;
+				try {
+					keyGen = KeyGenerator.getInstance(algo.toString());
+					keyGen.init(keysize);
+					SecretKey key = keyGen.generateKey();
+					return new SCCKey(key.getEncoded(), algo);
+				} catch (NoSuchAlgorithmException e) {
+					e.printStackTrace();
+					return null;
+				}
+			}
+
 		}
-		return null;
+
+		throw new CoseException("No supported algorithms! Key creation not possible!");
+
 	}
-	**/
+
+	public SCCKey createKey(PlaintextContainer password) throws CoseException {
+		String algo = null;
+		SCCKeyAlgorithm keyAlgo = null;
+		int keysize = 0, iterations = 0, saltLength = 0;
+
+		ArrayList<String> algorithms = new ArrayList<String>();
+
+		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, JSONReader.basePath + this.sccFileName);
+
+		for (int i = 0; i < algorithms.size(); i++) {
+
+			String sccalgorithmID = algorithms.get(i);
+
+			// TODO mapping from sting to enum:
+
+			if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
+
+				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+
+				switch (chosenAlgorithmID) {
+				case AES_GCM_256_96:
+					algo = "PBKDF2WithHmacSHA512";
+					keyAlgo = SCCKeyAlgorithm.AES;
+					keysize = 256;
+					iterations = 10000;
+					saltLength = 64;
+					break;
+				case AES_GCM_128_96:
+					algo = "PBKDF2WithHmacSHA512";
+					keyAlgo = SCCKeyAlgorithm.AES;
+					keysize = 128;
+					iterations = 10000;
+					saltLength = 64;
+					break;
+				default:
+					break;
+
+				}
+				try {
+
+					byte[] salt = UseCases.generateRandomByteArray(saltLength);
+
+					SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(algo);
+					KeySpec passwordBasedEncryptionKeySpec = new PBEKeySpec(password.getBase64().toCharArray(), salt,
+							iterations, keysize);
+					SecretKey secretKeyFromPBKDF2 = secretKeyFactory.generateSecret(passwordBasedEncryptionKeySpec);
+					SecretKey key = new SecretKeySpec(secretKeyFromPBKDF2.getEncoded(), keyAlgo.toString());
+					return new SCCKey(key.getEncoded(), keyAlgo);
+				} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+					e.printStackTrace();
+					return null;
+
+				}
+
+			}
+
+		}
+
+		throw new CoseException("No supported algorithms! Key creation not possible!");
+
+	}
+
+	public SCCKeyPair createKeyPair(keyPairUseCase useCase) throws CoseException, NoSuchAlgorithmException {
+		CryptoUseCase c;
+		switch (useCase) {
+		case Signing:
+			c = CryptoUseCase.Signing;
+			return createNewKeyPair(c);
+		case AsymmetricEncryption:
+			c = CryptoUseCase.AsymmetricEncryption;
+			return createNewKeyPair(c);
+		default:
+			return null;
+		}
+	}
+
+	private SCCKeyPair createNewKeyPair(CryptoUseCase c) throws NoSuchAlgorithmException {
+		ArrayList<String> algorithms = new ArrayList<String>();
+
+		algorithms = JSONReader.getAlgos(c, JSONReader.basePath + this.sccFileName);
+
+		for (int i = 0; i < algorithms.size(); i++) {
+
+			// get first one, later look what to do if first is not validate -> take next
+			String sccalgorithmID = algorithms.get(i);
+
+			// TODO mapping from sting to enum:
+
+			if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
+				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+
+				switch (chosenAlgorithmID) {
+				// Asymmetric
+				case RSA_SHA_512:
+					return createAsymmetricKeyPair("RSA", 4096);
+				// Signing
+				case ECDSA_512:
+					try {
+						OneKey oneKey = OneKey.generateKey(AlgorithmID.ECDSA_512);
+						return new SCCKeyPair(new KeyPair(oneKey.AsPublicKey(), oneKey.AsPrivateKey()));
+					} catch (CoseException e) {
+						e.printStackTrace();
+					}
+				default:
+					break;
+				}
+			}
+
+		}
+		throw new NoSuchAlgorithmException();
+	}
+
+	private SCCKeyPair createAsymmetricKeyPair(String algo, int keysize) {
+		try {
+			KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algo);
+			keyPairGenerator.initialize(keysize);
+			KeyPair keyPair = keyPairGenerator.generateKeyPair();
+			SCCKeyPair pair = new SCCKeyPair(keyPair);
+			return pair;
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
 
 }
-

@@ -55,32 +55,57 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 
 
 	@Override
-	public SCCCiphertext symmetricEncrypt(AbstractSCCKey key, SecureCryptoConfig scc) throws CoseException {
-		return scc.symmetricEncrypt(key, this);
+	public SCCCiphertext symmetricEncrypt(AbstractSCCKey key, SecureCryptoConfig scc) {
+		try {
+			return scc.symmetricEncrypt(key, this);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 
 	@Override
-	public SCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, SecureCryptoConfig scc) throws CoseException {
-		return scc.asymmetricEncrypt(keyPair, this);
+	public SCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, SecureCryptoConfig scc) {
+		try {
+			return scc.asymmetricEncrypt(keyPair, this);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 
 	@Override
-	public SCCSignature sign(AbstractSCCKeyPair keyPair, SecureCryptoConfig scc) throws CoseException {
-		return scc.sign(keyPair, this);
+	public SCCSignature sign(AbstractSCCKeyPair keyPair, SecureCryptoConfig scc) {
+		try {
+			return scc.sign(keyPair, this);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 
 	@Override
-	public SCCHash hash(SecureCryptoConfig scc) throws CoseException {
-		return scc.hash(this);
+	public SCCHash hash(SecureCryptoConfig scc) {
+		try {
+			return scc.hash(this);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 
 	@Override
-	public SCCPasswordHash passwordHash(SecureCryptoConfig scc) throws CoseException {
-		return scc.passwordHash(this);
+	public SCCPasswordHash passwordHash(SecureCryptoConfig scc) {
+		try {
+			return scc.passwordHash(this);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 

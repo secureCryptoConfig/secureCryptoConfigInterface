@@ -1,5 +1,6 @@
 package main;
 
+import java.nio.charset.Charset;
 import com.upokecenter.cbor.CBORObject;
 
 import COSE.AlgorithmID;
@@ -11,32 +12,39 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 
 	SecureCryptoConfig scc = new SecureCryptoConfig();
 	
-	// for COSE
-	public SCCCiphertext(PlaintextContainerInterface plaintext, byte[] cipher, AbstractSCCKey key, byte[] msg) {
-		super(plaintext, cipher, key, msg);
+	public SCCCiphertext(PlaintextContainerInterface plaintext, byte[] cipher, byte[] msg) {
+		super(plaintext, cipher, msg);
 	}
 	
-	public SCCCiphertext(PlaintextContainerInterface plain, byte[] cipher, AbstractSCCKeyPair keyPair, byte[] msg) {
-		super(plain, cipher, keyPair, msg);
-	}
-
 	@Override
 	public byte[] getMessageBytes() {
 		return this.msg;
 	}
 
 	@Override
-	public AlgorithmID getAlgorithmIdentifier() throws CoseException {
+	public AlgorithmID getAlgorithmIdentifier() {
+		try {
 		Message msg = convertByteToMsg();
 		CBORObject obj = msg.findAttribute(HeaderKeys.Algorithm);
 		AlgorithmID alg = AlgorithmID.FromCBOR(obj);
 		return alg;
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	
 	}
 
 	@Override
 	public byte[] getCipherBytes() {
 		return this.cipher;
 	}
+	
+	@Override
+	public String getCipherAsString(Charset c) {
+		return new String (this.cipher, c);
+	}
+	
 
 	@Override
 	public Message convertByteToMsg() {
@@ -49,8 +57,13 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	}
 
 	@Override
-	public PlaintextContainer getPlain() {
+	public PlaintextContainer getPlaintextAsPlaintextContainer() {
 		return (PlaintextContainer) this.plain;
+	}
+	
+	@Override
+	public String getPlaintextAsString(Charset c) {
+		return new String (this.plain.getByteArray(), c);
 	}
 
 
@@ -75,13 +88,24 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	}
 
 	@Override
-	public SCCCiphertext symmetricReEncrypt(AbstractSCCKey key, SecureCryptoConfig scc) throws CoseException  {
+	public SCCCiphertext symmetricReEncrypt(AbstractSCCKey key, SecureCryptoConfig scc)  {
+		try {
 		return scc.symmetricReEncrypt(key, this);
+		}catch(CoseException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Override
-	public SCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair, SecureCryptoConfig scc) throws CoseException {
-		return scc.asymmetricReEncrypt(keyPair, this);
+	public SCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair, SecureCryptoConfig scc) {
+		try {
+			return scc.asymmetricReEncrypt(keyPair, this);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 }
