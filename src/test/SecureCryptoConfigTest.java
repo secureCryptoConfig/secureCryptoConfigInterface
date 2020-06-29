@@ -78,7 +78,7 @@ class SecureCryptoConfigTest {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCKey key = scc.createSymmetricKey();
 		SCCCiphertext cipherText = scc.symmetricEncrypt(key, new PlaintextContainer(plaintext));
-		byte[] ciphertextBytes = cipher.getCipherBytes();
+		byte[] ciphertextBytes = cipherText.getCipherBytes();
 	}
 
 	// - byte[] encrypt + password, return: encrypted byte[] + new key
@@ -98,7 +98,7 @@ class SecureCryptoConfigTest {
 		SCCKey key = scc.createSymmetricKey();
 		SCCCiphertext cipherText = scc.symmetricEncrypt(key,
 				new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
-		String ciphertextBytes = cipher.getCipherAsString(StandardCharsets.UTF_8);
+		String ciphertextBytes = cipherText.getCipherAsString(StandardCharsets.UTF_8);
 	}
 
 	// - String encrypt + password, return: encrypted String + new key
