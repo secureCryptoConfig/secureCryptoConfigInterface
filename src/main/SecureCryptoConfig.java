@@ -277,7 +277,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	// Hash again
 	@Override
-	public AbstractSCCHash updateHash(AbstractSCCHash hash) throws CoseException {
+	public SCCHash updateHash(AbstractSCCHash hash) throws CoseException {
 		return hash(hash.getPlaintextAsPlaintextContainer());
 	}
 

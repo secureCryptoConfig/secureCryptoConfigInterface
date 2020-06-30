@@ -9,13 +9,14 @@ import org.junit.jupiter.api.Test;
 import COSE.CoseException;
 import main.PlaintextContainer;
 import main.SCCHash;
+import main.SCCPasswordHash;
 import main.SecureCryptoConfig;
 
 class TestHashing {
 	SecureCryptoConfig scc = new SecureCryptoConfig();
 
 	// Use Cases:
-	// Hashing (Hashing and PasswordHashing)
+	// Hashing 
 	// - byte[] plain hash, return: byte[] hash
 	// - String plain hash, return: String hash
 
@@ -24,6 +25,13 @@ class TestHashing {
 
 	// - hash, return: updated byte[]hash
 	// - hash, return: updated String hash
+	
+	//Password Hashing
+	// - byte[] plain hash, return: byte[] hash
+	// - String plain hash, return: String hash
+
+	// - byte[] plain hash + validate, return: boolean
+	// - String plain hash + validate, return: boolean
 
 	// Hashing
 	// - byte[] plain hash, return: byte[] hash
@@ -99,7 +107,53 @@ class TestHashing {
 	}
 	
 	//Password Hashing
+	
+	// - byte[] plain hash, return: byte[] hash
+		@Test
+		void testPasswordHashingByte() throws CoseException {
+			byte[] password = "Hello World!".getBytes(StandardCharsets.UTF_8);
+			SCCPasswordHash hash = scc.passwordHash(new PlaintextContainer(password));
+			byte[] hashedValue = hash.getHashAsPlaintextContainer().getByteArray();
 
+			assertTrue(hashedValue instanceof byte[]);
+
+		}
+		
+		// - String plain hash, return: String hash
+		@Test
+		void testPasswordHashingString() throws CoseException {
+			String password = "Hello World!";
+			SCCPasswordHash hash = scc.passwordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)));
+			String hashedValue = hash.getHashAsPlaintextContainer().getString(StandardCharsets.UTF_8);
+
+			assertTrue(hashedValue instanceof String);
+		}
+
+		// - byte[] plain hash + validate, return: boolean
+		@Test
+		void testPasswordHashingByteValidation() throws CoseException {
+			byte[] password = "Hello World!".getBytes(StandardCharsets.UTF_8);
+			SCCPasswordHash hash = scc.passwordHash(new PlaintextContainer(password));
+			byte[] hashedValue = hash.getHashAsPlaintextContainer().getByteArray();
+
+			boolean result = scc.validatePasswordHash(new PlaintextContainer(password), hash);
+
+			assertTrue(result);
+
+		}
+
+		// - String plain hash + validate, return: boolean
+		@Test
+		void testPasswordHashingStringValidation() throws CoseException {
+			String password = "Hello World!";
+			SCCPasswordHash hash = scc.passwordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)));
+			String hashedValue = hash.getHashAsPlaintextContainer().getString(StandardCharsets.UTF_8);
+
+			boolean result = scc.validatePasswordHash(new PlaintextContainer(password.getBytes()), hash);
+
+			assertTrue(result);
+
+		}
 
 
 }
