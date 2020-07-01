@@ -39,7 +39,7 @@ class TestHashing {
 	void testHashingByte() throws CoseException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCHash hash = scc.hash(new PlaintextContainer(plaintext));
-		byte[] hashedValue = hash.getHashAsPlaintextContainer().getByteArray();
+		byte[] hashedValue = hash.getHashBytes();
 
 		assertTrue(hashedValue instanceof byte[]);
 
@@ -50,8 +50,7 @@ class TestHashing {
 	void testHashingString() throws CoseException {
 		String plaintext = "Hello World!";
 		SCCHash hash = scc.hash(new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
-		String hashedValue = hash.getHashAsPlaintextContainer().getString(StandardCharsets.UTF_8);
-
+		String hashedValue = hash.getHashAsString(StandardCharsets.UTF_8);
 		assertTrue(hashedValue instanceof String);
 	}
 
@@ -60,7 +59,7 @@ class TestHashing {
 	void testHashingByteValidation() throws CoseException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCHash hash = scc.hash(new PlaintextContainer(plaintext));
-		byte[] hashedValue = hash.getHashAsPlaintextContainer().getByteArray();
+		byte[] hashedValue = hash.getHashBytes();
 
 		boolean result = scc.validateHash(new PlaintextContainer(plaintext), hash);
 
@@ -73,8 +72,8 @@ class TestHashing {
 	void testHashingStringValidation() throws CoseException {
 		String plaintext = "Hello World!";
 		SCCHash hash = scc.hash(new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
-		String hashedValue = hash.getHashAsPlaintextContainer().getString(StandardCharsets.UTF_8);
-
+		String hashedValue = hash.getHashAsString(StandardCharsets.UTF_8);
+				
 		boolean result = scc.validateHash(new PlaintextContainer(plaintext.getBytes()), hash);
 
 		assertTrue(result);
@@ -88,7 +87,7 @@ class TestHashing {
 		SCCHash oldHash = scc.hash(new PlaintextContainer(plaintext));
 
 		SCCHash updatedHash = scc.updateHash(oldHash);
-		byte[] newHash = updatedHash.getHashAsPlaintextContainer().getByteArray();
+		byte[] newHash = updatedHash.getHashBytes();
 
 		assertTrue(newHash instanceof byte[]);
 
@@ -113,7 +112,7 @@ class TestHashing {
 		void testPasswordHashingByte() throws CoseException {
 			byte[] password = "Hello World!".getBytes(StandardCharsets.UTF_8);
 			SCCPasswordHash hash = scc.passwordHash(new PlaintextContainer(password));
-			byte[] hashedValue = hash.getHashAsPlaintextContainer().getByteArray();
+			byte[] hashedValue = hash.getHashBytes();
 
 			assertTrue(hashedValue instanceof byte[]);
 
@@ -124,8 +123,8 @@ class TestHashing {
 		void testPasswordHashingString() throws CoseException {
 			String password = "Hello World!";
 			SCCPasswordHash hash = scc.passwordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)));
-			String hashedValue = hash.getHashAsPlaintextContainer().getString(StandardCharsets.UTF_8);
-
+			String hashedValue = hash.getHashAsString(StandardCharsets.UTF_8);
+			
 			assertTrue(hashedValue instanceof String);
 		}
 
@@ -134,7 +133,7 @@ class TestHashing {
 		void testPasswordHashingByteValidation() throws CoseException {
 			byte[] password = "Hello World!".getBytes(StandardCharsets.UTF_8);
 			SCCPasswordHash hash = scc.passwordHash(new PlaintextContainer(password));
-			byte[] hashedValue = hash.getHashAsPlaintextContainer().getByteArray();
+			byte[] hashedValue = hash.getHashBytes();
 
 			boolean result = scc.validatePasswordHash(new PlaintextContainer(password), hash);
 
@@ -147,8 +146,7 @@ class TestHashing {
 		void testPasswordHashingStringValidation() throws CoseException {
 			String password = "Hello World!";
 			SCCPasswordHash hash = scc.passwordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)));
-			String hashedValue = hash.getHashAsPlaintextContainer().getString(StandardCharsets.UTF_8);
-
+			String hashedValue = hash.getHashAsString(StandardCharsets.UTF_8);
 			boolean result = scc.validatePasswordHash(new PlaintextContainer(password.getBytes()), hash);
 
 			assertTrue(result);

@@ -108,13 +108,13 @@ class TestAsymmetricEncryption {
 
 	// - encrypted byte[] decrypt + key, return: decrypted byte[]
 	@Test
-	void testAymmetricByteDecryptWithKey() throws CoseException {
+	void testAymmetricByteDecryptWithKey() throws CoseException, NoSuchAlgorithmException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCKey key = scc.createSymmetricKey();
+		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.AsymmetricEncryption);
 		// Encryption
-		SCCCiphertext cipher = scc.symmetricEncrypt(key, new PlaintextContainer(plaintext));
+		SCCCiphertext cipher = scc.asymmetricEncrypt(pair, new PlaintextContainer(plaintext));
 		// Decryption
-		PlaintextContainer plain = cipher.symmetricDecrypt(key);
+		PlaintextContainer plain = cipher.asymmetricDecrypt(pair);
 		byte[] decrypted = plain.getByteArray();
 
 		assertEquals(new String(plaintext, StandardCharsets.UTF_8), plain.getString(StandardCharsets.UTF_8));

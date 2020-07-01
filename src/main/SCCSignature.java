@@ -66,18 +66,23 @@ public class SCCSignature extends AbstractSCCSignature {
 	}
 
 	@Override
-	PlaintextContainerInterface getPlaintextAsPlaintextContainer() {
+	public PlaintextContainerInterface getPlaintextAsPlaintextContainer() {
 		return this.plaintext;
 	}
 
 	@Override
-	String getPlaintextAsString(Charset c) {
+	public String getPlaintextAsString(Charset c) {
 		return new String(this.plaintext.getByteArray(), c);
 	}
 
 	@Override
-	String getSignatureAsPlaintextContainer(Charset c) {
+	public String getSignatureAsString(Charset c) {
 		return new String(this.signature.getByteArray(), c);
+	}
+
+	@Override
+	public byte[] getSignatureBytes() {
+		return this.signature.getByteArray();
 	}
 
 }

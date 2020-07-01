@@ -3,20 +3,11 @@ package main;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.KeySpec;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashSet;
 
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.SecretKeyFactory;
-import javax.crypto.spec.PBEKeySpec;
-import javax.crypto.spec.SecretKeySpec;
 import javax.management.openmbean.InvalidKeyException;
 
 import com.upokecenter.cbor.CBORObject;
@@ -30,8 +21,6 @@ import COSE.OneKey;
 import COSE.PasswordHashMessage;
 import COSE.Sign1Message;
 import main.JSONReader.CryptoUseCase;
-import main.SCCKey.SCCKeyAlgorithm;
-import main.SCCKeyPair.keyPairUseCase;
 
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
@@ -41,7 +30,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		SecurityLevel_1, SecurityLevel_2, SecurityLevel_3, SecurityLevel_4, SecurityLevel_5
 	}
 
-	static enum AlgorithmIDEnum {
+	protected static enum AlgorithmIDEnum {
 		// symmetric:
 		// Algo_Mode_key_IV
 		AES_GCM_256_96, AES_GCM_128_96,
@@ -439,53 +428,5 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 *           e.printStackTrace(); } return null; }
 	 **/
 
-	public SCCKey createSymmetricKey() throws CoseException {
-
-		SCCKeyAlgorithm algo = null;
-		int keysize = 0;
-		ArrayList<String> algorithms = new ArrayList<String>();
-
-		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, JSONReader.basePath + this.getSccFile());
-		for (int i = 0; i < algorithms.size(); i++) {
-
-			String sccalgorithmID = algorithms.get(i);
-
-			// TODO mapping from sting to enum:
-
-			if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
-
-				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
-
-				switch (chosenAlgorithmID) {
-				case AES_GCM_256_96:
-					algo = SCCKeyAlgorithm.AES;
-					keysize = 256;
-					break;
-				case AES_GCM_128_96:
-					algo = SCCKeyAlgorithm.AES;
-					keysize = 128;
-					break;
-				default:
-					break;
-
-				}
-
-				KeyGenerator keyGen;
-				try {
-					keyGen = KeyGenerator.getInstance(algo.toString());
-					keyGen.init(keysize);
-					SecretKey key = keyGen.generateKey();
-					return new SCCKey(key.getEncoded(), algo);
-				} catch (NoSuchAlgorithmException e) {
-					e.printStackTrace();
-					return null;
-				}
-			}
-
-		}
-
-		throw new CoseException("No supported algorithms! Key creation not possible!");
-
-	}
 
 }

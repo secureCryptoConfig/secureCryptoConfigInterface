@@ -1,56 +1,16 @@
 package main;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
 import COSE.*;
 
 public class UseCases {
 
-	// Method for getting file content. Content needed for comparing file encryption
-	// test
-	public static String readFile(String filepath) {
-		String s = "";
-		try {
-			File file = new File(filepath);
-			BufferedReader br = new BufferedReader(new FileReader(file));
-			String st;
-			while ((st = br.readLine()) != null) {
-				s = s + st + "\n";
-			}
-			br.close();
-			return s;
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	/**
-	 * Generate Nonce with secure Random number generator
-	 */
-	public static byte[] generateRandomByteArray(int length) {
-		try {
-			// GENERATE random nonce (number used once)
-			final byte[] nonce = new byte[length];
-			SecureRandom random;
-			random = SecureRandom.getInstanceStrong();
-			random.nextBytes(nonce);
-			return nonce;
-		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return null;
-		}
-
-	}
 
 	protected static SCCCiphertext fileEncryptWithParams(AbstractSCCKey key, String filepath, AlgorithmID algo) {
 

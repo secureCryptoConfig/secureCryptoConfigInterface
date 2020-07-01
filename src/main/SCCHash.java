@@ -87,4 +87,9 @@ public class SCCHash extends AbstractSCCHash{
 	{
 		return new String (this.hash.getByteArray(), c);
 	}
+	
+	@Override
+	public byte[] getHashBytes() {
+		return this.hash.getByteArray();
+	}
 }

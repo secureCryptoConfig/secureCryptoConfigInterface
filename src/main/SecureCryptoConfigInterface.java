@@ -202,6 +202,8 @@ abstract class AbstractSCCHash {
 	abstract PlaintextContainerInterface getHashAsPlaintextContainer();
 	
 	abstract String getHashAsString(Charset c);
+	
+	abstract byte[] getHashBytes();
 
 }
 
@@ -232,6 +234,8 @@ abstract class AbstractSCCPasswordHash {
 	abstract PlaintextContainerInterface getHashAsPlaintextContainer();
 	
 	abstract String getHashAsString(Charset c);
+	
+	abstract byte[] getHashBytes();
 
 }
 
@@ -259,7 +263,9 @@ abstract class AbstractSCCSignature {
 
 	abstract PlaintextContainer getSignatureAsPlaintextContainer();
 	
-	abstract String getSignatureAsPlaintextContainer(Charset c);
+	abstract String getSignatureAsString(Charset c);
+	
+	abstract byte[] getSignatureBytes();
 	
 	abstract SCCSignature updateSignature (AbstractSCCKeyPair pair, SecureCryptoConfig scc);
 

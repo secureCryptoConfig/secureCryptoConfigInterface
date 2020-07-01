@@ -83,7 +83,7 @@ class TestSymmetricEncryption {
 	@Test
 	void testSymmetricByteEncryptNoExistingKey() throws CoseException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCKey key = scc.createSymmetricKey();
+		SCCKey key = SCCKey.createSymmetricKey();
 		SCCCiphertext cipher = scc.symmetricEncrypt(key, new PlaintextContainer(plaintext));
 		byte[] encrypted = cipher.getCipherBytes();
 		
@@ -109,7 +109,7 @@ class TestSymmetricEncryption {
 	@Test
 	void testSymmetricStringEncryptNoExistingKey() throws CoseException {
 		String plaintext = "Hello World!";
-		SCCKey key = scc.createSymmetricKey();
+		SCCKey key = SCCKey.createSymmetricKey();
 		SCCCiphertext cipher = scc.symmetricEncrypt(key,
 				new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
 		String encrypted = cipher.getCipherAsString(StandardCharsets.UTF_8);
@@ -167,7 +167,7 @@ class TestSymmetricEncryption {
 	@Test
 	void testSymmetricByteDecryptWithKey() throws CoseException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCKey key = scc.createSymmetricKey();
+		SCCKey key = SCCKey.createSymmetricKey();
 		// Encryption
 		SCCCiphertext cipher = scc.symmetricEncrypt(key, new PlaintextContainer(plaintext));
 		// Decryption
@@ -182,7 +182,7 @@ class TestSymmetricEncryption {
 	@Test
 	void testSymmetricStringDecryptWithKey() throws CoseException {
 		String plaintext = "Hello World!";
-		SCCKey key = scc.createSymmetricKey();
+		SCCKey key = SCCKey.createSymmetricKey();
 		// Encryption
 		SCCCiphertext cipher = scc.symmetricEncrypt(key, new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
 		// Decryption
@@ -231,7 +231,7 @@ class TestSymmetricEncryption {
 	@Test
 	void testSymmetricByteReEncyptionWithKey() throws CoseException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCKey key = scc.createSymmetricKey();
+		SCCKey key = SCCKey.createSymmetricKey();
 		// Encryption
 		SCCCiphertext cipher = scc.symmetricEncrypt(key, new PlaintextContainer(plaintext));
 		// ReEncryption
@@ -248,7 +248,7 @@ class TestSymmetricEncryption {
 	@Test
 	void testSymmetricStringReEncyptionWithKey() throws CoseException {
 		String plaintext = "Hello World!";
-		SCCKey key = scc.createSymmetricKey();
+		SCCKey key = SCCKey.createSymmetricKey();
 		// Encryption
 		SCCCiphertext cipher = scc.symmetricEncrypt(key, new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
 		// ReEncryption

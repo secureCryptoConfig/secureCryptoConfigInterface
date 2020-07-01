@@ -1,10 +1,12 @@
 package main;
 
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.KeySpec;
 import java.util.ArrayList;
 
+import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
@@ -80,7 +82,7 @@ public class SCCKey extends AbstractSCCKey {
 				}
 				try {
 
-					byte[] salt = UseCases.generateRandomByteArray(saltLength);
+					byte[] salt = generateRandomByteArray(saltLength);
 
 					SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(algo);
 					KeySpec passwordBasedEncryptionKeySpec = new PBEKeySpec(password.getBase64().toCharArray(), salt,
@@ -101,5 +103,75 @@ public class SCCKey extends AbstractSCCKey {
 		throw new CoseException("No supported algorithms! Key creation not possible!");
 
 	}
+	
+	public static SCCKey createSymmetricKey() throws CoseException {
+
+		SCCKeyAlgorithm algo = null;
+		int keysize = 0;
+		ArrayList<String> algorithms = new ArrayList<String>();
+
+		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, JSONReader.basePath + SecureCryptoConfig.getSccFile());
+		for (int i = 0; i < algorithms.size(); i++) {
+
+			String sccalgorithmID = algorithms.get(i);
+
+			// TODO mapping from sting to enum:
+
+			if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
+
+				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+
+				switch (chosenAlgorithmID) {
+				case AES_GCM_256_96:
+					algo = SCCKeyAlgorithm.AES;
+					keysize = 256;
+					break;
+				case AES_GCM_128_96:
+					algo = SCCKeyAlgorithm.AES;
+					keysize = 128;
+					break;
+				default:
+					break;
+
+				}
+
+				KeyGenerator keyGen;
+				try {
+					keyGen = KeyGenerator.getInstance(algo.toString());
+					keyGen.init(keysize);
+					SecretKey key = keyGen.generateKey();
+					return new SCCKey(key.getEncoded(), algo);
+				} catch (NoSuchAlgorithmException e) {
+					e.printStackTrace();
+					return null;
+				}
+			}
+
+		}
+
+		throw new CoseException("No supported algorithms! Key creation not possible!");
+
+	}
+	
+
+	/**
+	 * Generate Nonce with secure Random number generator
+	 */
+	private static byte[] generateRandomByteArray(int length) {
+		try {
+			// GENERATE random 
+			final byte[] nonce = new byte[length];
+			SecureRandom random;
+			random = SecureRandom.getInstanceStrong();
+			random.nextBytes(nonce);
+			return nonce;
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+
+
 
 }

@@ -31,12 +31,12 @@ import main.SecureCryptoConfig.SecurityLevel;
 
 public class JSONReader {
 
-	public static String basePath = null;
+	protected static String basePath = null;
 	// JSON parser object to parse read file
-	static JSONParser jsonParser = new JSONParser();
+	private static JSONParser jsonParser = new JSONParser();
 
 	// Enum representing supported crypto use cases
-	public enum CryptoUseCase {
+	protected enum CryptoUseCase {
 		SymmetricEncryption, Signing, Hashing, AsymmetricEncryption, PasswordHashing, KeyGeneration;
 	}
 
@@ -123,7 +123,7 @@ public class JSONReader {
 	/**
 	 * Prints all data contained in the JSON file
 	 */
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "unused" })
 	private static void readJSON() {
 
 		try (FileReader reader = new FileReader(basePath + "SCC_Security_Level_5_2020-0.json")) {

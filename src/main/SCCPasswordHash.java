@@ -59,17 +59,22 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	}
 
 	@Override
-	PlaintextContainerInterface getPlaintextAsPlaintextContainer() {
+	public PlaintextContainerInterface getPlaintextAsPlaintextContainer() {
 		return this.plaintext;
 	}
 
 	@Override
-	String getPlaintextAsString(Charset c) {
+	public String getPlaintextAsString(Charset c) {
 		return new String(this.plaintext.getByteArray(), c);
 	}
 
 	@Override
-	String getHashAsString(Charset c) {
+	public String getHashAsString(Charset c) {
 		return new String(this.hash.getByteArray(), c);
+	}
+
+	@Override
+	public byte[] getHashBytes() {
+		return this.hash.getByteArray();
 	}
 }
