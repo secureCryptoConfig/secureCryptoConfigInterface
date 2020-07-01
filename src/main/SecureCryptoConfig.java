@@ -3,6 +3,7 @@ package main;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Base64;
@@ -250,7 +251,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				switch (chosenAlgorithmID) {
 				case SHA_512:
-					PlaintextContainer p = new PlaintextContainer(plaintext.getByteArray());
+					PlaintextContainer p = new PlaintextContainer(plaintext.getPlaintextBytes());
 					return UseCases.createHashMessage(p, AlgorithmID.SHA_512);
 				default:
 					break;
@@ -270,11 +271,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	// Hash same plain two times and look if it is the same
 	@Override
 	public boolean validateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException {
-		String s = hash.getHashAsPlaintextContainer().getBase64();
+		String s = hash.getHashAsString(StandardCharsets.UTF_8);
 
 		SCCHash hash1 = hash(plaintext);
-		String s1 = hash1.getHashAsPlaintextContainer().getBase64();
-
+		String s1 = hash1.getHashAsString(StandardCharsets.UTF_8);
 		return s.equals(s1);
 	}
 
@@ -405,6 +405,56 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		}
 		throw new NoSuchAlgorithmException();
+	}
+
+	@Override
+	public SCCCiphertext symmetricEncrypt(AbstractSCCKey key, byte[] plaintext) throws CoseException {
+		try {
+			return symmetricEncrypt(key, new PlaintextContainer(plaintext));
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public SCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, byte[] plaintext) throws CoseException {
+		try {
+			return asymmetricEncrypt(keyPair, new PlaintextContainer(plaintext));
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public SCCHash hash(byte[] plaintext) throws CoseException {
+		try {
+			return hash(new PlaintextContainer(plaintext));
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public SCCSignature sign(AbstractSCCKeyPair key, byte[] plaintext) throws CoseException {
+		try {
+			return sign(key, new PlaintextContainer(plaintext));
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public SCCPasswordHash passwordHash(byte[] password) throws CoseException {
+		try {
+			return passwordHash(new PlaintextContainer(password));
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	/**

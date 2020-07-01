@@ -1,8 +1,6 @@
 package main;
 
 import java.nio.charset.Charset;
-import java.util.Base64;
-
 import COSE.CoseException;
 
 public class PlaintextContainer implements PlaintextContainerInterface {
@@ -16,18 +14,13 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	
 
 	@Override
-	public byte[] getByteArray() {
+	public byte[] getPlaintextBytes() {
 		return plaintext;
 	}
 
-	@Override
-	public String getBase64() {
-		return Base64.getEncoder().encodeToString(this.plaintext);
-
-	}
 	
 	@Override
-	public String getString(Charset c) {
+	public String getPlaintextAsString(Charset c) {
 		return new String(this.plaintext, c);
 
 	}

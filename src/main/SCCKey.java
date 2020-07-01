@@ -1,5 +1,6 @@
 package main;
 
+import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
@@ -40,8 +41,20 @@ public class SCCKey extends AbstractSCCKey {
 	public String getAlgorithm() {
 		return this.algorithm.toString();
 	}
+	
+	public static SCCKey createKeyWithPassword(byte[] password)
+	{
+		try {
+			return createKeyWithPassword(new PlaintextContainer(password));
+			
+		}catch(CoseException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
 
-	public static SCCKey createKey(PlaintextContainer password) throws CoseException {
+	public static SCCKey createKeyWithPassword(PlaintextContainer password) throws CoseException {
 		String algo = null;
 		SCCKeyAlgorithm keyAlgo = null;
 		int keysize = 0, iterations = 0, saltLength = 0;
@@ -85,7 +98,7 @@ public class SCCKey extends AbstractSCCKey {
 					byte[] salt = generateRandomByteArray(saltLength);
 
 					SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(algo);
-					KeySpec passwordBasedEncryptionKeySpec = new PBEKeySpec(password.getBase64().toCharArray(), salt,
+					KeySpec passwordBasedEncryptionKeySpec = new PBEKeySpec(password.getPlaintextAsString(StandardCharsets.UTF_8).toCharArray(), salt,
 							iterations, keysize);
 					SecretKey secretKeyFromPBKDF2 = secretKeyFactory.generateSecret(passwordBasedEncryptionKeySpec);
 					SecretKey key = new SecretKeySpec(secretKeyFromPBKDF2.getEncoded(), keyAlgo.toString());

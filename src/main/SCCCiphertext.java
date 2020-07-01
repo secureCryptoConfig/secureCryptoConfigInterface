@@ -12,8 +12,8 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 
 	SecureCryptoConfig scc = new SecureCryptoConfig();
 	
-	public SCCCiphertext(PlaintextContainerInterface plaintext, byte[] cipher, byte[] msg) {
-		super(plaintext, cipher, msg);
+	public SCCCiphertext(byte[] ciphertext, byte[] msg) {
+		super(ciphertext, msg);
 	}
 	
 	@Override
@@ -36,13 +36,13 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	}
 
 	@Override
-	public byte[] getCipherBytes() {
-		return this.cipher;
+	public byte[] getCiphertextBytes() {
+		return this.ciphertext;
 	}
 	
 	@Override
-	public String getCipherAsString(Charset c) {
-		return new String (this.cipher, c);
+	public String getCiphertextAsString(Charset c) {
+		return new String (this.ciphertext, c);
 	}
 	
 
@@ -55,17 +55,6 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 			return null;
 		}
 	}
-
-	@Override
-	public PlaintextContainer getPlaintextAsPlaintextContainer() {
-		return (PlaintextContainer) this.plain;
-	}
-	
-	@Override
-	public String getPlaintextAsString(Charset c) {
-		return new String (this.plain.getByteArray(), c);
-	}
-
 
 	@Override
 	public PlaintextContainer symmetricDecrypt(AbstractSCCKey key) {

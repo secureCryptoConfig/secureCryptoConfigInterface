@@ -38,7 +38,7 @@ class TestHashing {
 	@Test
 	void testHashingByte() throws CoseException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCHash hash = scc.hash(new PlaintextContainer(plaintext));
+		SCCHash hash = scc.hash(plaintext);
 		byte[] hashedValue = hash.getHashBytes();
 
 		assertTrue(hashedValue instanceof byte[]);
@@ -49,7 +49,7 @@ class TestHashing {
 	@Test
 	void testHashingString() throws CoseException {
 		String plaintext = "Hello World!";
-		SCCHash hash = scc.hash(new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
+		SCCHash hash = scc.hash(plaintext.getBytes(StandardCharsets.UTF_8));
 		String hashedValue = hash.getHashAsString(StandardCharsets.UTF_8);
 		assertTrue(hashedValue instanceof String);
 	}
@@ -58,7 +58,7 @@ class TestHashing {
 	@Test
 	void testHashingByteValidation() throws CoseException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCHash hash = scc.hash(new PlaintextContainer(plaintext));
+		SCCHash hash = scc.hash(plaintext);
 		byte[] hashedValue = hash.getHashBytes();
 
 		boolean result = scc.validateHash(new PlaintextContainer(plaintext), hash);
@@ -71,7 +71,7 @@ class TestHashing {
 	@Test
 	void testHashingStringValidation() throws CoseException {
 		String plaintext = "Hello World!";
-		SCCHash hash = scc.hash(new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
+		SCCHash hash = scc.hash(plaintext.getBytes(StandardCharsets.UTF_8));
 		String hashedValue = hash.getHashAsString(StandardCharsets.UTF_8);
 				
 		boolean result = scc.validateHash(new PlaintextContainer(plaintext.getBytes()), hash);
@@ -84,7 +84,7 @@ class TestHashing {
 	@Test
 	void testUpdateHashingByte() throws CoseException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCHash oldHash = scc.hash(new PlaintextContainer(plaintext));
+		SCCHash oldHash = scc.hash(plaintext);
 
 		SCCHash updatedHash = scc.updateHash(oldHash);
 		byte[] newHash = updatedHash.getHashBytes();
@@ -97,7 +97,7 @@ class TestHashing {
 	@Test
 	void testUpdateHashingString() throws CoseException {
 		String plaintext = "Hello World!";
-		SCCHash oldHash = scc.hash(new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
+		SCCHash oldHash = scc.hash(plaintext.getBytes(StandardCharsets.UTF_8));
 
 		SCCHash updatedHash = scc.updateHash(oldHash);
 		String newHash = updatedHash.getHashAsString(StandardCharsets.UTF_8);
@@ -111,7 +111,7 @@ class TestHashing {
 		@Test
 		void testPasswordHashingByte() throws CoseException {
 			byte[] password = "Hello World!".getBytes(StandardCharsets.UTF_8);
-			SCCPasswordHash hash = scc.passwordHash(new PlaintextContainer(password));
+			SCCPasswordHash hash = scc.passwordHash(password);
 			byte[] hashedValue = hash.getHashBytes();
 
 			assertTrue(hashedValue instanceof byte[]);
@@ -122,7 +122,7 @@ class TestHashing {
 		@Test
 		void testPasswordHashingString() throws CoseException {
 			String password = "Hello World!";
-			SCCPasswordHash hash = scc.passwordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)));
+			SCCPasswordHash hash = scc.passwordHash(password.getBytes(StandardCharsets.UTF_8));
 			String hashedValue = hash.getHashAsString(StandardCharsets.UTF_8);
 			
 			assertTrue(hashedValue instanceof String);
@@ -132,7 +132,7 @@ class TestHashing {
 		@Test
 		void testPasswordHashingByteValidation() throws CoseException {
 			byte[] password = "Hello World!".getBytes(StandardCharsets.UTF_8);
-			SCCPasswordHash hash = scc.passwordHash(new PlaintextContainer(password));
+			SCCPasswordHash hash = scc.passwordHash(password);
 			byte[] hashedValue = hash.getHashBytes();
 
 			boolean result = scc.validatePasswordHash(new PlaintextContainer(password), hash);
@@ -145,7 +145,7 @@ class TestHashing {
 		@Test
 		void testPasswordHashingStringValidation() throws CoseException {
 			String password = "Hello World!";
-			SCCPasswordHash hash = scc.passwordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)));
+			SCCPasswordHash hash = scc.passwordHash(password.getBytes(StandardCharsets.UTF_8));
 			String hashedValue = hash.getHashAsString(StandardCharsets.UTF_8);
 			boolean result = scc.validatePasswordHash(new PlaintextContainer(password.getBytes()), hash);
 

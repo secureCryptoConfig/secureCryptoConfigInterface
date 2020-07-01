@@ -36,7 +36,7 @@ class TestSignature {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.Signing);
 		
-		SCCSignature signature = scc.sign(pair, new PlaintextContainer(plaintext));
+		SCCSignature signature = scc.sign(pair, plaintext);
 		byte[] s = signature.getSignatureBytes();
 
 		assertTrue(s instanceof byte[]);
@@ -49,7 +49,7 @@ class TestSignature {
 		String plaintext = "Hello World!";
 		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.Signing);
 		
-		SCCSignature signature = scc.sign(pair, new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
+		SCCSignature signature = scc.sign(pair, plaintext.getBytes(StandardCharsets.UTF_8));
 		String s = signature.getSignatureAsString(StandardCharsets.UTF_8);
 		assertTrue(s instanceof String);
 	}
@@ -60,7 +60,7 @@ class TestSignature {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.Signing);
 		
-		SCCSignature signature = scc.sign(pair, new PlaintextContainer(plaintext));
+		SCCSignature signature = scc.sign(pair,plaintext);
 		
 		boolean result = scc.validateSignature(pair, signature);
 
@@ -74,7 +74,7 @@ class TestSignature {
 		String plaintext = "Hello World!";
 		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.Signing);
 		
-		SCCSignature signature = scc.sign(pair, new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
+		SCCSignature signature = scc.sign(pair, plaintext.getBytes(StandardCharsets.UTF_8));
 		
 		boolean result = scc.validateSignature(pair, signature);
 
@@ -88,7 +88,7 @@ class TestSignature {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.Signing);
 		
-		SCCSignature oldSignature = scc.sign(pair, new PlaintextContainer(plaintext));
+		SCCSignature oldSignature = scc.sign(pair, plaintext);
 		
 		SCCSignature updatedSignature = scc.updateSignature(pair, oldSignature);
 		byte[] newSignature = updatedSignature.getSignatureBytes();
@@ -103,7 +103,7 @@ class TestSignature {
 		String plaintext = "Hello World!";
 		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.Signing);
 		
-		SCCSignature oldSignature = scc.sign(pair, new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
+		SCCSignature oldSignature = scc.sign(pair, plaintext.getBytes(StandardCharsets.UTF_8));
 		
 		SCCSignature updatedSignature = scc.updateSignature(pair, oldSignature);
 		String newSignature = updatedSignature.getSignatureAsString(StandardCharsets.UTF_8);

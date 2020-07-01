@@ -65,16 +65,16 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 
 	@Override
 	public String getPlaintextAsString(Charset c) {
-		return new String(this.plaintext.getByteArray(), c);
+		return new String(this.plaintext.getPlaintextBytes(), c);
 	}
 
 	@Override
 	public String getHashAsString(Charset c) {
-		return new String(this.hash.getByteArray(), c);
+		return new String(this.hash.getPlaintextBytes(), c);
 	}
 
 	@Override
 	public byte[] getHashBytes() {
-		return this.hash.getByteArray();
+		return this.hash.getPlaintextBytes();
 	}
 }
