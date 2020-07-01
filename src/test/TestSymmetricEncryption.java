@@ -27,6 +27,7 @@ import main.SCCKeyPair.keyPairUseCase;
 import main.SCCPasswordHash;
 import main.SCCSignature;
 import main.SecureCryptoConfig;
+import main.SecureCryptoConfig.SecurityLevel;
 import main.UseCases;
 
 class TestSymmetricEncryption {
@@ -96,7 +97,7 @@ class TestSymmetricEncryption {
 	void testSymmetricByteEncryptWithPassword() throws CoseException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		byte[] password = "Password!".getBytes(StandardCharsets.UTF_8);
-		SCCKey key = scc.createKey(new PlaintextContainer(password));
+		SCCKey key = SCCKey.createKey(new PlaintextContainer(password));
 		SCCCiphertext cipher = scc.symmetricEncrypt(key, new PlaintextContainer(plaintext));
 		byte[] encrypted = cipher.getCipherBytes();
 		
@@ -121,7 +122,7 @@ class TestSymmetricEncryption {
 	void testSymmetricStringEncryptWithPassword() throws CoseException {
 		String plaintext = "Hello World!";
 		String password = "password";
-		SCCKey key = scc.createKey(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)));
+		SCCKey key = SCCKey.createKey(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)));
 		SCCCiphertext cipher = scc.symmetricEncrypt(key,
 				new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
 		String encrypted = cipher.getCipherAsString(StandardCharsets.UTF_8);
@@ -199,7 +200,7 @@ class TestSymmetricEncryption {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		PlaintextContainer plaintextContainer = new PlaintextContainer(plaintext);
 		byte[] password = "Password!".getBytes(StandardCharsets.UTF_8);
-		SCCKey key = scc.createKey(new PlaintextContainer(password));
+		SCCKey key = SCCKey.createKey(new PlaintextContainer(password));
 		// Encryption
 		SCCCiphertext cipher = scc.symmetricEncrypt(key, plaintextContainer);
 		// Decryption
@@ -215,7 +216,7 @@ class TestSymmetricEncryption {
 	void testSymmetricStringDecryptWithPassword() throws CoseException {
 		String plaintext = "Hello World!";
 		String password = "password";
-		SCCKey key = scc.createKey(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)));
+		SCCKey key = SCCKey.createKey(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)));
 		// Encryption
 		SCCCiphertext cipher = scc.symmetricEncrypt(key, new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
 		// Decryption
@@ -265,7 +266,7 @@ class TestSymmetricEncryption {
 	void testSymmetricByteReEncyptionWitPassword() throws CoseException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		byte[] password = "password".getBytes(StandardCharsets.UTF_8);
-		SCCKey key = scc.createKey(new PlaintextContainer(password));
+		SCCKey key = SCCKey.createKey(new PlaintextContainer(password));
 		// Encryption
 		SCCCiphertext cipher = scc.symmetricEncrypt(key, new PlaintextContainer(plaintext));
 		// ReEncryption
@@ -283,7 +284,7 @@ class TestSymmetricEncryption {
 	void testSymmetricStringReEncyptionWithPassword() throws CoseException {
 		String plaintext = "Hello World!";
 		String password = "password";
-		SCCKey key = scc.createKey(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)));
+		SCCKey key = SCCKey.createKey(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)));
 		// Encryption
 		SCCCiphertext cipher = scc.symmetricEncrypt(key, new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
 		// ReEncryption

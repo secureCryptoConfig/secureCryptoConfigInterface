@@ -89,15 +89,15 @@ abstract interface PlaintextContainerInterface {
 	
 	abstract boolean validatePasswordHash(AbstractSCCPasswordHash passwordHash);
 	
-	abstract SCCCiphertext symmetricEncrypt(AbstractSCCKey key, SecureCryptoConfig scc);
+	abstract SCCCiphertext symmetricEncrypt(AbstractSCCKey key);
 	
-	abstract SCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair pair, SecureCryptoConfig scc);
+	abstract SCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair pair);
 	
-	abstract SCCSignature sign(AbstractSCCKeyPair keyPair, SecureCryptoConfig scc);
+	abstract SCCSignature sign(AbstractSCCKeyPair keyPair);
 	
-	abstract SCCHash hash(SecureCryptoConfig scc);
+	abstract SCCHash hash();
 	
-	abstract SCCPasswordHash passwordHash(SecureCryptoConfig scc);
+	abstract SCCPasswordHash passwordHash();
 	
 }
 
@@ -133,9 +133,9 @@ abstract class AbstractSCCCiphertext {
 
 	abstract PlaintextContainer symmetricDecrypt(AbstractSCCKey key);
 	
-	abstract SCCCiphertext symmetricReEncrypt(AbstractSCCKey key, SecureCryptoConfig scc);
+	abstract SCCCiphertext symmetricReEncrypt(AbstractSCCKey key);
 	
-	abstract SCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair, SecureCryptoConfig scc);
+	abstract SCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair);
 
 }
 

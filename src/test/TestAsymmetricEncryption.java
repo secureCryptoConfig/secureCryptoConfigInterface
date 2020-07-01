@@ -48,7 +48,7 @@ class TestAsymmetricEncryption {
 	@Test
 	void testAsymmetricByteEncryptNoExistingKey() throws CoseException, NoSuchAlgorithmException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCKeyPair pair = scc.createKeyPair(keyPairUseCase.AsymmetricEncryption);
+		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.AsymmetricEncryption);
 		SCCCiphertext cipher = scc.asymmetricEncrypt(pair, new PlaintextContainer(plaintext));
 		byte[] encrypted = cipher.getCipherBytes();
 
@@ -61,7 +61,7 @@ class TestAsymmetricEncryption {
 	@Test
 	void testAsymmetricStringEncryptNoExistingKey() throws CoseException, NoSuchAlgorithmException {
 		String plaintext = "Hello World!";
-		SCCKeyPair pair = scc.createKeyPair(keyPairUseCase.AsymmetricEncryption);
+		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.AsymmetricEncryption);
 		SCCCiphertext cipher = scc.asymmetricEncrypt(pair,
 				new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
 		String encrypted = cipher.getCipherAsString(StandardCharsets.UTF_8);
@@ -124,7 +124,7 @@ class TestAsymmetricEncryption {
 	@Test
 	void testAsymmetricStringDecryptWithKey() throws CoseException, NoSuchAlgorithmException {
 		String plaintext = "Hello World!";
-		SCCKeyPair pair = scc.createKeyPair(keyPairUseCase.AsymmetricEncryption);
+		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.AsymmetricEncryption);
 		// Encryption
 		SCCCiphertext cipher = scc.asymmetricEncrypt(pair, new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
 		// Decryption
@@ -140,7 +140,7 @@ class TestAsymmetricEncryption {
 	@Test
 	void testAsymmetricByteReEncyptionWithKey() throws CoseException, NoSuchAlgorithmException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCKeyPair pair = scc.createKeyPair(keyPairUseCase.AsymmetricEncryption);
+		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.AsymmetricEncryption);
 		// Encryption
 		SCCCiphertext cipher = scc.asymmetricEncrypt(pair, new PlaintextContainer(plaintext));
 		// ReEncryption
@@ -157,7 +157,7 @@ class TestAsymmetricEncryption {
 	@Test
 	void testAsymmetricStringReEncyptionWithKey() throws CoseException, NoSuchAlgorithmException {
 		String plaintext = "Hello World!";
-		SCCKeyPair pair = scc.createKeyPair(keyPairUseCase.AsymmetricEncryption);
+		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.AsymmetricEncryption);
 		// Encryption
 		SCCCiphertext cipher = scc.asymmetricEncrypt(pair, new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
 		// ReEncryption

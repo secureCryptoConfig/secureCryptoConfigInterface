@@ -55,7 +55,7 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 
 
 	@Override
-	public SCCCiphertext symmetricEncrypt(AbstractSCCKey key, SecureCryptoConfig scc) {
+	public SCCCiphertext symmetricEncrypt(AbstractSCCKey key) {
 		try {
 			return scc.symmetricEncrypt(key, this);
 		} catch (CoseException e) {
@@ -66,7 +66,7 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 
 
 	@Override
-	public SCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair, SecureCryptoConfig scc) {
+	public SCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair) {
 		try {
 			return scc.asymmetricEncrypt(keyPair, this);
 		} catch (CoseException e) {
@@ -77,7 +77,7 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 
 
 	@Override
-	public SCCSignature sign(AbstractSCCKeyPair keyPair, SecureCryptoConfig scc) {
+	public SCCSignature sign(AbstractSCCKeyPair keyPair) {
 		try {
 			return scc.sign(keyPair, this);
 		} catch (CoseException e) {
@@ -88,7 +88,7 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 
 
 	@Override
-	public SCCHash hash(SecureCryptoConfig scc) {
+	public SCCHash hash() {
 		try {
 			return scc.hash(this);
 		} catch (CoseException e) {
@@ -99,7 +99,7 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 
 
 	@Override
-	public SCCPasswordHash passwordHash(SecureCryptoConfig scc) {
+	public SCCPasswordHash passwordHash() {
 		try {
 			return scc.passwordHash(this);
 		} catch (CoseException e) {

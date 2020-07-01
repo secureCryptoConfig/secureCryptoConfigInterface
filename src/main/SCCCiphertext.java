@@ -88,7 +88,7 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	}
 
 	@Override
-	public SCCCiphertext symmetricReEncrypt(AbstractSCCKey key, SecureCryptoConfig scc)  {
+	public SCCCiphertext symmetricReEncrypt(AbstractSCCKey key)  {
 		try {
 		return scc.symmetricReEncrypt(key, this);
 		}catch(CoseException e)
@@ -99,7 +99,7 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	}
 
 	@Override
-	public SCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair, SecureCryptoConfig scc) {
+	public SCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair) {
 		try {
 			return scc.asymmetricReEncrypt(keyPair, this);
 		} catch (CoseException e) {

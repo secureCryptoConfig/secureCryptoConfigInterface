@@ -34,7 +34,7 @@ class TestSignature {
 	@Test
 	void testSigningByte() throws CoseException, NoSuchAlgorithmException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCKeyPair pair = scc.createKeyPair(keyPairUseCase.Signing);
+		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.Signing);
 		
 		SCCSignature signature = scc.sign(pair, new PlaintextContainer(plaintext));
 		byte[] s = signature.getSignatureAsPlaintextContainer().getByteArray();
@@ -47,7 +47,7 @@ class TestSignature {
 	@Test
 	void testSigningString() throws CoseException, NoSuchAlgorithmException {
 		String plaintext = "Hello World!";
-		SCCKeyPair pair = scc.createKeyPair(keyPairUseCase.Signing);
+		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.Signing);
 		
 		SCCSignature signature = scc.sign(pair, new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
 		String s = signature.getSignatureAsPlaintextContainer().getString(StandardCharsets.UTF_8);
@@ -58,7 +58,7 @@ class TestSignature {
 	@Test
 	void testSigningByteValidation() throws CoseException, NoSuchAlgorithmException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCKeyPair pair = scc.createKeyPair(keyPairUseCase.Signing);
+		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.Signing);
 		
 		SCCSignature signature = scc.sign(pair, new PlaintextContainer(plaintext));
 		
@@ -72,7 +72,7 @@ class TestSignature {
 	@Test
 	void testSigningStringValidation() throws CoseException, NoSuchAlgorithmException {
 		String plaintext = "Hello World!";
-		SCCKeyPair pair = scc.createKeyPair(keyPairUseCase.Signing);
+		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.Signing);
 		
 		SCCSignature signature = scc.sign(pair, new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
 		
@@ -86,7 +86,7 @@ class TestSignature {
 	@Test
 	void testUpdateSigningByte() throws CoseException, NoSuchAlgorithmException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCKeyPair pair = scc.createKeyPair(keyPairUseCase.Signing);
+		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.Signing);
 		
 		SCCSignature oldSignature = scc.sign(pair, new PlaintextContainer(plaintext));
 		
@@ -101,7 +101,7 @@ class TestSignature {
 	@Test
 	void testUpdateSigningString() throws CoseException, NoSuchAlgorithmException {
 		String plaintext = "Hello World!";
-		SCCKeyPair pair = scc.createKeyPair(keyPairUseCase.Signing);
+		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.Signing);
 		
 		SCCSignature oldSignature = scc.sign(pair, new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)));
 		
