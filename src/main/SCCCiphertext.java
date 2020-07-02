@@ -12,17 +12,76 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 
 	SecureCryptoConfig scc = new SecureCryptoConfig();
 	
-	public SCCCiphertext(byte[] ciphertext, byte[] msg) {
-		super(ciphertext, msg);
+	public SCCCiphertext(byte[] msg) {
+		super(msg);
 	}
 	
 	@Override
-	public byte[] getMessageBytes() {
+	public byte[] toBytes() {
 		return this.msg;
+	}
+	
+	@Override
+	public String toString(Charset c) {
+		return new String (this.msg, c);
+	}
+	
+
+	@Override
+	public PlaintextContainer decryptSymmetric(AbstractSCCKey key) {
+		try {
+			return scc.decryptSymmetric(key, this);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 	@Override
-	public AlgorithmID getAlgorithmIdentifier() {
+	public PlaintextContainer decryptAsymmetric(AbstractSCCKeyPair keyPair) {
+		try {
+			return scc.decryptAsymmetric(keyPair, this);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public SCCCiphertext reEncryptSymmetric(AbstractSCCKey key)  {
+		try {
+		return scc.reEncryptSymmetric(key, this);
+		}catch(CoseException e)
+		{
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public SCCCiphertext reEncryptAsymmetric(AbstractSCCKeyPair keyPair) {
+		try {
+			return scc.reEncryptAsymmetric(keyPair, this);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+
+	
+	/*
+	protected Message convertByteToMsg() {
+		try {
+			return (Message) Message.DecodeFromBytes(this.msg);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+
+	protected AlgorithmID getAlgorithmIdentifier() {
 		try {
 		Message msg = convertByteToMsg();
 		CBORObject obj = msg.findAttribute(HeaderKeys.Algorithm);
@@ -35,66 +94,9 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	
 	}
 
-	@Override
-	public byte[] getCiphertextBytes() {
+	
+	protected byte[] getCiphertextBytes() {
 		return this.ciphertext;
-	}
-	
-	@Override
-	public String getCiphertextAsString(Charset c) {
-		return new String (this.ciphertext, c);
-	}
-	
-
-	@Override
-	public Message convertByteToMsg() {
-		try {
-			return (Message) Message.DecodeFromBytes(this.msg);
-		} catch (CoseException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	@Override
-	public PlaintextContainer symmetricDecrypt(AbstractSCCKey key) {
-		try {
-			return scc.symmetricDecrypt(key, this);
-		} catch (CoseException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	@Override
-	public PlaintextContainer asymmetricDecrypt(AbstractSCCKeyPair keyPair) {
-		try {
-			return scc.asymmetricDecrypt(keyPair, this);
-		} catch (CoseException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	@Override
-	public SCCCiphertext symmetricReEncrypt(AbstractSCCKey key)  {
-		try {
-		return scc.symmetricReEncrypt(key, this);
-		}catch(CoseException e)
-		{
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	@Override
-	public SCCCiphertext asymmetricReEncrypt(AbstractSCCKeyPair keyPair) {
-		try {
-			return scc.asymmetricReEncrypt(keyPair, this);
-		} catch (CoseException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+	}*/
 
 }

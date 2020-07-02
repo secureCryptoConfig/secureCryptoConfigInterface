@@ -3,8 +3,6 @@ package main;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
 import java.util.ArrayList;
 
 import COSE.AlgorithmID;
@@ -23,20 +21,16 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 		super(pair);
 	}
 
-	@Override
-	public PublicKey getPublic() {
-		return this.pair.getPublic();
-	}
-	
-	@Override
-	public PrivateKey getPrivate() {
-		return this.pair.getPrivate();
-	}
-	
 
 	@Override
-	public KeyPair getKeyPair() {
-		return this.pair;
+	public byte[] getPublicKeyBytes() {
+		return this.pair.getPublic().getEncoded();
+	}
+
+	
+	@Override
+	public byte[] getPrivateKeyBytes() {
+		return this.pair.getPrivate().getEncoded();
 	}
 
 	public static SCCKeyPair createKeyPair(keyPairUseCase useCase) throws CoseException, NoSuchAlgorithmException {
@@ -101,5 +95,6 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 			return null;
 		}
 	}
+
 
 }

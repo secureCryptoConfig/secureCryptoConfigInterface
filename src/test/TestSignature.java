@@ -8,7 +8,6 @@ import java.security.NoSuchAlgorithmException;
 import org.junit.jupiter.api.Test;
 
 import COSE.CoseException;
-import main.PlaintextContainer;
 import main.SCCKeyPair;
 import main.SCCSignature;
 import main.SecureCryptoConfig;
@@ -37,7 +36,7 @@ class TestSignature {
 		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.Signing);
 		
 		SCCSignature signature = scc.sign(pair, plaintext);
-		byte[] s = signature.getSignatureBytes();
+		byte[] s = signature.toBytes();
 
 		assertTrue(s instanceof byte[]);
 
@@ -50,7 +49,7 @@ class TestSignature {
 		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.Signing);
 		
 		SCCSignature signature = scc.sign(pair, plaintext.getBytes(StandardCharsets.UTF_8));
-		String s = signature.getSignatureAsString(StandardCharsets.UTF_8);
+		String s = signature.toString(StandardCharsets.UTF_8);
 		assertTrue(s instanceof String);
 	}
 
@@ -62,7 +61,7 @@ class TestSignature {
 		
 		SCCSignature signature = scc.sign(pair,plaintext);
 		
-		boolean result = scc.validateSignature(pair, signature);
+		boolean result = scc.validateSignature(signature);
 
 		assertTrue(result);
 
@@ -76,7 +75,7 @@ class TestSignature {
 		
 		SCCSignature signature = scc.sign(pair, plaintext.getBytes(StandardCharsets.UTF_8));
 		
-		boolean result = scc.validateSignature(pair, signature);
+		boolean result = scc.validateSignature(signature);
 
 		assertTrue(result);
 
@@ -90,8 +89,8 @@ class TestSignature {
 		
 		SCCSignature oldSignature = scc.sign(pair, plaintext);
 		
-		SCCSignature updatedSignature = scc.updateSignature(pair, oldSignature);
-		byte[] newSignature = updatedSignature.getSignatureBytes();
+		SCCSignature updatedSignature = scc.updateSignature(oldSignature);
+		byte[] newSignature = updatedSignature.toBytes();
 		
 		assertTrue(newSignature instanceof byte[]);
 
@@ -105,8 +104,8 @@ class TestSignature {
 		
 		SCCSignature oldSignature = scc.sign(pair, plaintext.getBytes(StandardCharsets.UTF_8));
 		
-		SCCSignature updatedSignature = scc.updateSignature(pair, oldSignature);
-		String newSignature = updatedSignature.getSignatureAsString(StandardCharsets.UTF_8);
+		SCCSignature updatedSignature = scc.updateSignature(oldSignature);
+		String newSignature = updatedSignature.toString(StandardCharsets.UTF_8);
 		
 		assertTrue(newSignature instanceof String);
 	}

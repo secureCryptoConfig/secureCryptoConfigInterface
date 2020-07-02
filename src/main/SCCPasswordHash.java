@@ -10,9 +10,11 @@ import COSE.HeaderKeys;
 import COSE.PasswordHashMessage;
 
 public class SCCPasswordHash extends AbstractSCCPasswordHash {
+	
+	SecureCryptoConfig scc = new SecureCryptoConfig();
 
 	public SCCPasswordHash(PlaintextContainer password, PlaintextContainer hash, byte[] hashMsg) {
-		super(password, hash, hashMsg);
+		super(password, hashMsg);
 	}
 
 	@Override
@@ -26,12 +28,30 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	}
 
 	@Override
-	public byte[] getMessageBytes() {
+	public byte[] toBytes() {
 		return this.hashMsg;
 	}
 
 	@Override
-	public AlgorithmID getAlgorithmIdentifier() {
+	public String toString(Charset c) {
+		return new String(this.hashMsg, c);
+	}
+	
+	protected PasswordHashMessage convertByteToMsg() {
+		try {
+			return (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(this.hashMsg);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/*
+	protected byte[] getMessageBytes() {
+		return this.hashMsg;
+	}
+
+	protected AlgorithmID getAlgorithmIdentifier() {
 		try {
 			PasswordHashMessage msg = convertByteToMsg();
 			CBORObject obj = msg.findAttribute(HeaderKeys.Algorithm);
@@ -43,38 +63,25 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 		}
 	}
 
-	@Override
-	public PlaintextContainer getHashAsPlaintextContainer() {
+	protected PlaintextContainer getHashAsPlaintextContainer() {
 		return (PlaintextContainer) this.hash;
 	}
 
-	@Override
-	public PasswordHashMessage convertByteToMsg() {
-		try {
-			return (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(this.hashMsg);
-		} catch (CoseException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
 
-	@Override
 	public PlaintextContainerInterface getPlaintextAsPlaintextContainer() {
 		return this.plaintext;
 	}
 
-	@Override
 	public String getPlaintextAsString(Charset c) {
-		return new String(this.plaintext.getPlaintextBytes(), c);
+		return new String(this.plaintext.toBytes(), c);
 	}
 
-	@Override
 	public String getHashAsString(Charset c) {
-		return new String(this.hash.getPlaintextBytes(), c);
+		return new String(this.hash.toBytes(), c);
 	}
 
-	@Override
 	public byte[] getHashBytes() {
-		return this.hash.getPlaintextBytes();
+		return this.hash.toBytes();
 	}
+	*/
 }

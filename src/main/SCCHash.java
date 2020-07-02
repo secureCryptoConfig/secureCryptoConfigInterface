@@ -1,6 +1,7 @@
 package main;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 
 import com.upokecenter.cbor.CBORObject;
 
@@ -13,9 +14,9 @@ public class SCCHash extends AbstractSCCHash{
 
 	SecureCryptoConfig scc = new SecureCryptoConfig();
 	
-	public SCCHash(PlaintextContainer plaintext, PlaintextContainer hash, byte[] hashMsg)
+	public SCCHash(PlaintextContainer plaintext, byte[] hashMsg)
 	{
-		super(plaintext, hash, hashMsg);
+		super(plaintext, hashMsg);
 	}
 	
 	@Override
@@ -29,12 +30,39 @@ public class SCCHash extends AbstractSCCHash{
 	}
 
 	@Override
-	public byte[] getMessageBytes() {
+	public byte[] toBytes() {
 		return this.hashMsg;
 	}
 
+	
 	@Override
-	public AlgorithmID getAlgorithmIdentifier() {
+	public SCCHash updateHash() {
+		try {
+			return scc.hash(this.plaintext);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	@Override
+	public String toString(Charset c) {
+		return new String(this.hashMsg, c);
+	}
+	
+	
+	protected HashMessage convertByteToMsg() {
+		try {
+			return (HashMessage) HashMessage.DecodeFromBytes(this.hashMsg);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/*
+	
+	protected AlgorithmID getAlgorithmIdentifier() {
 		try {
 		HashMessage msg = convertByteToMsg();
 		CBORObject obj = msg.findAttribute(HeaderKeys.Algorithm);
@@ -48,48 +76,30 @@ public class SCCHash extends AbstractSCCHash{
 	}
 
 
-	@Override
-	public PlaintextContainer getHashAsPlaintextContainer() {
+	
+	protected PlaintextContainer getHashAsPlaintextContainer() {
 		return (PlaintextContainer) this.hash;
 	}
 
-	@Override
-	public HashMessage convertByteToMsg() {
-		try {
-			return (HashMessage) HashMessage.DecodeFromBytes(this.hashMsg);
-		} catch (CoseException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
 
-	@Override
-	public SCCHash updateHash() {
-		try {
-			return scc.hash(this.plaintext);
-		} catch (CoseException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
 
-	@Override
-	public PlaintextContainerInterface getPlaintextAsPlaintextContainer() {
+	protected PlaintextContainerInterface getPlaintextAsPlaintextContainer() {
 		return this.plaintext;
 	}
 
-	@Override
-	public String getPlaintextAsString(Charset c) {
-		return new String (this.plaintext.getPlaintextBytes(), c);
+	
+	protected String getPlaintextAsString(Charset c) {
+		return new String (this.plaintext.toBytes(), c);
 	}
 	
-	public String getHashAsString(Charset c)
+	protected String getHashAsString(Charset c)
 	{
-		return new String (this.hash.getPlaintextBytes(), c);
+		return new String (this.hash.toBytes(), c);
 	}
 	
-	@Override
-	public byte[] getHashBytes() {
-		return this.hash.getPlaintextBytes();
+	
+	protected byte[] getHashBytes() {
+		return this.hash.toBytes();
 	}
+	*/
 }

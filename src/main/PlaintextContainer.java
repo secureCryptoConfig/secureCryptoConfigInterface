@@ -14,13 +14,13 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	
 
 	@Override
-	public byte[] getPlaintextBytes() {
+	public byte[] toBytes() {
 		return plaintext;
 	}
 
 	
 	@Override
-	public String getPlaintextAsString(Charset c) {
+	public String toString(Charset c) {
 		return new String(this.plaintext, c);
 
 	}
@@ -48,9 +48,9 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 
 
 	@Override
-	public SCCCiphertext symmetricEncrypt(AbstractSCCKey key) {
+	public SCCCiphertext encryptSymmetric(AbstractSCCKey key) {
 		try {
-			return scc.symmetricEncrypt(key, this);
+			return scc.encryptSymmetric(key, this);
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;
@@ -59,9 +59,9 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 
 
 	@Override
-	public SCCCiphertext asymmetricEncrypt(AbstractSCCKeyPair keyPair) {
+	public SCCCiphertext encryptAsymmetric(AbstractSCCKeyPair keyPair) {
 		try {
-			return scc.asymmetricEncrypt(keyPair, this);
+			return scc.encryptAsymmetric(keyPair, this);
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;

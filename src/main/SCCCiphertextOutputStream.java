@@ -1,9 +1,9 @@
 package main;
 
 import java.io.ByteArrayOutputStream;
-import java.util.Base64;
 
-public class SCCCiphertextOutputStream extends AbstractSCCCiphertextOutputStream{
+public class SCCCiphertextOutputStream //extends AbstractSCCCiphertextOutputStream
+{
 
 ByteArrayOutputStream byteArrayOutputStream;
 	
@@ -11,6 +11,7 @@ ByteArrayOutputStream byteArrayOutputStream;
 		this.byteArrayOutputStream = byteArrayOutputStream;
 	}
 	
+	/*
 	@Override
 	public ByteArrayOutputStream getStream()
 	{
@@ -29,5 +30,5 @@ ByteArrayOutputStream byteArrayOutputStream;
 	{
 		return byteArrayOutputStream.toByteArray();
 	}
-
+	*/
 }

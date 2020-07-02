@@ -48,8 +48,8 @@ class TestAsymmetricEncryption {
 	void testAsymmetricByteEncryptNoExistingKey() throws CoseException, NoSuchAlgorithmException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.AsymmetricEncryption);
-		SCCCiphertext ciphertext = scc.asymmetricEncrypt(pair, plaintext);
-		byte[] encrypted = ciphertext.getCiphertextBytes();
+		SCCCiphertext ciphertext = scc.encryptAsymmetric(pair, plaintext);
+		byte[] encrypted = ciphertext.toBytes();
 
 		assertTrue(encrypted instanceof byte[]);
 		assertTrue(pair instanceof SCCKeyPair);
@@ -61,8 +61,8 @@ class TestAsymmetricEncryption {
 	void testAsymmetricStringEncryptNoExistingKey() throws CoseException, NoSuchAlgorithmException {
 		String plaintext = "Hello World!";
 		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.AsymmetricEncryption);
-		SCCCiphertext ciphertext = scc.asymmetricEncrypt(pair, plaintext.getBytes(StandardCharsets.UTF_8));
-		String encrypted = ciphertext.getCiphertextAsString(StandardCharsets.UTF_8);
+		SCCCiphertext ciphertext = scc.encryptAsymmetric(pair, plaintext.getBytes(StandardCharsets.UTF_8));
+		String encrypted = ciphertext.toString(StandardCharsets.UTF_8);
 
 		assertTrue(encrypted instanceof String);
 		assertTrue(pair instanceof SCCKeyPair);
@@ -80,8 +80,8 @@ class TestAsymmetricEncryption {
 		SCCKeyPair pair = new SCCKeyPair(keyPair);
 
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCCiphertext ciphertext = scc.asymmetricEncrypt(pair, plaintext);
-		byte[] encrypted = ciphertext.getCiphertextBytes();
+		SCCCiphertext ciphertext = scc.encryptAsymmetric(pair, plaintext);
+		byte[] encrypted = ciphertext.toBytes();
 
 		assertTrue(encrypted instanceof byte[]);
 	}
@@ -98,8 +98,8 @@ class TestAsymmetricEncryption {
 		SCCKeyPair pair = new SCCKeyPair(keyPair);
 
 		String plaintext = "Hello World!";
-		SCCCiphertext ciphertext = scc.asymmetricEncrypt(pair, plaintext.getBytes(StandardCharsets.UTF_8));
-		String encrypted = ciphertext.getCiphertextAsString(StandardCharsets.UTF_8);
+		SCCCiphertext ciphertext = scc.encryptAsymmetric(pair, plaintext.getBytes(StandardCharsets.UTF_8));
+		String encrypted = ciphertext.toString(StandardCharsets.UTF_8);
 
 		assertTrue(encrypted instanceof String);
 	}
@@ -110,12 +110,12 @@ class TestAsymmetricEncryption {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.AsymmetricEncryption);
 		// Encryption
-		SCCCiphertext ciphertext = scc.asymmetricEncrypt(pair, plaintext);
+		SCCCiphertext ciphertext = scc.encryptAsymmetric(pair, plaintext);
 		// Decryption
-		PlaintextContainer plain = ciphertext.asymmetricDecrypt(pair);
-		byte[] decrypted = plain.getPlaintextBytes();
+		PlaintextContainer plain = ciphertext.decryptAsymmetric(pair);
+		byte[] decrypted = plain.toBytes();
 
-		assertEquals(new String(plaintext, StandardCharsets.UTF_8), plain.getPlaintextAsString(StandardCharsets.UTF_8));
+		assertEquals(new String(plaintext, StandardCharsets.UTF_8), plain.toString(StandardCharsets.UTF_8));
 	}
 
 	// - encrypted String decrypt + key, return: decrypted String
@@ -124,10 +124,10 @@ class TestAsymmetricEncryption {
 		String plaintext = "Hello World!";
 		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.AsymmetricEncryption);
 		// Encryption
-		SCCCiphertext ciphertext = scc.asymmetricEncrypt(pair, plaintext.getBytes(StandardCharsets.UTF_8));
+		SCCCiphertext ciphertext = scc.encryptAsymmetric(pair, plaintext.getBytes(StandardCharsets.UTF_8));
 		// Decryption
-		PlaintextContainer decryptedCiphertext = ciphertext.asymmetricDecrypt(pair);
-		String decrypted = decryptedCiphertext.getPlaintextAsString(StandardCharsets.UTF_8);
+		PlaintextContainer decryptedCiphertext = ciphertext.decryptAsymmetric(pair);
+		String decrypted = decryptedCiphertext.toString(StandardCharsets.UTF_8);
 
 		assertEquals(plaintext, decrypted);
 
@@ -140,13 +140,14 @@ class TestAsymmetricEncryption {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.AsymmetricEncryption);
 		// Encryption
-		SCCCiphertext ciphertext = scc.asymmetricEncrypt(pair, plaintext);
+		SCCCiphertext ciphertext = scc.encryptAsymmetric(pair, plaintext);
 		// ReEncryption
-		SCCCiphertext updatedCiphertext = scc.asymmetricReEncrypt(pair, ciphertext);
-		byte[] updateCiphertext = updatedCiphertext.getCiphertextBytes();
+		SCCCiphertext updatedCiphertext = scc.reEncryptAsymmetric(pair, ciphertext);
+		byte[] updateCiphertect = updatedCiphertext.toBytes();
+		//byte[] updateCiphertext = updatedCiphertext.getCiphertextBytes();
 
-		String oldCiphertext = ciphertext.getCiphertextAsString(StandardCharsets.UTF_8);
-		String newCiphertext = updatedCiphertext.getCiphertextAsString(StandardCharsets.UTF_8);
+		String oldCiphertext = ciphertext.toString(StandardCharsets.UTF_8);
+		String newCiphertext = updatedCiphertext.toString(StandardCharsets.UTF_8);
 
 		assertFalse(oldCiphertext.equals(newCiphertext));
 	}
@@ -157,13 +158,13 @@ class TestAsymmetricEncryption {
 		String plaintext = "Hello World!";
 		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.AsymmetricEncryption);
 		// Encryption
-		SCCCiphertext ciphertext = scc.asymmetricEncrypt(pair, plaintext.getBytes(StandardCharsets.UTF_8));
+		SCCCiphertext ciphertext = scc.encryptAsymmetric(pair, plaintext.getBytes(StandardCharsets.UTF_8));
 		// ReEncryption
-		SCCCiphertext updatedCiphertext = scc.asymmetricReEncrypt(pair, ciphertext);
-		String updateCiphertext = updatedCiphertext.getCiphertextAsString(StandardCharsets.UTF_8);
+		SCCCiphertext updatedCiphertext = scc.reEncryptAsymmetric(pair, ciphertext);
+		String updateCiphertext = updatedCiphertext.toString(StandardCharsets.UTF_8);
 
-		String oldCiphertext = ciphertext.getCiphertextAsString(StandardCharsets.UTF_8);
-		String newCiphertext = updatedCiphertext.getCiphertextAsString(StandardCharsets.UTF_8);
+		String oldCiphertext = ciphertext.toString(StandardCharsets.UTF_8);
+		String newCiphertext = updatedCiphertext.toString(StandardCharsets.UTF_8);
 
 		assertFalse(oldCiphertext.equals(newCiphertext));
 	}

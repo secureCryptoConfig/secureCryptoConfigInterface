@@ -1,6 +1,7 @@
 package main;
 
-public class PlaintextOutputStream extends AbstractPlaintextOutputStream{
+public class PlaintextOutputStream //extends AbstractPlaintextOutputStream
+{
 
 
 	

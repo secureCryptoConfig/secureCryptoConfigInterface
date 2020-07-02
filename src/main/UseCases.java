@@ -28,14 +28,14 @@ public class UseCases {
 			AlgorithmID id) {
 		try {
 			Encrypt0Message encrypt0Message = new Encrypt0Message();
-			encrypt0Message.SetContent(plaintext.getPlaintextBytes());
+			encrypt0Message.SetContent(plaintext.toBytes());
 
 			encrypt0Message.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 
 			encrypt0Message.encrypt(key.key);
 			byte[] encrypted = encrypt0Message.getEncryptedContent();
 
-			return new SCCCiphertext(encrypted, encrypt0Message.EncodeToBytes());
+			return new SCCCiphertext(encrypt0Message.EncodeToBytes());
 
 		} catch (CoseException e) {
 			e.printStackTrace();
@@ -53,14 +53,13 @@ public class UseCases {
 	protected static SCCHash createHashMessage(PlaintextContainer plaintext, AlgorithmID id) {
 		try {
 			HashMessage hashMessage = new HashMessage();
-			hashMessage.SetContent(plaintext.getPlaintextBytes());
+			hashMessage.SetContent(plaintext.toBytes());
 
 			hashMessage.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 
 			hashMessage.hash();
 
-			return new SCCHash(plaintext, new PlaintextContainer(hashMessage.getHashedContent()),
-					hashMessage.EncodeToBytes());
+			return new SCCHash(plaintext, hashMessage.EncodeToBytes());
 
 		} catch (CoseException e) {
 			e.printStackTrace();
@@ -79,7 +78,7 @@ public class UseCases {
 
 		try {
 			PasswordHashMessage m = new PasswordHashMessage();
-			m.SetContent(password.getPlaintextBytes());
+			m.SetContent(password.toBytes());
 			m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 			m.passwordHash();
 			PlaintextContainer hashed = new PlaintextContainer(m.getHashedContent());
@@ -104,7 +103,7 @@ public class UseCases {
 			byte[] salt) {
 		try {
 			PasswordHashMessage m = new PasswordHashMessage();
-			m.SetContent(password.getPlaintextBytes());
+			m.SetContent(password.toBytes());
 			m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 			m.passwordHashWithSalt(salt);
 
@@ -128,12 +127,12 @@ public class UseCases {
 			AbstractSCCKeyPair keyPair) {
 		try {
 			AsymMessage m3 = new AsymMessage();
-			m3.SetContent(plaintext.getPlaintextBytes());
+			m3.SetContent(plaintext.toBytes());
 			m3.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
-			m3.encrypt(keyPair.getKeyPair());
+			m3.encrypt(keyPair.pair);
 			byte[] encrypted = m3.getEncryptedContent();
 
-			return new SCCCiphertext(encrypted, m3.EncodeToBytes());
+			return new SCCCiphertext(m3.EncodeToBytes());
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;
@@ -151,13 +150,12 @@ public class UseCases {
 	protected static SCCSignature createSignMessage(PlaintextContainerInterface plaintext, AbstractSCCKeyPair key,
 			AlgorithmID id) {
 		Sign1Message m = new Sign1Message();
-		m.SetContent(plaintext.getPlaintextBytes());
+		m.SetContent(plaintext.toBytes());
 		try {
 			m.addAttribute(HeaderKeys.Algorithm, AlgorithmID.ECDSA_512.AsCBOR(), Attribute.PROTECTED);
-			OneKey oneKey = new OneKey(key.getPublic(), key.getPrivate());
+			OneKey oneKey = new OneKey(key.pair.getPublic(), key.pair.getPrivate());
 			m.sign(oneKey);
-			return new SCCSignature((PlaintextContainer) plaintext, new PlaintextContainer(m.getSignature()),
-					m.EncodeToBytes());
+			return new SCCSignature((PlaintextContainer) plaintext, (SCCKeyPair) key, m.EncodeToBytes());
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;
@@ -199,7 +197,7 @@ public class UseCases {
 
 			fileOutputStream.close();
 			inputStream.close();
-			SCCCiphertext s = new SCCCiphertext(encrypted, encrypt0Message.EncodeToBytes());
+			SCCCiphertext s = new SCCCiphertext(encrypt0Message.EncodeToBytes());
 			return s;
 		} catch (IOException | CoseException e) {
 
