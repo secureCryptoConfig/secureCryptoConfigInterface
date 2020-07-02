@@ -366,6 +366,11 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		
 		return s.equals(s1);
 	}
+	
+	@Override
+	public boolean validateHash(byte[] plaintext, AbstractSCCHash hash) throws CoseException {
+		return validateHash(new PlaintextContainer(plaintext), hash);
+	}
 
 	/**
 	 * Signing of a plaintext with a specific key.
@@ -506,9 +511,13 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		return hash1.equals(hash2);
 
 	}
+	
 
-	
-	
+	@Override
+	public boolean validatePasswordHash(byte[] password, AbstractSCCPasswordHash passwordhash) throws CoseException {
+		return validatePasswordHash(new PlaintextContainer(password), passwordhash);
+	}
+
 	
 	/*
 	 //Encryption of content of a given Inputstream. 

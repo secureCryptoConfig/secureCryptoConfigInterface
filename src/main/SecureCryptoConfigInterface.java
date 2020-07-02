@@ -57,6 +57,8 @@ abstract interface SecureCryptoConfigInterface {
 
 	public boolean validateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException;
 
+	public boolean validateHash(byte[] plaintext, AbstractSCCHash hash) throws CoseException;
+
 	// Digital Signature
 	public AbstractSCCSignature sign(AbstractSCCKeyPair key, PlaintextContainerInterface plaintext)
 			throws CoseException;
@@ -76,6 +78,8 @@ abstract interface SecureCryptoConfigInterface {
 	public boolean validatePasswordHash(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash)
 			throws CoseException;
 
+	public boolean validatePasswordHash(byte[] password, AbstractSCCPasswordHash passwordhash)
+			throws CoseException;
 }
 
 abstract interface PlaintextContainerInterface {
