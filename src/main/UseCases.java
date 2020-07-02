@@ -33,7 +33,9 @@ public class UseCases {
 			encrypt0Message.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 
 			encrypt0Message.encrypt(key.key);
-			byte[] encrypted = encrypt0Message.getEncryptedContent();
+			encrypt0Message.SetContent((byte[])null);
+			
+			//byte[] encrypted = encrypt0Message.getEncryptedContent();
 
 			return new SCCCiphertext(encrypt0Message.EncodeToBytes());
 
@@ -126,13 +128,14 @@ public class UseCases {
 	protected static SCCCiphertext createAsymMessage(PlaintextContainerInterface plaintext, AlgorithmID id,
 			AbstractSCCKeyPair keyPair) {
 		try {
-			AsymMessage m3 = new AsymMessage();
-			m3.SetContent(plaintext.toBytes());
-			m3.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
-			m3.encrypt(keyPair.pair);
-			byte[] encrypted = m3.getEncryptedContent();
+			AsymMessage asymMsg = new AsymMessage();
+			asymMsg.SetContent(plaintext.toBytes());
+			asymMsg.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
+			asymMsg.encrypt(keyPair.pair);
+			asymMsg.SetContent((byte[])null);
+			//byte[] encrypted = m3.getEncryptedContent();
 
-			return new SCCCiphertext(m3.EncodeToBytes());
+			return new SCCCiphertext(asymMsg.EncodeToBytes());
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;

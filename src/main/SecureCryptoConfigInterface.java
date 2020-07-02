@@ -3,8 +3,8 @@ package main;
 import java.nio.charset.Charset;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
+
 import COSE.CoseException;
-import COSE.HashMessage;
 import main.SCCKey.SCCKeyAlgorithm;
 
 abstract interface SecureCryptoConfigInterface {

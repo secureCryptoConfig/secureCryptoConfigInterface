@@ -3,12 +3,9 @@ package main;
 import java.io.FileOutputStream;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.HashSet;
 
 import com.upokecenter.cbor.CBORObject;
@@ -17,7 +14,6 @@ import COSE.AlgorithmID;
 import COSE.AsymMessage;
 import COSE.CoseException;
 import COSE.Encrypt0Message;
-import COSE.HashMessage;
 import COSE.HeaderKeys;
 import COSE.OneKey;
 import COSE.PasswordHashMessage;

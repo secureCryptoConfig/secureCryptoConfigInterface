@@ -2,11 +2,7 @@ package main;
 
 import java.nio.charset.Charset;
 
-import com.upokecenter.cbor.CBORObject;
-
-import COSE.AlgorithmID;
 import COSE.CoseException;
-import COSE.HeaderKeys;
 import COSE.Sign1Message;
 
 public class SCCSignature extends AbstractSCCSignature {
@@ -51,41 +47,4 @@ public class SCCSignature extends AbstractSCCSignature {
 		}
 	}
 	
-	/*
-	
-	protected AlgorithmID getAlgorithmIdentifier() {
-		try {
-			Sign1Message msg = convertByteToMsg();
-			CBORObject obj = msg.findAttribute(HeaderKeys.Algorithm);
-			AlgorithmID alg = AlgorithmID.FromCBOR(obj);
-			return alg;
-		} catch (CoseException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
-
-	
-	protected PlaintextContainer getSignatureAsPlaintextContainer() {
-		return (PlaintextContainer) this.signature;
-	}
-
-
-
-	protected PlaintextContainerInterface getPlaintextAsPlaintextContainer() {
-		return this.plaintext;
-	}
-
-	protected String getPlaintextAsString(Charset c) {
-		return new String(this.plaintext.toBytes(), c);
-	}
-
-	protected String getSignatureAsString(Charset c) {
-		return new String(this.signature.toBytes(), c);
-	}
-
-	protected byte[] getSignatureBytes() {
-		return this.signature.toBytes();
-	}
-	*/
 }
