@@ -24,9 +24,9 @@ public class SCCSignature extends AbstractSCCSignature {
 	}
 	
 	@Override
-	public SCCSignature updateSignature() {
+	public SCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKeyPair keyPair) {
 		try {
-			return scc.updateSignature(this);
+			return scc.updateSignature(plaintext, keyPair);
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;
@@ -34,8 +34,8 @@ public class SCCSignature extends AbstractSCCSignature {
 	}
 	
 	@Override
-	public boolean validateSignature() {
-		return scc.validateSignature(this);
+	public boolean validateSignature(AbstractSCCKeyPair keyPair) {
+		return scc.validateSignature(keyPair, this);
 	}
 
 	protected Sign1Message convertByteToMsg() {

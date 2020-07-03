@@ -67,10 +67,13 @@ abstract interface SecureCryptoConfigInterface {
 
 	public AbstractSCCSignature sign(AbstractSCCKeyPair key, byte[] plaintext) throws CoseException;
 
-	public AbstractSCCSignature updateSignature(AbstractSCCSignature signature)
+	public AbstractSCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKeyPair keyPair)
+			throws CoseException;
+	
+	public AbstractSCCSignature updateSignature(byte[] plaintext, AbstractSCCKeyPair keyPair)
 			throws CoseException;
 
-	public boolean validateSignature(AbstractSCCSignature signature);
+	public boolean validateSignature(AbstractSCCKeyPair keyPair, AbstractSCCSignature signature);
 
 	// Password Hashing
 	public AbstractSCCPasswordHash passwordHash(PlaintextContainerInterface password) throws CoseException;
@@ -193,8 +196,6 @@ abstract class AbstractSCCPasswordHash {
 
 abstract class AbstractSCCSignature {
 	byte[] signatureMsg;
-	PlaintextContainerInterface plaintext;
-	AbstractSCCKeyPair keyPair;
 
 	// keyPair, plaintext
 	public AbstractSCCSignature(byte[] signatureMasg) {
@@ -205,9 +206,9 @@ abstract class AbstractSCCSignature {
 
 	abstract String toString(Charset c);
 
-	abstract boolean validateSignature();
+	abstract boolean validateSignature(AbstractSCCKeyPair keyPair);
 
-	abstract SCCSignature updateSignature();
+	abstract SCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKeyPair keyPair);
 
 }
 

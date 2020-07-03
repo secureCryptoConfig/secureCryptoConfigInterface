@@ -428,20 +428,25 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * Given a signature of a plaintext: the corresponding plaintext will be signed again with the current SCC.
 	 */
 	@Override
-	public SCCSignature updateSignature(AbstractSCCSignature signature) throws CoseException {
-		return sign(signature.keyPair, signature.plaintext);
+	public SCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKeyPair keyPair) throws CoseException {
+		return sign(keyPair, plaintext);
+	}
+	
+	@Override
+	public SCCSignature updateSignature(byte[] plaintext, AbstractSCCKeyPair keyPair) throws CoseException {
+		return updateSignature(new PlaintextContainer(plaintext), keyPair);
 	}
 
 	/**
 	 * A given signature is checked for validity
 	 */
 	@Override
-	public boolean validateSignature(AbstractSCCSignature signature) {
+	public boolean validateSignature(AbstractSCCKeyPair keyPair, AbstractSCCSignature signature) {
 
 		try {
 			SCCSignature s = (SCCSignature) signature;
 			Sign1Message msg = s.convertByteToMsg();
-			OneKey oneKey = new OneKey(signature.keyPair.pair.getPublic(), signature.keyPair.pair.getPrivate());
+			OneKey oneKey = new OneKey(keyPair.pair.getPublic(), keyPair.pair.getPrivate());
 			return msg.validate(oneKey);
 		} catch (CoseException e) {
 			e.printStackTrace();
@@ -523,6 +528,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	public boolean validatePasswordHash(byte[] password, AbstractSCCPasswordHash passwordhash) throws CoseException {
 		return validatePasswordHash(new PlaintextContainer(password), passwordhash);
 	}
+
 
 	
 	/*
