@@ -8,15 +8,15 @@ public class SCCHash extends AbstractSCCHash{
 
 	SecureCryptoConfig scc = new SecureCryptoConfig();
 	
-	public SCCHash(PlaintextContainer plaintext, byte[] hashMsg)
+	public SCCHash(byte[] hashMsg)
 	{
-		super(plaintext, hashMsg);
+		super(hashMsg);
 	}
 	
 	@Override
-	public boolean validateHash(PlaintextContainerInterface plain) {
+	public boolean validateHash(PlaintextContainerInterface plaintext) {
 		try {
-			return scc.validateHash(plain, this);
+			return scc.validateHash(plaintext, this);
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return false;
@@ -30,9 +30,9 @@ public class SCCHash extends AbstractSCCHash{
 
 	
 	@Override
-	public SCCHash updateHash() {
+	public SCCHash updateHash(PlaintextContainerInterface plaintext) {
 		try {
-			return scc.hash(this.plaintext);
+			return scc.hash(plaintext);
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;

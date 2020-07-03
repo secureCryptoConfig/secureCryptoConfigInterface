@@ -348,9 +348,15 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * Given a hash of a plaintext: the corresponding plaintext will be hashed again with the current SCC.
 	 */
 	@Override
-	public SCCHash updateHash(AbstractSCCHash hash) throws CoseException {
-		return hash(hash.plaintext);
+	public SCCHash updateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException {
+		return hash(plaintext);
 	}
+	
+	@Override
+	public SCCHash updateHash(byte[] plaintext, AbstractSCCHash hash) throws CoseException {
+		return updateHash(new PlaintextContainer(plaintext), hash);
+	}
+
 
 	/**
 	 * A given plaintext will be hashed. The resulting hash will be compared with a given hash.

@@ -9,8 +9,8 @@ public class SCCSignature extends AbstractSCCSignature {
 
 	SecureCryptoConfig scc = new SecureCryptoConfig();
 
-	public SCCSignature(PlaintextContainer plaintext, SCCKeyPair keyPair, byte[] signatureMsg) {
-		super(plaintext, keyPair, signatureMsg);
+	public SCCSignature(byte[] signatureMsg) {
+		super(signatureMsg);
 	}
 
 	@Override

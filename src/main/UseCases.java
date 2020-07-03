@@ -61,7 +61,7 @@ public class UseCases {
 
 			hashMessage.hash();
 
-			return new SCCHash(plaintext, hashMessage.EncodeToBytes());
+			return new SCCHash(hashMessage.EncodeToBytes());
 
 		} catch (CoseException e) {
 			e.printStackTrace();
@@ -84,7 +84,7 @@ public class UseCases {
 			m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 			m.passwordHash();
 			PlaintextContainer hashed = new PlaintextContainer(m.getHashedContent());
-			return new SCCPasswordHash((PlaintextContainer) password, hashed, m.EncodeToBytes());
+			return new SCCPasswordHash(m.EncodeToBytes());
 
 		} catch (CoseException e) {
 			e.printStackTrace();
@@ -110,7 +110,7 @@ public class UseCases {
 			m.passwordHashWithSalt(salt);
 
 			PlaintextContainer hashed = new PlaintextContainer(m.getHashedContent());
-			return new SCCPasswordHash((PlaintextContainer) password, hashed, m.EncodeToBytes());
+			return new SCCPasswordHash(m.EncodeToBytes());
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;
@@ -158,7 +158,7 @@ public class UseCases {
 			m.addAttribute(HeaderKeys.Algorithm, AlgorithmID.ECDSA_512.AsCBOR(), Attribute.PROTECTED);
 			OneKey oneKey = new OneKey(key.pair.getPublic(), key.pair.getPrivate());
 			m.sign(oneKey);
-			return new SCCSignature((PlaintextContainer) plaintext, (SCCKeyPair) key, m.EncodeToBytes());
+			return new SCCSignature(m.EncodeToBytes());
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;

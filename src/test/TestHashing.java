@@ -86,7 +86,7 @@ class TestHashing {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCHash oldHash = scc.hash(plaintext);
 
-		SCCHash updatedHash = scc.updateHash(oldHash);
+		SCCHash updatedHash = scc.updateHash(plaintext, oldHash);
 		byte[] newHash = updatedHash.toBytes();
 
 		assertTrue(newHash instanceof byte[]);
@@ -99,7 +99,7 @@ class TestHashing {
 		String plaintext = "Hello World!";
 		SCCHash oldHash = scc.hash(plaintext.getBytes(StandardCharsets.UTF_8));
 
-		SCCHash updatedHash = scc.updateHash(oldHash);
+		SCCHash updatedHash = scc.updateHash(plaintext.getBytes(), oldHash);
 		String newHash = updatedHash.toString(StandardCharsets.UTF_8);
 
 		assertTrue(newHash instanceof String);

@@ -9,8 +9,8 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	
 	SecureCryptoConfig scc = new SecureCryptoConfig();
 
-	public SCCPasswordHash(PlaintextContainer password, PlaintextContainer hash, byte[] hashMsg) {
-		super(password, hashMsg);
+	public SCCPasswordHash(byte[] hashMsg) {
+		super(hashMsg);
 	}
 
 	@Override
