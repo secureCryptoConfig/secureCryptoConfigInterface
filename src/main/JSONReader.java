@@ -194,10 +194,19 @@ public class JSONReader {
 			break;
 		}
 
-		File folder = new File(getBasePath());
+		if (SecureCryptoConfig.ownPathSet == false)
+		{
+			basePath = getBasePath();
+		}
+		else {
+			System.out.println("Here");
+			basePath = SecureCryptoConfig.sccPath;
+			System.out.println(basePath);
+		}
+		File folder = new File(basePath);
 		File[] listOfFiles = folder.listFiles();
 		//Define path of SCC files
-		basePath = getBasePath();
+		
 
 		for (int i = 0; i < listOfFiles.length; i++) {
 			if (listOfFiles[i].isFile() && listOfFiles[i].getName().contains(".json")) {
@@ -320,7 +329,7 @@ public class JSONReader {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-		return basePath = basePath + "\\src\\main\\";
+		return basePath = basePath + "\\src\\configs\\";
 	}
 
 

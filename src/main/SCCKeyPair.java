@@ -50,7 +50,7 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 	private static SCCKeyPair createNewKeyPair(CryptoUseCase c) throws NoSuchAlgorithmException {
 		ArrayList<String> algorithms = new ArrayList<String>();
 		
-		algorithms = JSONReader.getAlgos(c, JSONReader.basePath + SecureCryptoConfig.sccFileName);
+		algorithms = JSONReader.getAlgos(c, SecureCryptoConfig.sccPath);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 

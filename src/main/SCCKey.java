@@ -62,7 +62,7 @@ public class SCCKey extends AbstractSCCKey {
 		ArrayList<String> algorithms = new ArrayList<String>();
 		
 		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption,
-				JSONReader.basePath + SecureCryptoConfig.sccFileName);
+				SecureCryptoConfig.sccPath);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 
@@ -123,7 +123,7 @@ public class SCCKey extends AbstractSCCKey {
 		int keysize = 0;
 		ArrayList<String> algorithms = new ArrayList<String>();
 
-		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, JSONReader.basePath + SecureCryptoConfig.getSccFile());
+		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, SecureCryptoConfig.sccPath);
 		for (int i = 0; i < algorithms.size(); i++) {
 
 			String sccalgorithmID = algorithms.get(i);

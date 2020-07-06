@@ -28,7 +28,9 @@ import main.JSONReader.CryptoUseCase;
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	protected static String sccFileName = JSONReader.getLatestSCC(SecurityLevel.SecurityLevel_5);
-
+	protected static String sccPath = JSONReader.basePath + sccFileName;
+	protected static boolean ownPathSet = false;
+	
 	//Contains all considered Security Level numbers
 	public static enum SecurityLevel {
 		SecurityLevel_1, SecurityLevel_2, SecurityLevel_3, SecurityLevel_4, SecurityLevel_5
@@ -70,8 +72,15 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * Return the name of the SCC file that is currently used
 	 * @return
 	 */
-	public static String getSccFile() {
+	public static String getSCCFileName() {
 		return SecureCryptoConfig.sccFileName;
+	}
+	
+	public static void setSCCPath(String path)
+	{
+		ownPathSet = true;
+		sccPath = path;
+		sccFileName = JSONReader.getLatestSCC(SecurityLevel.SecurityLevel_5);
 	}
 
 	/**
@@ -97,7 +106,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
 
-		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, JSONReader.basePath + SecureCryptoConfig.sccFileName);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, sccPath);
 		for (int i = 0; i < algorithms.size(); i++) {
 
 			String sccalgorithmID = algorithms.get(i);
@@ -168,7 +177,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	public SCCCiphertext encryptFile(AbstractSCCKey key, String filepath) throws NoSuchAlgorithmException {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
-		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, JSONReader.basePath + SecureCryptoConfig.sccFileName);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, sccPath);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 
@@ -232,7 +241,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			throws CoseException {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
-		algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption, JSONReader.basePath + SecureCryptoConfig.sccFileName);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption, sccPath);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 
@@ -306,7 +315,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
 		// read our Algorithms for symmetric encryption out of JSON
-		algorithms = JSONReader.getAlgos(CryptoUseCase.Hashing, JSONReader.basePath + SecureCryptoConfig.sccFileName);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.Hashing, sccPath);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 			// get first one, later look what to do if first is not validate -> take next
@@ -386,7 +395,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
 		// read our Algorithms for symmetric encryption out of JSON
-		algorithms = JSONReader.getAlgos(CryptoUseCase.Signing, JSONReader.basePath + SecureCryptoConfig.sccFileName);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.Signing, sccPath);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 			// get first one, later look what to do if first is not validate -> take next
@@ -463,7 +472,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
 		// read our Algorithms for symmetric encryption out of JSON
-		algorithms = JSONReader.getAlgos(CryptoUseCase.PasswordHashing, JSONReader.basePath + SecureCryptoConfig.sccFileName);
+		algorithms = JSONReader.getAlgos(CryptoUseCase.PasswordHashing, sccPath);
 
 		for (int i = 0; i < algorithms.size(); i++) {
 			// get first one, later look what to do if first is not validate -> take next
