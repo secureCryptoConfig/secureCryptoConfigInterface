@@ -51,27 +51,51 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * @param level
 	 */
 	public static void setSecurityLevel(int level) {
+		if (JSONReader.levels.contains(level))
+		{
 		sccPath = JSONReader.getLatestSCC(level);
+		}
+		else {
+			throw new IllegalArgumentException("There are no files with the specified Security Level");
+		}
 	}
 
 	/**
 	 * Return the name of the SCC file that is currently used
 	 * 
-	 * @return
+	 * @return SCCFilePath to the used SCC file
 	 */
 	public static String getUsedSCC() {
 		return sccPath;
 	}
 
 	//Path to "config" directory (at end with \\)
+	/**
+	 * Set path to a custom root folder "config" which contains the SCC files for usage
+	 * param Path to "config" directory (at end with \\)
+	 */
 	public static void setPathToSCCDirectory(String path) {
 		sccPath = JSONReader.parseFiles(path);
 	}
 	
-	//give path to SCC file to use
+	
+	/**
+	 * Set SCC file to use
+	 * 
+	 * @param SCCFilePath to the SCC file to use
+	 */
 	public static void setSCCFile(String filePath)
 	{
 		sccPath = filePath;
+	}
+	
+	/**
+	 * Set default SCC configuration using SCC files at src/configs
+	 * 
+	 */
+	public static void setDefaultSCC()
+	{
+		sccPath = JSONReader.parseFiles(JSONReader.getBasePath());
 	}
 
 	/**

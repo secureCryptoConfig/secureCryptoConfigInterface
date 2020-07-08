@@ -11,6 +11,7 @@ import COSE.*;
 
 /**
  * Class for doing auxiliary functionality for the SecureCryptoConfig class. 
+ * Especially creation/encoding to/from Messages of COSE
  * @author Lisa
  *
  */
@@ -83,7 +84,7 @@ public class UseCases {
 			m.SetContent(password.toBytes());
 			m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 			m.passwordHash();
-			PlaintextContainer hashed = new PlaintextContainer(m.getHashedContent());
+
 			return new SCCPasswordHash(m.EncodeToBytes());
 
 		} catch (CoseException e) {
@@ -109,7 +110,6 @@ public class UseCases {
 			m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 			m.passwordHashWithSalt(salt);
 
-			PlaintextContainer hashed = new PlaintextContainer(m.getHashedContent());
 			return new SCCPasswordHash(m.EncodeToBytes());
 		} catch (CoseException e) {
 			e.printStackTrace();
