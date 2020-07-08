@@ -121,6 +121,7 @@ public class SCCKey extends AbstractSCCKey {
 
 		SCCKeyAlgorithm algo = null;
 		int keysize = 0;
+		
 		ArrayList<String> algorithms = new ArrayList<String>();
 
 		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, SecureCryptoConfig.sccPath);

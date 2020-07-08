@@ -232,6 +232,7 @@ class TestSymmetricEncryption {
 	@Test
 	void testSymmetricStringReEncyptionWithKey() throws CoseException {
 		String plaintext = "Hello World!";
+		
 		SCCKey key = SCCKey.createSymmetricKey();
 		// Encryption
 		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext.getBytes(StandardCharsets.UTF_8));
