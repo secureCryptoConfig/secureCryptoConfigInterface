@@ -124,7 +124,7 @@ public class JSONReader {
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-		return basePath = basePath + "\\src\\configs\\";
+		return basePath = basePath + "\\src\\scc-configs\\";
 	}
 
 
@@ -185,7 +185,7 @@ public class JSONReader {
 				pathVersion.put(pathsWithKey.get(i), version);
 			}
 
-			int highestYear = 2020;
+			int highestYear = 0;
 			int highestPatch = 0;
 
 			Set<String> keys = pathVersion.keySet();
