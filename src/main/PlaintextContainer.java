@@ -3,11 +3,20 @@ package main;
 import java.nio.charset.Charset;
 import COSE.CoseException;
 
+/**
+ * Class representing the plaintext processed in cryptographic use cases.
+ * @author Lisa
+ *
+ */
 public class PlaintextContainer implements PlaintextContainerInterface {
 
 	private byte[] plaintext;
-	SecureCryptoConfig scc = new SecureCryptoConfig();
+	private SecureCryptoConfig scc = new SecureCryptoConfig();
 	
+	/**
+	 * Constructor that gets byte[] representation of plaintext
+	 * @param plaintext
+	 */
 	public PlaintextContainer(byte[] plaintext) {
 		this.plaintext = plaintext;
 	}

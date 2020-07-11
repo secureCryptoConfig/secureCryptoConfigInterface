@@ -24,7 +24,7 @@ import org.json.simple.parser.ParseException;
 public class JSONReader {
 	
 	private static ArrayList<String> allFilePaths = new ArrayList<String>();
-	protected static HashMap<String, Integer> levelsNames = new HashMap<String, Integer>();
+	private static HashMap<String, Integer> levelsNames = new HashMap<String, Integer>();
 	protected static HashSet<Integer> levels = new HashSet<Integer>();
 
 	// JSON parser object to parse read file
@@ -38,9 +38,9 @@ public class JSONReader {
 	
 
 	/**
-	 * retrieving Algorithms for specific Crypto Use case out of JSON
+	 * Retrieving algorithms for specific Crypto Use case out of JSON
 	 * 
-	 * @param useCase, value from Enum
+	 * @param useCase, sccFilePath (Path to used SCC file)
 	 */
 	protected static ArrayList<String> getAlgos(CryptoUseCase useCase, String sccFilePath) {
 		ArrayList<String> algos = new ArrayList<String>();
@@ -66,7 +66,7 @@ public class JSONReader {
 	}
 
 	/**
-	 * Auxiliary method for reading out theversion of a file at given path
+	 * Auxiliary method for reading out the version of a file at given path
 	 * 
 	 * @param path to file
 	 */
@@ -132,7 +132,7 @@ public class JSONReader {
 	 * Get all files out of root "configs" directory of given path
 	 * @param path to root directory "config"
 	 */
-	protected static void getFiles(String path) {
+	private static void getFiles(String path) {
 
 		File folder = new File(path);
 		File[] listOfFiles = folder.listFiles();
@@ -151,7 +151,7 @@ public class JSONReader {
 	/**
 	 * Determine Security Level number for a specific SCC file (file:level)
 	 */
-	protected static void getSecurityLevel() {
+	private static void getSecurityLevel() {
 		int level;
 		levels.clear();
 		levelsNames.clear();

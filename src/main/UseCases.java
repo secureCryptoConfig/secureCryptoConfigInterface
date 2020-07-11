@@ -1,12 +1,5 @@
 package main;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import COSE.*;
 
 /**
@@ -61,7 +54,7 @@ public class UseCases {
 			hashMessage.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 
 			hashMessage.hash();
-
+			hashMessage.SetContent((byte[])null);
 			return new SCCHash(hashMessage.EncodeToBytes());
 
 		} catch (CoseException e) {
@@ -84,7 +77,7 @@ public class UseCases {
 			m.SetContent(password.toBytes());
 			m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 			m.passwordHash();
-
+			m.SetContent((byte[])null);
 			return new SCCPasswordHash(m.EncodeToBytes());
 
 		} catch (CoseException e) {
@@ -109,7 +102,7 @@ public class UseCases {
 			m.SetContent(password.toBytes());
 			m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 			m.passwordHashWithSalt(salt);
-
+			m.SetContent((byte[])null);
 			return new SCCPasswordHash(m.EncodeToBytes());
 		} catch (CoseException e) {
 			e.printStackTrace();
@@ -133,7 +126,6 @@ public class UseCases {
 			asymMsg.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 			asymMsg.encrypt(keyPair.pair);
 			asymMsg.SetContent((byte[])null);
-			//byte[] encrypted = m3.getEncryptedContent();
 
 			return new SCCCiphertext(asymMsg.EncodeToBytes());
 		} catch (CoseException e) {
@@ -158,90 +150,11 @@ public class UseCases {
 			m.addAttribute(HeaderKeys.Algorithm, AlgorithmID.ECDSA_512.AsCBOR(), Attribute.PROTECTED);
 			OneKey oneKey = new OneKey(key.pair.getPublic(), key.pair.getPrivate());
 			m.sign(oneKey);
+			
 			return new SCCSignature(m.EncodeToBytes());
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;
 		}
-	}
-
-	/**
-	 * Encryption of content of a given file with given parameters. Ciphertext will
-	 * overwrite the file content.
-	 * 
-	 * @param key
-	 * @param filepath
-	 * @param algo
-	 * @return
-	 */
-	protected static SCCCiphertext fileEncryptWithParams(AbstractSCCKey key, String filepath, AlgorithmID algo) {
-
-		try {
-
-			File inputFile = new File(filepath);
-			FileInputStream inputStream = new FileInputStream(inputFile);
-			byte[] inputBytes = new byte[(int) inputFile.length()];
-			inputStream.read(inputBytes);
-
-			FileOutputStream fileOutputStream = new FileOutputStream(filepath);
-			InputStream stringInputStream = new ByteArrayInputStream(inputBytes);
-
-			Encrypt0Message encrypt0Message = new Encrypt0Message();
-			byte[] plain = new byte[8192];
-			stringInputStream.read(plain);
-
-			encrypt0Message.SetContent(plain);
-
-			encrypt0Message.addAttribute(HeaderKeys.Algorithm, algo.AsCBOR(), Attribute.PROTECTED);
-
-			encrypt0Message.encrypt(key.key);
-			byte[] encrypted = encrypt0Message.getEncryptedContent();
-			fileOutputStream.write(encrypted);
-
-			fileOutputStream.close();
-			inputStream.close();
-			SCCCiphertext s = new SCCCiphertext(encrypt0Message.EncodeToBytes());
-			return s;
-		} catch (IOException | CoseException e) {
-
-			e.printStackTrace();
-			return null;
-		}
-
-	}
-
-	/**
-	 * Encryption of content of a given Inputstream. 
-	 * 
-	 * @param key
-	 * @param filepath
-	 * @param algo
-	 * @return SCCCiphertextOutputStream
-	 */
-	protected static SCCCiphertextOutputStream fileEncryptStream(AbstractSCCKey key, AlgorithmID algo,
-			InputStream inputStream) {
-		ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-		try {
-
-			byte[] buffer = new byte[8192];
-			Encrypt0Message encrypt0Message = new Encrypt0Message();
-			inputStream.read(buffer);
-			inputStream.read(buffer);
-
-			encrypt0Message.SetContent(buffer);
-
-			encrypt0Message.addAttribute(HeaderKeys.Algorithm, algo.AsCBOR(), Attribute.PROTECTED);
-
-			encrypt0Message.encrypt(key.key);
-			byte[] encrypted = encrypt0Message.getEncryptedContent();
-
-			byteArrayOutputStream.write(encrypted);
-			return new SCCCiphertextOutputStream(byteArrayOutputStream);
-
-		} catch (IOException | CoseException e) {
-			e.printStackTrace();
-			return null;
-		}
-
 	}
 }

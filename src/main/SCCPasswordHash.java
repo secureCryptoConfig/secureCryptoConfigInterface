@@ -5,10 +5,19 @@ import java.nio.charset.Charset;
 import COSE.CoseException;
 import COSE.PasswordHashMessage;
 
+/**
+ * Class representing the Hash resulting from executing PasswordHashing
+ * @author Lisa
+ *
+ */
 public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	
-	SecureCryptoConfig scc = new SecureCryptoConfig();
+	private SecureCryptoConfig scc = new SecureCryptoConfig();
 
+	/**
+	 * Constructor that gets the byte[] representation of the COSE message resulting from PasswordHashing
+	 * @param hashMsg
+	 */
 	public SCCPasswordHash(byte[] hashMsg) {
 		super(hashMsg);
 	}
@@ -33,6 +42,10 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 		return new String(this.hashMsg, c);
 	}
 	
+	/**
+	 * Auxiliary method for converting byte[] back to COSE PasswordHashMessage
+	 * @return HashMessage
+	 */
 	protected PasswordHashMessage convertByteToMsg() {
 		try {
 			return (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(this.hashMsg);

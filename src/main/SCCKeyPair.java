@@ -11,12 +11,22 @@ import COSE.OneKey;
 import main.JSONReader.CryptoUseCase;
 import main.SecureCryptoConfig.AlgorithmIDEnum;
 
+/**
+ * Class representing key pair that can be used for signing and asymmetric encryption.
+ * @author Lisa
+ *
+ */
 public class SCCKeyPair extends AbstractSCCKeyPair {
 	
+	//Use cases in which key pair can be used
 	public enum keyPairUseCase{
 		AsymmetricEncryption, Signing
 	}
 
+	/**
+	 * Constructor that gets a KeyPair
+	 * @param pair
+	 */
 	public SCCKeyPair(KeyPair pair) {
 		super(pair);
 	}
@@ -33,6 +43,13 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 		return this.pair.getPrivate().getEncoded();
 	}
 
+	/**
+	 * Creation of a key pair that can be used for signing or asymmetric encryption
+	 * @param useCase
+	 * @return SCCKeyPair
+	 * @throws CoseException
+	 * @throws NoSuchAlgorithmException
+	 */
 	public static SCCKeyPair createKeyPair(keyPairUseCase useCase) throws CoseException, NoSuchAlgorithmException {
 		CryptoUseCase c;
 		switch (useCase) {
@@ -47,6 +64,12 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 		}
 	}
 
+	/**
+	 * Auxiliary method for creating SCCKeyPair
+	 * @param c
+	 * @return SCCKeyPair
+	 * @throws NoSuchAlgorithmException
+	 */
 	private static SCCKeyPair createNewKeyPair(CryptoUseCase c) throws NoSuchAlgorithmException {
 		ArrayList<String> algorithms = new ArrayList<String>();
 		
@@ -54,10 +77,7 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 
 		for (int i = 0; i < algorithms.size(); i++) {
 
-			// get first one, later look what to do if first is not validate -> take next
 			String sccalgorithmID = algorithms.get(i);
-
-			// TODO mapping from sting to enum:
 
 			if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
 				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
@@ -83,6 +103,12 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 		throw new NoSuchAlgorithmException();
 	}
 
+	/**
+	 * Auxiliary method for creating SCCKeyPair with specific size for asymmetric encryption
+	 * @param algo
+	 * @param keysize
+	 * @return SCCKeyPair
+	 */
 	private static SCCKeyPair createAsymmetricKeyPair(String algo, int keysize) {
 		try {
 			KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algo);

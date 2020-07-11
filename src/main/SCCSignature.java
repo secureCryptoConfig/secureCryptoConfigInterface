@@ -5,10 +5,19 @@ import java.nio.charset.Charset;
 import COSE.CoseException;
 import COSE.Sign1Message;
 
+/**
+ * Class representing Signature resulting from signing.
+ * @author Lisa
+ *
+ */
 public class SCCSignature extends AbstractSCCSignature {
 
-	SecureCryptoConfig scc = new SecureCryptoConfig();
+	private SecureCryptoConfig scc = new SecureCryptoConfig();
 
+	/**
+	 * Constructor that gets the byte[] representation of the COSE message resulting from signing
+	 * @param hashMsg
+	 */
 	public SCCSignature(byte[] signatureMsg) {
 		super(signatureMsg);
 	}
@@ -26,7 +35,7 @@ public class SCCSignature extends AbstractSCCSignature {
 	@Override
 	public SCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKeyPair keyPair) {
 		try {
-			return scc.updateSignature(plaintext, keyPair);
+			return (SCCSignature) scc.updateSignature(keyPair, plaintext);
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;
@@ -37,7 +46,12 @@ public class SCCSignature extends AbstractSCCSignature {
 	public boolean validateSignature(AbstractSCCKeyPair keyPair) {
 		return scc.validateSignature(keyPair, this);
 	}
-
+	
+	
+	/**
+	 * Auxiliary method for converting byte[] back to COSE Sign1Message
+	 * @return HashMessage
+	 */
 	protected Sign1Message convertByteToMsg() {
 		try {
 			return (Sign1Message) Sign1Message.DecodeFromBytes(this.signatureMsg);

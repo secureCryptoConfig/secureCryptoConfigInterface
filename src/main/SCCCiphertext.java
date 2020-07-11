@@ -3,10 +3,19 @@ package main;
 import java.nio.charset.Charset;
 import COSE.CoseException;
 
+/**
+ * Class represention the Ciphertext resulting from symetric/asymetric encryption.
+ * @author Lisa
+ *
+ */
 public class SCCCiphertext extends AbstractSCCCiphertext {
 
-	SecureCryptoConfig scc = new SecureCryptoConfig();
+	private SecureCryptoConfig scc = new SecureCryptoConfig();
 	
+	/**
+	 * Constructor that gets the byte[] representation of the COSE message resulting from encryption
+	 * @param msg
+	 */
 	public SCCCiphertext(byte[] msg) {
 		super(msg);
 	}

@@ -89,7 +89,7 @@ class TestSignature {
 		
 		SCCSignature oldSignature = scc.sign(pair, plaintext);
 		
-		SCCSignature updatedSignature = scc.updateSignature(plaintext, pair);
+		SCCSignature updatedSignature = scc.updateSignature(pair, plaintext);
 		byte[] newSignature = updatedSignature.toBytes();
 		
 		assertTrue(newSignature instanceof byte[]);
@@ -104,7 +104,7 @@ class TestSignature {
 		
 		SCCSignature oldSignature = scc.sign(pair, plaintext.getBytes(StandardCharsets.UTF_8));
 		
-		SCCSignature updatedSignature = scc.updateSignature(plaintext.getBytes(), pair);
+		SCCSignature updatedSignature = scc.updateSignature(pair, plaintext.getBytes());
 		String newSignature = updatedSignature.toString(StandardCharsets.UTF_8);
 		
 		assertTrue(newSignature instanceof String);

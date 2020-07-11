@@ -1,10 +1,8 @@
 package main;
 
-import java.io.FileOutputStream;
-
-import java.io.IOException;
+import java.io.File;
 import java.nio.charset.StandardCharsets;
-import java.security.NoSuchAlgorithmException;
+import java.nio.file.InvalidPathException;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -29,7 +27,7 @@ import main.JSONReader.CryptoUseCase;
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	protected static String sccPath = JSONReader.parseFiles(JSONReader.getBasePath());
-	
+
 	// All supported algorithm names
 	protected static enum AlgorithmIDEnum {
 		// symmetric:
@@ -49,13 +47,12 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * Set the latest SCC file of a specific Security level for usage
 	 * 
 	 * @param level
+	 * @throws IllegalArgumentException
 	 */
 	public static void setSecurityLevel(int level) {
-		if (JSONReader.levels.contains(level))
-		{
-		sccPath = JSONReader.getLatestSCC(level);
-		}
-		else {
+		if (JSONReader.levels.contains(level)) {
+			sccPath = JSONReader.getLatestSCC(level);
+		} else {
 			throw new IllegalArgumentException("There are no files with the specified Security Level");
 		}
 	}
@@ -69,39 +66,49 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		return sccPath;
 	}
 
-	//Path to "config" directory (at end with \\)
 	/**
-	 * Set path to a custom root folder "config" which contains the SCC files for usage
-	 * param Path to "config" directory (at end with \\)
+	 * Set path to a custom root folder "config" which contains the SCC files for
+	 * usage
+	 * 
+	 * @param path to "config" directory (ending with \\)
+	 * @throw InvalidPathException
 	 */
 	public static void setPathToSCCDirectory(String path) {
-		sccPath = JSONReader.parseFiles(path);
+		File file = new File(path);
+		if (file.exists()) {
+			sccPath = JSONReader.parseFiles(path);
+		} else {
+			throw new InvalidPathException(path, "Path is not existing");
+		}
 	}
-	
-	
+
 	/**
 	 * Set SCC file to use
 	 * 
 	 * @param SCCFilePath to the SCC file to use
 	 */
-	public static void setSCCFile(String filePath)
-	{
-		sccPath = filePath;
+	public static void setSCCFile(String filePath) {
+		File file = new File(filePath);
+		if (file.exists()) {
+			sccPath = filePath;
+		} else {
+			throw new InvalidPathException(filePath, "Path is not existing");
+		}
+
 	}
-	
+
 	/**
 	 * Set default SCC configuration using SCC files at src/configs
 	 * 
 	 */
-	public static void setDefaultSCC()
-	{
+	public static void setDefaultSCC() {
 		sccPath = JSONReader.parseFiles(JSONReader.getBasePath());
 	}
 
 	/**
 	 * Put all values from AlgorithmIDEnum in a Set
 	 * 
-	 * @return
+	 * @return hashSet
 	 */
 	protected static HashSet<String> getEnums() {
 		HashSet<String> values = new HashSet<String>();
@@ -113,21 +120,16 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		return values;
 	}
 
-	/**
-	 * Symmetric encryption with a certain key for a given plaintext.
-	 */
 	@Override
 	public SCCCiphertext encryptSymmetric(AbstractSCCKey key, PlaintextContainerInterface plaintext)
 			throws CoseException {
-		
+
 		ArrayList<String> algorithms = new ArrayList<String>();
-		
+
 		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, sccPath);
 		for (int i = 0; i < algorithms.size(); i++) {
 
 			String sccalgorithmID = algorithms.get(i);
-
-			// TODO mapping from sting to enum:
 
 			if (getEnums().contains(sccalgorithmID)) {
 
@@ -148,9 +150,6 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		throw new CoseException("No supported algorithms!");
 	}
 
-	/**
-	 * Symmetric encryption with a certain key for a given byte[] plaintext.
-	 */
 	@Override
 	public SCCCiphertext encryptSymmetric(AbstractSCCKey key, byte[] plaintext) throws CoseException {
 		try {
@@ -161,9 +160,13 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		}
 	}
 
-	/**
-	 * Decryption of a given ciphertext.
-	 */
+	@Override
+	public SCCCiphertext reEncryptSymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext) throws CoseException {
+
+		PlaintextContainer decrypted = decryptSymmetric(key, ciphertext);
+		return encryptSymmetric(key, decrypted);
+	}
+
 	@Override
 	public PlaintextContainer decryptSymmetric(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext)
 			throws CoseException {
@@ -176,85 +179,6 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		}
 	}
 
-	/**
-	 * ReEncrypts a given ciphertext. Ciphertext will be first decrypted and than
-	 * decrypted with the current SCC again.
-	 */
-	@Override
-	public SCCCiphertext reEncryptSymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext) throws CoseException {
-
-		PlaintextContainer decrypted = decryptSymmetric(key, ciphertext);
-		return encryptSymmetric(key, decrypted);
-	}
-
-	/**
-	 * Encryption of content of a given file. Ciphertext will overwrite the file
-	 * content.
-	 */
-	@Override
-	public SCCCiphertext encryptFile(AbstractSCCKey key, String filepath) throws NoSuchAlgorithmException {
-
-		ArrayList<String> algorithms = new ArrayList<String>();
-		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, sccPath);
-
-		for (int i = 0; i < algorithms.size(); i++) {
-
-			// get first one, later look what to do if first is not validate -> take next
-			String sccalgorithmID = algorithms.get(i);
-
-			// TODO mapping from sting to enum:
-
-			if (getEnums().contains(sccalgorithmID)) {
-
-				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
-
-				switch (chosenAlgorithmID) {
-				case AES_GCM_256_96:
-					if (key.toBytes().length < 32) {
-						throw new SecurityException("Key has not the correct size. At least 256 bit are needed!");
-					}
-					return UseCases.fileEncryptWithParams(key, filepath, AlgorithmID.AES_GCM_256);
-				case AES_GCM_128_96:
-					if (key.toBytes().length < 16) {
-						throw new SecurityException("Key has not the correct size. At least 256 bit are needed!");
-					}
-					return UseCases.fileEncryptWithParams(key, filepath, AlgorithmID.AES_GCM_256);
-				default:
-					break;
-
-				}
-			}
-
-		}
-		throw new NoSuchAlgorithmException();
-	}
-
-	/**
-	 * Decryption of a ciphertext contained in a given file. Decrypted content will
-	 * over write the existing file content.
-	 */
-	@Override
-	public PlaintextContainer decryptFile(AbstractSCCKey key, AbstractSCCCiphertext ciphertext, String filepath) {
-		try {
-			Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(ciphertext.msg);
-			byte[] decrypted = msg.decrypt(key.toBytes());
-			PlaintextContainer p = new PlaintextContainer(decrypted);
-
-			FileOutputStream fileOutputStream = new FileOutputStream(filepath);
-			fileOutputStream.write(decrypted);
-
-			fileOutputStream.close();
-
-			return p;
-		} catch (IOException | CoseException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	/**
-	 * Asymmetric encryption with a certain key for a given plaintext.
-	 */
 	@Override
 	public SCCCiphertext encryptAsymmetric(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext)
 			throws CoseException {
@@ -264,10 +188,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		for (int i = 0; i < algorithms.size(); i++) {
 
-			// get first one, later look what to do if first is not validate -> take next
 			String sccalgorithmID = algorithms.get(i);
-
-			// TODO mapping from sting to enum:
 
 			if (getEnums().contains(sccalgorithmID)) {
 
@@ -285,9 +206,6 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		throw new CoseException("No supported algorithm!");
 	}
 
-	/**
-	 * Asymmetric encryption with a certain key for a given byte[] plaintext.
-	 */
 	@Override
 	public SCCCiphertext encryptAsymmetric(AbstractSCCKeyPair keyPair, byte[] plaintext) throws CoseException {
 		try {
@@ -298,9 +216,13 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		}
 	}
 
-	/**
-	 * Asymmetric encryption with a certain key for a given plaintext.
-	 */
+	@Override
+	public SCCCiphertext reEncryptAsymmetric(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext)
+			throws CoseException {
+		PlaintextContainer decrypted = decryptAsymmetric(keyPair, ciphertext);
+		return encryptAsymmetric(keyPair, decrypted);
+	}
+
 	@Override
 	public PlaintextContainer decryptAsymmetric(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext)
 			throws CoseException {
@@ -316,32 +238,16 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	}
 
-	/**
-	 * ReEncrypts a given ciphertext. Ciphertext will be first decrypted and than
-	 * decrypted with the current SCC again.
-	 */
-	@Override
-	public SCCCiphertext reEncryptAsymmetric(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext)
-			throws CoseException {
-		PlaintextContainer decrypted = decryptAsymmetric(keyPair, ciphertext);
-		return encryptAsymmetric(keyPair, decrypted);
-	}
-
-	/**
-	 * Hashing of a given plaintext
-	 */
 	@Override
 	public SCCHash hash(PlaintextContainerInterface plaintext) throws CoseException {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
-		// read our Algorithms for symmetric encryption out of JSON
+
 		algorithms = JSONReader.getAlgos(CryptoUseCase.Hashing, sccPath);
 
 		for (int i = 0; i < algorithms.size(); i++) {
-			// get first one, later look what to do if first is not validate -> take next
-			String sccalgorithmID = algorithms.get(i);
 
-			// TODO mapping from sting to enum:
+			String sccalgorithmID = algorithms.get(i);
 
 			if (getEnums().contains(sccalgorithmID)) {
 
@@ -360,9 +266,6 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		throw new CoseException("No supported algorithm!");
 	}
 
-	/**
-	 * Hashing of a given byte[] plaintext
-	 */
 	@Override
 	public SCCHash hash(byte[] plaintext) throws CoseException {
 		try {
@@ -373,10 +276,6 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		}
 	}
 
-	/**
-	 * Given a hash of a plaintext: the corresponding plaintext will be hashed again
-	 * with the current SCC.
-	 */
 	@Override
 	public SCCHash updateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException {
 		return hash(plaintext);
@@ -387,11 +286,6 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		return updateHash(new PlaintextContainer(plaintext), hash);
 	}
 
-	/**
-	 * A given plaintext will be hashed. The resulting hash will be compared with a
-	 * given hash. If identical plaintexts are hashed two times (with the same SCC)
-	 * the resulting hashs are identical.
-	 */
 	@Override
 	public boolean validateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException {
 		SCCHash sccHash = (SCCHash) hash;
@@ -408,19 +302,14 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		return validateHash(new PlaintextContainer(plaintext), hash);
 	}
 
-	/**
-	 * Signing of a plaintext with a specific key.
-	 */
 	@Override
-	public SCCSignature sign(AbstractSCCKeyPair k, PlaintextContainerInterface plaintext) throws CoseException {
+	public SCCSignature sign(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext) throws CoseException {
 
-		
 		ArrayList<String> algorithms = new ArrayList<String>();
-		// read our Algorithms for symmetric encryption out of JSON
+
 		algorithms = JSONReader.getAlgos(CryptoUseCase.Signing, sccPath);
 
 		for (int i = 0; i < algorithms.size(); i++) {
-			// get first one, later look what to do if first is not validate -> take next
 			String sccalgorithmID = algorithms.get(i);
 
 			if (getEnums().contains(sccalgorithmID)) {
@@ -429,7 +318,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				switch (chosenAlgorithmID) {
 				case ECDSA_512:
-					return UseCases.createSignMessage(plaintext, k, AlgorithmID.ECDSA_512);
+					return UseCases.createSignMessage(plaintext, keyPair, AlgorithmID.ECDSA_512);
 				default:
 					break;
 				}
@@ -439,37 +328,27 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		throw new CoseException("No supported algorithm!");
 	}
 
-	/**
-	 * Signing of a byte[] plaintext with a specific key.
-	 */
 	@Override
-	public SCCSignature sign(AbstractSCCKeyPair key, byte[] plaintext) throws CoseException {
+	public SCCSignature sign(AbstractSCCKeyPair keyPair, byte[] plaintext) throws CoseException {
 		try {
-			return sign(key, new PlaintextContainer(plaintext));
+			return sign(keyPair, new PlaintextContainer(plaintext));
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
 
-	/**
-	 * Given a signature of a plaintext: the corresponding plaintext will be signed
-	 * again with the current SCC.
-	 */
 	@Override
-	public SCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKeyPair keyPair)
+	public SCCSignature updateSignature(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext)
 			throws CoseException {
 		return sign(keyPair, plaintext);
 	}
 
 	@Override
-	public SCCSignature updateSignature(byte[] plaintext, AbstractSCCKeyPair keyPair) throws CoseException {
-		return updateSignature(new PlaintextContainer(plaintext), keyPair);
+	public SCCSignature updateSignature(AbstractSCCKeyPair keyPair, byte[] plaintext) throws CoseException {
+		return updateSignature(keyPair, new PlaintextContainer(plaintext));
 	}
 
-	/**
-	 * A given signature is checked for validity
-	 */
 	@Override
 	public boolean validateSignature(AbstractSCCKeyPair keyPair, AbstractSCCSignature signature) {
 
@@ -485,21 +364,16 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	}
 
-	/**
-	 * Given password will be hashed.
-	 */
 	@Override
 	public SCCPasswordHash passwordHash(PlaintextContainerInterface password) throws CoseException {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
-		// read our Algorithms for symmetric encryption out of JSON
+
 		algorithms = JSONReader.getAlgos(CryptoUseCase.PasswordHashing, sccPath);
 
 		for (int i = 0; i < algorithms.size(); i++) {
-			// get first one, later look what to do if first is not validate -> take next
-			String sccalgorithmID = algorithms.get(i);
 
-			// TODO mapping from sting to enum:
+			String sccalgorithmID = algorithms.get(i);
 
 			if (getEnums().contains(sccalgorithmID)) {
 
@@ -518,9 +392,6 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	}
 
-	/**
-	 * Given byte[] password will be hashed.
-	 */
 	@Override
 	public SCCPasswordHash passwordHash(byte[] password) throws CoseException {
 		try {
@@ -531,11 +402,6 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		}
 	}
 
-	/**
-	 * A given password will be hashed. The resulting hash will be compared with a
-	 * given hash. If identical passwords are hashed two times (with the same SCC)
-	 * the resulting hashs are identical.
-	 */
 	@Override
 	public boolean validatePasswordHash(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash)
 			throws CoseException {
@@ -558,60 +424,5 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	public boolean validatePasswordHash(byte[] password, AbstractSCCPasswordHash passwordhash) throws CoseException {
 		return validatePasswordHash(new PlaintextContainer(password), passwordhash);
 	}
-
-	/*
-	 * //Encryption of content of a given Inputstream.
-	 * 
-	 * @Override public SCCCiphertextOutputStream encryptStream(AbstractSCCKey key,
-	 * InputStream inputStream) throws NoSuchAlgorithmException {
-	 * 
-	 * ArrayList<String> algorithms = new ArrayList<String>(); algorithms =
-	 * JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, JSONReader.basePath +
-	 * SecureCryptoConfig.sccFileName);
-	 * 
-	 * for (int i = 0; i < algorithms.size(); i++) {
-	 * 
-	 * // get first one, later look what to do if first is not validate -> take next
-	 * String sccalgorithmID = algorithms.get(i);
-	 * 
-	 * // TODO mapping from sting to enum:
-	 * 
-	 * if (getEnums().contains(sccalgorithmID)) {
-	 * 
-	 * AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
-	 * 
-	 * switch (chosenAlgorithmID) { case AES_GCM_256_96: return
-	 * UseCases.fileEncryptStream(key, AlgorithmID.AES_GCM_256, inputStream); case
-	 * AES_GCM_128_96: return UseCases.fileEncryptStream(key,
-	 * AlgorithmID.AES_GCM_128, inputStream);
-	 * 
-	 * default: break;
-	 * 
-	 * } }
-	 * 
-	 * } throw new NoSuchAlgorithmException(); }
-	 * 
-	 * 
-	 * //Decryption of content of a given Outputstream.
-	 * 
-	 * @Override public PlaintextOutputStream streamDecrypt(AbstractSCCKey key,
-	 * AbstractSCCCiphertextOutputStream ciphertext, InputStream inputStream) { try
-	 * {
-	 * 
-	 * Cipher cipher = Cipher.getInstance(ciphertext.param.algo); GCMParameterSpec
-	 * spec = new GCMParameterSpec(ciphertext.param.tagLength,
-	 * ciphertext.param.nonce); cipher.init(Cipher.DECRYPT_MODE, key.getSecretKey(),
-	 * spec);
-	 * 
-	 * 
-	 * PlaintextOutputStream plaintextStream = new
-	 * PlaintextOutputStream(inputStream, cipher); return plaintextStream;
-	 * 
-	 * } catch (InvalidKeyException | InvalidAlgorithmParameterException |
-	 * NoSuchAlgorithmException | NoSuchPaddingException e) {
-	 * 
-	 * e.printStackTrace(); } return null; }
-	 * 
-	 */
 
 }

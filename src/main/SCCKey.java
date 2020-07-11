@@ -17,12 +17,23 @@ import COSE.CoseException;
 import main.JSONReader.CryptoUseCase;
 import main.SecureCryptoConfig.AlgorithmIDEnum;
 
+/**
+ * Class representing Key that is needed for symmetric encryption
+ * @author Lisa
+ *
+ */
 public class SCCKey extends AbstractSCCKey {
 
+	//Enum containing all currently supproted algorithms for key creation from Java
 	public enum SCCKeyAlgorithm {
 		AES, Blowfish, ARCFOUR, DES, DESede, HmacMD5, HmacSHA1, HmacSHA224, HmacSHA256, HmacSHA384, HmacSHA512, RC2
 	}
 
+	/**
+	 * Constructor which gets the byte[] representation of the key and the algorithm of its creation
+	 * @param key
+	 * @param algorithm
+	 */
 	public SCCKey(byte[] key, SCCKeyAlgorithm algorithm) {
 		super(key, algorithm);
 	}
@@ -36,12 +47,11 @@ public class SCCKey extends AbstractSCCKey {
 		return new SecretKeySpec(key, 0, key.length, this.algorithm.toString());
 	}
 
-	/*
-	protected String getAlgorithm() {
-		return this.algorithm.toString();
-	}
-	*/
-	
+	/**
+	 * Creation of key derivend from a given password that can be used for symmetric encryption
+	 * @param password
+	 * @return SCCKey
+	 */
 	public static SCCKey createKeyWithPassword(byte[] password)
 	{
 		try {
@@ -54,6 +64,12 @@ public class SCCKey extends AbstractSCCKey {
 		}
 	}
 
+	/**
+	 * Creation of key derivend from a given password that can be used for symmetric encryption
+	 * @param password
+	 * @return SCCKey
+	 * @throws CoseException
+	 */
 	public static SCCKey createKeyWithPassword(PlaintextContainer password) throws CoseException {
 		String algo = null;
 		SCCKeyAlgorithm keyAlgo = null;
@@ -117,6 +133,11 @@ public class SCCKey extends AbstractSCCKey {
 
 	}
 	
+	/**
+	 * Creation of a key that can be used for symmetric encryption
+	 * @return SCCKey
+	 * @throws CoseException
+	 */
 	public static SCCKey createSymmetricKey() throws CoseException {
 
 		SCCKeyAlgorithm algo = null;
@@ -169,11 +190,12 @@ public class SCCKey extends AbstractSCCKey {
 	
 
 	/**
-	 * Generate Nonce with secure Random number generator
+	 * Generate byte[] with secure Random number generator
+	 * @param length
+	 * @return byte[]
 	 */
 	private static byte[] generateRandomByteArray(int length) {
 		try {
-			// GENERATE random 
 			final byte[] nonce = new byte[length];
 			SecureRandom random;
 			random = SecureRandom.getInstanceStrong();

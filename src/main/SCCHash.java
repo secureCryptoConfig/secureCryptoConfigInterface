@@ -4,10 +4,20 @@ import java.nio.charset.Charset;
 import COSE.CoseException;
 import COSE.HashMessage;
 
+
+/**
+ * Class representing the Hash resulting from executing hashing
+ * @author Lisa
+ *
+ */
 public class SCCHash extends AbstractSCCHash{
 
-	SecureCryptoConfig scc = new SecureCryptoConfig();
+	private SecureCryptoConfig scc = new SecureCryptoConfig();
 	
+	/**
+	 * Constructor that gets the byte[] representation of the COSE message resulting from hashing
+	 * @param hashMsg
+	 */
 	public SCCHash(byte[] hashMsg)
 	{
 		super(hashMsg);
@@ -44,7 +54,10 @@ public class SCCHash extends AbstractSCCHash{
 		return new String(this.hashMsg, c);
 	}
 	
-	
+	/**
+	 * Auxiliary method for converting byte[] back to COSE HashMessage
+	 * @return HashMessage
+	 */
 	protected HashMessage convertByteToMsg() {
 		try {
 			return (HashMessage) HashMessage.DecodeFromBytes(this.hashMsg);
