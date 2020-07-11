@@ -27,6 +27,7 @@ import main.JSONReader.CryptoUseCase;
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	protected static String sccPath = JSONReader.parseFiles(JSONReader.getBasePath());
+	protected static boolean customPath = false;
 
 	// All supported algorithm names
 	protected static enum AlgorithmIDEnum {
@@ -75,6 +76,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 */
 	public static void setPathToSCCDirectory(String path) {
 		File file = new File(path);
+		customPath = true;
 		if (file.exists()) {
 			sccPath = JSONReader.parseFiles(path);
 		} else {
@@ -102,6 +104,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * 
 	 */
 	public static void setDefaultSCC() {
+		customPath = false;
 		sccPath = JSONReader.parseFiles(JSONReader.getBasePath());
 	}
 

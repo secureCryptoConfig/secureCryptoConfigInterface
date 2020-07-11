@@ -4,12 +4,24 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.Signature;
+import java.security.SignatureException;
+import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -22,10 +34,14 @@ import org.json.simple.parser.ParseException;
  *
  */
 public class JSONReader {
-	
+
 	private static ArrayList<String> allFilePaths = new ArrayList<String>();
 	private static HashMap<String, Integer> levelsNames = new HashMap<String, Integer>();
 	protected static HashSet<Integer> levels = new HashSet<Integer>();
+
+	private static String publicKeyPath1;
+	private static String publicKeyPath2;
+	private static String signatureAlgo = "SHA512withRSA";
 
 	// JSON parser object to parse read file
 	private static JSONParser jsonParser = new JSONParser();
@@ -34,8 +50,6 @@ public class JSONReader {
 	protected enum CryptoUseCase {
 		SymmetricEncryption, Signing, Hashing, AsymmetricEncryption, PasswordHashing, KeyGeneration;
 	}
-	
-	
 
 	/**
 	 * Retrieving algorithms for specific Crypto Use case out of JSON
@@ -114,6 +128,7 @@ public class JSONReader {
 
 	/**
 	 * Returns the path to default SCC files in directory src/configs
+	 * 
 	 * @return
 	 */
 	protected static String getBasePath() {
@@ -127,9 +142,9 @@ public class JSONReader {
 		return basePath = basePath + "\\src\\scc-configs\\";
 	}
 
-
 	/**
 	 * Get all files out of root "configs" directory of given path
+	 * 
 	 * @param path to root directory "config"
 	 */
 	private static void getFiles(String path) {
@@ -138,10 +153,10 @@ public class JSONReader {
 		File[] listOfFiles = folder.listFiles();
 		for (int i = 0; i < listOfFiles.length; i++) {
 
-			if (listOfFiles[i].isFile()) {
+			if (listOfFiles[i].isFile() && listOfFiles[i].getName().contains(".json")) {
 				allFilePaths.add(path + "\\" + listOfFiles[i].getName());
 
-			} else {
+			} else if (listOfFiles[i].isDirectory()) {
 				getFiles(path + "\\" + listOfFiles[i].getName());
 			}
 		}
@@ -164,6 +179,7 @@ public class JSONReader {
 
 	/**
 	 * Determines path to latest SCC file with given Security level
+	 * 
 	 * @param level
 	 * @return path to latest SCC file with given Security level
 	 */
@@ -215,6 +231,7 @@ public class JSONReader {
 
 	/**
 	 * Determines the highest Security Level number in Set
+	 * 
 	 * @param Set with all appearing Security Level numbers
 	 * @return highest appearing level
 	 */
@@ -222,16 +239,125 @@ public class JSONReader {
 		return Collections.max(level);
 	}
 
+	
+
+	private static boolean checkSignature(String algo, String signaturePath, String publicKeyPath, String sccFilePath)
+			throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException,
+			SignatureException {
+
+		Signature signature = Signature.getInstance(algo);
+
+		Path fileLocation = Paths.get(publicKeyPath);
+		byte[] publicKey = Files.readAllBytes(fileLocation);
+
+		X509EncodedKeySpec pubKeySpec = new X509EncodedKeySpec(publicKey);
+		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+
+		// Creates a new PublicKey object
+		PublicKey pubKey = keyFactory.generatePublic(pubKeySpec);
+		signature.initVerify(pubKey);
+
+		Path fileLocation2 = Paths.get(sccFilePath);
+		byte[] scc = Files.readAllBytes(fileLocation2);
+		signature.update(scc);
+
+		Path fileLocation3 = Paths.get(signaturePath);
+		byte[] sig = Files.readAllBytes(fileLocation3);
+
+		return signature.verify(sig);
+
+	}
+
+	private static void getPublicKeyPath() {
+
+		File folder = new File(getBasePath() + "publicKeys\\");
+		File[] listOfFiles = folder.listFiles();
+		publicKeyPath1 = getBasePath() + "publicKeys\\" + listOfFiles[0].getName();
+		publicKeyPath2 = getBasePath() + "publicKeys\\" + listOfFiles[1].getName();
+
+	}
+
+	private static void startValidation()  {
+		for (int i = 0; i < allFilePaths.size(); i++) {
+			String filepath = allFilePaths.get(i);
+			String signaturePath1 = filepath;
+			String signaturePath2 = filepath;
+			String[] parts = allFilePaths.get(i).split("\\\\");
+			String signatureFileName1 = parts[parts.length - 1].replace(".json", "-signature1");
+			String signatureFileName2 = parts[parts.length - 1].replace(".json", "-signature2");
+			signaturePath1 = filepath.replace(parts[parts.length - 1], "") + signatureFileName1;
+			signaturePath2 = filepath.replace(parts[parts.length - 1], "") + signatureFileName2;
+
+			boolean validation1 = false;
+			boolean validation2 = false;
+
+			if (new File(signaturePath1).exists()&& new File(signaturePath2).exists()) {
+				
+					try {
+						validation1 = checkSignature(signatureAlgo, signaturePath1, publicKeyPath1, filepath);
+						validation2 = checkSignature(signatureAlgo, signaturePath2, publicKeyPath2, filepath);
+					} catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException
+							| SignatureException | IOException e) {
+						e.printStackTrace();
+					}
+					if (validation1 != true || validation2 != true)
+					{
+						System.out.println("Not both signatures are valid for " + filepath);
+						System.out.println("This file will not be considered!");
+						allFilePaths.remove(i);
+					}
+				} else {
+					System.out.println("There are no two signatures defined for " + filepath);
+					System.out.println("This file will not be considered!");
+					allFilePaths.remove(i);
+				}
+
+			} 
+		}
+
 	/**
+	 * Determine path to latest SCC file with highest appearing Security Level
+	 * number
 	 * 
 	 * @param path to "configs" folder containing SCC files
-	 * @return path to latest SCC file with highest appearing Security Level number
+	 * @return path
 	 */
 	protected static String parseFiles(String path) {
 		allFilePaths.clear();
 		getFiles(path);
+		if (SecureCryptoConfig.customPath == true)
+		{
+			getPublicKeyPath();
+			startValidation();
+		}
 		getSecurityLevel();
 		return getLatestSCC(getHighestLevel(levels));
 	}
+	
+	/**
+	 * private static void generateSignatureAndPublicKey() throws
+	 * NoSuchAlgorithmException, CoseException, IOException, SignatureException,
+	 * InvalidKeyException {
+	 * 
+	 * {
+	 * 
+	 * Path fileLocation = Paths.get(pathname); byte[] plaintext =
+	 * Files.readAllBytes(fileLocation);
+	 * 
+	 * KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
+	 * keyPairGenerator.initialize(4096); KeyPair keyPair =
+	 * keyPairGenerator.generateKeyPair();
+	 * 
+	 * try (FileOutputStream fos = new FileOutputStream(publicKeyPath)) {
+	 * fos.write(keyPair.getPublic().getEncoded()); }
+	 * 
+	 * // INITIALIZE SIGNATURE WITH PRIVATE KEY Signature signature =
+	 * Signature.getInstance("SHA512withRSA");
+	 * signature.initSign(keyPair.getPrivate()); signature.update(plaintext); byte[]
+	 * s = signature.sign();
+	 * 
+	 * try (FileOutputStream fos = new FileOutputStream(signaturePath1)) {
+	 * fos.write(s); } } }
+	 **/
 
 }
