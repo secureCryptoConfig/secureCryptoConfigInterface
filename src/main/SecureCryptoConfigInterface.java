@@ -65,7 +65,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * Asymmetric encryption with a certain key pair for a given plaintext.
 	 * @param keyPair
 	 * @param plaintext
-	 * @return
+	 * @return AbstractSCCCiphertext
 	 * @throws CoseException
 	 */
 	public AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKeyPair keyPair, byte[] plaintext) throws CoseException;
@@ -243,23 +243,69 @@ abstract interface SecureCryptoConfigInterface {
 
 abstract interface PlaintextContainerInterface {
 
+	/**
+	 * Get byte[] representation of PlaintextContainer
+	 * @return byte[]
+	 */
 	abstract byte[] toBytes();
 
+	/**
+	 * Get String representation of PlaintextContainer depending on given Charset
+	 * @param c
+	 * @return String
+	 */
 	abstract String toString(Charset c);
 
+
+	/**
+	 * Look if a given hash for a specific plaintext is valid: plaintext will be hashed again and 
+	 * compared if resulting hash is identical to the given one.
+	 * @param hash
+	 * @return boolean
+	 */
 	abstract boolean validateHash(AbstractSCCHash hash);
 
+	/**
+	 * Look if a given hash for a specific plaintext is valid: plaintext will be hashed again and 
+	 * compared if resulting hash is identical to the given one.
+	 * @param passwordhash
+	 * @return boolean
+	 */
 	abstract boolean validatePasswordHash(AbstractSCCPasswordHash passwordHash);
 
-	abstract SCCCiphertext encryptSymmetric(AbstractSCCKey key);
+	/**
+	 * Symmetric encryption with a certain key for a given plaintext.
+	 * @param key
+	 * @return AbstractSCCCiphertext
+	 */
+	abstract AbstractSCCCiphertext encryptSymmetric(AbstractSCCKey key);
 
-	abstract SCCCiphertext encryptAsymmetric(AbstractSCCKeyPair pair);
+	/**
+	 * Asymmetric encryption of PlaintextContainer with a certain key pair.
+	 * @param keyPair
+	 * @return SCCCiphertext
+	 */
+	abstract AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKeyPair pair);
 
-	abstract SCCSignature sign(AbstractSCCKeyPair keyPair);
+	/**
+	 * Signing of a plaintext with a specific key pair.
+	 * @param keyPair
+	 * @return AbstractSCCSignature
+	 */
+	abstract AbstractSCCSignature sign(AbstractSCCKeyPair keyPair);
 
-	abstract SCCHash hash();
+	/**
+	 * Hashing of a given plaintext
+	 * @return AbstractSCCHash
+	 */
+	abstract AbstractSCCHash hash();
 
-	abstract SCCPasswordHash passwordHash();
+	/**
+	 * Given password will be hashed.
+	 * @param password
+	 * @return AbstractSCCPasswordHash
+	 */
+	abstract AbstractSCCPasswordHash passwordHash();
 
 }
 
@@ -271,17 +317,48 @@ abstract class AbstractSCCCiphertext {
 		this.msg = msg;
 	}
 
+	/**
+	 * Get byte[] representation of SCCCiphertext
+	 * @return byte[]
+	 */
 	abstract byte[] toBytes();
 
+	/**
+	 * Get String representation of SCCCiphertext depending on given Charset
+	 * @param c
+	 * @return String
+	 */
 	abstract String toString(Charset c);
 
-	abstract PlaintextContainer decryptAsymmetric(AbstractSCCKeyPair keyPair);
+	/**
+	 * Asymmetric decryption with a certain key pair for a given ciphertext.
+	 * @param keyPair
+	 * @return PlaintextContainerInterface
+	 */
+	abstract PlaintextContainerInterface decryptAsymmetric(AbstractSCCKeyPair keyPair);
 
-	abstract PlaintextContainer decryptSymmetric(AbstractSCCKey key);
+	/**
+	 * Decryption of a given ciphertext.
+	 * @param key
+	 * @return PlaintextContainerInterface
+	 */
+	abstract PlaintextContainerInterface decryptSymmetric(AbstractSCCKey key);
 
-	abstract SCCCiphertext reEncryptSymmetric(AbstractSCCKey key);
+	/**
+	 * ReEncrypts a given ciphertext. Ciphertext will be first decrypted and then
+	 * decrypted with the current used SCC again.
+	 * @param key
+	 * @return AbstractSCCCiphertext
+	 */
+	abstract AbstractSCCCiphertext reEncryptSymmetric(AbstractSCCKey key);
 
-	abstract SCCCiphertext reEncryptAsymmetric(AbstractSCCKeyPair keyPair);
+	/**
+	 * ReEncrypts a given ciphertext. Ciphertext will be first decrypted and then
+	 * encrypted with the current SCC again.
+	 * @param keyPair
+	 * @return AbstractSCCCiphertext
+	 */
+	abstract AbstractSCCCiphertext reEncryptAsymmetric(AbstractSCCKeyPair keyPair);
 
 }
 
@@ -296,6 +373,10 @@ abstract class AbstractSCCKey {
 
 	}
 
+	/**
+	 * Get byte[] representation of SCCKey
+	 * @return byte[]
+	 */
 	abstract byte[] toBytes();
 
 }
@@ -307,8 +388,16 @@ abstract class AbstractSCCKeyPair {
 		this.pair = pair;
 	}
 
+	/**
+	 * Get byte[] representation of public key
+	 * @return byte[]
+	 */
 	abstract byte[] getPublicKeyBytes();
-
+	
+	/**
+	 * Get byte[] representation of private key
+	 * @return byte[]
+	 */
 	abstract byte[] getPrivateKeyBytes();
 
 }
@@ -321,13 +410,34 @@ abstract class AbstractSCCHash {
 		this.hashMsg = hashMsg;
 	}
 
+	/**
+	 * Get byte[] representation of SCCHash
+	 * @return byte[]
+	 */
 	abstract byte[] toBytes();
 	
+	/**
+	 * Get String representation of SCCHash depending on given Charset
+	 * @param c
+	 * @return byte[]
+	 */
 	abstract String toString(Charset c);
 	
+	/**
+	 * Look if a given hash for a specific plaintext is valid: plaintext will be hashed again and 
+	 * compared if resulting hash is identical to the given one.
+	 * @param plaintext
+	 * @return boolean
+	 */
 	abstract boolean validateHash(PlaintextContainerInterface plaintext);
 
-	abstract SCCHash updateHash(PlaintextContainerInterface plaintext);
+	/**
+	 * Given a hash of a plaintext: the corresponding plaintext will be hashed again
+	 * with the current SCC.
+	 * @param plaintext
+	 * @return AbstractSCCHash
+	 */
+	abstract AbstractSCCHash updateHash(PlaintextContainerInterface plaintext);
 	
 
 }
@@ -341,10 +451,25 @@ abstract class AbstractSCCPasswordHash {
 		this.hashMsg = hashMsg;
 	}
 
+	/**
+	 * Get byte[] representation of SCCPasswordHash
+	 * @return byte[]
+	 */
 	abstract byte[] toBytes();
 	
+	/**
+	 * Get String representation of SCCPasswordHash depending on given Charset
+	 * @param c
+	 * @return String
+	 */
 	abstract String toString(Charset c);
 	
+	/**
+	 * Look if a given hash for a specific plaintext is valid: plaintext will be hashed again and 
+	 * compared if resulting hash is identical to the given one.
+	 * @param password
+	 * @return boolean
+	 */
 	abstract boolean validatePasswordHash(PlaintextContainerInterface password);
 
 }
@@ -352,33 +477,40 @@ abstract class AbstractSCCPasswordHash {
 abstract class AbstractSCCSignature {
 	byte[] signatureMsg;
 
-	// keyPair, plaintext
 	public AbstractSCCSignature(byte[] signatureMasg) {
 		this.signatureMsg = signatureMasg;
 	}
 
+	/**
+	 * Get byte[] representation of SCCPasswordHash
+	 * @return byte[]
+	 */
 	abstract byte[] toBytes();
 
+	/**
+	 * Get String representation of SCCSignature depending on given Charset
+	 * @param c
+	 * @return String
+	 */
 	abstract String toString(Charset c);
 
+	/**
+	 * A given signature is checked for validity
+	 * @param keyPair
+	 * @return boolean
+	 */
 	abstract boolean validateSignature(AbstractSCCKeyPair keyPair);
 
-	abstract SCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKeyPair keyPair);
+	/**
+	 * Given a signature of a plaintext: the corresponding plaintext will be signed
+	 * again with the current SCC.
+	 * @param keyPair
+	 * @param plaintext
+	 * @return AbstractSCCSignature
+	 * @throws CoseException
+	 */
+	abstract AbstractSCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKeyPair keyPair);
 
 }
 
-/*
- * abstract class AbstractSCCCiphertextOutputStream {
- * 
- * abstract ByteArrayOutputStream getStream();
- * 
- * abstract String getEncryptedContent();
- * 
- * abstract byte[] getEncryptedBytes();
- * 
- * }
- * 
- * abstract class AbstractPlaintextOutputStream {
- * 
- * }
- */
+
