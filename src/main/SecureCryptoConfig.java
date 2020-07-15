@@ -3,6 +3,7 @@ package main;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.InvalidPathException;
+import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.HashSet;
 
@@ -28,7 +29,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	protected static String sccPath = JSONReader.parseFiles(JSONReader.getBasePath());
 	protected static boolean customPath = false;
-
+	protected static String useCase = "";
 	// All supported algorithm names
 	protected static enum AlgorithmIDEnum {
 		// symmetric:
@@ -229,10 +230,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	@Override
 	public PlaintextContainer decryptAsymmetric(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext)
 			throws CoseException {
-
+		SCCKeyPair pair = (SCCKeyPair) keyPair;
 		try {
 			AsymMessage msg = (AsymMessage) AsymMessage.DecodeFromBytes(ciphertext.msg);
-			return new PlaintextContainer(msg.decrypt(keyPair.pair));
+			return new PlaintextContainer(msg.decrypt(pair.makeKeyPair()));
 		} catch (CoseException e) {
 			e.printStackTrace();
 
@@ -354,11 +355,19 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	@Override
 	public boolean validateSignature(AbstractSCCKeyPair keyPair, AbstractSCCSignature signature) {
-
+		SCCKeyPair pair = (SCCKeyPair) keyPair;
+		PrivateKey privateKey = null;
 		try {
 			SCCSignature s = (SCCSignature) signature;
 			Sign1Message msg = s.convertByteToMsg();
-			OneKey oneKey = new OneKey(keyPair.pair.getPublic(), keyPair.pair.getPrivate());
+			try {
+				privateKey = pair.getPrivateKey();
+			}catch(NullPointerException e)
+			{
+				OneKey oneKey = new OneKey(pair.getPublicKey(), null);
+				return msg.validate(oneKey);
+			}
+			OneKey oneKey = new OneKey(pair.getPublicKey(), privateKey);
 			return msg.validate(oneKey);
 		} catch (CoseException e) {
 			e.printStackTrace();

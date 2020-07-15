@@ -1,6 +1,7 @@
 package main;
 
 import COSE.*;
+import main.SCCKeyPair;
 
 /**
  * Class for doing auxiliary functionality for the SecureCryptoConfig class. 
@@ -121,10 +122,11 @@ public class UseCases {
 	protected static SCCCiphertext createAsymMessage(PlaintextContainerInterface plaintext, AlgorithmID id,
 			AbstractSCCKeyPair keyPair) {
 		try {
+			SCCKeyPair pair = (SCCKeyPair) keyPair;
 			AsymMessage asymMsg = new AsymMessage();
 			asymMsg.SetContent(plaintext.toBytes());
 			asymMsg.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
-			asymMsg.encrypt(keyPair.pair);
+			asymMsg.encrypt(pair.makeKeyPair());
 			asymMsg.SetContent((byte[])null);
 
 			return new SCCCiphertext(asymMsg.EncodeToBytes());
@@ -146,9 +148,10 @@ public class UseCases {
 			AlgorithmID id) {
 		Sign1Message m = new Sign1Message();
 		m.SetContent(plaintext.toBytes());
+		SCCKeyPair pair = (SCCKeyPair) key;
 		try {
 			m.addAttribute(HeaderKeys.Algorithm, AlgorithmID.ECDSA_512.AsCBOR(), Attribute.PROTECTED);
-			OneKey oneKey = new OneKey(key.pair.getPublic(), key.pair.getPrivate());
+			OneKey oneKey = new OneKey(pair.getPublicKey(), pair.getPrivateKey());
 			m.sign(oneKey);
 			
 			return new SCCSignature(m.EncodeToBytes());
