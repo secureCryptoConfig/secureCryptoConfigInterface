@@ -3,6 +3,7 @@ package main;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.InvalidPathException;
+import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -233,7 +234,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		SCCKeyPair pair = (SCCKeyPair) keyPair;
 		try {
 			AsymMessage msg = (AsymMessage) AsymMessage.DecodeFromBytes(ciphertext.msg);
-			return new PlaintextContainer(msg.decrypt(pair.makeKeyPair()));
+			return new PlaintextContainer(msg.decrypt(keyPair.keyPair));
 		} catch (CoseException e) {
 			e.printStackTrace();
 
@@ -361,19 +362,24 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			SCCSignature s = (SCCSignature) signature;
 			Sign1Message msg = s.convertByteToMsg();
 			try {
-				privateKey = pair.getPrivateKey();
+				privateKey = pair.keyPair.getPrivate();
 			}catch(NullPointerException e)
 			{
-				OneKey oneKey = new OneKey(pair.getPublicKey(), null);
+				OneKey oneKey = new OneKey(pair.keyPair.getPublic(), null);
 				return msg.validate(oneKey);
 			}
-			OneKey oneKey = new OneKey(pair.getPublicKey(), privateKey);
+			OneKey oneKey = new OneKey(pair.keyPair.getPublic(), privateKey);
 			return msg.validate(oneKey);
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return false;
 		}
 
+	}
+	
+	@Override
+	public boolean validateSignature(AbstractSCCKeyPair keyPair, byte[] signature) {
+		return validateSignature(keyPair, new SCCSignature(signature));
 	}
 
 	@Override
@@ -436,5 +442,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	public boolean validatePasswordHash(byte[] password, AbstractSCCPasswordHash passwordhash) throws CoseException {
 		return validatePasswordHash(new PlaintextContainer(password), passwordhash);
 	}
+
+
 
 }

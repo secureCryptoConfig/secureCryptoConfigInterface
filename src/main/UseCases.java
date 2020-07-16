@@ -1,5 +1,7 @@
 package main;
 
+import java.security.KeyPair;
+
 import COSE.*;
 import main.SCCKeyPair;
 
@@ -126,7 +128,7 @@ public class UseCases {
 			AsymMessage asymMsg = new AsymMessage();
 			asymMsg.SetContent(plaintext.toBytes());
 			asymMsg.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
-			asymMsg.encrypt(pair.makeKeyPair());
+			asymMsg.encrypt(keyPair.keyPair);
 			asymMsg.SetContent((byte[])null);
 
 			return new SCCCiphertext(asymMsg.EncodeToBytes());

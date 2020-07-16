@@ -1,14 +1,10 @@
 package main;
 
-import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 
 import COSE.AlgorithmID;
@@ -37,47 +33,36 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 	 * Constructor that gets a KeyPair
 	 * @param pair
 	 */
-	public SCCKeyPair(byte[] publicKey, byte[] privateKey, SCCKeyPairAlgorithm algorithm) {
-		super(publicKey, privateKey, algorithm);
+	public SCCKeyPair(KeyPair keyPair) {
+		super(keyPair);
 	}
 
 
 	@Override
 	public byte[] getPublicKeyBytes() {
-		return this.publicKey;
+		return keyPair.getPublic().getEncoded();
 	}
 
 	
 	@Override
 	public byte[] getPrivateKeyBytes() {
-		return this.privateKey;
+		return keyPair.getPrivate().getEncoded();
 	}
 	
-	protected PrivateKey getPrivateKey()
-	{
-		try {
-			return KeyFactory.getInstance(this.algorithm.toString()).generatePrivate(new PKCS8EncodedKeySpec(this.privateKey));
-		} catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return null;
-		}
+	@Override
+	public PublicKey getPublicKey() {
+		return keyPair.getPublic();
 	}
+
 	
-	
-	protected PublicKey getPublicKey()
-	{
-		try {
-			return KeyFactory.getInstance(this.algorithm.toString()).generatePublic(new X509EncodedKeySpec(this.publicKey));
-		} catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
-			e.printStackTrace();
-			return null;
-		}
-        
+	@Override
+	public PrivateKey getPrivateKey() {
+		return keyPair.getPrivate();
 	}
-	
-	protected KeyPair makeKeyPair()
-	{
-		return new KeyPair(getPublicKey(), getPrivateKey());
+
+	@Override
+	public KeyPair getKeyPair() {
+		return keyPair;
 	}
 
 	/**
@@ -127,7 +112,7 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 				case ECDSA_512:
 					try {
 						OneKey oneKey = OneKey.generateKey(AlgorithmID.ECDSA_512);
-						return new SCCKeyPair(oneKey.AsPublicKey().getEncoded(), oneKey.AsPrivateKey().getEncoded(), SCCKeyPairAlgorithm.EC);
+						return new SCCKeyPair(new KeyPair(oneKey.AsPublicKey(), oneKey.AsPrivateKey()));
 					} catch (CoseException e) {
 						e.printStackTrace();
 					}
@@ -151,7 +136,7 @@ public class SCCKeyPair extends AbstractSCCKeyPair {
 			KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algo.toString());
 			keyPairGenerator.initialize(keysize);
 			KeyPair keyPair = keyPairGenerator.generateKeyPair();
-			SCCKeyPair pair = new SCCKeyPair(keyPair.getPublic().getEncoded(), keyPair.getPrivate().getEncoded(), algo);
+			SCCKeyPair pair = new SCCKeyPair(keyPair);
 			return pair;
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();

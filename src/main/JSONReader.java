@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.spec.InvalidKeySpecException;
+import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -243,8 +244,9 @@ public class JSONReader {
 
 		Path fileLocation = Paths.get(publicKeyPath);
 		byte[] publicKey = Files.readAllBytes(fileLocation);
-		byte[] privateKey = null;
-		SCCKeyPair sccKeyPair = new SCCKeyPair (publicKey, privateKey, algo);
+		PublicKey pub = KeyFactory.getInstance(algo.toString()).generatePublic(new X509EncodedKeySpec(publicKey));
+		PrivateKey privateKey = null;
+		SCCKeyPair sccKeyPair = new SCCKeyPair(new KeyPair(pub, privateKey));
 
 		Path fileLocation1 = Paths.get(signaturePath);
 		byte[] sig = Files.readAllBytes(fileLocation1);
@@ -317,4 +319,5 @@ public class JSONReader {
 		getSecurityLevel();
 		return getLatestSCC(getHighestLevel(levels));
 	}
+
 }

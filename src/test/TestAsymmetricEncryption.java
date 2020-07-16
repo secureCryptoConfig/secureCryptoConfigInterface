@@ -81,9 +81,8 @@ class TestAsymmetricEncryption {
 		KeyPair keyPair = keyPairGenerator.generateKeyPair();
 
 		// Convert existing pair to SCCKeyPair
-		SCCKeyPair pair = new SCCKeyPair(keyPair.getPublic().getEncoded(), keyPair.getPrivate().getEncoded(),
-				SCCKeyPairAlgorithm.RSA);
-
+		SCCKeyPair pair = new SCCKeyPair(keyPair);
+				
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCCiphertext ciphertext = scc.encryptAsymmetric(pair, plaintext);
 		byte[] encrypted = ciphertext.toBytes();
@@ -104,8 +103,7 @@ class TestAsymmetricEncryption {
 		KeyPair keyPair = keyPairGenerator.generateKeyPair();
 
 		// Convert existing pair to SCCKeyPair
-		SCCKeyPair pair = new SCCKeyPair(keyPair.getPublic().getEncoded(), keyPair.getPrivate().getEncoded(),
-				SCCKeyPairAlgorithm.RSA);
+		SCCKeyPair pair = new SCCKeyPair(keyPair);
 
 		String plaintext = "Hello World!";
 		SCCCiphertext ciphertext = scc.encryptAsymmetric(pair, plaintext.getBytes(StandardCharsets.UTF_8));

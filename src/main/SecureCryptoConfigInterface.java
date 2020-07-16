@@ -2,6 +2,9 @@ package main;
 
 import java.nio.charset.Charset;
 import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+
 import COSE.CoseException;
 import main.SCCKey.SCCKeyAlgorithm;
 import main.SCCKeyPair.SCCKeyPairAlgorithm;
@@ -200,6 +203,8 @@ abstract interface SecureCryptoConfigInterface {
 	 * @return boolean
 	 */
 	public boolean validateSignature(AbstractSCCKeyPair keyPair, AbstractSCCSignature signature);
+	
+	public boolean validateSignature(AbstractSCCKeyPair keyPair, byte[] signature);
 
 	// Password Hashing
 	
@@ -383,13 +388,10 @@ abstract class AbstractSCCKey {
 }
 
 abstract class AbstractSCCKeyPair {
-	byte[] privateKey, publicKey;
-	SCCKeyPairAlgorithm algorithm;
+	protected KeyPair keyPair;
 
-	protected AbstractSCCKeyPair(byte[] publicKey, byte[] privateKey, SCCKeyPairAlgorithm algorithm) {
-		this.publicKey = publicKey;
-		this.privateKey = privateKey;
-		this.algorithm = algorithm;
+	protected AbstractSCCKeyPair(KeyPair keyPair) {
+		this.keyPair = keyPair;
 	}
 
 	/**
@@ -403,6 +405,24 @@ abstract class AbstractSCCKeyPair {
 	 * @return byte[]
 	 */
 	abstract byte[] getPrivateKeyBytes();
+	
+	/**
+	 * Get public key
+	 * @return PublicKey
+	 */
+	abstract PublicKey getPublicKey();
+	
+	/**
+	 * Get private key
+	 * @return PrivateKey
+	 */
+	abstract PrivateKey getPrivateKey();
+	
+	/**
+	 * Get key pair
+	 * @return KeyPair
+	 */
+	abstract KeyPair getKeyPair();
 
 }
 
