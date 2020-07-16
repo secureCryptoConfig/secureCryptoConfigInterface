@@ -1,6 +1,5 @@
 package test;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -14,16 +13,15 @@ import COSE.CoseException;
 import main.PlaintextContainer;
 import main.SCCCiphertext;
 import main.SCCKeyPair;
-import main.SCCKeyPair.keyPairUseCase;
+import main.SCCKeyPair.SCCKeyPairAlgorithm;
+import main.SCCKeyPair.KeyPairUseCase;
 import main.SecureCryptoConfig;
 
 class TestAsymmetricEncryption {
 
 	SecureCryptoConfig scc = new SecureCryptoConfig();
-	String filepath = ".\\src\\main\\Test.txt";
 
 	// Use Cases:
-	// TODO RFC use cases
 	// encryption:
 	// - byte[] encrypt, return: encrypted byte[] + new key
 	// - String encrypt, return: encrypted String + new key
@@ -44,28 +42,34 @@ class TestAsymmetricEncryption {
 	 */
 
 	// - byte[] encrypt, return: encrypted byte[] + new key
+	// - encrypted byte[] decrypt + key, return: decrypted byte[]
 	@Test
-	void testAsymmetricByteEncryptNoExistingKey() throws CoseException, NoSuchAlgorithmException {
+	void testAymmetricByteDecryptWithKey() throws CoseException, NoSuchAlgorithmException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.AsymmetricEncryption);
+		SCCKeyPair pair = SCCKeyPair.createKeyPair(KeyPairUseCase.AsymmetricEncryption);
+		// Encryption
 		SCCCiphertext ciphertext = scc.encryptAsymmetric(pair, plaintext);
-		byte[] encrypted = ciphertext.toBytes();
+		// Decryption
+		PlaintextContainer plain = ciphertext.decryptAsymmetric(pair);
+		byte[] decrypted = plain.toBytes();
 
-		assertTrue(encrypted instanceof byte[]);
-		assertTrue(pair instanceof SCCKeyPair);
-
+		assertEquals(new String(plaintext, StandardCharsets.UTF_8), plain.toString(StandardCharsets.UTF_8));
 	}
 
 	// - String encrypt, return: encrypted String + new key
+	// - encrypted String decrypt + key, return: decrypted String
 	@Test
-	void testAsymmetricStringEncryptNoExistingKey() throws CoseException, NoSuchAlgorithmException {
+	void testAsymmetricStringDecryptWithKey() throws CoseException, NoSuchAlgorithmException {
 		String plaintext = "Hello World!";
-		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.AsymmetricEncryption);
+		SCCKeyPair pair = SCCKeyPair.createKeyPair(KeyPairUseCase.AsymmetricEncryption);
+		// Encryption
 		SCCCiphertext ciphertext = scc.encryptAsymmetric(pair, plaintext.getBytes(StandardCharsets.UTF_8));
-		String encrypted = ciphertext.toString(StandardCharsets.UTF_8);
+		// Decryption
+		PlaintextContainer decryptedCiphertext = ciphertext.decryptAsymmetric(pair);
+		String decrypted = decryptedCiphertext.toString(StandardCharsets.UTF_8);
 
-		assertTrue(encrypted instanceof String);
-		assertTrue(pair instanceof SCCKeyPair);
+		assertEquals(plaintext, decrypted);
+
 	}
 
 	// - byte[] encrypt + key, return: encrypted byte[]
@@ -77,13 +81,18 @@ class TestAsymmetricEncryption {
 		KeyPair keyPair = keyPairGenerator.generateKeyPair();
 
 		// Convert existing pair to SCCKeyPair
-		SCCKeyPair pair = new SCCKeyPair(keyPair);
+		SCCKeyPair pair = new SCCKeyPair(keyPair.getPublic().getEncoded(), keyPair.getPrivate().getEncoded(),
+				SCCKeyPairAlgorithm.RSA);
 
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCCiphertext ciphertext = scc.encryptAsymmetric(pair, plaintext);
 		byte[] encrypted = ciphertext.toBytes();
 
-		assertTrue(encrypted instanceof byte[]);
+		PlaintextContainer plain = ciphertext.decryptAsymmetric(pair);
+		byte[] decrypted = plain.toBytes();
+
+		assertEquals(new String(plaintext, StandardCharsets.UTF_8), plain.toString(StandardCharsets.UTF_8));
+
 	}
 
 	// - String encrypt + key, return: encrypted String
@@ -95,56 +104,30 @@ class TestAsymmetricEncryption {
 		KeyPair keyPair = keyPairGenerator.generateKeyPair();
 
 		// Convert existing pair to SCCKeyPair
-		SCCKeyPair pair = new SCCKeyPair(keyPair);
+		SCCKeyPair pair = new SCCKeyPair(keyPair.getPublic().getEncoded(), keyPair.getPrivate().getEncoded(),
+				SCCKeyPairAlgorithm.RSA);
 
 		String plaintext = "Hello World!";
 		SCCCiphertext ciphertext = scc.encryptAsymmetric(pair, plaintext.getBytes(StandardCharsets.UTF_8));
 		String encrypted = ciphertext.toString(StandardCharsets.UTF_8);
 
-		assertTrue(encrypted instanceof String);
-	}
-
-	// - encrypted byte[] decrypt + key, return: decrypted byte[]
-	@Test
-	void testAymmetricByteDecryptWithKey() throws CoseException, NoSuchAlgorithmException {
-		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.AsymmetricEncryption);
-		// Encryption
-		SCCCiphertext ciphertext = scc.encryptAsymmetric(pair, plaintext);
-		// Decryption
-		PlaintextContainer plain = ciphertext.decryptAsymmetric(pair);
-		byte[] decrypted = plain.toBytes();
-
-		assertEquals(new String(plaintext, StandardCharsets.UTF_8), plain.toString(StandardCharsets.UTF_8));
-	}
-
-	// - encrypted String decrypt + key, return: decrypted String
-	@Test
-	void testAsymmetricStringDecryptWithKey() throws CoseException, NoSuchAlgorithmException {
-		String plaintext = "Hello World!";
-		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.AsymmetricEncryption);
-		// Encryption
-		SCCCiphertext ciphertext = scc.encryptAsymmetric(pair, plaintext.getBytes(StandardCharsets.UTF_8));
-		// Decryption
 		PlaintextContainer decryptedCiphertext = ciphertext.decryptAsymmetric(pair);
 		String decrypted = decryptedCiphertext.toString(StandardCharsets.UTF_8);
 
 		assertEquals(plaintext, decrypted);
-
 	}
-
 
 	// - encrypted byte[] encrypt + key, return: encrypted byte[]
 	@Test
 	void testAsymmetricByteReEncyptionWithKey() throws CoseException, NoSuchAlgorithmException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.AsymmetricEncryption);
+		SCCKeyPair pair = SCCKeyPair.createKeyPair(KeyPairUseCase.AsymmetricEncryption);
 		// Encryption
 		SCCCiphertext ciphertext = scc.encryptAsymmetric(pair, plaintext);
 		// ReEncryption
 		SCCCiphertext updatedCiphertext = scc.reEncryptAsymmetric(pair, ciphertext);
 		byte[] updateCiphertect = updatedCiphertext.toBytes();
-		//byte[] updateCiphertext = updatedCiphertext.getCiphertextBytes();
+		// byte[] updateCiphertext = updatedCiphertext.getCiphertextBytes();
 
 		String oldCiphertext = ciphertext.toString(StandardCharsets.UTF_8);
 		String newCiphertext = updatedCiphertext.toString(StandardCharsets.UTF_8);
@@ -156,7 +139,7 @@ class TestAsymmetricEncryption {
 	@Test
 	void testAsymmetricStringReEncyptionWithKey() throws CoseException, NoSuchAlgorithmException {
 		String plaintext = "Hello World!";
-		SCCKeyPair pair = SCCKeyPair.createKeyPair(keyPairUseCase.AsymmetricEncryption);
+		SCCKeyPair pair = SCCKeyPair.createKeyPair(KeyPairUseCase.AsymmetricEncryption);
 		// Encryption
 		SCCCiphertext ciphertext = scc.encryptAsymmetric(pair, plaintext.getBytes(StandardCharsets.UTF_8));
 		// ReEncryption
@@ -168,6 +151,5 @@ class TestAsymmetricEncryption {
 
 		assertFalse(oldCiphertext.equals(newCiphertext));
 	}
-
 
 }

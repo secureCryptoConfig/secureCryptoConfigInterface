@@ -34,26 +34,8 @@ class TestHashing {
 	// - String plain hash + validate, return: boolean
 
 	// Hashing
+
 	// - byte[] plain hash, return: byte[] hash
-	@Test
-	void testHashingByte() throws CoseException {
-		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCHash hash = scc.hash(plaintext);
-		byte[] hashedValue = hash.toBytes();
-		
-		assertTrue(hash.toBytes() instanceof byte[]);
-
-	}
-	
-	// - String plain hash, return: String hash
-	@Test
-	void testHashingString() throws CoseException {
-		String plaintext = "Hello World!";
-		SCCHash hash = scc.hash(plaintext.getBytes(StandardCharsets.UTF_8));
-		String hashedValue = hash.toString(StandardCharsets.UTF_8);
-		assertTrue(hashedValue instanceof String);
-	}
-
 	// - byte[] plain hash + validate, return: boolean
 	@Test
 	void testHashingByteValidation() throws CoseException {
@@ -67,6 +49,7 @@ class TestHashing {
 
 	}
 
+	// - String plain hash, return: String hash
 	// - String plain hash + validate, return: boolean
 	@Test
 	void testHashingStringValidation() throws CoseException {
@@ -106,28 +89,8 @@ class TestHashing {
 	}
 	
 	//Password Hashing
-	
-	// - byte[] plain hash, return: byte[] hash
-		@Test
-		void testPasswordHashingByte() throws CoseException {
-			byte[] password = "Hello World!".getBytes(StandardCharsets.UTF_8);
-			SCCPasswordHash hash = scc.passwordHash(password);
-			byte[] hashedValue = hash.toBytes();
 
-			assertTrue(hashedValue instanceof byte[]);
-
-		}
-		
-		// - String plain hash, return: String hash
-		@Test
-		void testPasswordHashingString() throws CoseException {
-			String password = "Hello World!";
-			SCCPasswordHash hash = scc.passwordHash(password.getBytes(StandardCharsets.UTF_8));
-			String hashedValue = hash.toString(StandardCharsets.UTF_8);
-			
-			assertTrue(hashedValue instanceof String);
-		}
-
+		// - byte[] plain hash, return: byte[] hash
 		// - byte[] plain hash + validate, return: boolean
 		@Test
 		void testPasswordHashingByteValidation() throws CoseException {
@@ -141,6 +104,7 @@ class TestHashing {
 
 		}
 
+		// - String plain hash, return: String hash
 		// - String plain hash + validate, return: boolean
 		@Test
 		void testPasswordHashingStringValidation() throws CoseException {
