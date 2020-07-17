@@ -52,7 +52,7 @@ abstract interface SecureCryptoConfigInterface {
 	
 	/**
 	 * Asymmetric encryption with a certain key pair for a given plaintext.
-	 * @param keyPair
+	 * @param keyPair: SCCKey
 	 * @param plaintext
 	 * @return SCCChiphertext
 	 * @throws CoseException
@@ -62,7 +62,7 @@ abstract interface SecureCryptoConfigInterface {
 
 	/**
 	 * Asymmetric encryption with a certain key pair for a given plaintext.
-	 * @param keyPair
+	 * @param keyPair: SCCKey
 	 * @param plaintext
 	 * @return AbstractSCCCiphertext
 	 * @throws CoseException
@@ -72,7 +72,7 @@ abstract interface SecureCryptoConfigInterface {
 	/**
 	 * ReEncrypts a given ciphertext. Ciphertext will be first decrypted and then
 	 * encrypted with the current SCC again.
-	 * @param keyPair
+	 * @param keyPair: SCCKey
 	 * @param ciphertext
 	 * @return AbstractSCCCiphertext
 	 * @throws CoseException
@@ -82,7 +82,7 @@ abstract interface SecureCryptoConfigInterface {
 
 	/**
 	 * Asymmetric decryption with a certain key pair for a given ciphertext.
-	 * @param keyPair
+	 * @param keyPair: SCCKey
 	 * @param ciphertext
 	 * @return PlaintextContainerInterface
 	 * @throws CoseException
@@ -152,7 +152,7 @@ abstract interface SecureCryptoConfigInterface {
 	
 	/**
 	 * Signing of a plaintext with a specific key pair.
-	 * @param keyPair
+	 * @param keyPair: SCCKey
 	 * @param plaintext
 	 * @return AbstractSCCSignature
 	 * @throws CoseException
@@ -162,7 +162,7 @@ abstract interface SecureCryptoConfigInterface {
 
 	/**
 	 * Signing of a plaintext with a specific key pair.
-	 * @param keyPair
+	 * @param keyPair: SCCKey
 	 * @param plaintext
 	 * @return AbstractSCCSignature
 	 * @throws CoseException
@@ -172,7 +172,7 @@ abstract interface SecureCryptoConfigInterface {
 	/**
 	 * Given a signature of a plaintext: the corresponding plaintext will be signed
 	 * again with the current SCC.
-	 * @param keyPair
+	 * @param keyPair: SCCKey
 	 * @param plaintext
 	 * @return AbstractSCCSignature
 	 * @throws CoseException
@@ -183,7 +183,7 @@ abstract interface SecureCryptoConfigInterface {
 	/**
 	 * Given a signature of a plaintext: the corresponding plaintext will be signed
 	 * again with the current SCC.
-	 * @param keyPair
+	 * @param keyPair: SCCKey
 	 * @param plaintext
 	 * @return AbstractSCCSignature
 	 * @throws CoseException
@@ -193,7 +193,7 @@ abstract interface SecureCryptoConfigInterface {
 	
 	/**
 	 * A given signature is checked for validity
-	 * @param keyPair
+	 * @param keyPair: SCCKey
 	 * @param signature
 	 * @return boolean
 	 */
@@ -283,14 +283,14 @@ abstract interface PlaintextContainerInterface {
 
 	/**
 	 * Asymmetric encryption of PlaintextContainer with a certain key pair.
-	 * @param keyPair
+	 * @param keyPair: SCCKey
 	 * @return SCCCiphertext
 	 */
 	abstract AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey pair);
 
 	/**
 	 * Signing of a plaintext with a specific key pair.
-	 * @param keyPair
+	 * @param keyPair: SCCKey
 	 * @return AbstractSCCSignature
 	 */
 	abstract AbstractSCCSignature sign(AbstractSCCKey keyPair);
@@ -333,7 +333,7 @@ abstract class AbstractSCCCiphertext {
 
 	/**
 	 * Asymmetric decryption with a certain key pair for a given ciphertext.
-	 * @param keyPair
+	 * @param keyPair: SCCKey
 	 * @return PlaintextContainerInterface
 	 */
 	abstract PlaintextContainerInterface decryptAsymmetric(AbstractSCCKey keyPair);
@@ -356,7 +356,7 @@ abstract class AbstractSCCCiphertext {
 	/**
 	 * ReEncrypts a given ciphertext. Ciphertext will be first decrypted and then
 	 * encrypted with the current SCC again.
-	 * @param keyPair
+	 * @param keyPair: SCCKey
 	 * @return AbstractSCCCiphertext
 	 */
 	abstract AbstractSCCCiphertext reEncryptAsymmetric(AbstractSCCKey keyPair);
@@ -504,7 +504,7 @@ abstract class AbstractSCCSignature {
 
 	/**
 	 * A given signature is checked for validity
-	 * @param keyPair
+	 * @param keyPair: SCCKey
 	 * @return boolean
 	 */
 	abstract boolean validateSignature(AbstractSCCKey keyPair);
@@ -512,7 +512,7 @@ abstract class AbstractSCCSignature {
 	/**
 	 * Given a signature of a plaintext: the corresponding plaintext will be signed
 	 * again with the current SCC.
-	 * @param keyPair
+	 * @param keyPair: SCCKey
 	 * @param plaintext
 	 * @return AbstractSCCSignature
 	 * @throws CoseException
