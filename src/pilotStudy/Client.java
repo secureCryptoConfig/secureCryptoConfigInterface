@@ -5,6 +5,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.time.Instant;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 import COSE.CoseException;
 import main.SCCKeyPair;
 import main.SCCKeyPair.KeyPairUseCase;
@@ -15,10 +17,6 @@ public class Client implements Runnable {
 	int clientID;
 	KeyPair pair;
 	Server server;
-
-	enum TransactionType {
-		Buy, Sell
-	}
 
 	private Client(int clientID, KeyPair pair, Server server) {
 		this.clientID = clientID;
@@ -49,30 +47,36 @@ public class Client implements Runnable {
 		return c;
 	}
 
-	private static byte[] generateOrder(TransactionType type) {
+	private static String generateOrder() throws NumberFormatException, JsonProcessingException {
+		int random = (int) (100 * Math.random());
+		if (random <= 50) {
+			return Message.createBuyStockMessage(generateRandomString(12), generateRandomNumber(3));
+		} else {
+			return Message.createSellStockMessage(generateRandomString(12), generateRandomNumber(10));
+		}
 
-		String ISIN = generateRandomNumber(4);
-		String amount = generateRandomNumber(3);
-		String order = type.toString() + ";" + ISIN + ";" + amount;
-		return order.getBytes();
 	}
 
-	private static String sign(byte[] order, KeyPair pair) throws CoseException {
+	private static byte[] sign(String order, KeyPair pair) throws CoseException {
 		SecureCryptoConfig scc = new SecureCryptoConfig();
 		// SCCKeyPair sccPair = null;
 		SCCKeyPair sccPair = new SCCKeyPair(pair);
 
 		// SCCSignature sig = scc.sign(sccPair, order);
-		return "todo signature";// sig.toString();
+		return "todo signature".getBytes();// sig.toString();
 	}
 
-	private void sendOrder(byte[] order) throws CoseException {
+	private void sendOrder(String order) throws CoseException, JsonProcessingException {
 		KeyPair pair = this.pair;
-		String signature = sign(order, pair);
 
-		String messageToServer = this.clientID + ";" + new String(order) + ";" + signature;
-		p("sending to server: " + messageToServer);
-		int result = server.acceptMessage(messageToServer);
+		String signedMessage = SignedMessage.createSignedMessage(this.clientID, order, sign(order, pair));
+
+		// String signature = sign(order, pair);
+
+		// String messageToServer = this.clientID + ";" + new String(order) + ";" +
+		// signature;
+		p("sending to server: " + signedMessage);
+		String result = server.acceptMessage(signedMessage);
 		p("result from server: " + result);
 
 		// TODO: send signature, order and clientID to Server
@@ -81,6 +85,19 @@ public class Client implements Runnable {
 	private static String generateRandomNumber(int length) {
 
 		String AlphaNumericString = "01234567890";
+		StringBuilder sb = new StringBuilder(length);
+
+		for (int i = 0; i < length; i++) {
+			int index = (int) (AlphaNumericString.length() * Math.random());
+			sb.append(AlphaNumericString.charAt(index));
+		}
+
+		return sb.toString();
+	}
+
+	private static String generateRandomString(int length) {
+
+		String AlphaNumericString = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 		StringBuilder sb = new StringBuilder(length);
 
 		for (int i = 0; i < length; i++) {
@@ -100,7 +117,7 @@ public class Client implements Runnable {
 		while (true) {
 			try {
 				Thread.sleep(500 + (long) (1000 * Math.random()));
-				sendOrder(generateOrder(TransactionType.Buy));
+				sendOrder(generateOrder());
 
 				// p("sleeping");
 				Thread.sleep(5000 + (long) (5000 * Math.random()));
@@ -108,6 +125,12 @@ public class Client implements Runnable {
 			} catch (InterruptedException | CoseException e) {
 				// TODO Auto-generated catch block
 				// e.printStackTrace();
+			} catch (NumberFormatException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (JsonProcessingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 

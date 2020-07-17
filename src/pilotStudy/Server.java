@@ -6,6 +6,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import COSE.CoseException;
 import main.SCCCiphertext;
 import main.SCCKey;
@@ -50,11 +53,39 @@ public class Server extends Thread {
 
 	}
 
-	public int acceptMessage(String message) {
+	public String acceptMessage(String message) {
 		// TODO create something like this: OrderParser op = new OrderParser(PublicKey);
 		// op.init(message) throws InvalidSignatureException ...
 
-		return 0;
+		boolean isCorrectMessage = false;
+
+		ObjectMapper mapper = new ObjectMapper();
+		try {
+			SignedMessage signedMessage = mapper.readValue(message, SignedMessage.class);
+			int clientId = signedMessage.getClientId();
+			PublicKey publicKey = clients.get(clientId);
+
+			byte[] signature = signedMessage.getSignature();
+
+			// TODO validate signature
+
+			Message theMessage = mapper.readValue(signedMessage.getContent(), Message.class);
+
+			p(theMessage.getMessageType().toString());
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		// SAVE Message
+
+		try {
+			return Message.createServerResponsekMessage(isCorrectMessage);
+		} catch (JsonProcessingException e) {
+			// TODO Auto-generated catch block
+			return new String("{\"Failure\"}");
+			// e.printStackTrace();
+		}
 	}
 
 	private void p(String s) {
