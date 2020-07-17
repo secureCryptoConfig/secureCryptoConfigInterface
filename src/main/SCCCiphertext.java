@@ -42,9 +42,9 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	}
 
 	@Override
-	public PlaintextContainer decryptAsymmetric(AbstractSCCKeyPair keyPair) {
+	public PlaintextContainer decryptAsymmetric(AbstractSCCKey pair) {
 		try {
-			return scc.decryptAsymmetric(keyPair, this);
+			return scc.decryptAsymmetric(pair, this);
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;
@@ -63,7 +63,7 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	}
 
 	@Override
-	public SCCCiphertext reEncryptAsymmetric(AbstractSCCKeyPair keyPair) {
+	public SCCCiphertext reEncryptAsymmetric(AbstractSCCKey keyPair) {
 		try {
 			return scc.reEncryptAsymmetric(keyPair, this);
 		} catch (CoseException e) {

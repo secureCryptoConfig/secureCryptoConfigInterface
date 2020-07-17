@@ -22,7 +22,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
-import main.SCCKeyPair.SCCKeyPairAlgorithm;
+import main.SCCKey.KeyType;
 
 
 /**
@@ -39,7 +39,7 @@ public class JSONReader {
 
 	private static String publicKeyPath1;
 	private static String publicKeyPath2;
-	private static SCCKeyPairAlgorithm signatureAlgo = SCCKeyPairAlgorithm.EC;
+	private static String signatureAlgo = "EC";
 
 	// JSON parser object to parse read file
 	private static JSONParser jsonParser = new JSONParser();
@@ -55,6 +55,7 @@ public class JSONReader {
 	 * @param useCase, sccFilePath (Path to used SCC file)
 	 */
 	protected static ArrayList<String> getAlgos(CryptoUseCase useCase, String sccFilePath) {
+		JSONParser jsonParser = new JSONParser();
 		ArrayList<String> algos = new ArrayList<String>();
 		try (FileReader reader = new FileReader(sccFilePath)) {
 			// Read JSON file
@@ -237,7 +238,7 @@ public class JSONReader {
 		return Collections.max(level);
 	}
 
-	private static boolean checkSignature(SCCKeyPairAlgorithm algo, String signaturePath, String publicKeyPath)
+	private static boolean checkSignature(String algo, String signaturePath, String publicKeyPath)
 			throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException,
 			SignatureException {
 
@@ -246,7 +247,7 @@ public class JSONReader {
 		byte[] publicKey = Files.readAllBytes(fileLocation);
 		PublicKey pub = KeyFactory.getInstance(algo.toString()).generatePublic(new X509EncodedKeySpec(publicKey));
 		PrivateKey privateKey = null;
-		SCCKeyPair sccKeyPair = new SCCKeyPair(new KeyPair(pub, privateKey));
+		SCCKey sccKeyPair = new SCCKey(KeyType.Asymmetric, pub.getEncoded(), privateKey.getEncoded(), algo);
 
 		Path fileLocation1 = Paths.get(signaturePath);
 		byte[] sig = Files.readAllBytes(fileLocation1);

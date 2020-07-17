@@ -1,24 +1,23 @@
 package pilotStudy;
 
-import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
 import java.time.Instant;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import COSE.CoseException;
-import main.SCCKeyPair;
-import main.SCCKeyPair.KeyPairUseCase;
+import main.SCCKey;
+import main.SCCKey.KeyUseCase;
+import main.SCCSignature;
 import main.SecureCryptoConfig;
 
 public class Client implements Runnable {
 
 	int clientID;
-	KeyPair pair;
+	SCCKey pair;
 	Server server;
 
-	private Client(int clientID, KeyPair pair, Server server) {
+	private Client(int clientID, SCCKey pair, Server server) {
 		this.clientID = clientID;
 		this.pair = pair;
 		this.server = server;
@@ -28,22 +27,22 @@ public class Client implements Runnable {
 		return this.clientID;
 	}
 
-	private KeyPair getKeyPair() {
+	private SCCKey getKey() {
 		return this.pair;
 	}
 
 	public static Client generateNewClient(Server server)
 			throws NoSuchAlgorithmException, CoseException, IllegalStateException {
 
-		SCCKeyPair pair = SCCKeyPair.createKeyPair(KeyPairUseCase.Signing);
-		PublicKey publicKey = pair.getPublicKey();
+		SCCKey pair = SCCKey.createKey(KeyUseCase.Signing);
+		byte[] publicKey = pair.getPublicKeyBytes();
 		// TODO: create method sendPublicKey
 		int clientID = server.registerClient(publicKey);
 		if (clientID == -1) {
 			throw new IllegalStateException("server does not seem to accept the client registration!");
 		}
 
-		Client c = new Client(clientID, pair.getKeyPair(), server);
+		Client c = new Client(clientID, pair, server);
 		return c;
 	}
 
@@ -57,17 +56,15 @@ public class Client implements Runnable {
 
 	}
 
-	private static byte[] sign(String order, KeyPair pair) throws CoseException {
+	private static byte[] sign(String order, SCCKey pair) throws CoseException {
 		SecureCryptoConfig scc = new SecureCryptoConfig();
-		// SCCKeyPair sccPair = null;
-		SCCKeyPair sccPair = new SCCKeyPair(pair);
-
-		// SCCSignature sig = scc.sign(sccPair, order);
-		return "todo signature".getBytes();// sig.toString();
+		
+		SCCSignature sig = scc.sign(pair, order.getBytes());
+		return sig.toBytes();
 	}
 
 	private void sendOrder(String order) throws CoseException, JsonProcessingException {
-		KeyPair pair = this.pair;
+		SCCKey pair = this.pair;
 
 		String signedMessage = SignedMessage.createSignedMessage(this.clientID, order, sign(order, pair));
 

@@ -122,13 +122,13 @@ public class UseCases {
 	 * @return SCCCiphertext
 	 */
 	protected static SCCCiphertext createAsymMessage(PlaintextContainerInterface plaintext, AlgorithmID id,
-			AbstractSCCKeyPair keyPair) {
+			AbstractSCCKey keyPair) {
 		try {
-			SCCKeyPair pair = (SCCKeyPair) keyPair;
+			SCCKey pair = (SCCKey) keyPair;
 			AsymMessage asymMsg = new AsymMessage();
 			asymMsg.SetContent(plaintext.toBytes());
 			asymMsg.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
-			asymMsg.encrypt(keyPair.keyPair);
+			asymMsg.encrypt(new KeyPair(pair.getPublicKey(), pair.getPrivateKey()));
 			asymMsg.SetContent((byte[])null);
 
 			return new SCCCiphertext(asymMsg.EncodeToBytes());
@@ -146,11 +146,11 @@ public class UseCases {
 	 * @param id
 	 * @return SCCSignature
 	 */
-	protected static SCCSignature createSignMessage(PlaintextContainerInterface plaintext, AbstractSCCKeyPair key,
+	protected static SCCSignature createSignMessage(PlaintextContainerInterface plaintext, AbstractSCCKey key,
 			AlgorithmID id) {
 		Sign1Message m = new Sign1Message();
 		m.SetContent(plaintext.toBytes());
-		SCCKeyPair pair = (SCCKeyPair) key;
+		SCCKey pair = (SCCKey) key;
 		try {
 			m.addAttribute(HeaderKeys.Algorithm, AlgorithmID.ECDSA_512.AsCBOR(), Attribute.PROTECTED);
 			OneKey oneKey = new OneKey(pair.getPublicKey(), pair.getPrivateKey());

@@ -185,7 +185,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCCiphertext encryptAsymmetric(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext)
+	public SCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
 			throws CoseException {
 
 		ArrayList<String> algorithms = new ArrayList<String>();
@@ -212,7 +212,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCCiphertext encryptAsymmetric(AbstractSCCKeyPair keyPair, byte[] plaintext) throws CoseException {
+	public SCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair, byte[] plaintext) throws CoseException {
 		try {
 			return encryptAsymmetric(keyPair, new PlaintextContainer(plaintext));
 		} catch (CoseException e) {
@@ -222,19 +222,19 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCCiphertext reEncryptAsymmetric(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext)
+	public SCCCiphertext reEncryptAsymmetric(AbstractSCCKey keyPair, AbstractSCCCiphertext ciphertext)
 			throws CoseException {
 		PlaintextContainer decrypted = decryptAsymmetric(keyPair, ciphertext);
 		return encryptAsymmetric(keyPair, decrypted);
 	}
 
 	@Override
-	public PlaintextContainer decryptAsymmetric(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext)
+	public PlaintextContainer decryptAsymmetric(AbstractSCCKey keyPair, AbstractSCCCiphertext ciphertext)
 			throws CoseException {
-		SCCKeyPair pair = (SCCKeyPair) keyPair;
+		SCCKey pair = (SCCKey) keyPair;
 		try {
 			AsymMessage msg = (AsymMessage) AsymMessage.DecodeFromBytes(ciphertext.msg);
-			return new PlaintextContainer(msg.decrypt(keyPair.keyPair));
+			return new PlaintextContainer(msg.decrypt(new KeyPair(pair.getPublicKey(), pair.getPrivateKey())));
 		} catch (CoseException e) {
 			e.printStackTrace();
 
@@ -308,10 +308,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCSignature sign(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext) throws CoseException {
-
+	public SCCSignature sign(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext) throws CoseException {
+		
 		ArrayList<String> algorithms = new ArrayList<String>();
-
 		algorithms = JSONReader.getAlgos(CryptoUseCase.Signing, sccPath);
 
 		for (int i = 0; i < algorithms.size(); i++) {
@@ -334,7 +333,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCSignature sign(AbstractSCCKeyPair keyPair, byte[] plaintext) throws CoseException {
+	public SCCSignature sign(AbstractSCCKey keyPair, byte[] plaintext) throws CoseException {
 		try {
 			return sign(keyPair, new PlaintextContainer(plaintext));
 		} catch (CoseException e) {
@@ -344,31 +343,31 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCSignature updateSignature(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext)
+	public SCCSignature updateSignature(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
 			throws CoseException {
 		return sign(keyPair, plaintext);
 	}
 
 	@Override
-	public SCCSignature updateSignature(AbstractSCCKeyPair keyPair, byte[] plaintext) throws CoseException {
+	public SCCSignature updateSignature(AbstractSCCKey keyPair, byte[] plaintext) throws CoseException {
 		return updateSignature(keyPair, new PlaintextContainer(plaintext));
 	}
 
 	@Override
-	public boolean validateSignature(AbstractSCCKeyPair keyPair, AbstractSCCSignature signature) {
-		SCCKeyPair pair = (SCCKeyPair) keyPair;
+	public boolean validateSignature(AbstractSCCKey keyPair, AbstractSCCSignature signature) {
+		SCCKey pair = (SCCKey) keyPair;
 		PrivateKey privateKey = null;
 		try {
 			SCCSignature s = (SCCSignature) signature;
 			Sign1Message msg = s.convertByteToMsg();
 			try {
-				privateKey = pair.keyPair.getPrivate();
+				privateKey = pair.getPrivateKey();
 			}catch(NullPointerException e)
 			{
-				OneKey oneKey = new OneKey(pair.keyPair.getPublic(), null);
+				OneKey oneKey = new OneKey(pair.getPublicKey(), null);
 				return msg.validate(oneKey);
 			}
-			OneKey oneKey = new OneKey(pair.keyPair.getPublic(), privateKey);
+			OneKey oneKey = new OneKey(pair.getPublicKey(), privateKey);
 			return msg.validate(oneKey);
 		} catch (CoseException e) {
 			e.printStackTrace();
@@ -378,7 +377,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 	
 	@Override
-	public boolean validateSignature(AbstractSCCKeyPair keyPair, byte[] signature) {
+	public boolean validateSignature(AbstractSCCKey keyPair, byte[] signature) {
 		return validateSignature(keyPair, new SCCSignature(signature));
 	}
 

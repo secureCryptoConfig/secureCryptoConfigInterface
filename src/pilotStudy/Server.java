@@ -1,5 +1,6 @@
 package pilotStudy;
 
+import java.security.KeyPair;
 import java.security.PublicKey;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -12,15 +13,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import COSE.CoseException;
 import main.SCCCiphertext;
 import main.SCCKey;
+import main.SCCKey.KeyType;
 import main.SCCKeyPair;
 import main.SecureCryptoConfig;
 
 public class Server extends Thread {
 	final static String masterPassword = "Confidential";
 
-	List<PublicKey> clients = Collections.synchronizedList(new ArrayList<PublicKey>());
+	List<byte[]> clients = Collections.synchronizedList(new ArrayList<byte[]>());
 
-	public synchronized int registerClient(PublicKey publicKey) {
+	public synchronized int registerClient(byte[] publicKey) {
 
 		if (clients.indexOf(publicKey) == -1) {
 			clients.add(publicKey);
@@ -29,26 +31,26 @@ public class Server extends Thread {
 		return clients.indexOf(publicKey);
 	}
 
-	private void checkSignature(int clientID, byte[] order, byte[] signature) throws CoseException {
-		PublicKey publicKey = clients.get(clientID);
+	private boolean checkSignature(int clientID, byte[] order, byte[] signature) throws CoseException {
+		byte[] publicKey = clients.get(clientID);
 		SecureCryptoConfig scc = new SecureCryptoConfig();
 
-		// SCCKeyPair keyPair = new SCCKeyPair(new KeyPair(publicKey, null));
-		SCCKeyPair keyPair = null;
+		SCCKey keyPair = new SCCKey(KeyType.Asymmetric, publicKey, null, "EC");
+		
 		boolean resultValidation = scc.validateSignature(keyPair, signature);
-
 		if (resultValidation == true) {
 			encryptOrder(order);
 		}
+		
+		return resultValidation;
 
-		// TODO: return some Info to client
 	}
 
 	private void encryptOrder(byte[] order) throws CoseException {
 		SecureCryptoConfig scc = new SecureCryptoConfig();
-		SCCKey key = SCCKey.createKeyWithPassword(masterPassword.getBytes());
+		SCCKey key = SCCKey.createSymmetricKeyWithPassword(masterPassword.getBytes());
 		SCCCiphertext cipher = scc.encryptSymmetric(key, order);
-
+		
 		// TODO: store cipher as byte[] somewhere
 
 	}
@@ -63,16 +65,16 @@ public class Server extends Thread {
 		try {
 			SignedMessage signedMessage = mapper.readValue(message, SignedMessage.class);
 			int clientId = signedMessage.getClientId();
-			PublicKey publicKey = clients.get(clientId);
+			byte[] publicKey = clients.get(clientId);
 
 			byte[] signature = signedMessage.getSignature();
 
-			// TODO validate signature
+			isCorrectMessage = checkSignature(clientId, signedMessage.getContent().getBytes(), signature);
 
 			Message theMessage = mapper.readValue(signedMessage.getContent(), Message.class);
 
 			p(theMessage.getMessageType().toString());
-		} catch (JsonProcessingException e) {
+		} catch (JsonProcessingException | CoseException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

@@ -8,10 +8,11 @@ import java.security.NoSuchAlgorithmException;
 import org.junit.jupiter.api.Test;
 
 import COSE.CoseException;
+import main.SCCKey;
 import main.SCCKeyPair;
 import main.SCCSignature;
 import main.SecureCryptoConfig;
-import main.SCCKeyPair.KeyPairUseCase;
+import main.SCCKey.KeyUseCase;
 
 class TestSignature {
 	
@@ -34,7 +35,7 @@ class TestSignature {
 	@Test
 	void testSigningByteValidation() throws CoseException, NoSuchAlgorithmException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCKeyPair pair = SCCKeyPair.createKeyPair(KeyPairUseCase.Signing);
+		SCCKey pair = SCCKey.createKey(KeyUseCase.Signing);
 		
 		SCCSignature signature = scc.sign(pair,plaintext);
 		
@@ -49,7 +50,7 @@ class TestSignature {
 	@Test
 	void testSigningStringValidation() throws CoseException, NoSuchAlgorithmException {
 		String plaintext = "Hello World!";
-		SCCKeyPair pair = SCCKeyPair.createKeyPair(KeyPairUseCase.Signing);
+		SCCKey pair = SCCKey.createKey(KeyUseCase.Signing);
 		
 		SCCSignature signature = scc.sign(pair, plaintext.getBytes(StandardCharsets.UTF_8));
 		
@@ -63,7 +64,7 @@ class TestSignature {
 	@Test
 	void testUpdateSigningByte() throws CoseException, NoSuchAlgorithmException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCKeyPair pair = SCCKeyPair.createKeyPair(KeyPairUseCase.Signing);
+		SCCKey pair = SCCKey.createKey(KeyUseCase.Signing);
 		
 		SCCSignature oldSignature = scc.sign(pair, plaintext);
 		
@@ -78,7 +79,7 @@ class TestSignature {
 	@Test
 	void testUpdateSigningString() throws CoseException, NoSuchAlgorithmException {
 		String plaintext = "Hello World!";
-		SCCKeyPair pair = SCCKeyPair.createKeyPair(KeyPairUseCase.Signing);
+		SCCKey pair = SCCKey.createKey(KeyUseCase.Signing);
 		
 		SCCSignature oldSignature = scc.sign(pair, plaintext.getBytes(StandardCharsets.UTF_8));
 		

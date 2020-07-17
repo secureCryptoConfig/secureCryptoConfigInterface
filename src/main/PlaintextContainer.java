@@ -68,7 +68,7 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 
 
 	@Override
-	public SCCCiphertext encryptAsymmetric(AbstractSCCKeyPair keyPair) {
+	public SCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair) {
 		try {
 			return scc.encryptAsymmetric(keyPair, this);
 		} catch (CoseException e) {
@@ -79,7 +79,7 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 
 
 	@Override
-	public SCCSignature sign(AbstractSCCKeyPair keyPair) {
+	public SCCSignature sign(AbstractSCCKey keyPair) {
 		try {
 			return scc.sign(keyPair, this);
 		} catch (CoseException e) {

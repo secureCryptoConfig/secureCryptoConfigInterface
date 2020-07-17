@@ -33,7 +33,7 @@ public class SCCSignature extends AbstractSCCSignature {
 	}
 	
 	@Override
-	public SCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKeyPair keyPair) {
+	public SCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKey keyPair) {
 		try {
 			return (SCCSignature) scc.updateSignature(keyPair, plaintext);
 		} catch (CoseException e) {
@@ -43,7 +43,7 @@ public class SCCSignature extends AbstractSCCSignature {
 	}
 	
 	@Override
-	public boolean validateSignature(AbstractSCCKeyPair keyPair) {
+	public boolean validateSignature(AbstractSCCKey keyPair) {
 		return scc.validateSignature(keyPair, this);
 	}
 	

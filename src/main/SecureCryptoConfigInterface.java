@@ -1,13 +1,8 @@
 package main;
 
 import java.nio.charset.Charset;
-import java.security.KeyPair;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-
 import COSE.CoseException;
-import main.SCCKey.SCCKeyAlgorithm;
-import main.SCCKeyPair.SCCKeyPairAlgorithm;
+import main.SCCKey.KeyType;
 
 abstract interface SecureCryptoConfigInterface {
 
@@ -62,7 +57,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * @return SCCChiphertext
 	 * @throws CoseException
 	 */
-	public AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext)
+	public AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
 			throws CoseException;
 
 	/**
@@ -72,7 +67,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * @return AbstractSCCCiphertext
 	 * @throws CoseException
 	 */
-	public AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKeyPair keyPair, byte[] plaintext) throws CoseException;
+	public AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair, byte[] plaintext) throws CoseException;
 
 	/**
 	 * ReEncrypts a given ciphertext. Ciphertext will be first decrypted and then
@@ -82,7 +77,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * @return AbstractSCCCiphertext
 	 * @throws CoseException
 	 */
-	public AbstractSCCCiphertext reEncryptAsymmetric(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext)
+	public AbstractSCCCiphertext reEncryptAsymmetric(AbstractSCCKey keyPair, AbstractSCCCiphertext ciphertext)
 			throws CoseException;
 
 	/**
@@ -92,7 +87,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * @return PlaintextContainerInterface
 	 * @throws CoseException
 	 */
-	public PlaintextContainerInterface decryptAsymmetric(AbstractSCCKeyPair keyPair, AbstractSCCCiphertext ciphertext)
+	public PlaintextContainerInterface decryptAsymmetric(AbstractSCCKey keyPair, AbstractSCCCiphertext ciphertext)
 			throws CoseException;
 
 	// Hashing
@@ -162,7 +157,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * @return AbstractSCCSignature
 	 * @throws CoseException
 	 */
-	public AbstractSCCSignature sign(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext)
+	public AbstractSCCSignature sign(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
 			throws CoseException;
 
 	/**
@@ -172,7 +167,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * @return AbstractSCCSignature
 	 * @throws CoseException
 	 */
-	public AbstractSCCSignature sign(AbstractSCCKeyPair keyPair, byte[] plaintext) throws CoseException;
+	public AbstractSCCSignature sign(AbstractSCCKey keyPair, byte[] plaintext) throws CoseException;
 
 	/**
 	 * Given a signature of a plaintext: the corresponding plaintext will be signed
@@ -182,7 +177,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * @return AbstractSCCSignature
 	 * @throws CoseException
 	 */
-	public AbstractSCCSignature updateSignature(AbstractSCCKeyPair keyPair, PlaintextContainerInterface plaintext)
+	public AbstractSCCSignature updateSignature(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
 			throws CoseException;
 	
 	/**
@@ -193,7 +188,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * @return AbstractSCCSignature
 	 * @throws CoseException
 	 */
-	public AbstractSCCSignature updateSignature(AbstractSCCKeyPair keyPair, byte[] plaintext)
+	public AbstractSCCSignature updateSignature(AbstractSCCKey keyPair, byte[] plaintext)
 			throws CoseException;
 	
 	/**
@@ -202,9 +197,9 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param signature
 	 * @return boolean
 	 */
-	public boolean validateSignature(AbstractSCCKeyPair keyPair, AbstractSCCSignature signature);
+	public boolean validateSignature(AbstractSCCKey keyPair, AbstractSCCSignature signature);
 	
-	public boolean validateSignature(AbstractSCCKeyPair keyPair, byte[] signature);
+	public boolean validateSignature(AbstractSCCKey keyPair, byte[] signature);
 
 	// Password Hashing
 	
@@ -291,14 +286,14 @@ abstract interface PlaintextContainerInterface {
 	 * @param keyPair
 	 * @return SCCCiphertext
 	 */
-	abstract AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKeyPair pair);
+	abstract AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey pair);
 
 	/**
 	 * Signing of a plaintext with a specific key pair.
 	 * @param keyPair
 	 * @return AbstractSCCSignature
 	 */
-	abstract AbstractSCCSignature sign(AbstractSCCKeyPair keyPair);
+	abstract AbstractSCCSignature sign(AbstractSCCKey keyPair);
 
 	/**
 	 * Hashing of a given plaintext
@@ -341,7 +336,7 @@ abstract class AbstractSCCCiphertext {
 	 * @param keyPair
 	 * @return PlaintextContainerInterface
 	 */
-	abstract PlaintextContainerInterface decryptAsymmetric(AbstractSCCKeyPair keyPair);
+	abstract PlaintextContainerInterface decryptAsymmetric(AbstractSCCKey keyPair);
 
 	/**
 	 * Decryption of a given ciphertext.
@@ -364,66 +359,55 @@ abstract class AbstractSCCCiphertext {
 	 * @param keyPair
 	 * @return AbstractSCCCiphertext
 	 */
-	abstract AbstractSCCCiphertext reEncryptAsymmetric(AbstractSCCKeyPair keyPair);
+	abstract AbstractSCCCiphertext reEncryptAsymmetric(AbstractSCCKey keyPair);
 
 }
 
 abstract class AbstractSCCKey {
 
-	byte[] key;
-	SCCKeyAlgorithm algorithm;
-
-	protected AbstractSCCKey(byte[] key, SCCKeyAlgorithm algorithm) {
+	KeyType type;
+	byte[] key, privateKey, publicKey;
+	String algorithm;
+	
+	protected AbstractSCCKey(KeyType type, byte[] publicKey, byte[] privateKey, String algorithm)
+	{
+		this.type = type;
+		this.publicKey = publicKey;
+		this.privateKey = privateKey;
+		this.algorithm = algorithm;
+		
+	}
+	
+	protected AbstractSCCKey(KeyType type, byte[] key, String algorithm)
+	{
+		this.type = type;
 		this.key = key;
 		this.algorithm = algorithm;
-
+		
 	}
 
 	/**
-	 * Get byte[] representation of SCCKey
-	 * @return byte[]
+	 * Get byte[] representation of key
+	 * @return byte[]: returns byte[] representation of key in case of a 'Symmetric' KeyType
 	 */
 	abstract byte[] toBytes();
-
-}
-
-abstract class AbstractSCCKeyPair {
-	protected KeyPair keyPair;
-
-	protected AbstractSCCKeyPair(KeyPair keyPair) {
-		this.keyPair = keyPair;
-	}
-
+	
 	/**
 	 * Get byte[] representation of public key
-	 * @return byte[]
+	 * @return byte[]: returns byte[] representation of public key in case of a 'Asymmetric' KeyType
 	 */
 	abstract byte[] getPublicKeyBytes();
 	
 	/**
 	 * Get byte[] representation of private key
-	 * @return byte[]
+	 * @return byte[]: returns byte[] representation of private key in case of a 'Asymmetric' KeyType
 	 */
 	abstract byte[] getPrivateKeyBytes();
-	
-	/**
-	 * Get public key
-	 * @return PublicKey
-	 */
-	abstract PublicKey getPublicKey();
-	
-	/**
-	 * Get private key
-	 * @return PrivateKey
-	 */
-	abstract PrivateKey getPrivateKey();
-	
-	/**
-	 * Get key pair
-	 * @return KeyPair
-	 */
-	abstract KeyPair getKeyPair();
 
+}
+
+abstract class AbstractSCCKeyPair {
+	
 }
 
 abstract class AbstractSCCHash {
@@ -523,7 +507,7 @@ abstract class AbstractSCCSignature {
 	 * @param keyPair
 	 * @return boolean
 	 */
-	abstract boolean validateSignature(AbstractSCCKeyPair keyPair);
+	abstract boolean validateSignature(AbstractSCCKey keyPair);
 
 	/**
 	 * Given a signature of a plaintext: the corresponding plaintext will be signed
@@ -533,7 +517,7 @@ abstract class AbstractSCCSignature {
 	 * @return AbstractSCCSignature
 	 * @throws CoseException
 	 */
-	abstract AbstractSCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKeyPair keyPair);
+	abstract AbstractSCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKey keyPair);
 
 }
 
