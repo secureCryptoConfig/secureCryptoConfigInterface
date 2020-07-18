@@ -26,7 +26,6 @@ public class AppMain {
 			}
 
 		} catch (NoSuchAlgorithmException | CoseException | IllegalStateException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -35,7 +34,7 @@ public class AppMain {
 		}
 
 	}
-
+	
 	private static void p(String s) {
 		System.out.println(Instant.now().toString() + "AppMain: " + s);
 	}

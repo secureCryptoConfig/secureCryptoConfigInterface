@@ -63,6 +63,11 @@ public class SCCKey extends AbstractSCCKey {
 		super(type, key, algorithm);
 	}
 
+	@Override
+	public String getAlgorithm() {
+		return this.algorithm;
+	}
+
 	/**
 	 * Constructor which gets the type, the byte[] representation of the public and private key and the algorithm
 	 * of its creation
@@ -397,5 +402,6 @@ public class SCCKey extends AbstractSCCKey {
 		}
 
 	}
+
 
 }

@@ -1,7 +1,5 @@
 package pilotStudy;
 
-import java.security.KeyPair;
-import java.security.PublicKey;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,31 +11,28 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import COSE.CoseException;
 import main.SCCCiphertext;
 import main.SCCKey;
-import main.SCCKey.KeyType;
-import main.SCCKeyPair;
 import main.SecureCryptoConfig;
 
 public class Server extends Thread {
 	final static String masterPassword = "Confidential";
+	final static SCCKey masterKey = SCCKey.createSymmetricKeyWithPassword(masterPassword.getBytes());
+	List<SCCKey> clients = Collections.synchronizedList(new ArrayList<SCCKey>());
 
-	List<byte[]> clients = Collections.synchronizedList(new ArrayList<byte[]>());
+	public synchronized int registerClient(SCCKey key) {
 
-	public synchronized int registerClient(byte[] publicKey) {
-
-		if (clients.indexOf(publicKey) == -1) {
-			clients.add(publicKey);
+		if (clients.indexOf(key) == -1) {
+			clients.add(key);
 		}
 
-		return clients.indexOf(publicKey);
+		return clients.indexOf(key);
 	}
 
 	private boolean checkSignature(int clientID, byte[] order, byte[] signature) throws CoseException {
-		byte[] publicKey = clients.get(clientID);
+		SCCKey key = clients.get(clientID);
 		SecureCryptoConfig scc = new SecureCryptoConfig();
 
-		SCCKey keyPair = new SCCKey(KeyType.Asymmetric, publicKey, null, "EC");
+		boolean resultValidation = scc.validateSignature(key, signature);
 		
-		boolean resultValidation = scc.validateSignature(keyPair, signature);
 		if (resultValidation == true) {
 			encryptOrder(order);
 		}
@@ -48,8 +43,7 @@ public class Server extends Thread {
 
 	private void encryptOrder(byte[] order) throws CoseException {
 		SecureCryptoConfig scc = new SecureCryptoConfig();
-		SCCKey key = SCCKey.createSymmetricKeyWithPassword(masterPassword.getBytes());
-		SCCCiphertext cipher = scc.encryptSymmetric(key, order);
+		SCCCiphertext cipher = scc.encryptSymmetric(masterKey, order);
 		
 		// TODO: store cipher as byte[] somewhere
 
@@ -65,8 +59,7 @@ public class Server extends Thread {
 		try {
 			SignedMessage signedMessage = mapper.readValue(message, SignedMessage.class);
 			int clientId = signedMessage.getClientId();
-			byte[] publicKey = clients.get(clientId);
-
+			
 			byte[] signature = signedMessage.getSignature();
 
 			isCorrectMessage = checkSignature(clientId, signedMessage.getContent().getBytes(), signature);
@@ -75,18 +68,14 @@ public class Server extends Thread {
 
 			p(theMessage.getMessageType().toString());
 		} catch (JsonProcessingException | CoseException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		// SAVE Message
-
 		try {
 			return Message.createServerResponsekMessage(isCorrectMessage);
 		} catch (JsonProcessingException e) {
-			// TODO Auto-generated catch block
 			return new String("{\"Failure\"}");
-			// e.printStackTrace();
 		}
 	}
 

@@ -403,6 +403,12 @@ abstract class AbstractSCCKey {
 	 * @return byte[]: returns byte[] representation of private key in case of a 'Asymmetric' KeyType
 	 */
 	abstract byte[] getPrivateKeyBytes();
+	
+	/**
+	 * Returns the algorithm used for key generation
+	 * @return String: algorithm used for key generation
+	 */
+	abstract String getAlgorithm();
 
 }
 

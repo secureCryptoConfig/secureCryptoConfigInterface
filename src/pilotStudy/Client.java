@@ -7,6 +7,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 
 import COSE.CoseException;
 import main.SCCKey;
+import main.SCCKey.KeyType;
 import main.SCCKey.KeyUseCase;
 import main.SCCSignature;
 import main.SecureCryptoConfig;
@@ -36,8 +37,8 @@ public class Client implements Runnable {
 
 		SCCKey pair = SCCKey.createKey(KeyUseCase.Signing);
 		byte[] publicKey = pair.getPublicKeyBytes();
-		// TODO: create method sendPublicKey
-		int clientID = server.registerClient(publicKey);
+		
+		int clientID = server.registerClient(new SCCKey(KeyType.Asymmetric, publicKey, null, pair.getAlgorithm()));
 		if (clientID == -1) {
 			throw new IllegalStateException("server does not seem to accept the client registration!");
 		}
