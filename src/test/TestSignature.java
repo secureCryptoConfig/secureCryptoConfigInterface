@@ -9,6 +9,7 @@ import java.security.NoSuchAlgorithmException;
 import org.junit.jupiter.api.Test;
 
 import COSE.CoseException;
+import main.SCCException;
 import main.SCCKey;
 import main.SCCKeyPair;
 import main.SCCSignature;
@@ -34,7 +35,7 @@ class TestSignature {
 	//- byte[] plain sign, return: byte[] signature + new key
 	// - byte[] plain sign + validate, return: boolean
 	@Test
-	void testSigningByteValidation() throws CoseException, NoSuchAlgorithmException, InvalidKeyException {
+	void testSigningByteValidation() throws CoseException, NoSuchAlgorithmException, InvalidKeyException, SCCException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCKey pair = SCCKey.createKey(KeyUseCase.Signing);
 		
@@ -49,7 +50,7 @@ class TestSignature {
 	// - String plain sign, return: String signature + new key
 	// - String plain sign + validate, return: boolean
 	@Test
-	void testSigningStringValidation() throws CoseException, NoSuchAlgorithmException, InvalidKeyException {
+	void testSigningStringValidation() throws CoseException, NoSuchAlgorithmException, InvalidKeyException, SCCException {
 		String plaintext = "Hello World!";
 		SCCKey pair = SCCKey.createKey(KeyUseCase.Signing);
 		
@@ -63,7 +64,7 @@ class TestSignature {
 
 	// - signature + key, return: updated byte[] signature
 	@Test
-	void testUpdateSigningByte() throws CoseException, NoSuchAlgorithmException, InvalidKeyException {
+	void testUpdateSigningByte() throws CoseException, NoSuchAlgorithmException, InvalidKeyException, SCCException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCKey pair = SCCKey.createKey(KeyUseCase.Signing);
 		
@@ -78,7 +79,7 @@ class TestSignature {
 
 	// - signature + key, return: updated String signature
 	@Test
-	void testUpdateSigningString() throws CoseException, NoSuchAlgorithmException, InvalidKeyException {
+	void testUpdateSigningString() throws CoseException, NoSuchAlgorithmException, InvalidKeyException, SCCException {
 		String plaintext = "Hello World!";
 		SCCKey pair = SCCKey.createKey(KeyUseCase.Signing);
 		

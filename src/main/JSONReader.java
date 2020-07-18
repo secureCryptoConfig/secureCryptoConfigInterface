@@ -166,7 +166,6 @@ public class JSONReader {
 
 					});
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -248,7 +247,7 @@ public class JSONReader {
 	}
 
 	private static boolean checkSignature(String algo, String signaturePath, String publicKeyPath) throws IOException,
-			NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException {
+			NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException, SCCException {
 
 		Path fileLocation = Paths.get(publicKeyPath);
 		byte[] publicKey = Files.readAllBytes(fileLocation);
@@ -273,7 +272,7 @@ public class JSONReader {
 
 	}
 
-	private static void startValidation() {
+	private static void startValidation() throws SCCException {
 		for (int i = 0; i < allFilePaths.size(); i++) {
 			String filepath = allFilePaths.get(i);
 			String signaturePath1 = filepath;
@@ -294,16 +293,16 @@ public class JSONReader {
 					validation2 = checkSignature(signatureAlgo, signaturePath2, publicKeyPath2);
 				} catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | SignatureException
 						| IOException e) {
-					e.printStackTrace();
+					throw new SCCException("Signature check of Secure Crypto Config files could not be performed!", e);
 				}
 				if (validation1 != true || validation2 != true) {
-					System.out.println("Not both signatures are valid for " + filepath);
-					System.out.println("This file will not be considered!");
+					logger.debug("Not both signatures are valid for {}", filepath);
+					logger.debug("This file will not be considered!");
 					allFilePaths.remove(i);
 				}
 			} else {
-				System.out.println("There are no two signatures defined for " + filepath);
-				System.out.println("This file will not be considered!");
+				logger.debug("There are no two signatures defined for {}", filepath);
+				logger.debug("This file will not be considered!");
 				allFilePaths.remove(i);
 			}
 
@@ -316,19 +315,21 @@ public class JSONReader {
 	 * 
 	 * @param path to "configs" folder containing SCC files
 	 * @return path
+	 * @throws SCCException 
 	 */
 	protected static String parseFiles(String path) {
 		allFilePaths.clear();
 		getFiles(path);
 		if (SecureCryptoConfig.customPath == true) {
 			getPublicKeyPath();
-			startValidation();
+			try {
+				startValidation();
+			} catch (SCCException e) {
+				e.printStackTrace();
+			}
 		}
 		getSecurityLevel();
 		return getLatestSCC(getHighestLevel(levels));
 	}
 
-	public static void main(String[] args) {
-		System.out.println(getBasePath());
-	}
 }

@@ -7,6 +7,7 @@ import java.time.Instant;
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import COSE.CoseException;
+import main.SCCException;
 import main.SCCKey;
 import main.SCCKey.KeyType;
 import main.SCCKey.KeyUseCase;
@@ -36,7 +37,12 @@ public class Client implements Runnable {
 	public static Client generateNewClient(Server server)
 			throws NoSuchAlgorithmException, CoseException, IllegalStateException {
 
-		SCCKey pair = SCCKey.createKey(KeyUseCase.Signing);
+		SCCKey pair = null;
+		try {
+			pair = SCCKey.createKey(KeyUseCase.Signing);
+		} catch (SCCException e) {
+			e.printStackTrace();
+		}
 		byte[] publicKey = pair.getPublicKeyBytes();
 		
 		int clientID = server.registerClient(new SCCKey(KeyType.Asymmetric, publicKey, null, pair.getAlgorithm()));
@@ -64,7 +70,7 @@ public class Client implements Runnable {
 		SCCSignature sig;
 		try {
 			sig = scc.sign(pair, order.getBytes());
-		} catch (InvalidKeyException e) {
+		} catch (InvalidKeyException | SCCException e) {
 			e.printStackTrace();
 			return null;
 		}

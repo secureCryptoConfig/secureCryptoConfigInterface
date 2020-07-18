@@ -134,14 +134,14 @@ public class SCCKey extends AbstractSCCKey {
 	/**
 	 * Returns byte[] representation of public key to PublicKey for further processing
 	 * @return PublicKey
+	 * @throws SCCException 
 	 */
-	protected PublicKey getPublicKey() {
+	protected PublicKey getPublicKey() throws SCCException {
 		if (this.type == KeyType.Asymmetric) {
 			try {
 				return KeyFactory.getInstance(this.algorithm).generatePublic(new X509EncodedKeySpec(this.publicKey));
 			} catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
-				e.printStackTrace();
-				return null;
+				throw new SCCException("Could not convert to PublicKey", e);
 			}
 		} else {
 			return null;
@@ -151,14 +151,14 @@ public class SCCKey extends AbstractSCCKey {
 	/**
 	 * Returns byte[] representation of private key to PrivateKey for further processing
 	 * @return PrivateKey
+	 * @throws SCCException 
 	 */
-	protected PrivateKey getPrivateKey() {
+	protected PrivateKey getPrivateKey() throws SCCException {
 		if (this.type == KeyType.Asymmetric) {
 			try {
 				return KeyFactory.getInstance(this.algorithm).generatePrivate(new PKCS8EncodedKeySpec(this.privateKey));
 			} catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
-				e.printStackTrace();
-				return null;
+				throw new SCCException("Could not convert to PrivateKey!", e);
 			}
 		} else {
 			return null;
@@ -183,8 +183,9 @@ public class SCCKey extends AbstractSCCKey {
 	 * @return SCCKey: key that can be used for the specified use case
 	 * @throws CoseException
 	 * @throws NoSuchAlgorithmException
+	 * @throws SCCException 
 	 */
-	public static SCCKey createKey(KeyUseCase useCase) throws CoseException, NoSuchAlgorithmException {
+	public static SCCKey createKey(KeyUseCase useCase) throws CoseException, NoSuchAlgorithmException, SCCException {
 		CryptoUseCase c;
 		switch (useCase) {
 		case Signing:
@@ -205,8 +206,9 @@ public class SCCKey extends AbstractSCCKey {
 	 * 
 	 * @return SCCKey
 	 * @throws CoseException
+	 * @throws SCCException 
 	 */
-	private static SCCKey createSymmetricKey() throws CoseException {
+	private static SCCKey createSymmetricKey() throws CoseException, SCCException {
 
 		String algo = null;
 		int keysize = 0;
@@ -218,7 +220,6 @@ public class SCCKey extends AbstractSCCKey {
 
 			String sccalgorithmID = algorithms.get(i);
 
-			// TODO mapping from sting to enum:
 
 			if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
 
@@ -245,8 +246,7 @@ public class SCCKey extends AbstractSCCKey {
 					SecretKey key = keyGen.generateKey();
 					return new SCCKey(KeyType.Symmetric, key.getEncoded(), algo);
 				} catch (NoSuchAlgorithmException e) {
-					e.printStackTrace();
-					return null;
+					throw new SCCException("Key could not be created! No algorithm specified!", e);
 				}
 			}
 
@@ -262,8 +262,10 @@ public class SCCKey extends AbstractSCCKey {
 	 * @param c
 	 * @return SCCKeyPair
 	 * @throws NoSuchAlgorithmException
+	 * @throws SCCException 
+	 * @throws CoseException 
 	 */
-	private static SCCKey createNewKeyPair(CryptoUseCase c) throws NoSuchAlgorithmException {
+	private static SCCKey createNewKeyPair(CryptoUseCase c) throws SCCException, CoseException {
 		ArrayList<String> algorithms = new ArrayList<String>();
 
 		algorithms = JSONReader.getAlgos(c, SecureCryptoConfig.sccPath);
@@ -286,7 +288,7 @@ public class SCCKey extends AbstractSCCKey {
 						return new SCCKey(KeyType.Asymmetric, oneKey.AsPublicKey().getEncoded(),
 								oneKey.AsPrivateKey().getEncoded(), "EC");
 					} catch (CoseException e) {
-						e.printStackTrace();
+						throw new SCCException("Key could not be created!", e);
 					}
 				default:
 					break;
@@ -294,7 +296,7 @@ public class SCCKey extends AbstractSCCKey {
 			}
 
 		}
-		throw new NoSuchAlgorithmException();
+		throw new CoseException("Key could not be created! No algorithm specified!");
 	}
 
 	/**
@@ -325,8 +327,9 @@ public class SCCKey extends AbstractSCCKey {
 	 * 
 	 * @param password: as byte[]
 	 * @return SCCKey
+	 * @throws SCCException 
 	 */
-	public static SCCKey createSymmetricKeyWithPassword(byte[] password) {
+	public static SCCKey createSymmetricKeyWithPassword(byte[] password) throws SCCException {
 		try {
 			return createSymmetricKeyWithPassword(new PlaintextContainer(password));
 
@@ -343,8 +346,9 @@ public class SCCKey extends AbstractSCCKey {
 	 * @param password: as PlaintextContainer
 	 * @return SCCKey
 	 * @throws CoseException
+	 * @throws SCCException 
 	 */
-	public static SCCKey createSymmetricKeyWithPassword(PlaintextContainer password) throws CoseException {
+	public static SCCKey createSymmetricKeyWithPassword(PlaintextContainer password) throws CoseException, SCCException {
 		String algo = null;
 		String keyAlgo = null;
 		int keysize = 0, iterations = 0, saltLength = 0;
@@ -356,8 +360,6 @@ public class SCCKey extends AbstractSCCKey {
 		for (int i = 0; i < algorithms.size(); i++) {
 
 			String sccalgorithmID = algorithms.get(i);
-
-			// TODO mapping from sting to enum:
 
 			if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
 
@@ -392,10 +394,11 @@ public class SCCKey extends AbstractSCCKey {
 					SecretKey secretKeyFromPBKDF2 = secretKeyFactory.generateSecret(passwordBasedEncryptionKeySpec);
 					SecretKey key = new SecretKeySpec(secretKeyFromPBKDF2.getEncoded(), keyAlgo.toString());
 					return new SCCKey(KeyType.Symmetric, key.getEncoded(), keyAlgo);
-				} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-					e.printStackTrace();
-					return null;
-
+				} catch (NoSuchAlgorithmException e)
+				{
+					throw new SCCException("Key could not be created! No algorithm specified!", e);
+				}catch(InvalidKeySpecException e) {
+					throw new SCCException("Key could not be created!", e);
 				}
 
 			}

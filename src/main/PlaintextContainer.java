@@ -39,78 +39,80 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	}
 
 	@Override
-	public boolean validateHash(AbstractSCCHash hash) {
+	public boolean validateHash(AbstractSCCHash hash) throws SCCException {
 		try {
 			return scc.validateHash(this, hash);
 		} catch (CoseException e) {
-			e.printStackTrace();
-			return false;
+			throw new SCCException("Hash validation could not be performed!", e);
 		}
 	}
 
 
 	@Override
-	public boolean validatePasswordHash(AbstractSCCPasswordHash passwordHash) {
+	public boolean validatePasswordHash(AbstractSCCPasswordHash passwordHash) throws SCCException {
 		try {
 			return scc.validatePasswordHash(this, passwordHash);
 		} catch (CoseException e) {
-			e.printStackTrace();
-			return false;
+			throw new SCCException("PasswordHash validation could not be performed!", e);
 		}
 	}
 
 
 	@Override
-	public SCCCiphertext encryptSymmetric(AbstractSCCKey key) {
+	public SCCCiphertext encryptSymmetric(AbstractSCCKey key) throws SCCException {
 		try {
 			return scc.encryptSymmetric(key, this);
-		} catch (CoseException | InvalidKeyException e) {
-			e.printStackTrace();
-			return null;
+		} catch (CoseException e) {
+			throw new SCCException("Symmetric encryption could not be performed!", e);
+		}catch(InvalidKeyException e)
+		{
+			throw new SCCException("Symmetric encryption is not possible! Not the right KeyType!", e);
 		}
 	}
 
 
 	@Override
-	public SCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair) {
+	public SCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair) throws SCCException {
 		try {
 			return scc.encryptAsymmetric(keyPair, this);
-		} catch (CoseException | InvalidKeyException e) {
-			e.printStackTrace();
-			return null;
+		} catch (CoseException e) {
+			throw new SCCException("Asymmetric encryption could not be performed!", e);
+		}catch(InvalidKeyException e)
+		{
+			throw new SCCException("Asymmetric encryption is not possible! Not the right KeyType!", e);
 		}
 	}
 
 
 	@Override
-	public SCCSignature sign(AbstractSCCKey keyPair) {
+	public SCCSignature sign(AbstractSCCKey keyPair) throws SCCException {
 		try {
 			return scc.sign(keyPair, this);
-		} catch (CoseException | InvalidKeyException e) {
-			e.printStackTrace();
-			return null;
+		} catch (CoseException e) {
+			throw new SCCException("Signing could not be performed!", e);
+		}catch(InvalidKeyException e)
+		{
+			throw new SCCException("Signing is not possible! Not the right KeyType!", e);
 		}
 	}
 
 
 	@Override
-	public SCCHash hash() {
+	public SCCHash hash() throws SCCException {
 		try {
 			return scc.hash(this);
 		} catch (CoseException e) {
-			e.printStackTrace();
-			return null;
+			throw new SCCException("Hashing could not be performed!", e);
 		}
 	}
 
 
 	@Override
-	public SCCPasswordHash passwordHash() {
+	public SCCPasswordHash passwordHash() throws SCCException {
 		try {
 			return scc.passwordHash(this);
 		} catch (CoseException e) {
-			e.printStackTrace();
-			return null;
+			throw new SCCException("Password Hashing could not be performed!", e);
 		}
 	}
 

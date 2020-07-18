@@ -212,7 +212,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	@Override
 	public SCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
-			throws CoseException, InvalidKeyException {
+			throws CoseException, InvalidKeyException, SCCException {
 		if (keyPair.getKeyType() == KeyType.Asymmetric) {
 			ArrayList<String> algorithms = new ArrayList<String>();
 			algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption, sccPath);
@@ -243,7 +243,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	@Override
 	public SCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair, byte[] plaintext)
-			throws CoseException, InvalidKeyException {
+			throws CoseException, InvalidKeyException, SCCException {
 
 		return encryptAsymmetric(keyPair, new PlaintextContainer(plaintext));
 
@@ -251,14 +251,14 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	@Override
 	public SCCCiphertext reEncryptAsymmetric(AbstractSCCKey keyPair, AbstractSCCCiphertext ciphertext)
-			throws CoseException, InvalidKeyException {
+			throws CoseException, InvalidKeyException, SCCException {
 		PlaintextContainer decrypted = decryptAsymmetric(keyPair, ciphertext);
 		return encryptAsymmetric(keyPair, decrypted);
 	}
 
 	@Override
 	public PlaintextContainer decryptAsymmetric(AbstractSCCKey keyPair, AbstractSCCCiphertext ciphertext)
-			throws CoseException, InvalidKeyException {
+			throws CoseException, InvalidKeyException, SCCException {
 		if (keyPair.getKeyType() == KeyType.Asymmetric) {
 			SCCKey pair = (SCCKey) keyPair;
 
@@ -336,7 +336,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCSignature sign(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext) throws CoseException, InvalidKeyException {
+	public SCCSignature sign(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext) throws CoseException, InvalidKeyException, SCCException {
 		if(keyPair.getKeyType() == KeyType.Asymmetric)
 		{
 		ArrayList<String> algorithms = new ArrayList<String>();
@@ -366,7 +366,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCSignature sign(AbstractSCCKey keyPair, byte[] plaintext) throws CoseException, InvalidKeyException {
+	public SCCSignature sign(AbstractSCCKey keyPair, byte[] plaintext) throws CoseException, InvalidKeyException, SCCException {
 		
 			return sign(keyPair, new PlaintextContainer(plaintext));
 		
@@ -374,17 +374,17 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	@Override
 	public SCCSignature updateSignature(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
-			throws CoseException, InvalidKeyException {
+			throws CoseException, InvalidKeyException, SCCException {
 		return sign(keyPair, plaintext);
 	}
 
 	@Override
-	public SCCSignature updateSignature(AbstractSCCKey keyPair, byte[] plaintext) throws CoseException, InvalidKeyException {
+	public SCCSignature updateSignature(AbstractSCCKey keyPair, byte[] plaintext) throws CoseException, InvalidKeyException, SCCException {
 		return updateSignature(keyPair, new PlaintextContainer(plaintext));
 	}
 
 	@Override
-	public boolean validateSignature(AbstractSCCKey keyPair, AbstractSCCSignature signature) throws InvalidKeyException {
+	public boolean validateSignature(AbstractSCCKey keyPair, AbstractSCCSignature signature) throws InvalidKeyException, SCCException {
 		if(keyPair.getKeyType() == KeyType.Asymmetric)
 		{
 		SCCKey pair = (SCCKey) keyPair;
@@ -401,8 +401,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			OneKey oneKey = new OneKey(pair.getPublicKey(), privateKey);
 			return msg.validate(oneKey);
 		} catch (CoseException e) {
-			e.printStackTrace();
-			return false;
+			throw new SCCException("Signature validation could not be performed!", e);
 		}
 
 	} else {
@@ -412,7 +411,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public boolean validateSignature(AbstractSCCKey keyPair, byte[] signature) throws InvalidKeyException {
+	public boolean validateSignature(AbstractSCCKey keyPair, byte[] signature) throws InvalidKeyException, SCCException {
 		return validateSignature(keyPair, new SCCSignature(signature));
 	}
 

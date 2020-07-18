@@ -26,17 +26,16 @@ public class SCCHash extends AbstractSCCHash{
 	}
 	
 	@Override
-	public boolean validateHash(PlaintextContainerInterface plaintext) {
+	public boolean validateHash(PlaintextContainerInterface plaintext) throws SCCException {
 		try {
 			return scc.validateHash(plaintext, this);
 		} catch (CoseException e) {
-			e.printStackTrace();
-			return false;
+			throw new SCCException("Hash validation could not be performed!", e);
 		}
 	}
 	
 	@Override
-	boolean validateHash(byte[] plaintext) {
+	boolean validateHash(byte[] plaintext) throws SCCException {
 		return validateHash(new PlaintextContainer(plaintext));
 	}
 
@@ -47,17 +46,16 @@ public class SCCHash extends AbstractSCCHash{
 
 	
 	@Override
-	public SCCHash updateHash(PlaintextContainerInterface plaintext) {
+	public SCCHash updateHash(PlaintextContainerInterface plaintext) throws SCCException {
 		try {
 			return scc.hash(plaintext);
 		} catch (CoseException e) {
-			e.printStackTrace();
-			return null;
+			throw new SCCException("Hash updating could not be performed!", e);
 		}
 	}
 
 	@Override
-	AbstractSCCHash updateHash(byte[] plaintext) {
+	AbstractSCCHash updateHash(byte[] plaintext) throws SCCException {
 		return updateHash(new PlaintextContainer(plaintext));
 	}
 	

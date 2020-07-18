@@ -11,12 +11,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import COSE.CoseException;
 import main.SCCCiphertext;
+import main.SCCException;
 import main.SCCKey;
 import main.SecureCryptoConfig;
 
 public class Server extends Thread {
 	final static String masterPassword = "Confidential";
-	final static SCCKey masterKey = SCCKey.createSymmetricKeyWithPassword(masterPassword.getBytes());
+	static SCCKey masterKey = null;
 	List<SCCKey> clients = Collections.synchronizedList(new ArrayList<SCCKey>());
 
 	public synchronized int registerClient(SCCKey key) {
@@ -38,7 +39,7 @@ public class Server extends Thread {
 			if (resultValidation == true) {
 				encryptOrder(order);
 			}
-		} catch (InvalidKeyException e) {
+		} catch (InvalidKeyException | SCCException e) {
 			e.printStackTrace();
 			return false;
 		}
@@ -48,6 +49,12 @@ public class Server extends Thread {
 	}
 
 	private void encryptOrder(byte[] order) throws CoseException {
+		try {
+			masterKey = SCCKey.createSymmetricKeyWithPassword(masterPassword.getBytes());
+		} catch (SCCException e1) {
+			e1.printStackTrace();
+		}
+		
 		SecureCryptoConfig scc = new SecureCryptoConfig();
 		try {
 			SCCCiphertext cipher = scc.encryptSymmetric(masterKey, order);

@@ -36,43 +36,50 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	
 
 	@Override
-	public PlaintextContainer decryptSymmetric(AbstractSCCKey key) {
+	public PlaintextContainer decryptSymmetric(AbstractSCCKey key) throws SCCException {
 		try {
 			return scc.decryptSymmetric(key, this);
-		} catch (CoseException | InvalidKeyException e) {
-			e.printStackTrace();
-			return null;
+		} catch (CoseException e) {
+			throw new SCCException("Symmetric decryption could not be performed!", e);
+		}catch(InvalidKeyException e)
+		{
+			throw new SCCException("Symmetric decryption is not possible! Not the right KeyType!", e);
 		}
 	}
 
 	@Override
-	public PlaintextContainer decryptAsymmetric(AbstractSCCKey pair) {
+	public PlaintextContainer decryptAsymmetric(AbstractSCCKey pair) throws SCCException {
 		try {
 			return scc.decryptAsymmetric(pair, this);
-		} catch (CoseException | InvalidKeyException e) {
-			e.printStackTrace();
-			return null;
+		} catch (CoseException e) {
+			throw new SCCException("Asymmetric decryption could not be performed!", e);
+		}catch(InvalidKeyException e)
+		{
+			throw new SCCException("Asymmetric decryption is not possible! Not the right KeyType!", e);
 		}
 	}
 
 	@Override
-	public SCCCiphertext reEncryptSymmetric(AbstractSCCKey key)  {
+	public SCCCiphertext reEncryptSymmetric(AbstractSCCKey key) throws SCCException  {
 		try {
 		return scc.reEncryptSymmetric(key, this);
-		}catch(CoseException | InvalidKeyException e)
+		} catch (CoseException e) {
+			throw new SCCException("Symmetric ReEncryption could not be performed!", e);
+		}catch(InvalidKeyException e)
 		{
-			e.printStackTrace();
-			return null;
+			throw new SCCException("Symmetric ReEncryption is not possible! Not the right KeyType!", e);
 		}
 	}
 
 	@Override
-	public SCCCiphertext reEncryptAsymmetric(AbstractSCCKey keyPair) {
+	public SCCCiphertext reEncryptAsymmetric(AbstractSCCKey keyPair) throws SCCException {
 		try {
 			return scc.reEncryptAsymmetric(keyPair, this);
-		} catch (CoseException | InvalidKeyException e) {
-			e.printStackTrace();
-			return null;
+		} catch (CoseException e) {
+			throw new SCCException("Asymmetric ReEncryption could not be performed!", e);
+		}catch(InvalidKeyException e)
+		{
+			throw new SCCException("Asymmetric ReEncryption is not possible! Not the right KeyType!", e);
 		}
 	}
 	

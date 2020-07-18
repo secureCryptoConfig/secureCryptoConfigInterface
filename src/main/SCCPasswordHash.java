@@ -25,17 +25,16 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	}
 
 	@Override
-	public boolean validatePasswordHash(PlaintextContainerInterface password) {
+	public boolean validatePasswordHash(PlaintextContainerInterface password) throws SCCException {
 		try {
 			return scc.validatePasswordHash(password, this);
 		} catch (CoseException e) {
-			e.printStackTrace();
-			return false;
+			throw new SCCException("PasswordHash validation could not be performed!", e);
 		}
 	}
 	
 	@Override
-	boolean validatePasswordHash(byte[] password) {
+	boolean validatePasswordHash(byte[] password) throws SCCException {
 		return validatePasswordHash(new PlaintextContainer(password));
 	}
 

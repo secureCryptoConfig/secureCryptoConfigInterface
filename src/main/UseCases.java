@@ -119,9 +119,11 @@ public class UseCases {
 	 * @param id
 	 * @param keyPair
 	 * @return SCCCiphertext
+	 * @throws SCCException 
+	 * @throws IllegalStateException 
 	 */
 	protected static SCCCiphertext createAsymMessage(PlaintextContainerInterface plaintext, AlgorithmID id,
-			AbstractSCCKey keyPair) {
+			AbstractSCCKey keyPair) throws SCCException {
 		try {
 			SCCKey pair = (SCCKey) keyPair;
 			AsymMessage asymMsg = new AsymMessage();
@@ -132,8 +134,7 @@ public class UseCases {
 
 			return new SCCCiphertext(asymMsg.EncodeToBytes());
 		} catch (CoseException e) {
-			e.printStackTrace();
-			return null;
+			throw new SCCException("Asymmetric encryption could not be performed", e);
 		}
 	}
 
@@ -144,9 +145,10 @@ public class UseCases {
 	 * @param key
 	 * @param id
 	 * @return SCCSignature
+	 * @throws SCCException 
 	 */
 	protected static SCCSignature createSignMessage(PlaintextContainerInterface plaintext, AbstractSCCKey key,
-			AlgorithmID id) {
+			AlgorithmID id) throws SCCException {
 		Sign1Message m = new Sign1Message();
 		m.SetContent(plaintext.toBytes());
 		SCCKey pair = (SCCKey) key;
@@ -157,8 +159,7 @@ public class UseCases {
 			
 			return new SCCSignature(m.EncodeToBytes());
 		} catch (CoseException e) {
-			e.printStackTrace();
-			return null;
+			throw new SCCException("Signing could not be performed!", e);
 		}
 	}
 }

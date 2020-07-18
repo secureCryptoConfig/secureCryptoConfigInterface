@@ -36,22 +36,22 @@ public class SCCSignature extends AbstractSCCSignature {
 	}
 	
 	@Override
-	public SCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKey keyPair) {
+	public SCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKey keyPair) throws SCCException {
 		try {
 			return (SCCSignature) scc.updateSignature(keyPair, plaintext);
-		} catch (CoseException | InvalidKeyException e) {
-			e.printStackTrace();
-			return null;
+		} catch (CoseException e) {
+			throw new SCCException("Signature update could not be performed!", e);
+		}catch (InvalidKeyException e) {
+			throw new SCCException("Signature update could not be performed! Wrong KeyType!", e);
 		}
 	}
 	
 	@Override
-	public boolean validateSignature(AbstractSCCKey keyPair) {
+	public boolean validateSignature(AbstractSCCKey keyPair) throws SCCException {
 		try {
 			return scc.validateSignature(keyPair, this);
 		} catch (InvalidKeyException e) {
-			e.printStackTrace();
-			return false;
+			throw new SCCException("Signature validation could not be performed! Wrong KeyType!", e);
 		}
 	}
 	
