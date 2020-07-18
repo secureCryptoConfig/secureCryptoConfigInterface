@@ -7,6 +7,11 @@ import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidKeyException;
+import java.security.KeyFactory;
+import java.security.NoSuchAlgorithmException;
+import java.security.PublicKey;
+import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
@@ -16,14 +21,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import java.security.*;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 
 import main.SCCKey.KeyType;
-
 
 /**
  * Class for handling/parsing SCC file content
@@ -147,19 +150,16 @@ public class JSONReader {
 	 * @param path to root directory "config"
 	 */
 	private static void getFiles(String path) {
+		try {
+			Files.walk(Paths.get(path)).filter(Files::isRegularFile)
+					.filter(file -> file.getFileName().toString().endsWith(".json")).forEach(file -> {
+						allFilePaths.add(file.toString());
 
-		File folder = new File(path);
-		File[] listOfFiles = folder.listFiles();
-		for (int i = 0; i < listOfFiles.length; i++) {
-
-			if (listOfFiles[i].isFile() && listOfFiles[i].getName().contains(".json")) {
-				allFilePaths.add(path + "\\" + listOfFiles[i].getName());
-
-			} else if (listOfFiles[i].isDirectory()) {
-				getFiles(path + "\\" + listOfFiles[i].getName());
-			}
+					});
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-
 	}
 
 	/**
@@ -238,20 +238,18 @@ public class JSONReader {
 		return Collections.max(level);
 	}
 
-	private static boolean checkSignature(String algo, String signaturePath, String publicKeyPath)
-			throws IOException, NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException,
-			SignatureException {
-
+	private static boolean checkSignature(String algo, String signaturePath, String publicKeyPath) throws IOException,
+			NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException {
 
 		Path fileLocation = Paths.get(publicKeyPath);
 		byte[] publicKey = Files.readAllBytes(fileLocation);
 		PublicKey pub = KeyFactory.getInstance(algo.toString()).generatePublic(new X509EncodedKeySpec(publicKey));
-		
+
 		SCCKey sccKeyPair = new SCCKey(KeyType.Asymmetric, pub.getEncoded(), null, algo);
 
 		Path fileLocation1 = Paths.get(signaturePath);
 		byte[] sig = Files.readAllBytes(fileLocation1);
-		
+
 		SCCSignature signature = new SCCSignature(sig);
 		return signature.validateSignature(sccKeyPair);
 
