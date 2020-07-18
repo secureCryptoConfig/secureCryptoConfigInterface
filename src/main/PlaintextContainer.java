@@ -5,6 +5,8 @@ import COSE.CoseException;
 
 /**
  * Class representing the plaintext processed in cryptographic use cases.
+ * A PlaintextContainer contains the plaintext as byte[] representation.
+ * The class provides different methods to easiliy deal with the plaintext.
  * @author Lisa
  *
  */

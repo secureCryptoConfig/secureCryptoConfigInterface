@@ -4,7 +4,9 @@ import java.nio.charset.Charset;
 import COSE.CoseException;
 
 /**
- * Class represention the Ciphertext resulting from symetric/asymetric encryption.
+ * Class represention the ciphertext resulting from symmetric/asymmetric encryption.
+ * SCCCiphertext includes a byte[] representation of a COSE message. The byte[] contains the encrypted plaintext as well as all the parameters used during encryption. 
+ * In this way it is possible to decrypt the SCCCiphertext with the right choice of parameters easily.
  * @author Lisa
  *
  */

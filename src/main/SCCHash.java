@@ -6,7 +6,9 @@ import COSE.HashMessage;
 
 
 /**
- * Class representing the Hash resulting from executing hashing
+ * Class representing the Hash resulting from executing hashing.
+ * SCCHash includes the byte[] representation of a COSE message. 
+ * The byte[] contains the hashed plaintext as well as all the parameters used during hashing.
  * @author Lisa
  *
  */

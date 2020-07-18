@@ -10,9 +10,10 @@ abstract interface SecureCryptoConfigInterface {
 	
 	/**
 	 * Symmetric encryption with a certain key for a given plaintext.
+	 * 
 	 * @param key
 	 * @param plaintext
-	 * @return AbstractSCCCiphertext
+	 * @return SCCCiphertext 
 	 * @throws CoseException
 	 */
 	public AbstractSCCCiphertext encryptSymmetric(AbstractSCCKey key, PlaintextContainerInterface plaintext)
