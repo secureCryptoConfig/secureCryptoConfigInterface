@@ -587,8 +587,9 @@ abstract class AbstractSCCHash {
 	 * 
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return boolean
+	 * @throws CoseException
 	 */
-	abstract boolean validateHash(PlaintextContainerInterface plaintext);
+	abstract boolean validateHash(PlaintextContainerInterface plaintext) throws CoseException;
 
 	/**
 	 * Look if {@link SCCHash} for a specific plaintext is valid: plaintext will be
@@ -596,8 +597,9 @@ abstract class AbstractSCCHash {
 	 * 
 	 * @param plaintext: as byte[]
 	 * @return boolean
+	 * @throws CoseException
 	 */
-	abstract boolean validateHash(byte[] plaintext);
+	abstract boolean validateHash(byte[] plaintext) throws CoseException;
 
 	/**
 	 * {@link SCCHash} of a plaintext: the corresponding plaintext will be hashed
@@ -605,8 +607,9 @@ abstract class AbstractSCCHash {
 	 * 
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCHash}
+	 * @throws CoseException
 	 */
-	abstract AbstractSCCHash updateHash(PlaintextContainerInterface plaintext);
+	abstract AbstractSCCHash updateHash(PlaintextContainerInterface plaintext) throws CoseException;
 
 	/**
 	 * {@link SCCHash} of a plaintext: the corresponding plaintext will be hashed
@@ -614,8 +617,9 @@ abstract class AbstractSCCHash {
 	 * 
 	 * @param plaintext: as byte[]
 	 * @return {@link SCCHash}
+	 * @throws CoseException
 	 */
-	abstract AbstractSCCHash updateHash(byte[] plaintext);
+	abstract AbstractSCCHash updateHash(byte[] plaintext) throws CoseException;
 
 }
 
