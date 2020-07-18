@@ -136,12 +136,13 @@ public class JSONReader {
 	protected static String getBasePath() {
 		String basePath = "";
 		try {
-			basePath = new File(JSONReader.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath()
-					.replace("\\target\\classes", "");
+			basePath = Paths.get(JSONReader.class.getClassLoader().getResource("scc-configs/").toURI()).toString();
 		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		return basePath = basePath + "\\src\\scc-configs\\";
+		// TODO add fallback if no scc-configs/ folder is present or throw the exception?
+		return basePath;
 	}
 
 	/**
