@@ -292,7 +292,6 @@ abstract interface PlaintextContainerInterface {
 	 * Alternatively it is also possible to create a key derived from a password with {@link SCCKey#createSymmetricKeyWithPassword(byte[])}
 	 * @param key: {@link SCCKey} 
 	 * @return {@link SCCCiphertext}
-	 * @throws CoseException
 	 */
 	abstract AbstractSCCCiphertext encryptSymmetric(AbstractSCCKey key);
 
@@ -301,7 +300,6 @@ abstract interface PlaintextContainerInterface {
 	 * A new SCCKey can be created with {@link SCCKey#createKey(main.SCCKey.KeyUseCase)} with {@link SCCKey.KeyUseCase#AsymmetricEncryption}
 	 * @param pair: {@link SCCKey}
 	 * @return {@link SCCCiphertext}
-	 * @throws CoseException
 	 */
 	abstract AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey pair);
 
@@ -310,21 +308,18 @@ abstract interface PlaintextContainerInterface {
 	 * A new SCCKey can be created with {@link SCCKey#createKey(main.SCCKey.KeyUseCase)} with {@link SCCKey.KeyUseCase#Signing}
 	 * @param keyPair: {@link SCCKey}
 	 * @return {@link SCCSignature}
-	 * @throws CoseException
 	 */
 	abstract AbstractSCCSignature sign(AbstractSCCKey keyPair);
 
 	/**
 	 * Hashing of value from {@link PlaintextContainer}
 	 * @return {@link SCCHash}
-	 * @throws CoseException
 	 */
 	abstract AbstractSCCHash hash();
 
 	/**
 	 * Value of {@link PlaintextContainer} will be hashed.
 	 * @return {@link SCCPasswordHash}
-	 * @throws CoseException
 	 */
 	abstract AbstractSCCPasswordHash passwordHash();
 
@@ -355,7 +350,6 @@ abstract class AbstractSCCCiphertext {
 	 * Symmetric decryption with a certain {@link SCCKey} of {@link SCCCiphertext}.
 	 * @param key: {@link SCCKey}
 	 * @return {@link PlaintextContainer}
-	 * @throws CoseException
 	 */
 	abstract PlaintextContainerInterface decryptSymmetric(AbstractSCCKey key);
 
@@ -363,7 +357,6 @@ abstract class AbstractSCCCiphertext {
 	 *  Asymmetric decryption with a certain {@link SCCKey} of {@link SCCCiphertext}.
 	 * @param keyPair: {@link SCCKey} 
 	 * @return {@link PlaintextContainer}
-	 * @throws CoseException
 	 */
 	abstract PlaintextContainerInterface decryptAsymmetric(AbstractSCCKey keyPair);
 
@@ -372,7 +365,6 @@ abstract class AbstractSCCCiphertext {
 	 * encrypted again with the current used Secure Crypto Config file.
 	 * @param key: {@link SCCKey} 
 	 * @return {@link SCCCiphertext}
-	 * @throws CoseException
 	 */
 	abstract AbstractSCCCiphertext reEncryptSymmetric(AbstractSCCKey key);
 
@@ -381,7 +373,6 @@ abstract class AbstractSCCCiphertext {
 	 * encrypted with the current Secure Crypto Config again.
 	 * @param keyPair: {@link SCCKey}
 	 * @return {@link SCCCiphertext}
-	 * @throws CoseException
 	 */
 	abstract AbstractSCCCiphertext reEncryptAsymmetric(AbstractSCCKey keyPair);
 
@@ -462,7 +453,6 @@ abstract class AbstractSCCHash {
 	 * compared if resulting hash is identical to the given one.
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return boolean
-	 * @throws CoseException
 	 */
 	abstract boolean validateHash(PlaintextContainerInterface plaintext);
 	
@@ -471,7 +461,6 @@ abstract class AbstractSCCHash {
 	 * compared if resulting hash is identical to the given one.
 	 * @param plaintext: as byte[]
 	 * @return boolean
-	 * @throws CoseException
 	 */
 	abstract boolean validateHash(byte[] plaintext);
 
@@ -480,7 +469,6 @@ abstract class AbstractSCCHash {
 	 * with the current Secure Crypto Config.
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCHash}
-	 * @throws CoseException
 	 */
 	abstract AbstractSCCHash updateHash(PlaintextContainerInterface plaintext);
 	
@@ -489,7 +477,6 @@ abstract class AbstractSCCHash {
 	 * with the current Secure Crypto Config.
 	 * @param plaintext: as byte[]
 	 * @return {@link SCCHash}
-	 * @throws CoseException
 	 */
 	abstract AbstractSCCHash updateHash(byte[] plaintext);
 	
@@ -523,7 +510,6 @@ abstract class AbstractSCCPasswordHash {
 	 * compared if resulting hash is identical to the given one.
 	 * @param password: as {@link PlaintextContainer}
 	 * @return boolean
-	 * @throws CoseException
 	 */
 	abstract boolean validatePasswordHash(PlaintextContainerInterface password);
 	
@@ -532,7 +518,6 @@ abstract class AbstractSCCPasswordHash {
 	 * compared if resulting hash is identical to the given one.
 	 * @param password: as byte[]
 	 * @return boolean
-	 * @throws CoseException
 	 */
 	abstract boolean validatePasswordHash(byte[] password);
 
@@ -571,7 +556,6 @@ abstract class AbstractSCCSignature {
 	 * @param keyPair: {@link SCCKey}
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCSignature}
-	 * @throws CoseException
 	 */
 	abstract AbstractSCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKey keyPair);
 
