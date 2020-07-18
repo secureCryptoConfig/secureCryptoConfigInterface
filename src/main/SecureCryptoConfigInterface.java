@@ -351,8 +351,9 @@ abstract interface PlaintextContainerInterface {
 	 * 
 	 * @param hash: {@link SCCHash}
 	 * @return boolean
+	 * @throws CoseException
 	 */
-	abstract boolean validateHash(AbstractSCCHash hash);
+	abstract boolean validateHash(AbstractSCCHash hash) throws CoseException;
 
 	/**
 	 * Look if a given {@link SCCPasswordHash} for a {@link PlaintextContainer}
@@ -361,8 +362,9 @@ abstract interface PlaintextContainerInterface {
 	 * 
 	 * @param passwordhash: {@link SCCPasswordHash}
 	 * @return boolean
+	 * @throws CoseException
 	 */
-	abstract boolean validatePasswordHash(AbstractSCCPasswordHash passwordHash);
+	abstract boolean validatePasswordHash(AbstractSCCPasswordHash passwordHash) throws CoseException;
 
 	/**
 	 * Symmetric encryption with a certain {@link SCCKey} for
@@ -374,8 +376,10 @@ abstract interface PlaintextContainerInterface {
 	 * 
 	 * @param key: {@link SCCKey}
 	 * @return {@link SCCCiphertext}
+	 * @throws CoseException
+	 * @throws InvalidKeyException
 	 */
-	abstract AbstractSCCCiphertext encryptSymmetric(AbstractSCCKey key);
+	abstract AbstractSCCCiphertext encryptSymmetric(AbstractSCCKey key) throws InvalidKeyException, CoseException;
 
 	/**
 	 * Asymmetric encryption with a certain {@link SCCKey} for
@@ -385,8 +389,10 @@ abstract interface PlaintextContainerInterface {
 	 * 
 	 * @param pair: {@link SCCKey}
 	 * @return {@link SCCCiphertext}
+	 * @throws CoseException
+	 * @throws InvalidKeyException
 	 */
-	abstract AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey pair);
+	abstract AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey pair) throws InvalidKeyException, CoseException;
 
 	/**
 	 * Signing of a {@link PlaintextContainer} value with a specific {@link SCCKey}.
@@ -396,22 +402,26 @@ abstract interface PlaintextContainerInterface {
 	 * 
 	 * @param keyPair: {@link SCCKey}
 	 * @return {@link SCCSignature}
+	 * @throws CoseException
+	 * @throws InvalidKeyException
 	 */
-	abstract AbstractSCCSignature sign(AbstractSCCKey keyPair);
+	abstract AbstractSCCSignature sign(AbstractSCCKey keyPair) throws InvalidKeyException, CoseException;
 
 	/**
 	 * Hashing of value from {@link PlaintextContainer}
 	 * 
 	 * @return {@link SCCHash}
+	 * @throws CoseException
 	 */
-	abstract AbstractSCCHash hash();
+	abstract AbstractSCCHash hash() throws CoseException;
 
 	/**
 	 * Value of {@link PlaintextContainer} will be hashed.
 	 * 
 	 * @return {@link SCCPasswordHash}
+	 * @throws CoseException
 	 */
-	abstract AbstractSCCPasswordHash passwordHash();
+	abstract AbstractSCCPasswordHash passwordHash() throws CoseException;
 
 }
 
