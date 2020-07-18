@@ -37,6 +37,9 @@ import main.SCCKey.KeyType;
  */
 public class JSONReader {
 
+	private static org.apache.logging.log4j.Logger logger = org.apache.logging.log4j.LogManager
+			.getLogger(JSONReader.class);
+
 	private static ArrayList<String> allFilePaths = new ArrayList<String>();
 	private static HashMap<String, Integer> levelsNames = new HashMap<String, Integer>();
 	protected static HashSet<Integer> levels = new HashSet<Integer>();
@@ -138,15 +141,15 @@ public class JSONReader {
 		String basePath = "";
 		try {
 			basePath = Paths.get(JSONReader.class.getClassLoader().getResource("scc-configs/").toURI()).toString();
+
 		} catch (URISyntaxException e) {
 			e.printStackTrace();
 		}
-		//fallback if no scc-configs/ folder is present
-		if (!new File(basePath).exists())
-		{
+		// fallback if no scc-configs/ folder is present
+		if (!new File(basePath).exists()) {
 			throw new InvalidPathException(basePath, "Path to SCC files does not exist!");
 		}
-		
+		logger.debug("Base Path is: {}", basePath);
 		return basePath;
 	}
 
