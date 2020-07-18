@@ -3,6 +3,7 @@ package main;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.InvalidPathException;
+import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.util.ArrayList;
@@ -19,10 +20,12 @@ import COSE.OneKey;
 import COSE.PasswordHashMessage;
 import COSE.Sign1Message;
 import main.JSONReader.CryptoUseCase;
+import main.SCCKey.KeyType;
 
 /**
- * Class with main functionality. Implements the {@link SecureCryptoConfigInterface}.
- * The implementation of all possible cryptographic uses cases supported by the Interface.
+ * Class with main functionality. Implements the
+ * {@link SecureCryptoConfigInterface}. The implementation of all possible
+ * cryptographic uses cases supported by the Interface.
  * 
  * 
  * @author Lisa
@@ -32,7 +35,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	protected static String sccPath = JSONReader.parseFiles(JSONReader.getBasePath());
 	protected static boolean customPath = false;
-	
+
 	/**
 	 * All supported algorithm names
 	 *
@@ -51,13 +54,16 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	/**
-	 * Set the latest Secure Crypto Config file of a specific Security level for usage.
+	 * Set the latest Secure Crypto Config file of a specific Security level for
+	 * usage.
 	 * 
-	 * Algorithms that are used for executing the invoked cryptographic use case are looked up in the
-	 * latest Secure Crypto Config file (according to its version) with the specified Security level
+	 * Algorithms that are used for executing the invoked cryptographic use case are
+	 * looked up in the latest Secure Crypto Config file (according to its version)
+	 * with the specified Security level
 	 * 
 	 * @param level: integer of desired security level of Secure Crypto Config file
-	 * @throws IllegalArgumentException: if there is no Secure Crypto Config File with specified level
+	 * @throws IllegalArgumentException: if there is no Secure Crypto Config File
+	 *                                   with specified level
 	 */
 	public static void setSecurityLevel(int level) {
 		if (JSONReader.levels.contains(level)) {
@@ -68,8 +74,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	/**
-	 * Return the name of the Secure Crypto Config file that is currently used to look up algorithms to use
-	 * for executing cryptographic use case
+	 * Return the name of the Secure Crypto Config file that is currently used to
+	 * look up algorithms to use for executing cryptographic use case
 	 * 
 	 * @return SCCFilePath: path to the used Secure Crypto Config file
 	 */
@@ -78,8 +84,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	/**
-	 * Set path to a custom root folder "scc-configs" which contains the Secure Crypto Config files.
-	 * The hierarcy inside the custom "scc-configs" folder can be varied.
+	 * Set path to a custom root folder "scc-configs" which contains the Secure
+	 * Crypto Config files. The hierarcy inside the custom "scc-configs" folder can
+	 * be varied.
+	 * 
 	 * @param path: path to "scc-config" directory. Path should end with \\
 	 * @throw InvalidPathException: if path to the directory does not exists
 	 */
@@ -110,9 +118,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	/**
-	 * Set default Secure Crypto Configuration using Secure Crypto Config files at "src/scc-configs"
-	 * Only necessary if a custom path with {@link #setPathToSCCDirectory(String)} or {@link #setSCCFile(String)}
-	 * was called before
+	 * Set default Secure Crypto Configuration using Secure Crypto Config files at
+	 * "src/scc-configs" Only necessary if a custom path with
+	 * {@link #setPathToSCCDirectory(String)} or {@link #setSCCFile(String)} was
+	 * called before
 	 */
 	public static void setDefaultSCC() {
 		customPath = false;
@@ -136,46 +145,49 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	@Override
 	public SCCCiphertext encryptSymmetric(AbstractSCCKey key, PlaintextContainerInterface plaintext)
-			throws CoseException {
+			throws CoseException, InvalidKeyException {
 
-		ArrayList<String> algorithms = new ArrayList<String>();
+		if (key.getKeyType() == KeyType.Symmetric) {
+			ArrayList<String> algorithms = new ArrayList<String>();
 
-		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, sccPath);
-		for (int i = 0; i < algorithms.size(); i++) {
+			algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, sccPath);
+			for (int i = 0; i < algorithms.size(); i++) {
 
-			String sccalgorithmID = algorithms.get(i);
+				String sccalgorithmID = algorithms.get(i);
 
-			if (getEnums().contains(sccalgorithmID)) {
+				if (getEnums().contains(sccalgorithmID)) {
 
-				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+					AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
 
-				switch (chosenAlgorithmID) {
-				case AES_GCM_256_96:
-					return UseCases.createMessage(plaintext, key, AlgorithmID.AES_GCM_256);
-				case AES_GCM_128_96:
-					return UseCases.createMessage(plaintext, key, AlgorithmID.AES_GCM_128);
-				default:
-					break;
+					switch (chosenAlgorithmID) {
+					case AES_GCM_256_96:
+						return UseCases.createMessage(plaintext, key, AlgorithmID.AES_GCM_256);
+					case AES_GCM_128_96:
+						return UseCases.createMessage(plaintext, key, AlgorithmID.AES_GCM_128);
+					default:
+						break;
 
+					}
 				}
-			}
 
+			}
+		} else {
+			throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
+					+ "Create a key with KeyType.Symmetric");
 		}
 		throw new CoseException("No supported algorithms!");
 	}
 
 	@Override
-	public SCCCiphertext encryptSymmetric(AbstractSCCKey key, byte[] plaintext) throws CoseException {
-		try {
-			return encryptSymmetric(key, new PlaintextContainer(plaintext));
-		} catch (CoseException e) {
-			e.printStackTrace();
-			return null;
-		}
+	public SCCCiphertext encryptSymmetric(AbstractSCCKey key, byte[] plaintext)
+			throws CoseException, InvalidKeyException {
+
+		return encryptSymmetric(key, new PlaintextContainer(plaintext));
 	}
 
 	@Override
-	public SCCCiphertext reEncryptSymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext) throws CoseException {
+	public SCCCiphertext reEncryptSymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext)
+			throws CoseException, InvalidKeyException {
 
 		PlaintextContainer decrypted = decryptSymmetric(key, ciphertext);
 		return encryptSymmetric(key, decrypted);
@@ -183,72 +195,79 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	@Override
 	public PlaintextContainer decryptSymmetric(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext)
-			throws CoseException {
-		try {
-			Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(sccciphertext.msg);
-			return new PlaintextContainer(msg.decrypt(key.toBytes()));
-		} catch (CoseException e) {
-			e.printStackTrace();
-			throw new CoseException("No supported algorithm!");
+			throws CoseException, InvalidKeyException {
+		if (key.getKeyType() == KeyType.Symmetric) {
+			try {
+				Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(sccciphertext.msg);
+				return new PlaintextContainer(msg.decrypt(key.toBytes()));
+			} catch (CoseException e) {
+				e.printStackTrace();
+				throw new CoseException("No supported algorithm!");
+			}
+		} else {
+			throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
+					+ "Create a key with KeyType.Symmetric");
 		}
 	}
 
 	@Override
 	public SCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
-			throws CoseException {
+			throws CoseException, InvalidKeyException {
+		if (keyPair.getKeyType() == KeyType.Asymmetric) {
+			ArrayList<String> algorithms = new ArrayList<String>();
+			algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption, sccPath);
 
-		ArrayList<String> algorithms = new ArrayList<String>();
-		algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption, sccPath);
+			for (int i = 0; i < algorithms.size(); i++) {
 
-		for (int i = 0; i < algorithms.size(); i++) {
+				String sccalgorithmID = algorithms.get(i);
 
-			String sccalgorithmID = algorithms.get(i);
+				if (getEnums().contains(sccalgorithmID)) {
 
-			if (getEnums().contains(sccalgorithmID)) {
+					AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
 
-				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
-
-				switch (chosenAlgorithmID) {
-				case RSA_SHA_512:
-					return UseCases.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_512, keyPair);
-				default:
-					break;
+					switch (chosenAlgorithmID) {
+					case RSA_SHA_512:
+						return UseCases.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_512, keyPair);
+					default:
+						break;
+					}
 				}
-			}
 
+			}
+		} else {
+			throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
+					+ "Create a key with KeyType.Asymmetric");
 		}
 		throw new CoseException("No supported algorithm!");
 	}
 
 	@Override
-	public SCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair, byte[] plaintext) throws CoseException {
-		try {
-			return encryptAsymmetric(keyPair, new PlaintextContainer(plaintext));
-		} catch (CoseException e) {
-			e.printStackTrace();
-			return null;
-		}
+	public SCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair, byte[] plaintext)
+			throws CoseException, InvalidKeyException {
+
+		return encryptAsymmetric(keyPair, new PlaintextContainer(plaintext));
+
 	}
 
 	@Override
 	public SCCCiphertext reEncryptAsymmetric(AbstractSCCKey keyPair, AbstractSCCCiphertext ciphertext)
-			throws CoseException {
+			throws CoseException, InvalidKeyException {
 		PlaintextContainer decrypted = decryptAsymmetric(keyPair, ciphertext);
 		return encryptAsymmetric(keyPair, decrypted);
 	}
 
 	@Override
 	public PlaintextContainer decryptAsymmetric(AbstractSCCKey keyPair, AbstractSCCCiphertext ciphertext)
-			throws CoseException {
-		SCCKey pair = (SCCKey) keyPair;
-		try {
+			throws CoseException, InvalidKeyException {
+		if (keyPair.getKeyType() == KeyType.Asymmetric) {
+			SCCKey pair = (SCCKey) keyPair;
+
 			AsymMessage msg = (AsymMessage) AsymMessage.DecodeFromBytes(ciphertext.msg);
 			return new PlaintextContainer(msg.decrypt(new KeyPair(pair.getPublicKey(), pair.getPrivateKey())));
-		} catch (CoseException e) {
-			e.printStackTrace();
-
+		} else {
+			throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
+					+ "Create a key with KeyType.Asymmetric");
 		}
-		throw new CoseException("No supported algorithm!");
 
 	}
 
@@ -317,8 +336,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCSignature sign(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext) throws CoseException {
-		
+	public SCCSignature sign(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext) throws CoseException, InvalidKeyException {
+		if(keyPair.getKeyType() == KeyType.Asymmetric)
+		{
 		ArrayList<String> algorithms = new ArrayList<String>();
 		algorithms = JSONReader.getAlgos(CryptoUseCase.Signing, sccPath);
 
@@ -338,32 +358,35 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			}
 
 		}
+		}else {
+			throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
+					+ "Create a key with KeyType.Asymmetric");
+		}
 		throw new CoseException("No supported algorithm!");
 	}
 
 	@Override
-	public SCCSignature sign(AbstractSCCKey keyPair, byte[] plaintext) throws CoseException {
-		try {
+	public SCCSignature sign(AbstractSCCKey keyPair, byte[] plaintext) throws CoseException, InvalidKeyException {
+		
 			return sign(keyPair, new PlaintextContainer(plaintext));
-		} catch (CoseException e) {
-			e.printStackTrace();
-			return null;
-		}
+		
 	}
 
 	@Override
 	public SCCSignature updateSignature(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
-			throws CoseException {
+			throws CoseException, InvalidKeyException {
 		return sign(keyPair, plaintext);
 	}
 
 	@Override
-	public SCCSignature updateSignature(AbstractSCCKey keyPair, byte[] plaintext) throws CoseException {
+	public SCCSignature updateSignature(AbstractSCCKey keyPair, byte[] plaintext) throws CoseException, InvalidKeyException {
 		return updateSignature(keyPair, new PlaintextContainer(plaintext));
 	}
 
 	@Override
-	public boolean validateSignature(AbstractSCCKey keyPair, AbstractSCCSignature signature) {
+	public boolean validateSignature(AbstractSCCKey keyPair, AbstractSCCSignature signature) throws InvalidKeyException {
+		if(keyPair.getKeyType() == KeyType.Asymmetric)
+		{
 		SCCKey pair = (SCCKey) keyPair;
 		PrivateKey privateKey = null;
 		try {
@@ -371,8 +394,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			Sign1Message msg = s.convertByteToMsg();
 			try {
 				privateKey = pair.getPrivateKey();
-			}catch(NullPointerException e)
-			{
+			} catch (NullPointerException e) {
 				OneKey oneKey = new OneKey(pair.getPublicKey(), null);
 				return msg.validate(oneKey);
 			}
@@ -383,10 +405,14 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			return false;
 		}
 
+	} else {
+		throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
+				+ "Create a key with KeyType.Asymmetric");
 	}
-	
+	}
+
 	@Override
-	public boolean validateSignature(AbstractSCCKey keyPair, byte[] signature) {
+	public boolean validateSignature(AbstractSCCKey keyPair, byte[] signature) throws InvalidKeyException {
 		return validateSignature(keyPair, new SCCSignature(signature));
 	}
 
@@ -450,7 +476,5 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	public boolean validatePasswordHash(byte[] password, AbstractSCCPasswordHash passwordhash) throws CoseException {
 		return validatePasswordHash(new PlaintextContainer(password), passwordhash);
 	}
-
-
 
 }

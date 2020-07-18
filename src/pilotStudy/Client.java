@@ -1,5 +1,6 @@
 package pilotStudy;
 
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 
@@ -60,7 +61,13 @@ public class Client implements Runnable {
 	private static byte[] sign(String order, SCCKey pair) throws CoseException {
 		SecureCryptoConfig scc = new SecureCryptoConfig();
 		
-		SCCSignature sig = scc.sign(pair, order.getBytes());
+		SCCSignature sig;
+		try {
+			sig = scc.sign(pair, order.getBytes());
+		} catch (InvalidKeyException e) {
+			e.printStackTrace();
+			return null;
+		}
 		return sig.toBytes();
 	}
 

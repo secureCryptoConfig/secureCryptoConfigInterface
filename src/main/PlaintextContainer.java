@@ -1,6 +1,8 @@
 package main;
 
 import java.nio.charset.Charset;
+import java.security.InvalidKeyException;
+
 import COSE.CoseException;
 
 /**
@@ -62,7 +64,7 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	public SCCCiphertext encryptSymmetric(AbstractSCCKey key) {
 		try {
 			return scc.encryptSymmetric(key, this);
-		} catch (CoseException e) {
+		} catch (CoseException | InvalidKeyException e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -73,7 +75,7 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	public SCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair) {
 		try {
 			return scc.encryptAsymmetric(keyPair, this);
-		} catch (CoseException e) {
+		} catch (CoseException | InvalidKeyException e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -84,7 +86,7 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	public SCCSignature sign(AbstractSCCKey keyPair) {
 		try {
 			return scc.sign(keyPair, this);
-		} catch (CoseException e) {
+		} catch (CoseException | InvalidKeyException e) {
 			e.printStackTrace();
 			return null;
 		}

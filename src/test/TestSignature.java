@@ -3,6 +3,7 @@ package test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 import org.junit.jupiter.api.Test;
@@ -33,7 +34,7 @@ class TestSignature {
 	//- byte[] plain sign, return: byte[] signature + new key
 	// - byte[] plain sign + validate, return: boolean
 	@Test
-	void testSigningByteValidation() throws CoseException, NoSuchAlgorithmException {
+	void testSigningByteValidation() throws CoseException, NoSuchAlgorithmException, InvalidKeyException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCKey pair = SCCKey.createKey(KeyUseCase.Signing);
 		
@@ -48,7 +49,7 @@ class TestSignature {
 	// - String plain sign, return: String signature + new key
 	// - String plain sign + validate, return: boolean
 	@Test
-	void testSigningStringValidation() throws CoseException, NoSuchAlgorithmException {
+	void testSigningStringValidation() throws CoseException, NoSuchAlgorithmException, InvalidKeyException {
 		String plaintext = "Hello World!";
 		SCCKey pair = SCCKey.createKey(KeyUseCase.Signing);
 		
@@ -62,7 +63,7 @@ class TestSignature {
 
 	// - signature + key, return: updated byte[] signature
 	@Test
-	void testUpdateSigningByte() throws CoseException, NoSuchAlgorithmException {
+	void testUpdateSigningByte() throws CoseException, NoSuchAlgorithmException, InvalidKeyException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCKey pair = SCCKey.createKey(KeyUseCase.Signing);
 		
@@ -77,7 +78,7 @@ class TestSignature {
 
 	// - signature + key, return: updated String signature
 	@Test
-	void testUpdateSigningString() throws CoseException, NoSuchAlgorithmException {
+	void testUpdateSigningString() throws CoseException, NoSuchAlgorithmException, InvalidKeyException {
 		String plaintext = "Hello World!";
 		SCCKey pair = SCCKey.createKey(KeyUseCase.Signing);
 		

@@ -1,6 +1,7 @@
 package main;
 
 import java.nio.charset.Charset;
+import java.security.InvalidKeyException;
 
 import COSE.CoseException;
 import COSE.Sign1Message;
@@ -38,7 +39,7 @@ public class SCCSignature extends AbstractSCCSignature {
 	public SCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKey keyPair) {
 		try {
 			return (SCCSignature) scc.updateSignature(keyPair, plaintext);
-		} catch (CoseException e) {
+		} catch (CoseException | InvalidKeyException e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -46,7 +47,12 @@ public class SCCSignature extends AbstractSCCSignature {
 	
 	@Override
 	public boolean validateSignature(AbstractSCCKey keyPair) {
-		return scc.validateSignature(keyPair, this);
+		try {
+			return scc.validateSignature(keyPair, this);
+		} catch (InvalidKeyException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
 	
 	

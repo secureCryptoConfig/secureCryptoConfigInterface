@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
@@ -45,7 +46,7 @@ class TestAsymmetricEncryption {
 	// - byte[] encrypt, return: encrypted byte[] + new key
 	// - encrypted byte[] decrypt + key, return: decrypted byte[]
 	@Test
-	void testAymmetricByteDecryptWithKey() throws CoseException, NoSuchAlgorithmException {
+	void testAymmetricByteDecryptWithKey() throws CoseException, NoSuchAlgorithmException, InvalidKeyException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCKey pair = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
 		// Encryption
@@ -60,7 +61,7 @@ class TestAsymmetricEncryption {
 	// - String encrypt, return: encrypted String + new key
 	// - encrypted String decrypt + key, return: decrypted String
 	@Test
-	void testAsymmetricStringDecryptWithKey() throws CoseException, NoSuchAlgorithmException {
+	void testAsymmetricStringDecryptWithKey() throws CoseException, NoSuchAlgorithmException, InvalidKeyException {
 		String plaintext = "Hello World!";
 		SCCKey pair = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
 		// Encryption
@@ -75,7 +76,7 @@ class TestAsymmetricEncryption {
 
 	// - byte[] encrypt + key, return: encrypted byte[]
 	@Test
-	void testAsymmetricByteEncryptionWithExistingKey() throws NoSuchAlgorithmException, CoseException {
+	void testAsymmetricByteEncryptionWithExistingKey() throws NoSuchAlgorithmException, CoseException, InvalidKeyException {
 		// KeyPair already exists
 		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
 		keyPairGenerator.initialize(4096);
@@ -97,7 +98,7 @@ class TestAsymmetricEncryption {
 
 	// - String encrypt + key, return: encrypted String
 	@Test
-	void testAsymmetricStringEncryptionWithExistingKey() throws NoSuchAlgorithmException, CoseException {
+	void testAsymmetricStringEncryptionWithExistingKey() throws NoSuchAlgorithmException, CoseException, InvalidKeyException {
 		// KeyPair already exists
 		KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("RSA");
 		keyPairGenerator.initialize(4096);
@@ -118,7 +119,7 @@ class TestAsymmetricEncryption {
 
 	// - encrypted byte[] encrypt + key, return: encrypted byte[]
 	@Test
-	void testAsymmetricByteReEncyptionWithKey() throws CoseException, NoSuchAlgorithmException {
+	void testAsymmetricByteReEncyptionWithKey() throws CoseException, NoSuchAlgorithmException, InvalidKeyException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCKey pair = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
 		// Encryption
@@ -136,7 +137,7 @@ class TestAsymmetricEncryption {
 
 	// - encrypted String encrypt + key, return: encrypted String
 	@Test
-	void testAsymmetricStringReEncyptionWithKey() throws CoseException, NoSuchAlgorithmException {
+	void testAsymmetricStringReEncyptionWithKey() throws CoseException, NoSuchAlgorithmException, InvalidKeyException {
 		String plaintext = "Hello World!";
 		SCCKey pair = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
 		// Encryption

@@ -1,5 +1,6 @@
 package pilotStudy;
 
+import java.security.InvalidKeyException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -31,10 +32,15 @@ public class Server extends Thread {
 		SCCKey key = clients.get(clientID);
 		SecureCryptoConfig scc = new SecureCryptoConfig();
 
-		boolean resultValidation = scc.validateSignature(key, signature);
-		
-		if (resultValidation == true) {
-			encryptOrder(order);
+		boolean resultValidation;
+		try {
+			resultValidation = scc.validateSignature(key, signature);
+			if (resultValidation == true) {
+				encryptOrder(order);
+			}
+		} catch (InvalidKeyException e) {
+			e.printStackTrace();
+			return false;
 		}
 		
 		return resultValidation;
@@ -43,7 +49,11 @@ public class Server extends Thread {
 
 	private void encryptOrder(byte[] order) throws CoseException {
 		SecureCryptoConfig scc = new SecureCryptoConfig();
-		SCCCiphertext cipher = scc.encryptSymmetric(masterKey, order);
+		try {
+			SCCCiphertext cipher = scc.encryptSymmetric(masterKey, order);
+		} catch (InvalidKeyException e) {
+			e.printStackTrace();
+		}
 		
 		// TODO: store cipher as byte[] somewhere
 

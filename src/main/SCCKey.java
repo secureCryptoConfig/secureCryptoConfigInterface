@@ -64,6 +64,12 @@ public class SCCKey extends AbstractSCCKey {
 	public SCCKey(KeyType type, byte[] key, String algorithm) {
 		super(type, key, algorithm);
 	}
+	
+
+	@Override
+	public KeyType getKeyType() {
+		return this.type;
+	}
 
 	@Override
 	public String getAlgorithm() {
@@ -170,6 +176,8 @@ public class SCCKey extends AbstractSCCKey {
 	 * {@link SecureCryptoConfigInterface#encryptAsymmetric(AbstractSCCKey, PlaintextContainerInterface)}, {@link SecureCryptoConfigInterface#decryptAsymmetric(AbstractSCCKey, AbstractSCCCiphertext)}
 	 * - {@link KeyUseCase#Signing}: {@link SecureCryptoConfigInterface#sign(AbstractSCCKey, byte[])}, {@link SecureCryptoConfigInterface#sign(AbstractSCCKey, PlaintextContainerInterface)},
 	 * {@link SecureCryptoConfigInterface#validateSignature(AbstractSCCKey, AbstractSCCSignature)}, {@link SecureCryptoConfigInterface#updateSignature(AbstractSCCKey, byte[])}, {@link SecureCryptoConfigInterface#updateSignature(AbstractSCCKey, PlaintextContainerInterface)}
+	 * 
+	 * Depending on the {@link KeyUseCase} the SCCKey get a different {@link KeyType}
 	 * 
 	 * @param useCase: for which Scenario is the key needed? Give a value of {@link KeyUseCase} 
 	 * @return SCCKey: key that can be used for the specified use case
@@ -417,6 +425,5 @@ public class SCCKey extends AbstractSCCKey {
 		}
 
 	}
-
 
 }

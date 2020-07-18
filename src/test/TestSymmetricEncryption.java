@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import org.junit.jupiter.api.Test;
@@ -59,13 +60,12 @@ class TestSymmetricEncryption {
 
 	/**
 	 * Testing of symmetric Encryption/Decryption
-	 * @throws NoSuchAlgorithmException 
 	 */
 
 	// - byte[] encrypt, return: encrypted byte[] + new key
 	// - encrypted byte[] decrypt + key, return: decrypted byte[]
 	@Test
-	void testSymmetricByteDecryptWithKey() throws CoseException, NoSuchAlgorithmException {
+	void testSymmetricByteDecryptWithKey() throws CoseException, NoSuchAlgorithmException, InvalidKeyException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 		// Encryption
@@ -80,7 +80,7 @@ class TestSymmetricEncryption {
 	// - String encrypt, return: encrypted String + new key
 	// - encrypted String decrypt + key, return: decrypted String
 	@Test
-	void testSymmetricStringDecryptWithKey() throws CoseException, NoSuchAlgorithmException {
+	void testSymmetricStringDecryptWithKey() throws CoseException, NoSuchAlgorithmException, InvalidKeyException {
 		String plaintext = "Hello World!";
 		SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 		// Encryption
@@ -96,7 +96,7 @@ class TestSymmetricEncryption {
 	// - byte[] encrypt + password, return: encrypted byte[] + new key
 	// - encrypted byte[] decrypt + password, return: decrypted byte[]
 	@Test
-	void testSymmetricByteDecryptWithPassword() throws CoseException {
+	void testSymmetricByteDecryptWithPassword() throws CoseException, InvalidKeyException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		byte[] password = "Password!".getBytes(StandardCharsets.UTF_8);
 		SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
@@ -113,7 +113,7 @@ class TestSymmetricEncryption {
 	// - String encrypt + password, return: encrypted String + new key
 	// - encrypted String decrypt + password, return: decrypted String
 	@Test
-	void testSymmetricStringDecryptWithPassword() throws CoseException {
+	void testSymmetricStringDecryptWithPassword() throws CoseException, InvalidKeyException {
 		String plaintext = "Hello World!";
 		String password = "password";
 		SCCKey key = SCCKey.createSymmetricKeyWithPassword(password.getBytes(StandardCharsets.UTF_8));
@@ -130,7 +130,7 @@ class TestSymmetricEncryption {
 
 	// - byte[] encrypt + key, return: encrypted byte[]
 	@Test
-	void testSymmetricByteEncryptionWithExistingKey() throws NoSuchAlgorithmException, CoseException {
+	void testSymmetricByteEncryptionWithExistingKey() throws NoSuchAlgorithmException, CoseException, InvalidKeyException {
 		// Some bytes for a key
 		byte[] existingKeyBytes = new byte[32];
 		SecureRandom random = SecureRandom.getInstanceStrong();
@@ -150,7 +150,7 @@ class TestSymmetricEncryption {
 
 	// - String encrypt + key, return: encrypted String
 	@Test
-	void testSymmetricStringEncryptionWithExistingKey() throws NoSuchAlgorithmException, CoseException {
+	void testSymmetricStringEncryptionWithExistingKey() throws NoSuchAlgorithmException, CoseException, InvalidKeyException {
 		// Some bytes for a key
 		byte[] existingKeyBytes = new byte[32];
 		SecureRandom random = SecureRandom.getInstanceStrong();
@@ -169,7 +169,7 @@ class TestSymmetricEncryption {
 
 	// - encrypted byte[] encrypt + key, return: encrypted byte[]
 	@Test
-	void testSymmetricByteReEncyptionWithKey() throws CoseException, NoSuchAlgorithmException {
+	void testSymmetricByteReEncyptionWithKey() throws CoseException, NoSuchAlgorithmException, InvalidKeyException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 		// Encryption
@@ -186,7 +186,7 @@ class TestSymmetricEncryption {
 
 	// - encrypted String encrypt + key, return: encrypted String
 	@Test
-	void testSymmetricStringReEncyptionWithKey() throws CoseException, NoSuchAlgorithmException {
+	void testSymmetricStringReEncyptionWithKey() throws CoseException, NoSuchAlgorithmException, InvalidKeyException {
 		String plaintext = "Hello World!";
 
 		SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
@@ -204,7 +204,7 @@ class TestSymmetricEncryption {
 
 	// - encrypted byte[] encrypt + password, return: encrypted byte[]
 	@Test
-	void testSymmetricByteReEncyptionWitPassword() throws CoseException {
+	void testSymmetricByteReEncyptionWitPassword() throws CoseException, InvalidKeyException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		byte[] password = "password".getBytes(StandardCharsets.UTF_8);
 		SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
@@ -222,7 +222,7 @@ class TestSymmetricEncryption {
 
 	// - encrypted String encrypt + password, return: encrypted String
 	@Test
-	void testSymmetricStringReEncyptionWithPassword() throws CoseException {
+	void testSymmetricStringReEncyptionWithPassword() throws CoseException, InvalidKeyException {
 		String plaintext = "Hello World!";
 		String password = "password";
 		SCCKey key = SCCKey.createSymmetricKeyWithPassword(password.getBytes(StandardCharsets.UTF_8));

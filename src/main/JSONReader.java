@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidKeyException;
@@ -138,10 +139,14 @@ public class JSONReader {
 		try {
 			basePath = Paths.get(JSONReader.class.getClassLoader().getResource("scc-configs/").toURI()).toString();
 		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		// TODO add fallback if no scc-configs/ folder is present or throw the exception?
+		//fallback if no scc-configs/ folder is present
+		if (!new File(basePath).exists())
+		{
+			throw new InvalidPathException(basePath, "Path to SCC files does not exist!");
+		}
+		
 		return basePath;
 	}
 
@@ -320,4 +325,7 @@ public class JSONReader {
 		return getLatestSCC(getHighestLevel(levels));
 	}
 
+	public static void main(String[] args) {
+		System.out.println(getBasePath());
+	}
 }
