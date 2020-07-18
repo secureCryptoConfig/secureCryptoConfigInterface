@@ -6,7 +6,9 @@ import COSE.CoseException;
 import COSE.PasswordHashMessage;
 
 /**
- * Class representing the Hash resulting from executing PasswordHashing
+ * Class representing the Hash resulting from executing PasswordHashing.
+ * SCCPasswordHash includes the byte[] representation of a COSE message. 
+ * The byte[] contains the hashed plaintext as well as all the parameters used during hashing.
  * @author Lisa
  *
  */
@@ -31,6 +33,11 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 			return false;
 		}
 	}
+	
+	@Override
+	boolean validatePasswordHash(byte[] password) {
+		return validatePasswordHash(new PlaintextContainer(password));
+	}
 
 	@Override
 	public byte[] toBytes() {
@@ -54,5 +61,6 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 			return null;
 		}
 	}
+
 
 }

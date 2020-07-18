@@ -3,11 +3,10 @@ package main;
 import java.security.KeyPair;
 
 import COSE.*;
-import main.SCCKeyPair;
 
 /**
- * Class for doing auxiliary functionality for the SecureCryptoConfig class. 
- * Especially creation/encoding to/from Messages of COSE
+ * Class for doing auxiliary processing for {@link SecureCryptoConfig}.
+ * Especially creation/encoding to/from messages of COSE
  * @author Lisa
  *
  */

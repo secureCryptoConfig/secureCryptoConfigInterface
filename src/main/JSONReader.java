@@ -246,8 +246,8 @@ public class JSONReader {
 		Path fileLocation = Paths.get(publicKeyPath);
 		byte[] publicKey = Files.readAllBytes(fileLocation);
 		PublicKey pub = KeyFactory.getInstance(algo.toString()).generatePublic(new X509EncodedKeySpec(publicKey));
-		PrivateKey privateKey = null;
-		SCCKey sccKeyPair = new SCCKey(KeyType.Asymmetric, pub.getEncoded(), privateKey.getEncoded(), algo);
+		
+		SCCKey sccKeyPair = new SCCKey(KeyType.Asymmetric, pub.getEncoded(), null, algo);
 
 		Path fileLocation1 = Paths.get(signaturePath);
 		byte[] sig = Files.readAllBytes(fileLocation1);

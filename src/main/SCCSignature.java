@@ -7,6 +7,8 @@ import COSE.Sign1Message;
 
 /**
  * Class representing Signature resulting from signing.
+ * SCCSignature includes a byte[] representation of a COSE message. The byte[] contains the signature as well as all the parameters used during signing. 
+ * In this way it is possible to validate the SCCSignature with the right choice of parameters easily.
  * @author Lisa
  *
  */

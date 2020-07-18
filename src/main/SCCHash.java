@@ -34,6 +34,11 @@ public class SCCHash extends AbstractSCCHash{
 			return false;
 		}
 	}
+	
+	@Override
+	boolean validateHash(byte[] plaintext) {
+		return validateHash(new PlaintextContainer(plaintext));
+	}
 
 	@Override
 	public byte[] toBytes() {
@@ -52,6 +57,11 @@ public class SCCHash extends AbstractSCCHash{
 	}
 
 	@Override
+	AbstractSCCHash updateHash(byte[] plaintext) {
+		return updateHash(new PlaintextContainer(plaintext));
+	}
+	
+	@Override
 	public String toString(Charset c) {
 		return new String(this.hashMsg, c);
 	}
@@ -68,5 +78,4 @@ public class SCCHash extends AbstractSCCHash{
 			return null;
 		}
 	}
-
 }

@@ -21,7 +21,9 @@ import COSE.Sign1Message;
 import main.JSONReader.CryptoUseCase;
 
 /**
- * Class with main functionality. Implements the SecureCryptoConfigInterface.
+ * Class with main functionality. Implements the {@link SecureCryptoConfigInterface}.
+ * The implementation of all possible cryptographic uses cases supported by the Interface.
+ * 
  * 
  * @author Lisa
  *
@@ -30,11 +32,13 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	protected static String sccPath = JSONReader.parseFiles(JSONReader.getBasePath());
 	protected static boolean customPath = false;
-	protected static String useCase = "";
-	// All supported algorithm names
+	
+	/**
+	 * All supported algorithm names
+	 *
+	 */
 	protected static enum AlgorithmIDEnum {
 		// symmetric:
-		// Algo_Mode_key_IV
 		AES_GCM_256_96, AES_GCM_128_96,
 		// Digital Signature
 		ECDSA_512,
@@ -47,10 +51,13 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	/**
-	 * Set the latest SCC file of a specific Security level for usage
+	 * Set the latest Secure Crypto Config file of a specific Security level for usage.
 	 * 
-	 * @param level
-	 * @throws IllegalArgumentException
+	 * Algorithms that are used for executing the invoked cryptographic use case are looked up in the
+	 * latest Secure Crypto Config file (according to its version) with the specified Security level
+	 * 
+	 * @param level: integer of desired security level of Secure Crypto Config file
+	 * @throws IllegalArgumentException: if there is no Secure Crypto Config File with specified level
 	 */
 	public static void setSecurityLevel(int level) {
 		if (JSONReader.levels.contains(level)) {
@@ -61,20 +68,20 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	/**
-	 * Return the name of the SCC file that is currently used
+	 * Return the name of the Secure Crypto Config file that is currently used to look up algorithms to use
+	 * for executing cryptographic use case
 	 * 
-	 * @return SCCFilePath to the used SCC file
+	 * @return SCCFilePath: path to the used Secure Crypto Config file
 	 */
 	public static String getUsedSCC() {
 		return sccPath;
 	}
 
 	/**
-	 * Set path to a custom root folder "config" which contains the SCC files for
-	 * usage
-	 * 
-	 * @param path to "config" directory (ending with \\)
-	 * @throw InvalidPathException
+	 * Set path to a custom root folder "scc-configs" which contains the Secure Crypto Config files.
+	 * The hierarcy inside the custom "scc-configs" folder can be varied.
+	 * @param path: path to "scc-config" directory. Path should end with \\
+	 * @throw InvalidPathException: if path to the directory does not exists
 	 */
 	public static void setPathToSCCDirectory(String path) {
 		File file = new File(path);
@@ -87,9 +94,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	/**
-	 * Set SCC file to use
+	 * Set Secure Crypto Config file to use
 	 * 
-	 * @param SCCFilePath to the SCC file to use
+	 * @param SCCFilePath: path to the Secure Crypto Config file to use
+	 * @throws InvalidPathException: if path to the directory does not exists
 	 */
 	public static void setSCCFile(String filePath) {
 		File file = new File(filePath);
@@ -102,8 +110,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	/**
-	 * Set default SCC configuration using SCC files at src/configs
-	 * 
+	 * Set default Secure Crypto Configuration using Secure Crypto Config files at "src/scc-configs"
+	 * Only necessary if a custom path with {@link #setPathToSCCDirectory(String)} or {@link #setSCCFile(String)}
+	 * was called before
 	 */
 	public static void setDefaultSCC() {
 		customPath = false;
