@@ -2,16 +2,13 @@ package main;
 
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 
 import COSE.CoseException;
 
 /**
- * Class representing the plaintext processed in cryptographic use cases. A
- * PlaintextContainer contains the plaintext as byte[] representation. The class
- * provides different methods to easiliy deal with the plaintext.
- * 
+ * Class representing the plaintext processed in cryptographic use cases.
+ * A PlaintextContainer contains the plaintext as byte[] representation.
+ * The class provides different methods to easiliy deal with the plaintext.
  * @author Lisa
  *
  */
@@ -19,21 +16,22 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 
 	private byte[] plaintext;
 	private SecureCryptoConfig scc = new SecureCryptoConfig();
-
+	
 	/**
 	 * Constructor that gets byte[] representation of plaintext
-	 * 
 	 * @param plaintext
 	 */
 	public PlaintextContainer(byte[] plaintext) {
 		this.plaintext = plaintext;
 	}
+	
 
 	@Override
 	public byte[] toBytes() {
 		return plaintext;
 	}
 
+	
 	@Override
 	public String toString(Charset c) {
 		return new String(this.plaintext, c);
@@ -41,46 +39,80 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	}
 
 	@Override
-	public boolean validateHash(AbstractSCCHash hash) throws CoseException {
-		return scc.validateHash(this, hash);
-
+	public boolean validateHash(AbstractSCCHash hash) {
+		try {
+			return scc.validateHash(this, hash);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
+
 
 	@Override
-	public boolean validatePasswordHash(AbstractSCCPasswordHash passwordHash) throws CoseException {
-		return scc.validatePasswordHash(this, passwordHash);
-
+	public boolean validatePasswordHash(AbstractSCCPasswordHash passwordHash) {
+		try {
+			return scc.validatePasswordHash(this, passwordHash);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return false;
+		}
 	}
+
 
 	@Override
-	public SCCCiphertext encryptSymmetric(AbstractSCCKey key) throws InvalidKeyException, CoseException {
-		return scc.encryptSymmetric(key, this);
-
+	public SCCCiphertext encryptSymmetric(AbstractSCCKey key) {
+		try {
+			return scc.encryptSymmetric(key, this);
+		} catch (CoseException | InvalidKeyException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
+
 
 	@Override
-	public SCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair) throws InvalidKeyException, CoseException,
-			IllegalStateException, InvalidKeySpecException, NoSuchAlgorithmException {
-		return scc.encryptAsymmetric(keyPair, this);
-
+	public SCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair) {
+		try {
+			return scc.encryptAsymmetric(keyPair, this);
+		} catch (CoseException | InvalidKeyException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
+
 
 	@Override
-	public SCCSignature sign(AbstractSCCKey keyPair)
-			throws InvalidKeyException, CoseException, InvalidKeySpecException, NoSuchAlgorithmException {
-		return scc.sign(keyPair, this);
-
+	public SCCSignature sign(AbstractSCCKey keyPair) {
+		try {
+			return scc.sign(keyPair, this);
+		} catch (CoseException | InvalidKeyException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
+
 
 	@Override
-	public SCCHash hash() throws CoseException {
-		return scc.hash(this);
-
+	public SCCHash hash() {
+		try {
+			return scc.hash(this);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
+
 
 	@Override
-	public SCCPasswordHash passwordHash() throws CoseException {
-		return scc.passwordHash(this);
+	public SCCPasswordHash passwordHash() {
+		try {
+			return scc.passwordHash(this);
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
+
 
 }
