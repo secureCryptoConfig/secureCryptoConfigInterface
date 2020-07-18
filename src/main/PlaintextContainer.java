@@ -2,6 +2,8 @@ package main;
 
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 import COSE.CoseException;
 
@@ -57,13 +59,15 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	}
 
 	@Override
-	public SCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair) throws InvalidKeyException, CoseException {
+	public SCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair) throws InvalidKeyException, CoseException,
+			IllegalStateException, InvalidKeySpecException, NoSuchAlgorithmException {
 		return scc.encryptAsymmetric(keyPair, this);
 
 	}
 
 	@Override
-	public SCCSignature sign(AbstractSCCKey keyPair) throws InvalidKeyException, CoseException {
+	public SCCSignature sign(AbstractSCCKey keyPair)
+			throws InvalidKeyException, CoseException, InvalidKeySpecException, NoSuchAlgorithmException {
 		return scc.sign(keyPair, this);
 
 	}

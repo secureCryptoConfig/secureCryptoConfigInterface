@@ -2,6 +2,8 @@ package main;
 
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 import COSE.CoseException;
 import main.SCCKey.KeyType;
@@ -82,11 +84,15 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCCiphertext}
 	 * @throws CoseException
-	 * @throws InvalidKeyException: If {@link SCCKey} has not the
-	 *                              {@link KeyType#Asymmetric}
+	 * @throws InvalidKeyException:     If {@link SCCKey} has not the
+	 *                                  {@link KeyType#Asymmetric}
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
+	 * @throws IllegalStateException
 	 */
 	public AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
-			throws CoseException, InvalidKeyException;
+			throws CoseException, InvalidKeyException, IllegalStateException, InvalidKeySpecException,
+			NoSuchAlgorithmException;
 
 	/**
 	 * Asymmetric encryption with a certain {@link SCCKey} for a given plaintext. A
@@ -98,11 +104,14 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param plaintext: as byte[]
 	 * @return {@link SCCCiphertext}
 	 * @throws CoseException
-	 * @throws InvalidKeyException: If {@link SCCKey} has not the
-	 *                              {@link KeyType#Asymmetric}
+	 * @throws InvalidKeyException:     If {@link SCCKey} has not the
+	 *                                  {@link KeyType#Asymmetric}
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
+	 * @throws IllegalStateException
 	 */
-	public AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair, byte[] plaintext)
-			throws CoseException, InvalidKeyException;
+	public AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair, byte[] plaintext) throws CoseException,
+			InvalidKeyException, IllegalStateException, InvalidKeySpecException, NoSuchAlgorithmException;
 
 	/**
 	 * ReEncrypts a given {@link SCCCiphertext}. Ciphertext will be first decrypted
@@ -112,11 +121,13 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param ciphertext: {@link SCCCiphertext}
 	 * @return {@link SCCCiphertext}
 	 * @throws CoseException
-	 * @throws InvalidKeyException: If {@link SCCKey} has not the
-	 *                              {@link KeyType#Asymmetric}
+	 * @throws InvalidKeyException:     If {@link SCCKey} has not the
+	 *                                  {@link KeyType#Asymmetric}
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
 	 */
 	public AbstractSCCCiphertext reEncryptAsymmetric(AbstractSCCKey keyPair, AbstractSCCCiphertext ciphertext)
-			throws CoseException, InvalidKeyException;
+			throws CoseException, InvalidKeyException, InvalidKeySpecException, NoSuchAlgorithmException;
 
 	/**
 	 * Asymmetric decryption with a certain {@link SCCKey} for a given
@@ -126,11 +137,13 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param ciphertext: {@link SCCCiphertext}
 	 * @return {@link PlaintextContainer}
 	 * @throws CoseException
-	 * @throws InvalidKeyException: If {@link SCCKey} has not the
-	 *                              {@link KeyType#Asymmetric}
+	 * @throws InvalidKeyException:     If {@link SCCKey} has not the
+	 *                                  {@link KeyType#Asymmetric}
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
 	 */
 	public PlaintextContainerInterface decryptAsymmetric(AbstractSCCKey keyPair, AbstractSCCCiphertext ciphertext)
-			throws CoseException, InvalidKeyException;
+			throws CoseException, InvalidKeyException, InvalidKeySpecException, NoSuchAlgorithmException;
 
 	// Hashing
 
@@ -209,11 +222,13 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCSignature}
 	 * @throws CoseException
-	 * @throws InvalidKeyException: If {@link SCCKey} has not the
-	 *                              {@link KeyType#Asymmetric}
+	 * @throws InvalidKeyException:     If {@link SCCKey} has not the
+	 *                                  {@link KeyType#Asymmetric}
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
 	 */
 	public AbstractSCCSignature sign(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
-			throws CoseException, InvalidKeyException;
+			throws CoseException, InvalidKeyException, InvalidKeySpecException, NoSuchAlgorithmException;
 
 	/**
 	 * Signing of a plaintext with a specific {@link SCCKey}. A new SCCKey can be
@@ -224,11 +239,13 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param plaintext: as byte[]
 	 * @return {@link SCCSignature}
 	 * @throws CoseException
-	 * @throws InvalidKeyException: If {@link SCCKey} has not the
-	 *                              {@link KeyType#Asymmetric}
+	 * @throws InvalidKeyException:     If {@link SCCKey} has not the
+	 *                                  {@link KeyType#Asymmetric}
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
 	 */
 	public AbstractSCCSignature sign(AbstractSCCKey keyPair, byte[] plaintext)
-			throws CoseException, InvalidKeyException;
+			throws CoseException, InvalidKeyException, InvalidKeySpecException, NoSuchAlgorithmException;
 
 	/**
 	 * Given a {@link SCCSignature} of a plaintext: the corresponding plaintext will
@@ -238,11 +255,13 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCSignature}
 	 * @throws CoseException
-	 * @throws InvalidKeyException: If {@link SCCKey} has not the
-	 *                              {@link KeyType#Asymmetric}
+	 * @throws InvalidKeyException:     If {@link SCCKey} has not the
+	 *                                  {@link KeyType#Asymmetric}
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
 	 */
 	public AbstractSCCSignature updateSignature(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
-			throws CoseException, InvalidKeyException;
+			throws CoseException, InvalidKeyException, InvalidKeySpecException, NoSuchAlgorithmException;
 
 	/**
 	 * Given a {@link SCCSignature} of a plaintext: the corresponding plaintext will
@@ -252,11 +271,13 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param plaintext: as byte[]
 	 * @return {@link SCCSignature}
 	 * @throws CoseException
-	 * @throws InvalidKeyException: If {@link SCCKey} has not the
-	 *                              {@link KeyType#Asymmetric}
+	 * @throws InvalidKeyException:     If {@link SCCKey} has not the
+	 *                                  {@link KeyType#Asymmetric}
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
 	 */
 	public AbstractSCCSignature updateSignature(AbstractSCCKey keyPair, byte[] plaintext)
-			throws CoseException, InvalidKeyException;
+			throws CoseException, InvalidKeyException, InvalidKeySpecException, NoSuchAlgorithmException;
 
 	/**
 	 * A given {@link SCCSignature} is checked for validity
@@ -264,10 +285,13 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param keyPair:   {@link AbstractSCCKey}
 	 * @param signature: {@link SCCSignature}
 	 * @return boolean
-	 * @throws InvalidKeyException: If {@link SCCKey} has not the
-	 *                              {@link KeyType#Asymmetric}
+	 * @throws InvalidKeyException:     If {@link SCCKey} has not the
+	 *                                  {@link KeyType#Asymmetric}
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
 	 */
-	public boolean validateSignature(AbstractSCCKey keyPair, AbstractSCCSignature signature) throws InvalidKeyException;
+	public boolean validateSignature(AbstractSCCKey keyPair, AbstractSCCSignature signature)
+			throws InvalidKeyException, InvalidKeySpecException, NoSuchAlgorithmException;
 
 	/**
 	 * A given {@link SCCSignature} is checked for validity
@@ -275,10 +299,13 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param keyPair:   {@link AbstractSCCKey}
 	 * @param signature: as byte[] representation of {@link SCCSignature}
 	 * @return boolean
-	 * @throws InvalidKeyException: If {@link SCCKey} has not the
-	 *                              {@link KeyType#Asymmetric}
+	 * @throws InvalidKeyException:     If {@link SCCKey} has not the
+	 *                                  {@link KeyType#Asymmetric}
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
 	 */
-	public boolean validateSignature(AbstractSCCKey keyPair, byte[] signature) throws InvalidKeyException;
+	public boolean validateSignature(AbstractSCCKey keyPair, byte[] signature)
+			throws InvalidKeyException, InvalidKeySpecException, NoSuchAlgorithmException;
 
 	// Password Hashing
 
@@ -391,8 +418,12 @@ abstract interface PlaintextContainerInterface {
 	 * @return {@link SCCCiphertext}
 	 * @throws CoseException
 	 * @throws InvalidKeyException
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
+	 * @throws IllegalStateException
 	 */
-	abstract AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey pair) throws InvalidKeyException, CoseException;
+	abstract AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey pair) throws InvalidKeyException, CoseException,
+			IllegalStateException, InvalidKeySpecException, NoSuchAlgorithmException;
 
 	/**
 	 * Signing of a {@link PlaintextContainer} value with a specific {@link SCCKey}.
@@ -404,8 +435,11 @@ abstract interface PlaintextContainerInterface {
 	 * @return {@link SCCSignature}
 	 * @throws CoseException
 	 * @throws InvalidKeyException
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
 	 */
-	abstract AbstractSCCSignature sign(AbstractSCCKey keyPair) throws InvalidKeyException, CoseException;
+	abstract AbstractSCCSignature sign(AbstractSCCKey keyPair)
+			throws InvalidKeyException, CoseException, InvalidKeySpecException, NoSuchAlgorithmException;
 
 	/**
 	 * Hashing of value from {@link PlaintextContainer}
@@ -465,9 +499,11 @@ abstract class AbstractSCCCiphertext {
 	 * @return {@link PlaintextContainer}
 	 * @throws CoseException
 	 * @throws InvalidKeyException
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
 	 */
 	abstract PlaintextContainerInterface decryptAsymmetric(AbstractSCCKey keyPair)
-			throws InvalidKeyException, CoseException;
+			throws InvalidKeyException, CoseException, InvalidKeySpecException, NoSuchAlgorithmException;
 
 	/**
 	 * ReEncrypts {@link SCCCiphertext}. Ciphertext will be first decrypted and then
@@ -488,9 +524,11 @@ abstract class AbstractSCCCiphertext {
 	 * @return {@link SCCCiphertext}
 	 * @throws CoseException
 	 * @throws InvalidKeyException
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
 	 */
 	abstract AbstractSCCCiphertext reEncryptAsymmetric(AbstractSCCKey keyPair)
-			throws InvalidKeyException, CoseException;
+			throws InvalidKeyException, CoseException, InvalidKeySpecException, NoSuchAlgorithmException;
 
 }
 
@@ -696,8 +734,12 @@ abstract class AbstractSCCSignature {
 	 * 
 	 * @param keyPair: {@link AbstractSCCKey}
 	 * @return boolean
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
+	 * @throws InvalidKeyException
 	 */
-	abstract boolean validateSignature(AbstractSCCKey keyPair);
+	abstract boolean validateSignature(AbstractSCCKey keyPair)
+			throws InvalidKeyException, InvalidKeySpecException, NoSuchAlgorithmException;
 
 	/**
 	 * Given a {@link SCCSignature} of a plaintext: the corresponding plaintext will
@@ -706,7 +748,12 @@ abstract class AbstractSCCSignature {
 	 * @param keyPair:   {@link SCCKey}
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCSignature}
+	 * @throws NoSuchAlgorithmException
+	 * @throws InvalidKeySpecException
+	 * @throws CoseException
+	 * @throws InvalidKeyException
 	 */
-	abstract AbstractSCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKey keyPair);
+	abstract AbstractSCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKey keyPair)
+			throws InvalidKeySpecException, NoSuchAlgorithmException, InvalidKeyException, CoseException;
 
 }

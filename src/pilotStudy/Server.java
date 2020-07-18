@@ -1,6 +1,8 @@
 package pilotStudy;
 
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -16,8 +18,17 @@ import main.SecureCryptoConfig;
 
 public class Server extends Thread {
 	final static String masterPassword = "Confidential";
-	final static SCCKey masterKey = SCCKey.createSymmetricKeyWithPassword(masterPassword.getBytes());
+	private static SCCKey masterKey = null;
 	List<SCCKey> clients = Collections.synchronizedList(new ArrayList<SCCKey>());
+
+	public Server() {
+		try {
+			this.masterKey = SCCKey.createSymmetricKeyWithPassword(masterPassword.getBytes());
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException | CoseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	public synchronized int registerClient(SCCKey key) {
 
@@ -32,7 +43,7 @@ public class Server extends Thread {
 		SCCKey key = clients.get(clientID);
 		SecureCryptoConfig scc = new SecureCryptoConfig();
 
-		boolean resultValidation;
+		boolean resultValidation = false;
 		try {
 			resultValidation = scc.validateSignature(key, signature);
 			if (resultValidation == true) {
@@ -41,8 +52,14 @@ public class Server extends Thread {
 		} catch (InvalidKeyException e) {
 			e.printStackTrace();
 			return false;
+		} catch (InvalidKeySpecException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		
+
 		return resultValidation;
 
 	}
@@ -54,7 +71,7 @@ public class Server extends Thread {
 		} catch (InvalidKeyException e) {
 			e.printStackTrace();
 		}
-		
+
 		// TODO: store cipher as byte[] somewhere
 
 	}
@@ -69,7 +86,7 @@ public class Server extends Thread {
 		try {
 			SignedMessage signedMessage = mapper.readValue(message, SignedMessage.class);
 			int clientId = signedMessage.getClientId();
-			
+
 			byte[] signature = signedMessage.getSignature();
 
 			isCorrectMessage = checkSignature(clientId, signedMessage.getContent().getBytes(), signature);

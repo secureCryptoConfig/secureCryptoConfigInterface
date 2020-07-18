@@ -2,6 +2,8 @@ package main;
 
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 
 import COSE.CoseException;
 
@@ -45,7 +47,8 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	}
 
 	@Override
-	public PlaintextContainer decryptAsymmetric(AbstractSCCKey pair) throws InvalidKeyException, CoseException {
+	public PlaintextContainer decryptAsymmetric(AbstractSCCKey pair)
+			throws InvalidKeyException, CoseException, InvalidKeySpecException, NoSuchAlgorithmException {
 		return scc.decryptAsymmetric(pair, this);
 	}
 
@@ -55,7 +58,8 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	}
 
 	@Override
-	public SCCCiphertext reEncryptAsymmetric(AbstractSCCKey keyPair) throws InvalidKeyException, CoseException {
+	public SCCCiphertext reEncryptAsymmetric(AbstractSCCKey keyPair)
+			throws InvalidKeyException, CoseException, InvalidKeySpecException, NoSuchAlgorithmException {
 		return scc.reEncryptAsymmetric(keyPair, this);
 	}
 

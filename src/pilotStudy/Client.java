@@ -2,6 +2,7 @@ package pilotStudy;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.time.Instant;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -38,7 +39,7 @@ public class Client implements Runnable {
 
 		SCCKey pair = SCCKey.createKey(KeyUseCase.Signing);
 		byte[] publicKey = pair.getPublicKeyBytes();
-		
+
 		int clientID = server.registerClient(new SCCKey(KeyType.Asymmetric, publicKey, null, pair.getAlgorithm()));
 		if (clientID == -1) {
 			throw new IllegalStateException("server does not seem to accept the client registration!");
@@ -58,23 +59,29 @@ public class Client implements Runnable {
 
 	}
 
-	private static byte[] sign(String order, SCCKey pair) throws CoseException {
+	private static byte[] sign(String order, SCCKey pair)
+			throws CoseException, InvalidKeyException, InvalidKeySpecException, NoSuchAlgorithmException {
 		SecureCryptoConfig scc = new SecureCryptoConfig();
-		
+
 		SCCSignature sig;
-		try {
-			sig = scc.sign(pair, order.getBytes());
-		} catch (InvalidKeyException e) {
-			e.printStackTrace();
-			return null;
-		}
+
+		sig = scc.sign(pair, order.getBytes());
+
 		return sig.toBytes();
 	}
 
 	private void sendOrder(String order) throws CoseException, JsonProcessingException {
 		SCCKey pair = this.pair;
 
-		String signedMessage = SignedMessage.createSignedMessage(this.clientID, order, sign(order, pair));
+		String signedMessage;
+		try {
+			signedMessage = SignedMessage.createSignedMessage(this.clientID, order, sign(order, pair));
+		} catch (InvalidKeyException | JsonProcessingException | InvalidKeySpecException | NoSuchAlgorithmException
+				| CoseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return;
+		}
 
 		// String signature = sign(order, pair);
 
