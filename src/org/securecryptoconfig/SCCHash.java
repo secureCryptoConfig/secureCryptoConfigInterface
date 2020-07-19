@@ -1,6 +1,6 @@
 package org.securecryptoconfig;
 
-import java.nio.charset.Charset;
+import java.util.Base64;
 
 import COSE.CoseException;
 import COSE.HashMessage;
@@ -22,13 +22,21 @@ public class SCCHash extends AbstractSCCHash {
 	private SecureCryptoConfig scc = new SecureCryptoConfig();
 
 	/**
-	 * Constructor that creates a new SCCHash object based on existing COSE message
-	 * (hash) bytes.
+	 * Constructor that creates a new SCCHash object based on existing COSE message.
 	 * 
 	 * @param hashMsg: byte[] of COSE message
 	 */
 	public SCCHash(byte[] hashMsg) {
 		super(hashMsg);
+	}
+
+	/**
+	 * Constructor that creates a new SCCHash object based on existing COSE message.
+	 * 
+	 * @param hashMsg: Base64 encoded String of COSE message
+	 */
+	public SCCHash(String hash) {
+		this(Base64.getDecoder().decode(hash));
 	}
 
 	@Override
@@ -65,8 +73,8 @@ public class SCCHash extends AbstractSCCHash {
 	}
 
 	@Override
-	public String toString(Charset c) {
-		return new String(this.hashMsg, c);
+	public String toString() {
+		return Base64.getEncoder().encodeToString(this.hashMsg);
 	}
 
 	/**

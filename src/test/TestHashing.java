@@ -1,6 +1,6 @@
 package test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
 
@@ -16,7 +16,7 @@ class TestHashing {
 	SecureCryptoConfig scc = new SecureCryptoConfig();
 
 	// Use Cases:
-	// Hashing 
+	// Hashing
 	// - byte[] plain hash, return: byte[] hash
 	// - String plain hash, return: String hash
 
@@ -25,8 +25,8 @@ class TestHashing {
 
 	// - hash, return: updated byte[]hash
 	// - hash, return: updated String hash
-	
-	//Password Hashing
+
+	// Password Hashing
 	// - byte[] plain hash, return: byte[] hash
 	// - String plain hash, return: String hash
 
@@ -41,11 +41,12 @@ class TestHashing {
 	void testHashingByteValidation() throws CoseException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCHash hash = scc.hash(plaintext);
+
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), hash));
+
 		byte[] hashedValue = hash.toBytes();
 
-		boolean result = scc.validateHash(new PlaintextContainer(plaintext), hash);
-
-		assertTrue(result);
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), new SCCHash(hashedValue)));
 
 	}
 
@@ -55,12 +56,9 @@ class TestHashing {
 	void testHashingStringValidation() throws CoseException {
 		String plaintext = "Hello World!";
 		SCCHash hash = scc.hash(plaintext.getBytes(StandardCharsets.UTF_8));
-		String hashedValue = hash.toString(StandardCharsets.UTF_8);
-				
-		boolean result = scc.validateHash(new PlaintextContainer(plaintext.getBytes()), hash);
 
-		assertTrue(result);
-
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes()), hash));
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes()), new SCCHash(hash.toString())));
 	}
 
 	// - hash, return: updated byte[]hash
@@ -83,39 +81,38 @@ class TestHashing {
 		SCCHash oldHash = scc.hash(plaintext.getBytes(StandardCharsets.UTF_8));
 
 		SCCHash updatedHash = scc.updateHash(plaintext.getBytes(), oldHash);
-		String newHash = updatedHash.toString(StandardCharsets.UTF_8);
+		String newHash = updatedHash.toString();
 
 		assertTrue(newHash instanceof String);
 	}
-	
-	//Password Hashing
 
-		// - byte[] plain hash, return: byte[] hash
-		// - byte[] plain hash + validate, return: boolean
-		@Test
-		void testPasswordHashingByteValidation() throws CoseException {
-			byte[] password = "Hello World!".getBytes(StandardCharsets.UTF_8);
-			SCCPasswordHash hash = scc.passwordHash(password);
-			byte[] hashedValue = hash.toBytes();
+	// Password Hashing
 
-			boolean result = scc.validatePasswordHash(new PlaintextContainer(password), hash);
+	// - byte[] plain hash, return: byte[] hash
+	// - byte[] plain hash + validate, return: boolean
+	@Test
+	void testPasswordHashingByteValidation() throws CoseException {
+		byte[] password = "Hello World!".getBytes(StandardCharsets.UTF_8);
+		SCCPasswordHash hash = scc.passwordHash(password);
+		byte[] hashedValue = hash.toBytes();
 
-			assertTrue(result);
+		boolean result = scc.validatePasswordHash(new PlaintextContainer(password), hash);
 
-		}
+		assertTrue(result);
 
-		// - String plain hash, return: String hash
-		// - String plain hash + validate, return: boolean
-		@Test
-		void testPasswordHashingStringValidation() throws CoseException {
-			String password = "Hello World!";
-			SCCPasswordHash hash = scc.passwordHash(password.getBytes(StandardCharsets.UTF_8));
-			String hashedValue = hash.toString(StandardCharsets.UTF_8);
-			boolean result = scc.validatePasswordHash(new PlaintextContainer(password.getBytes()), hash);
+	}
 
-			assertTrue(result);
+	// - String plain hash, return: String hash
+	// - String plain hash + validate, return: boolean
+	@Test
+	void testPasswordHashingStringValidation() throws CoseException {
+		String password = "Hello World!";
+		SCCPasswordHash hash = scc.passwordHash(password.getBytes(StandardCharsets.UTF_8));
+		String hashedValue = hash.toString(StandardCharsets.UTF_8);
+		boolean result = scc.validatePasswordHash(new PlaintextContainer(password.getBytes()), hash);
 
-		}
+		assertTrue(result);
 
+	}
 
 }

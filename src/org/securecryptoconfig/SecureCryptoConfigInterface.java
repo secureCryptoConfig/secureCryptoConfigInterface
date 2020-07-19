@@ -2,6 +2,7 @@ package org.securecryptoconfig;
 
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
+import java.util.Base64;
 
 import org.securecryptoconfig.SCCKey.KeyType;
 
@@ -648,8 +649,22 @@ abstract class AbstractSCCHash {
 
 	byte[] hashMsg;
 
+	/**
+	 * Constructor that creates a new SCCHash object based on existing COSE message.
+	 * 
+	 * @param hashMsg: byte[] of COSE message
+	 */
 	public AbstractSCCHash(byte[] hashMsg) {
 		this.hashMsg = hashMsg;
+	}
+
+	/**
+	 * Constructor that creates a new SCCHash object based on existing COSE message.
+	 * 
+	 * @param hashMsg: Base64 encoded String of COSE message
+	 */
+	public AbstractSCCHash(String hash) {
+		this(Base64.getDecoder().decode(hash));
 	}
 
 	/**
@@ -660,12 +675,12 @@ abstract class AbstractSCCHash {
 	abstract byte[] toBytes();
 
 	/**
-	 * Get String representation of {@link SCCHash} depending on given Charset.
+	 * Base64 encode {@link SCCHash}.
 	 * 
-	 * @param c: Charset
-	 * @return byte[]
+	 * @return String
 	 */
-	abstract String toString(Charset c);
+	@Override
+	public abstract String toString();
 
 	/**
 	 * Validate if a {@link SCCHash} matches hash of given plaintext.
