@@ -65,12 +65,17 @@ class TestHashing {
 	@Test
 	void testUpdateHashingByte() throws CoseException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
+
+		// TODO here we should change the actually used hash to test if
+		// rehashing/updating hash works correctly.
+
 		SCCHash oldHash = scc.hash(plaintext);
 
-		SCCHash updatedHash = scc.updateHash(plaintext, oldHash);
-		byte[] newHash = updatedHash.toBytes();
+		SCCHash newHash = scc.updateHash(plaintext, oldHash);
+		byte[] newHashBytes = newHash.toBytes();
 
-		assertTrue(newHash instanceof byte[]);
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), oldHash));
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), newHash));
 
 	}
 
@@ -79,11 +84,18 @@ class TestHashing {
 	void testUpdateHashingString() throws CoseException {
 		String plaintext = "Hello World!";
 		SCCHash oldHash = scc.hash(plaintext.getBytes(StandardCharsets.UTF_8));
+		String oldHashString = oldHash.toString();
 
-		SCCHash updatedHash = scc.updateHash(plaintext.getBytes(), oldHash);
-		String newHash = updatedHash.toString();
+		SCCHash newHash = scc.updateHash(plaintext.getBytes(), oldHash);
+		String newHashString = newHash.toString();
 
-		assertTrue(newHash instanceof String);
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)), oldHash));
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)), newHash));
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)),
+				new SCCHash(oldHashString)));
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)),
+				new SCCHash(newHashString)));
+
 	}
 
 	// Password Hashing
