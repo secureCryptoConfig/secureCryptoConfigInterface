@@ -1,4 +1,4 @@
-package main;
+package org.securecryptoconfig;
 
 import java.nio.charset.Charset;
 

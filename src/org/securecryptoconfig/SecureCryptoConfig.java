@@ -1,4 +1,4 @@
-package main;
+package org.securecryptoconfig;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
@@ -9,6 +9,9 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.HashSet;
+
+import org.securecryptoconfig.JSONReader.CryptoUseCase;
+import org.securecryptoconfig.SCCKey.KeyType;
 
 import com.upokecenter.cbor.CBORObject;
 
@@ -22,8 +25,6 @@ import COSE.HeaderKeys;
 import COSE.OneKey;
 import COSE.PasswordHashMessage;
 import COSE.Sign1Message;
-import main.JSONReader.CryptoUseCase;
-import main.SCCKey.KeyType;
 
 /**
  * Encapsulates Cryptography Use Cases, Configuration, and Parsing Logic of the
@@ -123,7 +124,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	/**
 	 * Set default Secure Crypto Configuration using Secure Crypto Config files at
 	 * "src/scc-configs" Only necessary if a custom path with
-	 * {@link #setCustomSCCPath(String)} or {@link #setSCCFile(String)} was called
+	 * {@link #setCustomSCCPath(Path)} or {@link #setSCCFile(String)} was called
 	 * before
 	 */
 	public static void setDefaultSCC() {

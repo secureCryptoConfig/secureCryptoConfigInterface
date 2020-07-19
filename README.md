@@ -48,7 +48,7 @@ To be abel to use the Secure Crypto Config Interface it is necessary to add two 
 Before using the Interface it is necessary to handle the import like follows:
 
 ```java
-    import main;
+    import org.securecryptoconfig;
     import COSE;
 
 ```

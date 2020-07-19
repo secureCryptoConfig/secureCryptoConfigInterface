@@ -1,4 +1,4 @@
-package main;
+package org.securecryptoconfig;
 
 import java.io.File;
 import java.io.FileReader;
@@ -26,8 +26,7 @@ import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-
-import main.SCCKey.KeyType;
+import org.securecryptoconfig.SCCKey.KeyType;
 
 /**
  * Class for handling/parsing SCC file content

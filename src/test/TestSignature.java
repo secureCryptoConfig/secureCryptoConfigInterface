@@ -7,14 +7,14 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 import org.junit.jupiter.api.Test;
+import org.securecryptoconfig.SCCException;
+import org.securecryptoconfig.SCCKey;
+import org.securecryptoconfig.SCCKeyPair;
+import org.securecryptoconfig.SCCSignature;
+import org.securecryptoconfig.SecureCryptoConfig;
+import org.securecryptoconfig.SCCKey.KeyUseCase;
 
 import COSE.CoseException;
-import main.SCCException;
-import main.SCCKey;
-import main.SCCKeyPair;
-import main.SCCSignature;
-import main.SecureCryptoConfig;
-import main.SCCKey.KeyUseCase;
 
 class TestSignature {
 	

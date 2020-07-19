@@ -1,4 +1,4 @@
-package main;
+package org.securecryptoconfig;
 
 public class SCCAlgorithmParameters  {
 

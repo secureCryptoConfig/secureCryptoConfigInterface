@@ -1,4 +1,4 @@
-package main;
+package org.securecryptoconfig;
 
 import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
@@ -20,11 +20,12 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import org.securecryptoconfig.JSONReader.CryptoUseCase;
+import org.securecryptoconfig.SecureCryptoConfig.AlgorithmIDEnum;
+
 import COSE.AlgorithmID;
 import COSE.CoseException;
 import COSE.OneKey;
-import main.JSONReader.CryptoUseCase;
-import main.SecureCryptoConfig.AlgorithmIDEnum;
 
 /**
  * Container for a key or keypair used for cryptography operations like

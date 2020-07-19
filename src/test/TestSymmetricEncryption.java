@@ -9,15 +9,15 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
 import org.junit.jupiter.api.Test;
+import org.securecryptoconfig.PlaintextContainer;
+import org.securecryptoconfig.SCCCiphertext;
+import org.securecryptoconfig.SCCException;
+import org.securecryptoconfig.SCCKey;
+import org.securecryptoconfig.SecureCryptoConfig;
+import org.securecryptoconfig.SCCKey.KeyType;
+import org.securecryptoconfig.SCCKey.KeyUseCase;
 
 import COSE.CoseException;
-import main.PlaintextContainer;
-import main.SCCCiphertext;
-import main.SCCException;
-import main.SCCKey;
-import main.SCCKey.KeyType;
-import main.SCCKey.KeyUseCase;
-import main.SecureCryptoConfig;
 
 class TestSymmetricEncryption {
 

@@ -4,15 +4,16 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.time.Instant;
 
+import org.securecryptoconfig.SCCException;
+import org.securecryptoconfig.SCCKey;
+import org.securecryptoconfig.SCCSignature;
+import org.securecryptoconfig.SecureCryptoConfig;
+import org.securecryptoconfig.SCCKey.KeyType;
+import org.securecryptoconfig.SCCKey.KeyUseCase;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 import COSE.CoseException;
-import main.SCCException;
-import main.SCCKey;
-import main.SCCKey.KeyType;
-import main.SCCKey.KeyUseCase;
-import main.SCCSignature;
-import main.SecureCryptoConfig;
 
 public class Client implements Runnable {
 

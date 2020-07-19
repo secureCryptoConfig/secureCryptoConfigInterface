@@ -1,10 +1,11 @@
-package main;
+package org.securecryptoconfig;
 
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 
+import org.securecryptoconfig.SCCKey.KeyType;
+
 import COSE.CoseException;
-import main.SCCKey.KeyType;
 
 /**
  * Interface that defines which methods should be used for cryptography
@@ -21,7 +22,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * Symmetric encryption with a certain {@link SCCKey} for a given plaintext.
 	 * 
 	 * A new {@link SCCKey} can be created with
-	 * {@link SCCKey#createKey(main.SCCKey.KeyUseCase)} with
+	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
 	 * {@link SCCKey.KeyUseCase#SymmetricEncryption} Alternatively it is also
 	 * possible to create a key derived from a password with
 	 * {@link SCCKey#createSymmetricKeyWithPassword(byte[])}
@@ -40,7 +41,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * Symmetric encryption with a certain {@link SCCKey} for a given plaintext.
 	 * 
 	 * A new {@link SCCKey} can be created with
-	 * {@link SCCKey#createKey(main.SCCKey.KeyUseCase)} with
+	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
 	 * {@link SCCKey.KeyUseCase#SymmetricEncryption}
 	 * 
 	 * @param key: SCCKey{@link SCCKey}text: as byte[]
@@ -88,7 +89,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * Asymmetric encryption with a certain {@link SCCKey} for a given plaintext.
 	 * 
 	 * A new {@link SCCKey} can be created with
-	 * {@link SCCKey#createKey(main.SCCKey.KeyUseCase)} with
+	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
 	 * {@link SCCKey.KeyUseCase#AsymmetricEncryption}
 	 * 
 	 * @param keyPair:   {@link SCCKey}
@@ -106,7 +107,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * Asymmetric encryption with a certain {@link SCCKey} for a given plaintext.
 	 * 
 	 * A new {@link SCCKey} can be created with
-	 * {@link SCCKey#createKey(main.SCCKey.KeyUseCase)} with
+	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
 	 * {@link SCCKey.KeyUseCase#AsymmetricEncryption}
 	 * 
 	 * @param keyPair:   {@link SCCKey}
@@ -227,7 +228,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * Signing of a plaintext with a specific {@link SCCKey}.
 	 * 
 	 * A new {@link SCCKey} can be created with
-	 * {@link SCCKey#createKey(main.SCCKey.KeyUseCase)} with
+	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
 	 * {@link SCCKey.KeyUseCase#Signing}
 	 * 
 	 * @param keyPair:   {@link SCCKey}
@@ -245,7 +246,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * Signing of a plaintext with a specific {@link SCCKey}.
 	 * 
 	 * A new {@link SCCKey} can be created with
-	 * {@link SCCKey#createKey(main.SCCKey.KeyUseCase)} with
+	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
 	 * {@link SCCKey.KeyUseCase#Signing}
 	 * 
 	 * @param keyPair:   {@link SCCKey}
@@ -421,7 +422,7 @@ abstract interface PlaintextContainerInterface {
 	 * {@link PlaintextContainer} value.
 	 * 
 	 * A new SCCKey can be created with
-	 * {@link SCCKey#createKey(main.SCCKey.KeyUseCase)} with
+	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
 	 * {@link SCCKey.KeyUseCase#SymmetricEncryption}. Alternatively it is also
 	 * possible to derive a key from a password with
 	 * {@link SCCKey#createSymmetricKeyWithPassword(byte[])}
@@ -437,7 +438,7 @@ abstract interface PlaintextContainerInterface {
 	 * {@link PlaintextContainer} value.
 	 * 
 	 * A new SCCKey can be created with
-	 * {@link SCCKey#createKey(main.SCCKey.KeyUseCase)} with
+	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
 	 * {@link SCCKey.KeyUseCase#AsymmetricEncryption}
 	 * 
 	 * @param pair: {@link SCCKey}
@@ -450,7 +451,7 @@ abstract interface PlaintextContainerInterface {
 	 * Signing of a {@link PlaintextContainer} value with a specific {@link SCCKey}.
 	 * 
 	 * A new SCCKey can be created with
-	 * {@link SCCKey#createKey(main.SCCKey.KeyUseCase)} with
+	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
 	 * {@link SCCKey.KeyUseCase#Signing}
 	 * 
 	 * @param keyPair: {@link SCCKey}

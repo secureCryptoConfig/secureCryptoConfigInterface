@@ -6,14 +6,15 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import org.securecryptoconfig.SCCCiphertext;
+import org.securecryptoconfig.SCCException;
+import org.securecryptoconfig.SCCKey;
+import org.securecryptoconfig.SecureCryptoConfig;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import COSE.CoseException;
-import main.SCCCiphertext;
-import main.SCCException;
-import main.SCCKey;
-import main.SecureCryptoConfig;
 
 public class Server extends Thread {
 	final static String masterPassword = "Confidential";

@@ -1,4 +1,4 @@
-package main;
+package org.securecryptoconfig;
 
 /**
  * General Exception of the Secure Crypto Config.
