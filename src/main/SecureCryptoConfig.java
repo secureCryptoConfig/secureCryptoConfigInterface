@@ -14,8 +14,10 @@ import com.upokecenter.cbor.CBORObject;
 
 import COSE.AlgorithmID;
 import COSE.AsymMessage;
+import COSE.Attribute;
 import COSE.CoseException;
 import COSE.Encrypt0Message;
+import COSE.HashMessage;
 import COSE.HeaderKeys;
 import COSE.OneKey;
 import COSE.PasswordHashMessage;
@@ -162,9 +164,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 					switch (chosenAlgorithmID) {
 					case AES_GCM_256_96:
-						return UseCases.createMessage(plaintext, key, AlgorithmID.AES_GCM_256);
+						return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_256);
 					case AES_GCM_128_96:
-						return UseCases.createMessage(plaintext, key, AlgorithmID.AES_GCM_128);
+						return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_128);
 					default:
 						break;
 
@@ -228,7 +230,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 					switch (chosenAlgorithmID) {
 					case RSA_SHA_512:
-						return UseCases.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_512, keyPair);
+						return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_512, keyPair);
 					default:
 						break;
 					}
@@ -290,7 +292,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				switch (chosenAlgorithmID) {
 				case SHA_512:
 					PlaintextContainer p = new PlaintextContainer(plaintext.toBytes());
-					return UseCases.createHashMessage(p, AlgorithmID.SHA_512);
+					return SecureCryptoConfig.createHashMessage(p, AlgorithmID.SHA_512);
 				default:
 					break;
 				}
@@ -352,7 +354,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 					switch (chosenAlgorithmID) {
 					case ECDSA_512:
-						return UseCases.createSignMessage(plaintext, keyPair, AlgorithmID.ECDSA_512);
+						return SecureCryptoConfig.createSignMessage(plaintext, keyPair, AlgorithmID.ECDSA_512);
 					default:
 						break;
 					}
@@ -436,7 +438,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				switch (chosenAlgorithmID) {
 				case PBKDF_SHA_256:
-					return UseCases.createPasswordHashMessage(password, AlgorithmID.PBKDF_SHA_256);
+					return SecureCryptoConfig.createPasswordHashMessage(password, AlgorithmID.PBKDF_SHA_256);
 				default:
 					break;
 				}
@@ -466,7 +468,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		CBORObject algX = msg.findAttribute(HeaderKeys.Algorithm);
 		AlgorithmID alg = AlgorithmID.FromCBOR(algX);
 
-		SCCPasswordHash hash = UseCases.createPasswordHashMessageSalt(password, alg, msg.getSalt());
+		SCCPasswordHash hash = SecureCryptoConfig.createPasswordHashMessageSalt(password, alg, msg.getSalt());
 
 		String hash1 = new String(msg.getHashedContent(), StandardCharsets.UTF_8);
 		String hash2 = new String(hash.convertByteToMsg().getHashedContent(), StandardCharsets.UTF_8);
@@ -478,6 +480,157 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	@Override
 	public boolean validatePasswordHash(byte[] password, AbstractSCCPasswordHash passwordhash) throws CoseException {
 		return validatePasswordHash(new PlaintextContainer(password), passwordhash);
+	}
+
+	/**
+	 * Creation of COSE Sign1Message for signing.
+	 * 
+	 * @param plaintext
+	 * @param key
+	 * @param id
+	 * @return SCCSignature
+	 * @throws SCCException
+	 */
+	protected static SCCSignature createSignMessage(PlaintextContainerInterface plaintext, AbstractSCCKey key,
+			AlgorithmID id) throws SCCException {
+		Sign1Message m = new Sign1Message();
+		m.SetContent(plaintext.toBytes());
+		SCCKey pair = (SCCKey) key;
+		try {
+			m.addAttribute(HeaderKeys.Algorithm, AlgorithmID.ECDSA_512.AsCBOR(), Attribute.PROTECTED);
+			OneKey oneKey = new OneKey(pair.getPublicKey(), pair.getPrivateKey());
+			m.sign(oneKey);
+
+			return new SCCSignature(m.EncodeToBytes());
+		} catch (CoseException e) {
+			throw new SCCException("Signing could not be performed!", e);
+		}
+	}
+
+	/**
+	 * Creation of COSE AsymMessage for asymmetric Encryption.
+	 * 
+	 * @param plaintext
+	 * @param id
+	 * @param keyPair
+	 * @return SCCCiphertext
+	 * @throws SCCException
+	 * @throws IllegalStateException
+	 */
+	protected static SCCCiphertext createAsymMessage(PlaintextContainerInterface plaintext, AlgorithmID id,
+			AbstractSCCKey keyPair) throws SCCException {
+		try {
+			SCCKey pair = (SCCKey) keyPair;
+			AsymMessage asymMsg = new AsymMessage();
+			asymMsg.SetContent(plaintext.toBytes());
+			asymMsg.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
+			asymMsg.encrypt(new KeyPair(pair.getPublicKey(), pair.getPrivateKey()));
+			asymMsg.SetContent((byte[]) null);
+
+			return new SCCCiphertext(asymMsg.EncodeToBytes());
+		} catch (CoseException e) {
+			throw new SCCException("Asymmetric encryption could not be performed", e);
+		}
+	}
+
+	/**
+	 * Creation of COSE PasswordHashMessage for password hashing with existing salt
+	 * value.
+	 * 
+	 * @param password
+	 * @param id
+	 * @param salt
+	 * @return SCCPasswordHash
+	 */
+	protected static SCCPasswordHash createPasswordHashMessageSalt(PlaintextContainerInterface password, AlgorithmID id,
+			byte[] salt) {
+		try {
+			PasswordHashMessage m = new PasswordHashMessage();
+			m.SetContent(password.toBytes());
+			m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
+			m.passwordHashWithSalt(salt);
+			m.SetContent((byte[]) null);
+			return new SCCPasswordHash(m.EncodeToBytes());
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * Creation of COSE PasswordHashMessage for password Hashing.
+	 * 
+	 * @param password
+	 * @param id
+	 * @return SCCPasswordHash
+	 */
+	protected static SCCPasswordHash createPasswordHashMessage(PlaintextContainerInterface password, AlgorithmID id) {
+
+		try {
+			PasswordHashMessage m = new PasswordHashMessage();
+			m.SetContent(password.toBytes());
+			m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
+			m.passwordHash();
+			m.SetContent((byte[]) null);
+			return new SCCPasswordHash(m.EncodeToBytes());
+
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * Creation of COSE HashMessage for hashing.
+	 * 
+	 * @param plaintext
+	 * @param id
+	 * @return SCCHash
+	 */
+	protected static SCCHash createHashMessage(PlaintextContainer plaintext, AlgorithmID id) {
+		try {
+			HashMessage hashMessage = new HashMessage();
+			hashMessage.SetContent(plaintext.toBytes());
+
+			hashMessage.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
+
+			hashMessage.hash();
+			hashMessage.SetContent((byte[]) null);
+			return new SCCHash(hashMessage.EncodeToBytes());
+
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
+	 * Creation of COSE Encrypt0Message for symmetric Encryption.
+	 * 
+	 * @param plaintext
+	 * @param key
+	 * @param id
+	 * @return SCCCiphertext
+	 */
+	protected static SCCCiphertext createMessage(PlaintextContainerInterface plaintext, AbstractSCCKey key,
+			AlgorithmID id) {
+		try {
+			Encrypt0Message encrypt0Message = new Encrypt0Message();
+			encrypt0Message.SetContent(plaintext.toBytes());
+
+			encrypt0Message.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
+
+			encrypt0Message.encrypt(key.key);
+			encrypt0Message.SetContent((byte[]) null);
+
+			// byte[] encrypted = encrypt0Message.getEncryptedContent();
+
+			return new SCCCiphertext(encrypt0Message.EncodeToBytes());
+
+		} catch (CoseException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 
 }
