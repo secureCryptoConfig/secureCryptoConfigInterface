@@ -23,8 +23,8 @@ public class SCCSignature extends AbstractSCCSignature {
 	private SecureCryptoConfig scc = new SecureCryptoConfig();
 
 	/**
-	 * Constructor that gets the byte[] representation of the COSE message resulting
-	 * from signing
+	 * Constructor that creates a new SCCSignature object based on existing COSE
+	 * message (signature) bytes.
 	 * 
 	 * @param signatureMsg: byte[] of COSE message
 	 */
@@ -64,7 +64,7 @@ public class SCCSignature extends AbstractSCCSignature {
 	}
 
 	/**
-	 * Auxiliary method for converting byte[] back to COSE Sign1Message
+	 * Auxiliary method for converting byte[] to COSE Sign1Message
 	 * 
 	 * @return HashMessage
 	 */
