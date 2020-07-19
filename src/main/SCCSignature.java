@@ -7,10 +7,13 @@ import COSE.CoseException;
 import COSE.Sign1Message;
 
 /**
- * Class representing Signature resulting from signing. SCCSignature includes a
- * byte[] representation of a COSE message. The byte[] contains the signature as
- * well as all the parameters used during signing. In this way it is possible to
- * validate the SCCSignature with the right choice of parameters easily.
+ * Container for a Digital Signature.
+ * 
+ * SCCSignature contains a byte[] representation of a COSE message. The byte[]
+ * contains the signature as well as all the parameters used during signing. The
+ * inclusion of the used parameters in the signature ensures that validation
+ * implementation code does not need to know the used algorithm or parameters
+ * before validation, but can parse it from the COSE message.
  * 
  * @author Lisa
  *
@@ -43,7 +46,7 @@ public class SCCSignature extends AbstractSCCSignature {
 	public SCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKey keyPair)
 			throws SCCException {
 		try {
-			return (SCCSignature) scc.updateSignature(keyPair, plaintext);
+			return scc.updateSignature(keyPair, plaintext);
 		} catch (CoseException e) {
 			throw new SCCException("Signature update could not be performed!", e);
 		} catch (InvalidKeyException e) {
