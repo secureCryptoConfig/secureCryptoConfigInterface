@@ -6,9 +6,13 @@ import COSE.CoseException;
 import COSE.HashMessage;
 
 /**
- * Class representing the Hash resulting from executing hashing. SCCHash
- * includes the byte[] representation of a COSE message. The byte[] contains the
- * hashed plaintext as well as all the parameters used during hashing.
+ * Container for a Cryptographic Hash.
+ * 
+ * SCCHash contains a byte[] representation of a COSE message. The byte[]
+ * contains the hash as well as all the parameters used during hashing. The
+ * inclusion of the used parameters in the hash ensures that validation
+ * implementation code does not need to know the used algorithm or parameters
+ * before validation, but can parse it from the COSE message.
  * 
  * @author Lisa
  *
@@ -18,8 +22,8 @@ public class SCCHash extends AbstractSCCHash {
 	private SecureCryptoConfig scc = new SecureCryptoConfig();
 
 	/**
-	 * Constructor that gets the byte[] representation of the COSE message resulting
-	 * from hashing
+	 * Constructor that creates a new SCCHash object based on existing COSE message
+	 * (hash) bytes.
 	 * 
 	 * @param hashMsg: byte[] of COSE message
 	 */

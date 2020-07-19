@@ -1,5 +1,11 @@
 package main;
 
+/**
+ * General Exception of the Secure Crypto Config.
+ * 
+ * @author Kai
+ *
+ */
 public class SCCException extends Exception {
 
 	/**

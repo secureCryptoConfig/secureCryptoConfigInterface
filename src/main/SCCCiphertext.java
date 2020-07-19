@@ -6,11 +6,15 @@ import java.security.InvalidKeyException;
 import COSE.CoseException;
 
 /**
- * Class represention the ciphertext resulting from symmetric/asymmetric
- * encryption. SCCCiphertext includes a byte[] representation of a COSE message.
- * The byte[] contains the encrypted plaintext as well as all the parameters
- * used during encryption. In this way it is possible to decrypt the
- * SCCCiphertext with the right choice of parameters easily.
+ * Container for the ciphertext (as result from encrypting a
+ * plaintext/plaintextcontainer).
+ * 
+ * SCCCiphertext contains a byte[] representation of a COSE message. The byte[]
+ * contains the encrypted plaintext as well as all the parameters used during
+ * encryption. The inclusion of the used parameters, except the key, in the
+ * ciphertext ensures that decryption implementation code does not need to know
+ * the used algorithm or parameters before decryption, but can parse it from the
+ * COSE message. So it only requires the used key.
  * 
  * @author Lisa
  *
@@ -20,8 +24,8 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	private SecureCryptoConfig scc = new SecureCryptoConfig();
 
 	/**
-	 * Constructor that gets the byte[] representation of the COSE message resulting
-	 * from encryption
+	 * Constructor that creates a new SCCCiphertext object based on existing COSE
+	 * message (ciphertext) bytes.
 	 * 
 	 * @param msg: byte[] of COSE message
 	 */
