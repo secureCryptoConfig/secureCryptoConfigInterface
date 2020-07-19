@@ -70,12 +70,15 @@ class TestHashing {
 		// rehashing/updating hash works correctly.
 
 		SCCHash oldHash = scc.hash(plaintext);
+		byte[] oldHashBytes = oldHash.toBytes();
 
 		SCCHash newHash = scc.updateHash(plaintext, oldHash);
 		byte[] newHashBytes = newHash.toBytes();
 
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), oldHash));
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), new SCCHash(oldHashBytes)));
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), newHash));
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), new SCCHash(newHashBytes)));
 
 	}
 
