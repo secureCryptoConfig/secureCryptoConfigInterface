@@ -3,6 +3,7 @@ package main;
 import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.security.InvalidKeyException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
@@ -23,10 +24,10 @@ import main.JSONReader.CryptoUseCase;
 import main.SCCKey.KeyType;
 
 /**
- * Class with main functionality. Implements the
- * {@link SecureCryptoConfigInterface}. The implementation of all possible
- * cryptographic uses cases supported by the Interface.
+ * Encapsulates Cryptography Use Cases, Configuration, and Parsing Logic of the
+ * Secure Crypto Config.
  * 
+ * Implements the {@link SecureCryptoConfigInterface}.
  * 
  * @author Lisa
  *
@@ -79,24 +80,24 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * @return SCCFilePath: path to the used Secure Crypto Config file
 	 */
 	public static String getUsedSCC() {
+		// TODO adapt to not use the path, but the specified policyName from the file,
+		// as the file path is not standards relevant.
 		return sccPath;
 	}
 
 	/**
 	 * Set path to a custom root folder "scc-configs" which contains the Secure
-	 * Crypto Config files. The hierarcy inside the custom "scc-configs" folder can
-	 * be varied.
+	 * Crypto Config files.
 	 * 
 	 * @param path: path to "scc-config" directory. Path should end with \\
 	 * @throws InvalidPathException
 	 */
-	public static void setPathToSCCDirectory(String path) {
-		File file = new File(path);
+	public static void setCustomSCCPath(Path path) {
 		customPath = true;
-		if (file.exists()) {
-			sccPath = JSONReader.parseFiles(path);
+		if (path.toFile().exists()) {
+			sccPath = JSONReader.parseFiles(path.toString());
 		} else {
-			throw new InvalidPathException(path, "Path is not existing");
+			throw new InvalidPathException(path.toString(), "Path is not existing");
 		}
 	}
 
@@ -107,6 +108,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * @throws InvalidPathException
 	 */
 	public static void setSCCFile(String filePath) {
+		// TODO usually we don't want to set a path to use but a policy to use
 		File file = new File(filePath);
 		if (file.exists()) {
 			sccPath = filePath;
@@ -119,8 +121,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	/**
 	 * Set default Secure Crypto Configuration using Secure Crypto Config files at
 	 * "src/scc-configs" Only necessary if a custom path with
-	 * {@link #setPathToSCCDirectory(String)} or {@link #setSCCFile(String)} was
-	 * called before
+	 * {@link #setCustomSCCPath(String)} or {@link #setSCCFile(String)} was called
+	 * before
 	 */
 	public static void setDefaultSCC() {
 		customPath = false;
