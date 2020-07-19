@@ -7,18 +7,22 @@ import COSE.PasswordHashMessage;
 
 /**
  * Class representing the Hash resulting from executing PasswordHashing.
- * SCCPasswordHash includes the byte[] representation of a COSE message. 
- * The byte[] contains the hashed plaintext as well as all the parameters used during hashing.
+ * SCCPasswordHash includes the byte[] representation of a COSE message. The
+ * byte[] contains the hashed plaintext as well as all the parameters used
+ * during hashing.
+ * 
  * @author Lisa
  *
  */
 public class SCCPasswordHash extends AbstractSCCPasswordHash {
-	
+
 	private SecureCryptoConfig scc = new SecureCryptoConfig();
 
 	/**
-	 * Constructor that gets the byte[] representation of the COSE message resulting from PasswordHashing
-	 * @param hashMsg
+	 * Constructor that gets the byte[] representation of the COSE message resulting
+	 * from PasswordHashing
+	 * 
+	 * @param hashMsg: byte[] of COSE message
 	 */
 	public SCCPasswordHash(byte[] hashMsg) {
 		super(hashMsg);
@@ -32,7 +36,7 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 			throw new SCCException("PasswordHash validation could not be performed!", e);
 		}
 	}
-	
+
 	@Override
 	boolean validatePasswordHash(byte[] password) throws SCCException {
 		return validatePasswordHash(new PlaintextContainer(password));
@@ -47,9 +51,10 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	public String toString(Charset c) {
 		return new String(this.hashMsg, c);
 	}
-	
+
 	/**
 	 * Auxiliary method for converting byte[] back to COSE PasswordHashMessage
+	 * 
 	 * @return HashMessage
 	 */
 	protected PasswordHashMessage convertByteToMsg() {
@@ -60,6 +65,5 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 			return null;
 		}
 	}
-
 
 }

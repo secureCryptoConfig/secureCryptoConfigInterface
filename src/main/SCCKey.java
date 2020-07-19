@@ -27,7 +27,8 @@ import main.JSONReader.CryptoUseCase;
 import main.SecureCryptoConfig.AlgorithmIDEnum;
 
 /**
- * Class representing Key that is needed for symmetric/asymmetric encryption and signing
+ * Class representing Key that is needed for symmetric/asymmetric encryption and
+ * signing
  * 
  * @author Lisa
  *
@@ -35,27 +36,27 @@ import main.SecureCryptoConfig.AlgorithmIDEnum;
 public class SCCKey extends AbstractSCCKey {
 
 	/**
-	 * Type of the corresponding key
-	 * Depending on the KeyType a key can only used for specific use cases:
-	 * Symmetric needed for symmetric en/decryption
+	 * Type of the corresponding key Depending on the KeyType a key can only used
+	 * for specific use cases: Symmetric needed for symmetric en/decryption
 	 * Asymmetric needed for asymmetric en/decryption and signing
 	 */
 	public enum KeyType {
-		Symmetric, Asymmetric
+	Symmetric, Asymmetric
 	}
 
 	/**
-	 * Different use cases for which a key can be created
-	 * Different KeyUseCases lead to a SCCKey with a different {@link KeyType}
+	 * Different use cases for which a key can be created Different KeyUseCases lead
+	 * to a SCCKey with a different {@link KeyType}
 	 */
 	public enum KeyUseCase {
 		SymmetricEncryption, AsymmetricEncryption, Signing
 	}
 
 	/**
-	 * Constructor which gets the {@link KeyType}, the byte[] representation of the key and the algorithm
-	 * of its creation. This constructor is used in for SCCKeys of {@link KeyType#Symmetric}.
-	 * If a new SCCKey should be created call {@link #createKey(KeyUseCase)}.
+	 * Constructor which gets the {@link KeyType}, the byte[] representation of the
+	 * key and the algorithm of its creation. This constructor is used in for
+	 * SCCKeys of {@link KeyType#Symmetric}. If a new SCCKey should be created call
+	 * {@link #createKey(KeyUseCase)}.
 	 * 
 	 * @param type: choice of {@link KeyType}
 	 * @param key: byte[] representation of key
@@ -64,7 +65,6 @@ public class SCCKey extends AbstractSCCKey {
 	public SCCKey(KeyType type, byte[] key, String algorithm) {
 		super(type, key, algorithm);
 	}
-	
 
 	@Override
 	public KeyType getKeyType() {
@@ -77,13 +77,14 @@ public class SCCKey extends AbstractSCCKey {
 	}
 
 	/**
-	 * Constructor which gets the {@link KeyType}, the byte[] representation of the public and private key and the algorithm
-	 * of its creation. This constructor is used in for SCCKeys of {@link KeyType#Asymmetric}.
-	 * If a new SCCKey should be created call {@link #createKey(KeyUseCase)}.
+	 * Constructor which gets the {@link KeyType}, the byte[] representation of the
+	 * public and private key and the algorithm of its creation. This constructor is
+	 * used in for SCCKeys of {@link KeyType#Asymmetric}. If a new SCCKey should be
+	 * created call {@link #createKey(KeyUseCase)}.
 	 * 
 	 * @param type: choice of {@link KeyType}
 	 * @param publicKey: byte[] representation of public key
-	 *  @param privateKey: byte[] representation of private key
+	 * @param privateKey: byte[] representation of private key
 	 * @param algorithm: used for key creation
 	 */
 	public SCCKey(KeyType type, byte[] publicKey, byte[] privateKey, String algorithm) {
@@ -99,7 +100,6 @@ public class SCCKey extends AbstractSCCKey {
 		}
 	}
 
-	
 	@Override
 	public byte[] getPublicKeyBytes() {
 		if (type == KeyType.Asymmetric) {
@@ -109,7 +109,6 @@ public class SCCKey extends AbstractSCCKey {
 		}
 	}
 
-	
 	@Override
 	public byte[] getPrivateKeyBytes() {
 		if (type == KeyType.Asymmetric) {
@@ -121,6 +120,7 @@ public class SCCKey extends AbstractSCCKey {
 
 	/**
 	 * Returns byte[] representation of key to SecretKey for further processing
+	 * 
 	 * @return SecretKey
 	 */
 	protected SecretKey getSecretKey() {
@@ -132,16 +132,18 @@ public class SCCKey extends AbstractSCCKey {
 	}
 
 	/**
-	 * Returns byte[] representation of public key to PublicKey for further processing
+	 * Returns byte[] representation of public key to PublicKey for further
+	 * processing
+	 * 
 	 * @return PublicKey
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
 	protected PublicKey getPublicKey() throws SCCException {
 		if (this.type == KeyType.Asymmetric) {
 			try {
 				return KeyFactory.getInstance(this.algorithm).generatePublic(new X509EncodedKeySpec(this.publicKey));
 			} catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
-				throw new SCCException("Could not convert to PublicKey", e);
+				throw new SCCException("Could not convert to Public Key", e);
 			}
 		} else {
 			return null;
@@ -149,16 +151,18 @@ public class SCCKey extends AbstractSCCKey {
 	}
 
 	/**
-	 * Returns byte[] representation of private key to PrivateKey for further processing
+	 * Returns byte[] representation of private key to PrivateKey for further
+	 * processing
+	 * 
 	 * @return PrivateKey
-	 * @throws SCCException 
 	 */
-	protected PrivateKey getPrivateKey() throws SCCException {
+	protected PrivateKey getPrivateKey() {
 		if (this.type == KeyType.Asymmetric) {
 			try {
 				return KeyFactory.getInstance(this.algorithm).generatePrivate(new PKCS8EncodedKeySpec(this.privateKey));
 			} catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
-				throw new SCCException("Could not convert to PrivateKey!", e);
+				e.printStackTrace();
+				return null;
 			}
 		} else {
 			return null;
@@ -168,22 +172,33 @@ public class SCCKey extends AbstractSCCKey {
 	/**
 	 * Create a key for a specific {@link KeyUseCase}.
 	 * 
-	 * Depending of specified {@link KeyUseCase} the resulting SCCKey can be used for: 
-	 * - {@link KeyUseCase#SymmetricEncryption}: {@link SecureCryptoConfigInterface#encryptSymmetric(AbstractSCCKey, byte[])}, 
-	 * {@link SecureCryptoConfigInterface#encryptSymmetric(AbstractSCCKey,PlaintextContainerInterface)}, {@link SecureCryptoConfigInterface#decryptSymmetric(AbstractSCCKey, AbstractSCCCiphertext)}, 
+	 * Depending of specified {@link KeyUseCase} the resulting SCCKey can be used
+	 * for: - {@link KeyUseCase#SymmetricEncryption}:
+	 * {@link SecureCryptoConfigInterface#encryptSymmetric(AbstractSCCKey, byte[])},
+	 * {@link SecureCryptoConfigInterface#encryptSymmetric(AbstractSCCKey,PlaintextContainerInterface)},
+	 * {@link SecureCryptoConfigInterface#decryptSymmetric(AbstractSCCKey, AbstractSCCCiphertext)},
 	 * {@link SecureCryptoConfigInterface#reEncryptSymmetric(AbstractSCCKey, AbstractSCCCiphertext)}
-	 * - {@link KeyUseCase#AsymmetricEncryption}: {@link SecureCryptoConfigInterface#encryptAsymmetric(AbstractSCCKey, byte[])}, {@link SecureCryptoConfigInterface#reEncryptAsymmetric(AbstractSCCKey, AbstractSCCCiphertext)}
-	 * {@link SecureCryptoConfigInterface#encryptAsymmetric(AbstractSCCKey, PlaintextContainerInterface)}, {@link SecureCryptoConfigInterface#decryptAsymmetric(AbstractSCCKey, AbstractSCCCiphertext)}
-	 * - {@link KeyUseCase#Signing}: {@link SecureCryptoConfigInterface#sign(AbstractSCCKey, byte[])}, {@link SecureCryptoConfigInterface#sign(AbstractSCCKey, PlaintextContainerInterface)},
-	 * {@link SecureCryptoConfigInterface#validateSignature(AbstractSCCKey, AbstractSCCSignature)}, {@link SecureCryptoConfigInterface#updateSignature(AbstractSCCKey, byte[])}, {@link SecureCryptoConfigInterface#updateSignature(AbstractSCCKey, PlaintextContainerInterface)}
+	 * - {@link KeyUseCase#AsymmetricEncryption}:
+	 * {@link SecureCryptoConfigInterface#encryptAsymmetric(AbstractSCCKey, byte[])},
+	 * {@link SecureCryptoConfigInterface#reEncryptAsymmetric(AbstractSCCKey, AbstractSCCCiphertext)}
+	 * {@link SecureCryptoConfigInterface#encryptAsymmetric(AbstractSCCKey, PlaintextContainerInterface)},
+	 * {@link SecureCryptoConfigInterface#decryptAsymmetric(AbstractSCCKey, AbstractSCCCiphertext)}
+	 * - {@link KeyUseCase#Signing}:
+	 * {@link SecureCryptoConfigInterface#sign(AbstractSCCKey, byte[])},
+	 * {@link SecureCryptoConfigInterface#sign(AbstractSCCKey, PlaintextContainerInterface)},
+	 * {@link SecureCryptoConfigInterface#validateSignature(AbstractSCCKey, AbstractSCCSignature)},
+	 * {@link SecureCryptoConfigInterface#updateSignature(AbstractSCCKey, byte[])},
+	 * {@link SecureCryptoConfigInterface#updateSignature(AbstractSCCKey, PlaintextContainerInterface)}
 	 * 
-	 * Depending on the {@link KeyUseCase} the SCCKey get a different {@link KeyType}
+	 * Depending on the {@link KeyUseCase} the SCCKey get a different
+	 * {@link KeyType}
 	 * 
-	 * @param useCase: for which Scenario is the key needed? Give a value of {@link KeyUseCase} 
+	 * @param useCase: for which Scenario is the key needed? Give a value of
+	 *        {@link KeyUseCase}
 	 * @return SCCKey: key that can be used for the specified use case
 	 * @throws CoseException
 	 * @throws NoSuchAlgorithmException
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
 	public static SCCKey createKey(KeyUseCase useCase) throws CoseException, NoSuchAlgorithmException, SCCException {
 		CryptoUseCase c;
@@ -202,11 +217,12 @@ public class SCCKey extends AbstractSCCKey {
 	}
 
 	/**
-	 * Creation of a key that can be used for {@link SecureCryptoConfigInterface#encryptSymmetric(AbstractSCCKey, byte[])}.
+	 * Creation of a key that can be used for
+	 * {@link SecureCryptoConfigInterface#encryptSymmetric(AbstractSCCKey, byte[])}.
 	 * 
 	 * @return SCCKey
 	 * @throws CoseException
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
 	private static SCCKey createSymmetricKey() throws CoseException, SCCException {
 
@@ -219,7 +235,6 @@ public class SCCKey extends AbstractSCCKey {
 		for (int i = 0; i < algorithms.size(); i++) {
 
 			String sccalgorithmID = algorithms.get(i);
-
 
 			if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
 
@@ -262,8 +277,8 @@ public class SCCKey extends AbstractSCCKey {
 	 * @param c
 	 * @return SCCKeyPair
 	 * @throws NoSuchAlgorithmException
-	 * @throws SCCException 
-	 * @throws CoseException 
+	 * @throws SCCException
+	 * @throws CoseException
 	 */
 	private static SCCKey createNewKeyPair(CryptoUseCase c) throws SCCException, CoseException {
 		ArrayList<String> algorithms = new ArrayList<String>();
@@ -327,7 +342,7 @@ public class SCCKey extends AbstractSCCKey {
 	 * 
 	 * @param password: as byte[]
 	 * @return SCCKey
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
 	public static SCCKey createSymmetricKeyWithPassword(byte[] password) throws SCCException {
 		try {
@@ -346,9 +361,10 @@ public class SCCKey extends AbstractSCCKey {
 	 * @param password: as PlaintextContainer
 	 * @return SCCKey
 	 * @throws CoseException
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
-	public static SCCKey createSymmetricKeyWithPassword(PlaintextContainer password) throws CoseException, SCCException {
+	public static SCCKey createSymmetricKeyWithPassword(PlaintextContainer password)
+			throws CoseException, SCCException {
 		String algo = null;
 		String keyAlgo = null;
 		int keysize = 0, iterations = 0, saltLength = 0;
@@ -394,10 +410,9 @@ public class SCCKey extends AbstractSCCKey {
 					SecretKey secretKeyFromPBKDF2 = secretKeyFactory.generateSecret(passwordBasedEncryptionKeySpec);
 					SecretKey key = new SecretKeySpec(secretKeyFromPBKDF2.getEncoded(), keyAlgo.toString());
 					return new SCCKey(KeyType.Symmetric, key.getEncoded(), keyAlgo);
-				} catch (NoSuchAlgorithmException e)
-				{
+				} catch (NoSuchAlgorithmException e) {
 					throw new SCCException("Key could not be created! No algorithm specified!", e);
-				}catch(InvalidKeySpecException e) {
+				} catch (InvalidKeySpecException e) {
 					throw new SCCException("Key could not be created!", e);
 				}
 

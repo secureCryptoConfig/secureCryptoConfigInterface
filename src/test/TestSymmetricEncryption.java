@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+
 import org.junit.jupiter.api.Test;
 
 import COSE.CoseException;
@@ -21,7 +22,7 @@ import main.SecureCryptoConfig;
 class TestSymmetricEncryption {
 
 	SecureCryptoConfig scc = new SecureCryptoConfig();
-	
+
 	// Use Cases:
 	// encryption:
 	// - byte[] encrypt, return: encrypted byte[] + new key
@@ -61,19 +62,21 @@ class TestSymmetricEncryption {
 
 	/**
 	 * Testing of symmetric Encryption/Decryption
-	 * @throws SCCException 
+	 * 
+	 * @throws SCCException
 	 */
 
 	// - byte[] encrypt, return: encrypted byte[] + new key
 	// - encrypted byte[] decrypt + key, return: decrypted byte[]
 	@Test
-	void testSymmetricByteDecryptWithKey() throws CoseException, NoSuchAlgorithmException, InvalidKeyException, SCCException {
+	void testSymmetricByteDecryptWithKey()
+			throws CoseException, NoSuchAlgorithmException, InvalidKeyException, SCCException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 		// Encryption
 		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext);
 		// Decryption
-		PlaintextContainer plain = ciphertext.decryptSymmetric(key);
+		PlaintextContainer plain = scc.decryptSymmetric(key, ciphertext);
 		byte[] decrypted = plain.toBytes();
 
 		assertEquals(new String(plaintext, StandardCharsets.UTF_8), plain.toString(StandardCharsets.UTF_8));
@@ -82,7 +85,8 @@ class TestSymmetricEncryption {
 	// - String encrypt, return: encrypted String + new key
 	// - encrypted String decrypt + key, return: decrypted String
 	@Test
-	void testSymmetricStringDecryptWithKey() throws CoseException, NoSuchAlgorithmException, InvalidKeyException, SCCException {
+	void testSymmetricStringDecryptWithKey()
+			throws CoseException, NoSuchAlgorithmException, InvalidKeyException, SCCException {
 		String plaintext = "Hello World!";
 		SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 		// Encryption
@@ -132,7 +136,8 @@ class TestSymmetricEncryption {
 
 	// - byte[] encrypt + key, return: encrypted byte[]
 	@Test
-	void testSymmetricByteEncryptionWithExistingKey() throws NoSuchAlgorithmException, CoseException, InvalidKeyException, SCCException {
+	void testSymmetricByteEncryptionWithExistingKey()
+			throws NoSuchAlgorithmException, CoseException, InvalidKeyException, SCCException {
 		// Some bytes for a key
 		byte[] existingKeyBytes = new byte[32];
 		SecureRandom random = SecureRandom.getInstanceStrong();
@@ -152,7 +157,8 @@ class TestSymmetricEncryption {
 
 	// - String encrypt + key, return: encrypted String
 	@Test
-	void testSymmetricStringEncryptionWithExistingKey() throws NoSuchAlgorithmException, CoseException, InvalidKeyException, SCCException {
+	void testSymmetricStringEncryptionWithExistingKey()
+			throws NoSuchAlgorithmException, CoseException, InvalidKeyException, SCCException {
 		// Some bytes for a key
 		byte[] existingKeyBytes = new byte[32];
 		SecureRandom random = SecureRandom.getInstanceStrong();
@@ -171,7 +177,8 @@ class TestSymmetricEncryption {
 
 	// - encrypted byte[] encrypt + key, return: encrypted byte[]
 	@Test
-	void testSymmetricByteReEncyptionWithKey() throws CoseException, NoSuchAlgorithmException, InvalidKeyException, SCCException {
+	void testSymmetricByteReEncyptionWithKey()
+			throws CoseException, NoSuchAlgorithmException, InvalidKeyException, SCCException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 		// Encryption
@@ -188,7 +195,8 @@ class TestSymmetricEncryption {
 
 	// - encrypted String encrypt + key, return: encrypted String
 	@Test
-	void testSymmetricStringReEncyptionWithKey() throws CoseException, NoSuchAlgorithmException, InvalidKeyException, SCCException {
+	void testSymmetricStringReEncyptionWithKey()
+			throws CoseException, NoSuchAlgorithmException, InvalidKeyException, SCCException {
 		String plaintext = "Hello World!";
 
 		SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);

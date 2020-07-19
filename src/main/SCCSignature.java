@@ -7,9 +7,11 @@ import COSE.CoseException;
 import COSE.Sign1Message;
 
 /**
- * Class representing Signature resulting from signing.
- * SCCSignature includes a byte[] representation of a COSE message. The byte[] contains the signature as well as all the parameters used during signing. 
- * In this way it is possible to validate the SCCSignature with the right choice of parameters easily.
+ * Class representing Signature resulting from signing. SCCSignature includes a
+ * byte[] representation of a COSE message. The byte[] contains the signature as
+ * well as all the parameters used during signing. In this way it is possible to
+ * validate the SCCSignature with the right choice of parameters easily.
+ * 
  * @author Lisa
  *
  */
@@ -18,8 +20,10 @@ public class SCCSignature extends AbstractSCCSignature {
 	private SecureCryptoConfig scc = new SecureCryptoConfig();
 
 	/**
-	 * Constructor that gets the byte[] representation of the COSE message resulting from signing
-	 * @param hashMsg
+	 * Constructor that gets the byte[] representation of the COSE message resulting
+	 * from signing
+	 * 
+	 * @param signatureMsg: byte[] of COSE message
 	 */
 	public SCCSignature(byte[] signatureMsg) {
 		super(signatureMsg);
@@ -29,23 +33,24 @@ public class SCCSignature extends AbstractSCCSignature {
 	public byte[] toBytes() {
 		return this.signatureMsg;
 	}
-	
+
 	@Override
 	public String toString(Charset c) {
 		return new String(this.signatureMsg, c);
 	}
-	
+
 	@Override
-	public SCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKey keyPair) throws SCCException {
+	public SCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKey keyPair)
+			throws SCCException {
 		try {
 			return (SCCSignature) scc.updateSignature(keyPair, plaintext);
 		} catch (CoseException e) {
 			throw new SCCException("Signature update could not be performed!", e);
-		}catch (InvalidKeyException e) {
+		} catch (InvalidKeyException e) {
 			throw new SCCException("Signature update could not be performed! Wrong KeyType!", e);
 		}
 	}
-	
+
 	@Override
 	public boolean validateSignature(AbstractSCCKey keyPair) throws SCCException {
 		try {
@@ -54,10 +59,10 @@ public class SCCSignature extends AbstractSCCSignature {
 			throw new SCCException("Signature validation could not be performed! Wrong KeyType!", e);
 		}
 	}
-	
-	
+
 	/**
 	 * Auxiliary method for converting byte[] back to COSE Sign1Message
+	 * 
 	 * @return HashMessage
 	 */
 	protected Sign1Message convertByteToMsg() {
@@ -68,5 +73,5 @@ public class SCCSignature extends AbstractSCCSignature {
 			return null;
 		}
 	}
-	
+
 }

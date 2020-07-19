@@ -62,8 +62,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * with the specified Security level
 	 * 
 	 * @param level: integer of desired security level of Secure Crypto Config file
-	 * @throws IllegalArgumentException: if there is no Secure Crypto Config File
-	 *                                   with specified level
+	 * @throws IllegalArgumentException
 	 */
 	public static void setSecurityLevel(int level) {
 		if (JSONReader.levels.contains(level)) {
@@ -89,7 +88,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * be varied.
 	 * 
 	 * @param path: path to "scc-config" directory. Path should end with \\
-	 * @throw InvalidPathException: if path to the directory does not exists
+	 * @throws InvalidPathException
 	 */
 	public static void setPathToSCCDirectory(String path) {
 		File file = new File(path);
@@ -104,8 +103,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	/**
 	 * Set Secure Crypto Config file to use
 	 * 
-	 * @param SCCFilePath: path to the Secure Crypto Config file to use
-	 * @throws InvalidPathException: if path to the directory does not exists
+	 * @param filePath: path to the Secure Crypto Config file to use
+	 * @throws InvalidPathException
 	 */
 	public static void setSCCFile(String filePath) {
 		File file = new File(filePath);
@@ -336,29 +335,29 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCSignature sign(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext) throws CoseException, InvalidKeyException, SCCException {
-		if(keyPair.getKeyType() == KeyType.Asymmetric)
-		{
-		ArrayList<String> algorithms = new ArrayList<String>();
-		algorithms = JSONReader.getAlgos(CryptoUseCase.Signing, sccPath);
+	public SCCSignature sign(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
+			throws CoseException, InvalidKeyException, SCCException {
+		if (keyPair.getKeyType() == KeyType.Asymmetric) {
+			ArrayList<String> algorithms = new ArrayList<String>();
+			algorithms = JSONReader.getAlgos(CryptoUseCase.Signing, sccPath);
 
-		for (int i = 0; i < algorithms.size(); i++) {
-			String sccalgorithmID = algorithms.get(i);
+			for (int i = 0; i < algorithms.size(); i++) {
+				String sccalgorithmID = algorithms.get(i);
 
-			if (getEnums().contains(sccalgorithmID)) {
+				if (getEnums().contains(sccalgorithmID)) {
 
-				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+					AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
 
-				switch (chosenAlgorithmID) {
-				case ECDSA_512:
-					return UseCases.createSignMessage(plaintext, keyPair, AlgorithmID.ECDSA_512);
-				default:
-					break;
+					switch (chosenAlgorithmID) {
+					case ECDSA_512:
+						return UseCases.createSignMessage(plaintext, keyPair, AlgorithmID.ECDSA_512);
+					default:
+						break;
+					}
 				}
-			}
 
-		}
-		}else {
+			}
+		} else {
 			throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
 					+ "Create a key with KeyType.Asymmetric");
 		}
@@ -366,10 +365,11 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCSignature sign(AbstractSCCKey keyPair, byte[] plaintext) throws CoseException, InvalidKeyException, SCCException {
-		
-			return sign(keyPair, new PlaintextContainer(plaintext));
-		
+	public SCCSignature sign(AbstractSCCKey keyPair, byte[] plaintext)
+			throws CoseException, InvalidKeyException, SCCException {
+
+		return sign(keyPair, new PlaintextContainer(plaintext));
+
 	}
 
 	@Override
@@ -379,39 +379,41 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCSignature updateSignature(AbstractSCCKey keyPair, byte[] plaintext) throws CoseException, InvalidKeyException, SCCException {
+	public SCCSignature updateSignature(AbstractSCCKey keyPair, byte[] plaintext)
+			throws CoseException, InvalidKeyException, SCCException {
 		return updateSignature(keyPair, new PlaintextContainer(plaintext));
 	}
 
 	@Override
-	public boolean validateSignature(AbstractSCCKey keyPair, AbstractSCCSignature signature) throws InvalidKeyException, SCCException {
-		if(keyPair.getKeyType() == KeyType.Asymmetric)
-		{
-		SCCKey pair = (SCCKey) keyPair;
-		PrivateKey privateKey = null;
-		try {
-			SCCSignature s = (SCCSignature) signature;
-			Sign1Message msg = s.convertByteToMsg();
+	public boolean validateSignature(AbstractSCCKey keyPair, AbstractSCCSignature signature)
+			throws InvalidKeyException, SCCException {
+		if (keyPair.getKeyType() == KeyType.Asymmetric) {
+			SCCKey pair = (SCCKey) keyPair;
+			PrivateKey privateKey = null;
 			try {
-				privateKey = pair.getPrivateKey();
-			} catch (NullPointerException e) {
-				OneKey oneKey = new OneKey(pair.getPublicKey(), null);
+				SCCSignature s = (SCCSignature) signature;
+				Sign1Message msg = s.convertByteToMsg();
+				try {
+					privateKey = pair.getPrivateKey();
+				} catch (NullPointerException e) {
+					OneKey oneKey = new OneKey(pair.getPublicKey(), null);
+					return msg.validate(oneKey);
+				}
+				OneKey oneKey = new OneKey(pair.getPublicKey(), privateKey);
 				return msg.validate(oneKey);
+			} catch (CoseException e) {
+				throw new SCCException("Signature validation could not be performed!", e);
 			}
-			OneKey oneKey = new OneKey(pair.getPublicKey(), privateKey);
-			return msg.validate(oneKey);
-		} catch (CoseException e) {
-			throw new SCCException("Signature validation could not be performed!", e);
-		}
 
-	} else {
-		throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
-				+ "Create a key with KeyType.Asymmetric");
-	}
+		} else {
+			throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
+					+ "Create a key with KeyType.Asymmetric");
+		}
 	}
 
 	@Override
-	public boolean validateSignature(AbstractSCCKey keyPair, byte[] signature) throws InvalidKeyException, SCCException {
+	public boolean validateSignature(AbstractSCCKey keyPair, byte[] signature)
+			throws InvalidKeyException, SCCException {
 		return validateSignature(keyPair, new SCCSignature(signature));
 	}
 
