@@ -6,6 +6,7 @@ import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
 import org.securecryptoconfig.PlaintextContainer;
+import org.securecryptoconfig.SCCException;
 import org.securecryptoconfig.SCCHash;
 import org.securecryptoconfig.SCCPasswordHash;
 import org.securecryptoconfig.SecureCryptoConfig;
@@ -99,6 +100,18 @@ class TestHashing {
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)),
 				new SCCHash(newHashString)));
 
+	}
+
+	// - PlaintextContainer hash, return: String hash
+	// - PlaintextContainer + validate, return: boolean
+	@Test
+	void testPlaintextContainerHashing() throws SCCException {
+		String plaintext = "Hello World!";
+		PlaintextContainer plaintextContainer = new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8));
+
+		SCCHash hash = plaintextContainer.hash();
+
+		assertTrue(plaintextContainer.validateHash(hash));
 	}
 
 	// Password Hashing
