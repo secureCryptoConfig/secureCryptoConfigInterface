@@ -27,8 +27,11 @@ import main.JSONReader.CryptoUseCase;
 import main.SecureCryptoConfig.AlgorithmIDEnum;
 
 /**
- * Class representing Key that is needed for symmetric/asymmetric encryption and
- * signing
+ * Container for a key or keypair used for cryptography operations like
+ * symmetric or asymmetric encryption.
+ * 
+ * SCCKey contains a byte[] representation of a key as well as all the
+ * parameters needed to define the type and use case of the key or keypair.
  * 
  * @author Lisa
  *
@@ -36,17 +39,21 @@ import main.SecureCryptoConfig.AlgorithmIDEnum;
 public class SCCKey extends AbstractSCCKey {
 
 	/**
-	 * Type of the corresponding key Depending on the KeyType a key can only used
-	 * for specific use cases: Symmetric needed for symmetric en/decryption
-	 * Asymmetric needed for asymmetric en/decryption and signing
+	 * Type of the corresponding key.
+	 * 
+	 * Depending on the {@link KeyType} a key can only be used for specific use
+	 * cases: {@code Symmetric} needed for symmetric encryption/decryption and
+	 * {@code Asymmetric} needed for asymmetric en/decryption and signing.
 	 */
 	public enum KeyType {
-	Symmetric, Asymmetric
+		Symmetric, Asymmetric
 	}
 
 	/**
-	 * Different use cases for which a key can be created Different KeyUseCases lead
-	 * to a SCCKey with a different {@link KeyType}
+	 * Different use cases for which a key can be created.
+	 * 
+	 * Different KeyUseCases lead to a {@link SCCKey} with a different
+	 * {@link KeyType}
 	 */
 	public enum KeyUseCase {
 		SymmetricEncryption, AsymmetricEncryption, Signing
@@ -54,12 +61,13 @@ public class SCCKey extends AbstractSCCKey {
 
 	/**
 	 * Constructor which gets the {@link KeyType}, the byte[] representation of the
-	 * key and the algorithm of its creation. This constructor is used in for
-	 * SCCKeys of {@link KeyType#Symmetric}. If a new SCCKey should be created call
-	 * {@link #createKey(KeyUseCase)}.
+	 * key and the algorithm of its creation.
 	 * 
-	 * @param type: choice of {@link KeyType}
-	 * @param key: byte[] representation of key
+	 * This constructor is used in for SCCKeys of {@link KeyType#Symmetric}. If a
+	 * new SCCKey should be created call {@link #createKey(KeyUseCase)}.
+	 * 
+	 * @param type:      choice of {@link KeyType}
+	 * @param key:       byte[] representation of key
 	 * @param algorithm: used for key creation
 	 */
 	public SCCKey(KeyType type, byte[] key, String algorithm) {
@@ -78,14 +86,15 @@ public class SCCKey extends AbstractSCCKey {
 
 	/**
 	 * Constructor which gets the {@link KeyType}, the byte[] representation of the
-	 * public and private key and the algorithm of its creation. This constructor is
-	 * used in for SCCKeys of {@link KeyType#Asymmetric}. If a new SCCKey should be
-	 * created call {@link #createKey(KeyUseCase)}.
+	 * public and private key and the algorithm of its creation.
 	 * 
-	 * @param type: choice of {@link KeyType}
-	 * @param publicKey: byte[] representation of public key
+	 * This constructor is used in for SCCKeys of {@link KeyType#Asymmetric}. If a
+	 * new SCCKey should be created call {@link #createKey(KeyUseCase)}.
+	 * 
+	 * @param type:       choice of {@link KeyType}
+	 * @param publicKey:  byte[] representation of public key
 	 * @param privateKey: byte[] representation of private key
-	 * @param algorithm: used for key creation
+	 * @param algorithm:  used for key creation
 	 */
 	public SCCKey(KeyType type, byte[] publicKey, byte[] privateKey, String algorithm) {
 		super(type, publicKey, privateKey, algorithm);
@@ -127,6 +136,7 @@ public class SCCKey extends AbstractSCCKey {
 		if (this.type == KeyType.Symmetric) {
 			return new SecretKeySpec(key, 0, key.length, this.algorithm);
 		} else {
+			// TODO throw exception instead of returning null
 			return null;
 		}
 	}
@@ -146,6 +156,7 @@ public class SCCKey extends AbstractSCCKey {
 				throw new SCCException("Could not convert to Public Key", e);
 			}
 		} else {
+			// TODO throw exception instead of returning null
 			return null;
 		}
 	}
@@ -194,7 +205,7 @@ public class SCCKey extends AbstractSCCKey {
 	 * {@link KeyType}
 	 * 
 	 * @param useCase: for which Scenario is the key needed? Give a value of
-	 *        {@link KeyUseCase}
+	 *                 {@link KeyUseCase}
 	 * @return SCCKey: key that can be used for the specified use case
 	 * @throws CoseException
 	 * @throws NoSuchAlgorithmException
@@ -272,7 +283,8 @@ public class SCCKey extends AbstractSCCKey {
 	}
 
 	/**
-	 * Auxiliary method for creating asymmetric SCCKey for asymmetric and signing
+	 * Auxiliary method for creating asymmetric SCCKey for asymmetric encryption or
+	 * signing.
 	 * 
 	 * @param c
 	 * @return SCCKeyPair
@@ -316,7 +328,7 @@ public class SCCKey extends AbstractSCCKey {
 
 	/**
 	 * Auxiliary method for creating SCCKey with specific size for asymmetric
-	 * encryption
+	 * encryption.
 	 * 
 	 * @param algo
 	 * @param keysize
@@ -331,6 +343,7 @@ public class SCCKey extends AbstractSCCKey {
 					keyPair.getPrivate().getEncoded(), algo);
 			return key;
 		} catch (NoSuchAlgorithmException e) {
+			// TODO throw exception instead of returning null
 			e.printStackTrace();
 			return null;
 		}
@@ -338,7 +351,7 @@ public class SCCKey extends AbstractSCCKey {
 
 	/**
 	 * Creation of key derived from a given password that can be used for symmetric
-	 * encryption
+	 * encryption.
 	 * 
 	 * @param password: as byte[]
 	 * @return SCCKey
@@ -349,6 +362,7 @@ public class SCCKey extends AbstractSCCKey {
 			return createSymmetricKeyWithPassword(new PlaintextContainer(password));
 
 		} catch (CoseException e) {
+			// TODO throw exception instead of returning null
 			e.printStackTrace();
 			return null;
 		}
@@ -438,6 +452,7 @@ public class SCCKey extends AbstractSCCKey {
 			random.nextBytes(nonce);
 			return nonce;
 		} catch (NoSuchAlgorithmException e) {
+			// TODO throw exception instead of returning null
 			e.printStackTrace();
 			return null;
 		}
