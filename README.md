@@ -22,9 +22,10 @@
 	1. [SCCPasswordHash](#sccpasswordhash)
 9. [Handling of Secure Crypto Config files](#handling-of-secure-crypto-config-files)
 
-##Example
+## Example Usage 
 
-One of the most important use cases in cryptography is symmetric encryption. Using the methods provided from the Secure Crypto Config Interface symmetric encryption and deryption can be easily performed as follows:
+Code for Encryption (and decryption) with the Secure Crypto Config Interface (which automatically selects a secure (symmetric in this case) cryptography algorithm and parameters.
+
 ```java
 	byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 	SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
