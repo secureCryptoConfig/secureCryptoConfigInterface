@@ -746,8 +746,24 @@ abstract class AbstractSCCPasswordHash {
 
 	byte[] hashMsg;
 
+	/**
+	 * Constructor that creates a new AbstractSCCPasswordHash object based on
+	 * existing COSE message.
+	 * 
+	 * @param hashMsg: byte[] of COSE message
+	 */
 	public AbstractSCCPasswordHash(byte[] hashMsg) {
 		this.hashMsg = hashMsg;
+	}
+
+	/**
+	 * Constructor that creates a new AbstractSCCPasswordHash object based on
+	 * existing COSE message.
+	 * 
+	 * @param hashMsg: Base64 encoded String of COSE message
+	 */
+	public AbstractSCCPasswordHash(String hash) {
+		this(Base64.getDecoder().decode(hash));
 	}
 
 	/**
@@ -758,13 +774,12 @@ abstract class AbstractSCCPasswordHash {
 	abstract byte[] toBytes();
 
 	/**
-	 * Get String representation of {@link SCCPasswordHash} depending on given.
-	 * Charset
+	 * Base64 encode {@link SCCHash}.
 	 * 
-	 * @param c: Charset
 	 * @return String
 	 */
-	abstract String toString(Charset c);
+	@Override
+	public abstract String toString();
 
 	/**
 	 * Validate if {@link SCCPasswordHash} matches hash of a given password.

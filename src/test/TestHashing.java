@@ -124,10 +124,8 @@ class TestHashing {
 		SCCPasswordHash hash = scc.passwordHash(password);
 		byte[] hashedValue = hash.toBytes();
 
-		boolean result = scc.validatePasswordHash(new PlaintextContainer(password), hash);
-
-		assertTrue(result);
-
+		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password), hash));
+		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password), new SCCPasswordHash(hashedValue)));
 	}
 
 	// - String plain hash, return: String hash
@@ -136,11 +134,11 @@ class TestHashing {
 	void testPasswordHashingStringValidation() throws CoseException {
 		String password = "Hello World!";
 		SCCPasswordHash hash = scc.passwordHash(password.getBytes(StandardCharsets.UTF_8));
-		String hashedValue = hash.toString(StandardCharsets.UTF_8);
-		boolean result = scc.validatePasswordHash(new PlaintextContainer(password.getBytes()), hash);
+		String hashedValue = hash.toString();
 
-		assertTrue(result);
-
+		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes()), hash));
+		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)),
+				new SCCPasswordHash(hashedValue)));
 	}
 
 }

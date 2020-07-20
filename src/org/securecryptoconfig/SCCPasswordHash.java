@@ -1,6 +1,6 @@
 package org.securecryptoconfig;
 
-import java.nio.charset.Charset;
+import java.util.Base64;
 
 import COSE.CoseException;
 import COSE.PasswordHashMessage;
@@ -23,12 +23,22 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 
 	/**
 	 * Constructor that creates a new SCCPasswordHash object based on existing COSE
-	 * message (password hash) bytes.
+	 * message.
 	 * 
 	 * @param hashMsg: byte[] of COSE message
 	 */
 	public SCCPasswordHash(byte[] hashMsg) {
 		super(hashMsg);
+	}
+
+	/**
+	 * Constructor that creates a new SCCPasswordHash object based on existing COSE
+	 * message.
+	 * 
+	 * @param hashMsg: Base64 encoded String of COSE message
+	 */
+	public SCCPasswordHash(String hash) {
+		this(Base64.getDecoder().decode(hash));
 	}
 
 	@Override
@@ -51,8 +61,8 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	}
 
 	@Override
-	public String toString(Charset c) {
-		return new String(this.hashMsg, c);
+	public String toString() {
+		return Base64.getEncoder().encodeToString(this.hashMsg);
 	}
 
 	/**
