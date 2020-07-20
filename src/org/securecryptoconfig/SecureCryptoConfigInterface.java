@@ -774,7 +774,7 @@ abstract class AbstractSCCPasswordHash {
 	abstract byte[] toBytes();
 
 	/**
-	 * Base64 encode {@link SCCHash}.
+	 * Base64 encode {@link SCCPasswordHash}.
 	 * 
 	 * @return String
 	 */
@@ -825,6 +825,16 @@ abstract class AbstractSCCSignature {
 	}
 
 	/**
+	 * Constructor that creates a new AbstractSCCSignature object based on existing
+	 * COSE message.
+	 * 
+	 * @param hashMsg: Base64 encoded String of COSE message
+	 */
+	public AbstractSCCSignature(String hash) {
+		this(Base64.getDecoder().decode(hash));
+	}
+
+	/**
 	 * Get byte[] representation of {@link SCCSignature}.
 	 * 
 	 * @return byte[]
@@ -832,12 +842,12 @@ abstract class AbstractSCCSignature {
 	abstract byte[] toBytes();
 
 	/**
-	 * Get String representation of {@link SCCSignature} depending on given Charset.
+	 * Base64 encode {@link AbstractSCCSignature}.
 	 * 
-	 * @param c: Charset
 	 * @return String
 	 */
-	abstract String toString(Charset c);
+	@Override
+	public abstract String toString();
 
 	/**
 	 * Validate {@link SCCSignature}.

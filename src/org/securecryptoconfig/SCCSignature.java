@@ -1,7 +1,7 @@
 package org.securecryptoconfig;
 
-import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
+import java.util.Base64;
 
 import COSE.CoseException;
 import COSE.Sign1Message;
@@ -32,14 +32,24 @@ public class SCCSignature extends AbstractSCCSignature {
 		super(signatureMsg);
 	}
 
+	/**
+	 * Constructor that creates a new AbstractSCCSignature object based on existing
+	 * COSE message.
+	 * 
+	 * @param hashMsg: Base64 encoded String of COSE message
+	 */
+	public SCCSignature(String hash) {
+		this(Base64.getDecoder().decode(hash));
+	}
+
 	@Override
 	public byte[] toBytes() {
 		return this.signatureMsg;
 	}
 
 	@Override
-	public String toString(Charset c) {
-		return new String(this.signatureMsg, c);
+	public String toString() {
+		return Base64.getEncoder().encodeToString(this.signatureMsg);
 	}
 
 	@Override
