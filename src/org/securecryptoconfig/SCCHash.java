@@ -33,7 +33,7 @@ public class SCCHash extends AbstractSCCHash {
 	/**
 	 * Constructor that creates a new SCCHash object based on existing COSE message.
 	 * 
-	 * @param hashMsg: Base64 encoded String of COSE message
+	 * @param hash: Base64 encoded String of COSE message
 	 */
 	public SCCHash(String hash) {
 		this(Base64.getDecoder().decode(hash));

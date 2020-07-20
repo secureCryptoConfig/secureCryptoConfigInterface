@@ -36,7 +36,7 @@ public class SCCSignature extends AbstractSCCSignature {
 	 * Constructor that creates a new AbstractSCCSignature object based on existing
 	 * COSE message.
 	 * 
-	 * @param hashMsg: Base64 encoded String of COSE message
+	 * @param hash: Base64 encoded String of COSE message
 	 */
 	public SCCSignature(String hash) {
 		this(Base64.getDecoder().decode(hash));
