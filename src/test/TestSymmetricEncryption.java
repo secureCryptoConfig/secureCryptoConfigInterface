@@ -2,6 +2,7 @@ package test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
@@ -13,9 +14,9 @@ import org.securecryptoconfig.PlaintextContainer;
 import org.securecryptoconfig.SCCCiphertext;
 import org.securecryptoconfig.SCCException;
 import org.securecryptoconfig.SCCKey;
-import org.securecryptoconfig.SecureCryptoConfig;
 import org.securecryptoconfig.SCCKey.KeyType;
 import org.securecryptoconfig.SCCKey.KeyUseCase;
+import org.securecryptoconfig.SecureCryptoConfig;
 
 import COSE.CoseException;
 
@@ -75,6 +76,10 @@ class TestSymmetricEncryption {
 		SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 		// Encryption
 		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext);
+
+		assertNotEquals(plaintext, ciphertext);
+		assertFalse(ciphertext.toBytes().length == 0);
+
 		// Decryption
 		PlaintextContainer plain = scc.decryptSymmetric(key, ciphertext);
 		byte[] decrypted = plain.toBytes();
