@@ -63,9 +63,8 @@ To be abel to use the Secure Crypto Config Interface it is necessary to add two 
 Before using the Interface it is necessary to handle the import like follows:
 
 ```java
-    import org.securecryptoconfig;
-    import COSE;
-
+import org.securecryptoconfig;
+import COSE;
 ```
 
 ## En/Decryption
@@ -75,11 +74,12 @@ Before using the Interface it is necessary to handle the import like follows:
 An example for crreating a symmetric key can be performed as follows:
 
 ```java
-    SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
+SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 ```
+
 It is also possible to create a symmetric key that is derived from a password:
 ```java
-    SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
+SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
 ```
 
 For performing cryptographic use cases a SCCKey is needed. To create a new SCC just call the `createKey(KeyUseCase useCase)`-method. To be able to generate a suitable key it is necessary to define for which use case the key should be created. Possible `KeyUseCase` choices are: `SymmetricEncryption, AsymmetricEncryption, Signing`.
@@ -101,24 +101,24 @@ To get information about the SCCKey different methods exists: `toBytes()`, `getP
 
 General process of symmetric en/decryption:
 ```java
-    byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-	SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
-    SecureCryptoConfig scc = new SecureCryptoConfig();
-	// Encryption
-	SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext);
-	// Decryption
-	PlaintextContainer plain = scc.decryptSymmetric(key, ciphertext);
+byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
+SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
+SecureCryptoConfig scc = new SecureCryptoConfig();
+// Encryption
+SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext);
+// Decryption
+PlaintextContainer plain = scc.decryptSymmetric(key, ciphertext);
 ```
  or with convenient methods:
  ```java
-    byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-	PlaintextContainer plain = new PlaintextContainer(plaintext);
+byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
+PlaintextContainer plain = new PlaintextContainer(plaintext);
 
-    SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
-	// Encryption
-	SCCCiphertext ciphertext = plain.encryptSymmetric(key);
-	// Decryption
-	PlaintextContainer plain = ciphertext.decryptSymmetric(key);
+SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
+// Encryption
+SCCCiphertext ciphertext = plain.encryptSymmetric(key);
+// Decryption
+PlaintextContainer plain = ciphertext.decryptSymmetric(key);
 ```
 
 Methods provided for symmetric encryption are: `encryptSymmetric(..)`, `reEncryptSymmetric(..)` and `decryptSymmetric(..)`
@@ -134,24 +134,24 @@ Methods provided for symmetric encryption are: `encryptSymmetric(..)`, `reEncryp
 
 General process of asymmetric en/decryption:
 ```java
-    byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-	SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
-    SecureCryptoConfig scc = new SecureCryptoConfig();
-	// Encryption
-	SCCCiphertext ciphertext = scc.encryptAsymmetric(key, plaintext);
-	// Decryption
-	PlaintextContainer plain = scc.decryptAsymmetric(key, ciphertext);
+byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
+SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
+SecureCryptoConfig scc = new SecureCryptoConfig();
+// Encryption
+SCCCiphertext ciphertext = scc.encryptAsymmetric(key, plaintext);
+// Decryption
+PlaintextContainer plain = scc.decryptAsymmetric(key, ciphertext);
 ```
  or with convenient methods:
  ```java
-    byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-	PlaintextContainer plain = new PlaintextContainer(plaintext);
+byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
+PlaintextContainer plain = new PlaintextContainer(plaintext);
 
-    SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
-	// Encryption
-	SCCCiphertext ciphertext = plain.encryptAsymmetric(key);
-	// Decryption
-	PlaintextContainer plain = ciphertext.decryptAsymmetric(key);
+SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
+// Encryption
+SCCCiphertext ciphertext = plain.encryptAsymmetric(key);
+// Decryption
+PlaintextContainer plain = ciphertext.decryptAsymmetric(key);
 ```
 
 The general process for asymmetric encryption is the same as for symmetric encryption.
@@ -178,23 +178,24 @@ This class also contains convenient methods for the user such that methods needi
 
 General process of signing/validation:
 ```java
-    byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-	SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
-    SecureCryptoConfig scc = new SecureCryptoConfig();
-	//Signing
-	SCCSignature signature = scc.sign(key,plaintext);
-	//validation
-	boolean result = scc.validateSignature(key, signature);
+byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
+SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
+SecureCryptoConfig scc = new SecureCryptoConfig();
+//Signing
+SCCSignature signature = scc.sign(key,plaintext);
+//validation
+boolean result = scc.validateSignature(key, signature);
 ```
+
  or with convenient methods:
  ```java
-    byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-    PlaintextContainer plain = new PlaintextContainer(plaintext);
-	SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
-	//Signing
-	SCCSignature signature = plain.sign(key);
-	//validation
-	boolean result = signature.validateSignature(key);
+byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
+PlaintextContainer plain = new PlaintextContainer(plaintext);
+SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
+//Signing
+SCCSignature signature = plain.sign(key);
+//validation
+boolean result = signature.validateSignature(key);
 ```
 
 Methods provided for Signing are: `sign(..)`, `updateSignature(..)` and `validateSignature(..)`
@@ -212,23 +213,22 @@ The SCCSignature is the output after performing signing. It is the same represen
 
 General process of hashing and its validation
 ```java
-    byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
+byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 
-    SecureCryptoConfig scc = new SecureCryptoConfig();
-    //Hashing
-	SCCHash hash = scc.hash(plaintext);
-	//Validation
-	boolean result = scc.validateHash(plaintext, hash);
-
+SecureCryptoConfig scc = new SecureCryptoConfig();
+//Hashing
+SCCHash hash = scc.hash(plaintext);
+//Validation
+boolean result = scc.validateHash(plaintext, hash);
 ```
  or with convenient methods:
  ```java
-    byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-    PlaintextContainer plain = new PlaintextContainer(plaintext);
-	//Hashing
-	SCCHash hash = plain.hash();
-	//Validation
-	boolean result = hash.validateHash(plaintext);
+byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
+PlaintextContainer plain = new PlaintextContainer(plaintext);
+//Hashing
+SCCHash hash = plain.hash();
+//Validation
+boolean result = hash.validateHash(plaintext);
 ```
 
 Methods provided for Hashing are: `hash(..)`, `validateHash(..)` and `updateHash(..)`
@@ -246,24 +246,22 @@ The SCCHash is the output after performing hashing. It is the same representatio
 
 General process of password hashing and its validation
 ```java
-    byte[] password = "Hello World!".getBytes(StandardCharsets.UTF_8);
+byte[] password = "Hello World!".getBytes(StandardCharsets.UTF_8);
 
-    SecureCryptoConfig scc = new SecureCryptoConfig();
-    //Hashing
-	SCCPasswordHash hash = scc.passwordHash(password);
-	//Validation
-	boolean result = scc.validatePasswordHash(password, hash);
-
-
+SecureCryptoConfig scc = new SecureCryptoConfig();
+//Hashing
+SCCPasswordHash hash = scc.passwordHash(password);
+//Validation
+boolean result = scc.validatePasswordHash(password, hash);
 ```
  or with convenient methods:
  ```java
-    byte[] password = "Hello World!".getBytes(StandardCharsets.UTF_8);
-    PlaintextContainer container = new PlaintextContainer(password);
-	//Hashing
-	SCCPasswordHash hash = container.passwordHash();
-	//Validation
-	boolean result = hash.validatePasswordHash(password);
+byte[] password = "Hello World!".getBytes(StandardCharsets.UTF_8);
+PlaintextContainer container = new PlaintextContainer(password);
+//Hashing
+SCCPasswordHash hash = container.passwordHash();
+//Validation
+boolean result = hash.validatePasswordHash(password);
 ```
 Methods provided for Hashing are: `passwordHash(..)` and `validatePasswordHash(..)`
 
@@ -283,5 +281,3 @@ It is also possible to give a custom part to your own (derived) versions of the 
 By default the files provided by within the Interface are used for parsing. There are files for different *security levels*. The higher the security level of a file the more confidential your data must be handled. By defualt the Interface will use the algorithm ids from the most recent (according to its version) file with the highest security level. If you want a specific file to be parsed use the `setSCCFile(String filePath)` method and give the path to the desired file. Also you can use the `setSecurityLevel(int level)` method. As a result the most recent file with the specified security level number will be used.
 
 The files used for processing can be shown with `getUsedSCC()`. If you have set a specific file for usage or a custom path you can also go back to the default settings with the `setDefaultSCC()` method.
-
-
