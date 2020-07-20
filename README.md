@@ -27,15 +27,17 @@
 Code for Encryption (and decryption) with the Secure Crypto Config Interface (which automatically selects a secure (symmetric in this case) cryptography algorithm and parameters.
 
 ```java
-	byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-	SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
-    SecureCryptoConfig scc = new SecureCryptoConfig();
-	// Encryption
-	SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext);
+byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 
-	// Decryption
-	PlaintextContainer plain = scc.decryptSymmetric(key, ciphertext);
-	byte[] decrypted = plain.toBytes();
+SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
+SecureCryptoConfig scc = new SecureCryptoConfig();
+
+// Encryption
+SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext);
+
+// Decryption
+PlaintextContainer plain = scc.decryptSymmetric(key, ciphertext);
+byte[] decrypted = plain.toBytes();
 ```
 
 ## Introduction
