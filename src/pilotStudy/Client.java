@@ -6,10 +6,10 @@ import java.time.Instant;
 
 import org.securecryptoconfig.SCCException;
 import org.securecryptoconfig.SCCKey;
-import org.securecryptoconfig.SCCSignature;
-import org.securecryptoconfig.SecureCryptoConfig;
 import org.securecryptoconfig.SCCKey.KeyType;
 import org.securecryptoconfig.SCCKey.KeyUseCase;
+import org.securecryptoconfig.SCCSignature;
+import org.securecryptoconfig.SecureCryptoConfig;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 
@@ -45,7 +45,7 @@ public class Client implements Runnable {
 			e.printStackTrace();
 		}
 		byte[] publicKey = pair.getPublicKeyBytes();
-		
+
 		int clientID = server.registerClient(new SCCKey(KeyType.Asymmetric, publicKey, null, pair.getAlgorithm()));
 		if (clientID == -1) {
 			throw new IllegalStateException("server does not seem to accept the client registration!");
@@ -67,7 +67,7 @@ public class Client implements Runnable {
 
 	private static byte[] sign(String order, SCCKey pair) throws CoseException {
 		SecureCryptoConfig scc = new SecureCryptoConfig();
-		
+
 		SCCSignature sig;
 		try {
 			sig = scc.sign(pair, order.getBytes());

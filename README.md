@@ -4,9 +4,10 @@
 
 ## Index
 
-1. [Introduction](#introduction)
-2. [Overview](#overview)
-3. [Getting started](#getting-started)
+1. [Example](#example)
+2. [Introduction](#introduction)
+3. [Overview](#overview)
+4. [Getting started](#getting-started)
 5. [En/decryption](#en/decryption)
 	1. [Generating new keys](#generating-new-keys)
 	2. [Symmetric Encryption](#symmetric-encryption)
@@ -21,6 +22,20 @@
 	1. [SCCPasswordHash](#sccpasswordhash)
 9. [Handling of Secure Crypto Config files](#handling-of-secure-crypto-config-files)
 
+##Example
+
+One of the most important use cases in cryptography is symmetric encryption. Using the methods provided from the Secure Crypto Config Interface symmetric encryption and deryption can be easily performed as follows:
+```java
+	byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
+	SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
+    SecureCryptoConfig scc = new SecureCryptoConfig();
+	// Encryption
+	SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext);
+
+	// Decryption
+	PlaintextContainer plain = scc.decryptSymmetric(key, ciphertext);
+	byte[] decrypted = plain.toBytes();
+```
 
 ## Introduction
 

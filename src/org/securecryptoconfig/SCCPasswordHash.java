@@ -35,7 +35,7 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	 * Constructor that creates a new SCCPasswordHash object based on existing COSE
 	 * message.
 	 * 
-	 * @param hashMsg: Base64 encoded String of COSE message
+	 * @param hash: Base64 encoded String of COSE message
 	 */
 	public SCCPasswordHash(String hash) {
 		this(Base64.getDecoder().decode(hash));

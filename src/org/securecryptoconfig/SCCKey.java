@@ -47,7 +47,7 @@ public class SCCKey extends AbstractSCCKey {
 	 * {@code Asymmetric} needed for asymmetric en/decryption and signing.
 	 */
 	public enum KeyType {
-		Symmetric, Asymmetric
+	Symmetric, Asymmetric
 	}
 
 	/**
@@ -67,8 +67,8 @@ public class SCCKey extends AbstractSCCKey {
 	 * This constructor is used in for SCCKeys of {@link KeyType#Symmetric}. If a
 	 * new SCCKey should be created call {@link #createKey(KeyUseCase)}.
 	 * 
-	 * @param type:      choice of {@link KeyType}
-	 * @param key:       byte[] representation of key
+	 * @param type: choice of {@link KeyType}
+	 * @param key: byte[] representation of key
 	 * @param algorithm: used for key creation
 	 */
 	public SCCKey(KeyType type, byte[] key, String algorithm) {
@@ -92,10 +92,10 @@ public class SCCKey extends AbstractSCCKey {
 	 * This constructor is used in for SCCKeys of {@link KeyType#Asymmetric}. If a
 	 * new SCCKey should be created call {@link #createKey(KeyUseCase)}.
 	 * 
-	 * @param type:       choice of {@link KeyType}
-	 * @param publicKey:  byte[] representation of public key
+	 * @param type: choice of {@link KeyType}
+	 * @param publicKey: byte[] representation of public key
 	 * @param privateKey: byte[] representation of private key
-	 * @param algorithm:  used for key creation
+	 * @param algorithm: used for key creation
 	 */
 	public SCCKey(KeyType type, byte[] publicKey, byte[] privateKey, String algorithm) {
 		super(type, publicKey, privateKey, algorithm);
@@ -206,7 +206,7 @@ public class SCCKey extends AbstractSCCKey {
 	 * {@link KeyType}
 	 * 
 	 * @param useCase: for which Scenario is the key needed? Give a value of
-	 *                 {@link KeyUseCase}
+	 *        {@link KeyUseCase}
 	 * @return SCCKey: key that can be used for the specified use case
 	 * @throws CoseException
 	 * @throws NoSuchAlgorithmException
