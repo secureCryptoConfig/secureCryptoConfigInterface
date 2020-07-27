@@ -263,11 +263,12 @@ public class JSONReader {
 	}
 
 	private static void getPublicKeyPath() {
-
-		File folder = new File(getBasePath() + "publicKeys\\");
+		
+		File folder = new File(getBasePath() + "\\publicKeys\\");
 		File[] listOfFiles = folder.listFiles();
-		publicKeyPath1 = getBasePath() + "publicKeys\\" + listOfFiles[0].getName();
-		publicKeyPath2 = getBasePath() + "publicKeys\\" + listOfFiles[1].getName();
+		publicKeyPath1 = getBasePath() + "\\publicKeys\\" + listOfFiles[0].getName();
+		publicKeyPath2 = getBasePath() + "\\publicKeys\\" + listOfFiles[1].getName();
+		
 
 	}
 
@@ -314,19 +315,21 @@ public class JSONReader {
 	 * 
 	 * @param path to "configs" folder containing SCC files
 	 * @return path
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
 	protected static String parseFiles(String path) {
 		allFilePaths.clear();
 		getFiles(path);
-		if (SecureCryptoConfig.customPath == true) {
+		//if (SecureCryptoConfig.customPath == true) {
+		/**
+		if (SecureCryptoConfig.customPath == false) {
 			getPublicKeyPath();
 			try {
 				startValidation();
 			} catch (SCCException e) {
 				e.printStackTrace();
 			}
-		}
+		}**/
 		getSecurityLevel();
 		return getLatestSCC(getHighestLevel(levels));
 	}

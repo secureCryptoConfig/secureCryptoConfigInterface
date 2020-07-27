@@ -37,14 +37,17 @@ import COSE.Sign1Message;
  */
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
-	protected static String sccPath = JSONReader.parseFiles(JSONReader.getBasePath());
+	protected static String sccPath;
+	//protected static String sccPath = JSONReader.parseFiles(JSONReader.getBasePath());
 	protected static boolean customPath = false;
 
+	protected static SCCAlgorithm usedAlgorithm = null;
+	
 	/**
 	 * All supported algorithm names
 	 *
 	 */
-	protected static enum AlgorithmIDEnum {
+	public static enum SCCAlgorithm {
 		// symmetric:
 		AES_GCM_256_96, AES_GCM_128_96,
 		// Digital Signature
@@ -56,7 +59,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		// PasswordHash
 		PBKDF_SHA_256
 	}
-
+	
+	
+	
 	/**
 	 * Set the latest Secure Crypto Config file of a specific Security level for
 	 * usage.
@@ -140,11 +145,32 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	protected static HashSet<String> getEnums() {
 		HashSet<String> values = new HashSet<String>();
 
-		for (AlgorithmIDEnum c : AlgorithmIDEnum.values()) {
+		for (SCCAlgorithm c : SCCAlgorithm.values()) {
 			values.add(c.name());
 		}
 
 		return values;
+	}
+	
+	/**
+	 * Set a specific algorithm for the execution of the later performed use cases. Possible choices
+	 * are containes in {@link SCCAlgorithm}
+	 * @param algorithm: choice of one specific supported algorithm for the following performed use cases.
+	 * 
+	 */
+	public static void setAlgorithm(SCCAlgorithm algorithm)
+	{
+		usedAlgorithm = algorithm;
+	}
+	
+	/**
+	 * Use the algorithms proposed in the currently used Secure Crypto Config file for the
+	 * execution of the performed use cases. Only necessary if specific algorithm was set previously via
+	 * {@link SecureCryptoConfig#setAlgorithm(AlgorithmID)} 
+	 */
+	public static void defaultAlgorithm()
+	{
+		usedAlgorithm = null;
 	}
 
 	@Override
@@ -152,6 +178,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			throws CoseException, InvalidKeyException {
 
 		if (key.getKeyType() == KeyType.Symmetric) {
+			if(usedAlgorithm == null) {
 			ArrayList<String> algorithms = new ArrayList<String>();
 
 			algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, sccPath);
@@ -161,7 +188,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				if (getEnums().contains(sccalgorithmID)) {
 
-					AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+					SCCAlgorithm chosenAlgorithmID = SCCAlgorithm.valueOf(sccalgorithmID);
 
 					switch (chosenAlgorithmID) {
 					case AES_GCM_256_96:
@@ -173,7 +200,18 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 					}
 				}
+			}
+			}else {
+				switch (usedAlgorithm) {
+				case AES_GCM_256_96:
+					return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_256);
+				case AES_GCM_128_96:
+					return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_128);
+				default:
+					break;
 
+				}
+				
 			}
 		} else {
 			throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
@@ -227,7 +265,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				if (getEnums().contains(sccalgorithmID)) {
 
-					AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+					SCCAlgorithm chosenAlgorithmID = SCCAlgorithm.valueOf(sccalgorithmID);
 
 					switch (chosenAlgorithmID) {
 					case RSA_SHA_512:
@@ -288,7 +326,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 			if (getEnums().contains(sccalgorithmID)) {
 
-				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+				SCCAlgorithm chosenAlgorithmID = SCCAlgorithm.valueOf(sccalgorithmID);
 
 				switch (chosenAlgorithmID) {
 				case SHA_512:
@@ -351,7 +389,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 				if (getEnums().contains(sccalgorithmID)) {
 
-					AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+					SCCAlgorithm chosenAlgorithmID = SCCAlgorithm.valueOf(sccalgorithmID);
 
 					switch (chosenAlgorithmID) {
 					case ECDSA_512:
@@ -435,7 +473,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 			if (getEnums().contains(sccalgorithmID)) {
 
-				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+				SCCAlgorithm chosenAlgorithmID = SCCAlgorithm.valueOf(sccalgorithmID);
 
 				switch (chosenAlgorithmID) {
 				case PBKDF_SHA_256:

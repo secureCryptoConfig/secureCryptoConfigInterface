@@ -21,7 +21,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.securecryptoconfig.JSONReader.CryptoUseCase;
-import org.securecryptoconfig.SecureCryptoConfig.AlgorithmIDEnum;
+import org.securecryptoconfig.SecureCryptoConfig.SCCAlgorithm;
 
 import COSE.AlgorithmID;
 import COSE.CoseException;
@@ -228,6 +228,8 @@ public class SCCKey extends AbstractSCCKey {
 		}
 	}
 
+	
+
 	/**
 	 * Creation of a key that can be used for
 	 * {@link SecureCryptoConfigInterface#encryptSymmetric(AbstractSCCKey, byte[])}.
@@ -241,42 +243,68 @@ public class SCCKey extends AbstractSCCKey {
 		String algo = null;
 		int keysize = 0;
 
-		ArrayList<String> algorithms = new ArrayList<String>();
+		if (SecureCryptoConfig.usedAlgorithm == null) {
+			ArrayList<String> algorithms = new ArrayList<String>();
 
-		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, SecureCryptoConfig.sccPath);
-		for (int i = 0; i < algorithms.size(); i++) {
+			algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, SecureCryptoConfig.sccPath);
+			for (int i = 0; i < algorithms.size(); i++) {
 
-			String sccalgorithmID = algorithms.get(i);
+				String sccalgorithmID = algorithms.get(i);
 
-			if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
+				if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
 
-				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+					SCCAlgorithm chosenAlgorithmID = SCCAlgorithm.valueOf(sccalgorithmID);
 
-				switch (chosenAlgorithmID) {
-				case AES_GCM_256_96:
-					algo = "AES";
-					keysize = 256;
-					break;
-				case AES_GCM_128_96:
-					algo = "AES";
-					keysize = 128;
-					break;
-				default:
-					break;
+					switch (chosenAlgorithmID) {
+					case AES_GCM_256_96:
+						algo = "AES";
+						keysize = 256;
+						break;
+					case AES_GCM_128_96:
+						algo = "AES";
+						keysize = 128;
+						break;
+					default:
+						break;
 
+					}
+
+					KeyGenerator keyGen;
+					try {
+						keyGen = KeyGenerator.getInstance(algo.toString());
+						keyGen.init(keysize);
+						SecretKey key = keyGen.generateKey();
+						return new SCCKey(KeyType.Symmetric, key.getEncoded(), algo);
+					} catch (NoSuchAlgorithmException e) {
+						throw new SCCException("Key could not be created! No algorithm specified!", e);
+					}
 				}
 
-				KeyGenerator keyGen;
-				try {
-					keyGen = KeyGenerator.getInstance(algo.toString());
-					keyGen.init(keysize);
-					SecretKey key = keyGen.generateKey();
-					return new SCCKey(KeyType.Symmetric, key.getEncoded(), algo);
-				} catch (NoSuchAlgorithmException e) {
-					throw new SCCException("Key could not be created! No algorithm specified!", e);
-				}
+			}
+		} else {
+			switch (SecureCryptoConfig.usedAlgorithm) {
+			case AES_GCM_256_96:
+				algo = "AES";
+				keysize = 256;
+				break;
+			case AES_GCM_128_96:
+				algo = "AES";
+				keysize = 128;
+				break;
+			default:
+				break;
+
 			}
 
+			KeyGenerator keyGen;
+			try {
+				keyGen = KeyGenerator.getInstance(algo.toString());
+				keyGen.init(keysize);
+				SecretKey key = keyGen.generateKey();
+				return new SCCKey(KeyType.Symmetric, key.getEncoded(), algo);
+			} catch (NoSuchAlgorithmException e) {
+				throw new SCCException("Key could not be created! No algorithm specified!", e);
+			}
 		}
 
 		throw new CoseException("No supported algorithms! Key creation not possible!");
@@ -294,6 +322,8 @@ public class SCCKey extends AbstractSCCKey {
 	 * @throws CoseException
 	 */
 	private static SCCKey createNewKeyPair(CryptoUseCase c) throws SCCException, CoseException {
+		if(SecureCryptoConfig.usedAlgorithm == null)
+		{
 		ArrayList<String> algorithms = new ArrayList<String>();
 
 		algorithms = JSONReader.getAlgos(c, SecureCryptoConfig.sccPath);
@@ -303,7 +333,7 @@ public class SCCKey extends AbstractSCCKey {
 			String sccalgorithmID = algorithms.get(i);
 
 			if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
-				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+				SCCAlgorithm chosenAlgorithmID = SCCAlgorithm.valueOf(sccalgorithmID);
 
 				switch (chosenAlgorithmID) {
 				// Asymmetric
@@ -323,6 +353,27 @@ public class SCCKey extends AbstractSCCKey {
 				}
 			}
 
+		}
+		}else
+		{
+			
+			switch (SecureCryptoConfig.usedAlgorithm) {
+			// Asymmetric
+			case RSA_SHA_512:
+				return createAsymmetricKey("RSA", 4096);
+				
+			// Signing
+			case ECDSA_512:
+				try {
+					OneKey oneKey = OneKey.generateKey(AlgorithmID.ECDSA_512);
+					return new SCCKey(KeyType.Asymmetric, oneKey.AsPublicKey().getEncoded(),
+							oneKey.AsPrivateKey().getEncoded(), "EC");
+				} catch (CoseException e) {
+					throw new SCCException("Key could not be created!", e);
+				}
+			default:
+				break;
+			}
 		}
 		throw new CoseException("Key could not be created! No algorithm specified!");
 	}
@@ -352,7 +403,7 @@ public class SCCKey extends AbstractSCCKey {
 
 	/**
 	 * Creation of key derived from a given password that can be used for symmetric
-	 * encryption.
+	 * encryption based on Secure Crypto Config file.
 	 * 
 	 * @param password: as byte[]
 	 * @return SCCKey
@@ -363,15 +414,15 @@ public class SCCKey extends AbstractSCCKey {
 			return createSymmetricKeyWithPassword(new PlaintextContainer(password));
 
 		} catch (CoseException e) {
-			// TODO throw exception instead of returning null
 			e.printStackTrace();
 			return null;
 		}
 	}
-
+	
+	
 	/**
 	 * Creation of key derived from a given password that can be used for symmetric
-	 * encryption.
+	 * encryption based on Secure Crypto Config file.
 	 * 
 	 * @param password: as PlaintextContainer
 	 * @return SCCKey
@@ -384,6 +435,8 @@ public class SCCKey extends AbstractSCCKey {
 		String keyAlgo = null;
 		int keysize = 0, iterations = 0, saltLength = 0;
 
+		if(SecureCryptoConfig.usedAlgorithm == null)
+		{
 		ArrayList<String> algorithms = new ArrayList<String>();
 
 		algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, SecureCryptoConfig.sccPath);
@@ -394,7 +447,7 @@ public class SCCKey extends AbstractSCCKey {
 
 			if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
 
-				AlgorithmIDEnum chosenAlgorithmID = AlgorithmIDEnum.valueOf(sccalgorithmID);
+				SCCAlgorithm chosenAlgorithmID = SCCAlgorithm.valueOf(sccalgorithmID);
 
 				switch (chosenAlgorithmID) {
 				case AES_GCM_256_96:
@@ -431,6 +484,44 @@ public class SCCKey extends AbstractSCCKey {
 					throw new SCCException("Key could not be created!", e);
 				}
 
+			}
+
+		}
+		}else {
+			
+			switch (SecureCryptoConfig.usedAlgorithm) {
+			case AES_GCM_256_96:
+				algo = "PBKDF2WithHmacSHA512";
+				keyAlgo = "AES";
+				keysize = 256;
+				iterations = 10000;
+				saltLength = 64;
+				break;
+			case AES_GCM_128_96:
+				algo = "PBKDF2WithHmacSHA512";
+				keyAlgo = "AES";
+				keysize = 128;
+				iterations = 10000;
+				saltLength = 64;
+				break;
+			default:
+				break;
+
+			}
+			try {
+
+				byte[] salt = generateRandomByteArray(saltLength);
+
+				SecretKeyFactory secretKeyFactory = SecretKeyFactory.getInstance(algo);
+				KeySpec passwordBasedEncryptionKeySpec = new PBEKeySpec(
+						password.toString(StandardCharsets.UTF_8).toCharArray(), salt, iterations, keysize);
+				SecretKey secretKeyFromPBKDF2 = secretKeyFactory.generateSecret(passwordBasedEncryptionKeySpec);
+				SecretKey key = new SecretKeySpec(secretKeyFromPBKDF2.getEncoded(), keyAlgo.toString());
+				return new SCCKey(KeyType.Symmetric, key.getEncoded(), keyAlgo);
+			} catch (NoSuchAlgorithmException e) {
+				throw new SCCException("Key could not be created! No algorithm specified!", e);
+			} catch (InvalidKeySpecException e) {
+				throw new SCCException("Key could not be created!", e);
 			}
 
 		}
