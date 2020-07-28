@@ -4,7 +4,7 @@
 
 ## Index
 
-1. [Example](#example)
+1. [Example Usage](#example-usage)
 2. [Introduction](#introduction)
 3. [Overview](#overview)
 4. [Getting started](#getting-started)
@@ -21,6 +21,7 @@
 8. [Password Hashing](#password-hashing)
 	1. [SCCPasswordHash](#sccpasswordhash)
 9. [Handling of Secure Crypto Config files](#handling-of-secure-crypto-config-files)
+10.[Specification of algorithms](#specification-of-algorithms)
 
 ## Example Usage 
 
@@ -281,3 +282,6 @@ It is also possible to give a custom part to your own (derived) versions of the 
 By default the files provided by within the Interface are used for parsing. There are files for different *security levels*. The higher the security level of a file the more confidential your data must be handled. By defualt the Interface will use the algorithm ids from the most recent (according to its version) file with the highest security level. If you want a specific file to be parsed use the `setSCCFile(String filePath)` method and give the path to the desired file. Also you can use the `setSecurityLevel(int level)` method. As a result the most recent file with the specified security level number will be used.
 
 The files used for processing can be shown with `getUsedSCC()`. If you have set a specific file for usage or a custom path you can also go back to the default settings with the `setDefaultSCC()` method.
+
+##Specification of algorithms
+By default the algorithm used for executing the specified cryptographic use case is determined by the currently used Secure Crypto Config file. It is also possible to chose a specific algorithm from all the supported ones with the method `setAlgorithm(SCCAlgorithm algorithm)`. `SCCAlgorithm` contains the unique algorithm identifiers of all currently supported algorithms for all use cases. To be able to perform a specific use case (e.g. hashing) a suitable algorithm identifier must be choose. This algorithm will be used for all further invoked methods. If the default choice of the Secure Crypto Config should be used again call `defaultAlgorithm()` or for changing to a specific algorithm call `setAlgorithm(SCCAlgorithm algorithm)` again.
