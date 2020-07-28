@@ -37,8 +37,8 @@ import COSE.Sign1Message;
  */
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
-	protected static String sccPath;
-	//protected static String sccPath = JSONReader.parseFiles(JSONReader.getBasePath());
+	//protected static String sccPath;
+	protected static String sccPath = JSONReader.parseFiles(JSONReader.getBasePath());
 	protected static boolean customPath = false;
 
 	protected static SCCAlgorithm usedAlgorithm = null;

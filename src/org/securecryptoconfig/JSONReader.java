@@ -268,7 +268,6 @@ public class JSONReader {
 		File[] listOfFiles = folder.listFiles();
 		publicKeyPath1 = getBasePath() + "\\publicKeys\\" + listOfFiles[0].getName();
 		publicKeyPath2 = getBasePath() + "\\publicKeys\\" + listOfFiles[1].getName();
-		
 
 	}
 
@@ -321,7 +320,6 @@ public class JSONReader {
 		allFilePaths.clear();
 		getFiles(path);
 		//if (SecureCryptoConfig.customPath == true) {
-		/**
 		if (SecureCryptoConfig.customPath == false) {
 			getPublicKeyPath();
 			try {
@@ -329,9 +327,10 @@ public class JSONReader {
 			} catch (SCCException e) {
 				e.printStackTrace();
 			}
-		}**/
+		}
 		getSecurityLevel();
 		return getLatestSCC(getHighestLevel(levels));
+		
 	}
 
 }
