@@ -7,7 +7,11 @@ import COSE.CoseException;
 import COSE.Sign1Message;
 
 /**
- * Container for a Digital Signature.
+ * Container for a digital signature. 
+ * 
+ * Must not be used for creating a new signature.
+ * A new SCCSignature can be created with {@link SecureCryptoConfig#sign(AbstractSCCKey, byte[])} 
+ * or {@link SecureCryptoConfig#sign(AbstractSCCKey, PlaintextContainerInterface)
  * 
  * SCCSignature contains a byte[] representation of a COSE message. The byte[]
  * contains the signature as well as all the parameters used during signing. The

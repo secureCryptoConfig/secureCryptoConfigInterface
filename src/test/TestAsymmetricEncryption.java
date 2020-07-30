@@ -13,7 +13,6 @@ import org.securecryptoconfig.PlaintextContainer;
 import org.securecryptoconfig.SCCCiphertext;
 import org.securecryptoconfig.SCCException;
 import org.securecryptoconfig.SCCKey;
-import org.securecryptoconfig.SCCKeyPair;
 import org.securecryptoconfig.SecureCryptoConfig;
 import org.securecryptoconfig.SCCKey.KeyType;
 import org.securecryptoconfig.SCCKey.KeyUseCase;

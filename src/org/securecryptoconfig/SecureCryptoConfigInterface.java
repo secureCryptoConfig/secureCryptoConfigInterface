@@ -93,7 +93,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
 	 * {@link SCCKey.KeyUseCase#AsymmetricEncryption}
 	 * 
-	 * @param keyPair: {@link SCCKey}
+	 * @param key: {@link SCCKey}
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCCiphertext}
 	 * @throws CoseException
@@ -101,7 +101,7 @@ abstract interface SecureCryptoConfigInterface {
 	 *                              {@link KeyType#Asymmetric}
 	 * @throws SCCException
 	 */
-	public AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
+	public AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey key, PlaintextContainerInterface plaintext)
 			throws CoseException, InvalidKeyException, SCCException;
 
 	/**
@@ -111,7 +111,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
 	 * {@link SCCKey.KeyUseCase#AsymmetricEncryption}
 	 * 
-	 * @param keyPair: {@link SCCKey}
+	 * @param key: {@link SCCKey}
 	 * @param plaintext: as byte[]
 	 * @return {@link SCCCiphertext}
 	 * @throws CoseException
@@ -119,7 +119,7 @@ abstract interface SecureCryptoConfigInterface {
 	 *                              {@link KeyType#Asymmetric}
 	 * @throws SCCException
 	 */
-	public AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair, byte[] plaintext)
+	public AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey key, byte[] plaintext)
 			throws CoseException, InvalidKeyException, SCCException;
 	
 
@@ -128,7 +128,7 @@ abstract interface SecureCryptoConfigInterface {
 
 	 * Ciphertext will be first decrypted and then encrypted based on the current Secure Crypto Config file.
 	 * 
-	 * @param keyPair: {@link SCCKey}
+	 * @param key: {@link SCCKey}
 	 * @param ciphertext: {@link SCCCiphertext}
 	 * @return {@link SCCCiphertext}
 	 * @throws CoseException
@@ -136,14 +136,14 @@ abstract interface SecureCryptoConfigInterface {
 	 *                              {@link KeyType#Asymmetric}
 	 * @throws SCCException
 	 */
-	public AbstractSCCCiphertext reEncryptAsymmetric(AbstractSCCKey keyPair, AbstractSCCCiphertext ciphertext)
+	public AbstractSCCCiphertext reEncryptAsymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext)
 			throws CoseException, InvalidKeyException, SCCException;
 
 	/**
 	 * Asymmetric decryption with a certain {@link SCCKey} for a given
 	 * {@link SCCCiphertext}.
 	 * 
-	 * @param keyPair: {@link SCCKey}
+	 * @param key: {@link SCCKey}
 	 * @param ciphertext: {@link SCCCiphertext}
 	 * @return {@link PlaintextContainer}
 	 * @throws CoseException
@@ -151,7 +151,7 @@ abstract interface SecureCryptoConfigInterface {
 	 *                              {@link KeyType#Asymmetric}
 	 * @throws SCCException
 	 */
-	public PlaintextContainerInterface decryptAsymmetric(AbstractSCCKey keyPair, AbstractSCCCiphertext ciphertext)
+	public PlaintextContainerInterface decryptAsymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext)
 			throws CoseException, InvalidKeyException, SCCException;
 
 	// Hashing
@@ -234,7 +234,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
 	 * {@link SCCKey.KeyUseCase#Signing}
 	 * 
-	 * @param keyPair: {@link SCCKey}
+	 * @param key: {@link SCCKey}
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCSignature}
 	 * @throws CoseException
@@ -242,7 +242,7 @@ abstract interface SecureCryptoConfigInterface {
 	 *                              {@link KeyType#Asymmetric}
 	 * @throws SCCException
 	 */
-	public AbstractSCCSignature sign(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
+	public AbstractSCCSignature sign(AbstractSCCKey key, PlaintextContainerInterface plaintext)
 			throws CoseException, InvalidKeyException, SCCException;
 
 
@@ -253,7 +253,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
 	 * {@link SCCKey.KeyUseCase#Signing}
 	 * 
-	 * @param keyPair: {@link SCCKey}
+	 * @param key: {@link SCCKey}
 	 * @param plaintext: as byte[]
 	 * @return {@link SCCSignature}
 	 * @throws CoseException
@@ -261,7 +261,7 @@ abstract interface SecureCryptoConfigInterface {
 	 *                              {@link KeyType#Asymmetric}
 	 * @throws SCCException
 	 */
-	public AbstractSCCSignature sign(AbstractSCCKey keyPair, byte[] plaintext)
+	public AbstractSCCSignature sign(AbstractSCCKey key, byte[] plaintext)
 			throws CoseException, InvalidKeyException, SCCException;
 
 
@@ -269,7 +269,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * Update the exsting {@link SCCSignature} of a plaintext with a new signature based on the current Secure
 	 * Crypto Config.
 	 * 
-	 * @param keyPair: {@link SCCKey}
+	 * @param key: {@link SCCKey}
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCSignature}
 	 * @throws CoseException
@@ -277,7 +277,7 @@ abstract interface SecureCryptoConfigInterface {
 	 *                              {@link KeyType#Asymmetric}
 	 * @throws SCCException
 	 */
-	public AbstractSCCSignature updateSignature(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
+	public AbstractSCCSignature updateSignature(AbstractSCCKey key, PlaintextContainerInterface plaintext)
 			throws CoseException, InvalidKeyException, SCCException;
 
 
@@ -285,7 +285,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * Update the exsting {@link SCCSignature} of a plaintext with a new signature based on the current Secure
 	 * Crypto Config.
 	 * 
-	 * @param keyPair: {@link SCCKey}
+	 * @param key: {@link SCCKey}
 	 * @param plaintext: as byte[]
 	 * @return {@link SCCSignature}
 	 * @throws CoseException
@@ -293,33 +293,33 @@ abstract interface SecureCryptoConfigInterface {
 	 *                              {@link KeyType#Asymmetric}
 	 * @throws SCCException
 	 */
-	public AbstractSCCSignature updateSignature(AbstractSCCKey keyPair, byte[] plaintext)
+	public AbstractSCCSignature updateSignature(AbstractSCCKey key, byte[] plaintext)
 			throws CoseException, InvalidKeyException, SCCException;
 	
 	/**
 	 * Validate a {@link SCCSignature}.
 	 * 
-	 * @param keyPair: {@link AbstractSCCKey}
+	 * @param key: {@link AbstractSCCKey}
 	 * @param signature: {@link SCCSignature}
 	 * @return boolean
 	 * @throws InvalidKeyException: If {@link SCCKey} has not the
 	 *                              {@link KeyType#Asymmetric}
 	 * @throws SCCException
 	 */
-	public boolean validateSignature(AbstractSCCKey keyPair, AbstractSCCSignature signature)
+	public boolean validateSignature(AbstractSCCKey key, AbstractSCCSignature signature)
 			throws InvalidKeyException, SCCException;
 
 	/**
 	 * Validate a {@link SCCSignature}.
 	 * 
-	 * @param keyPair: {@link AbstractSCCKey}
+	 * @param key: {@link AbstractSCCKey}
 	 * @param signature: as byte[] representation of {@link SCCSignature}
 	 * @return boolean
 	 * @throws InvalidKeyException: If {@link SCCKey} has not the
 	 *                              {@link KeyType#Asymmetric}
 	 * @throws SCCException
 	 */
-	public boolean validateSignature(AbstractSCCKey keyPair, byte[] signature) throws InvalidKeyException, SCCException;
+	public boolean validateSignature(AbstractSCCKey key, byte[] signature) throws InvalidKeyException, SCCException;
 
 	// Password Hashing
 
@@ -460,11 +460,11 @@ abstract interface PlaintextContainerInterface {
 	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
 	 * {@link SCCKey.KeyUseCase#Signing}
 	 * 
-	 * @param keyPair: {@link SCCKey}
+	 * @param key: {@link SCCKey}
 	 * @return {@link SCCSignature}
 	 * @throws SCCException
 	 */
-	abstract AbstractSCCSignature sign(AbstractSCCKey keyPair) throws SCCException;
+	abstract AbstractSCCSignature sign(AbstractSCCKey key) throws SCCException;
 
 	/**
 	 * Hashing of a plaintext ({@link PlaintextContainer}).
@@ -533,11 +533,11 @@ abstract class AbstractSCCCiphertext {
 	/**
 	 * Asymmetric decryption with a certain {@link SCCKey} of {@link SCCCiphertext}.
 	 * 
-	 * @param keyPair: {@link SCCKey}
+	 * @param key: {@link SCCKey}
 	 * @return {@link PlaintextContainer}
 	 * @throws SCCException
 	 */
-	abstract PlaintextContainerInterface decryptAsymmetric(AbstractSCCKey keyPair) throws SCCException;
+	abstract PlaintextContainerInterface decryptAsymmetric(AbstractSCCKey key) throws SCCException;
 
 	/**
 	 * Encrypts {@link SCCCiphertext} again, possibly using a different
@@ -559,20 +559,20 @@ abstract class AbstractSCCCiphertext {
 	 * The ciphertext will be first decrypted and then encrypted again with the
 	 * current used Secure Crypto Config file.
 	 * 
-	 * @param keyPair: {@link SCCKey}
+	 * @param key: {@link SCCKey}
 	 * @return {@link SCCCiphertext}
 	 * @throws SCCException
 	 */
-	abstract AbstractSCCCiphertext reEncryptAsymmetric(AbstractSCCKey keyPair) throws SCCException;
+	abstract AbstractSCCCiphertext reEncryptAsymmetric(AbstractSCCKey key) throws SCCException;
 
 }
 
 /**
- * Abstract Class for the Container of a key or keypair used for cryptography
+ * Abstract Class for the Container of a key used for cryptography
  * operations like symmetric or asymmetric encryption.
  * 
  * SCCKey contains a byte[] representation of a key as well as all the
- * parameters needed to define the type and use case of the key or keypair.
+ * parameters needed to define the type and use case of the key.
  *
  */
 abstract class AbstractSCCKey {
@@ -857,11 +857,11 @@ abstract class AbstractSCCSignature {
 	/**
 	 * Validate {@link SCCSignature}.
 	 * 
-	 * @param keyPair: {@link AbstractSCCKey}
+	 * @param key: {@link AbstractSCCKey}
 	 * @return boolean
 	 * @throws SCCException
 	 */
-	abstract boolean validateSignature(AbstractSCCKey keyPair) throws SCCException;
+	abstract boolean validateSignature(AbstractSCCKey key) throws SCCException;
 
 	/**
 	 * Update signature possibly using a different algorithm/parameters.
@@ -869,12 +869,12 @@ abstract class AbstractSCCSignature {
 	 * The corresponding plaintext will be signed again with the current Secure
 	 * Crypto Config.
 	 * 
-	 * @param keyPair: {@link SCCKey}
+	 * @param key: {@link SCCKey}
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCSignature}
 	 * @throws SCCException
 	 */
-	abstract AbstractSCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKey keyPair)
+	abstract AbstractSCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKey key)
 			throws SCCException;
 
 }

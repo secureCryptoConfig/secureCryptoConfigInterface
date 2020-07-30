@@ -28,11 +28,11 @@ import COSE.CoseException;
 import COSE.OneKey;
 
 /**
- * Container for a key or keypair used for cryptography operations like
- * symmetric or asymmetric encryption.
+ * Container for a key used for cryptography operations like
+ * symmetric, asymmetric encryption or signing.
  * 
  * SCCKey contains a byte[] representation of a key as well as all the
- * parameters needed to define the type and use case of the key or keypair.
+ * parameters needed to define the type and use case of the key.
  * 
  * @author Lisa
  *
@@ -185,25 +185,9 @@ public class SCCKey extends AbstractSCCKey {
 	 * Create a key for a specific {@link KeyUseCase}.
 	 * 
 	 * Depending of specified {@link KeyUseCase} the resulting SCCKey can be used
-	 * for: - {@link KeyUseCase#SymmetricEncryption}:
-	 * {@link SecureCryptoConfigInterface#encryptSymmetric(AbstractSCCKey, byte[])},
-	 * {@link SecureCryptoConfigInterface#encryptSymmetric(AbstractSCCKey,PlaintextContainerInterface)},
-	 * {@link SecureCryptoConfigInterface#decryptSymmetric(AbstractSCCKey, AbstractSCCCiphertext)},
-	 * {@link SecureCryptoConfigInterface#reEncryptSymmetric(AbstractSCCKey, AbstractSCCCiphertext)}
-	 * - {@link KeyUseCase#AsymmetricEncryption}:
-	 * {@link SecureCryptoConfigInterface#encryptAsymmetric(AbstractSCCKey, byte[])},
-	 * {@link SecureCryptoConfigInterface#reEncryptAsymmetric(AbstractSCCKey, AbstractSCCCiphertext)}
-	 * {@link SecureCryptoConfigInterface#encryptAsymmetric(AbstractSCCKey, PlaintextContainerInterface)},
-	 * {@link SecureCryptoConfigInterface#decryptAsymmetric(AbstractSCCKey, AbstractSCCCiphertext)}
-	 * - {@link KeyUseCase#Signing}:
-	 * {@link SecureCryptoConfigInterface#sign(AbstractSCCKey, byte[])},
-	 * {@link SecureCryptoConfigInterface#sign(AbstractSCCKey, PlaintextContainerInterface)},
-	 * {@link SecureCryptoConfigInterface#validateSignature(AbstractSCCKey, AbstractSCCSignature)},
-	 * {@link SecureCryptoConfigInterface#updateSignature(AbstractSCCKey, byte[])},
-	 * {@link SecureCryptoConfigInterface#updateSignature(AbstractSCCKey, PlaintextContainerInterface)}
-	 * 
+	 * for different provided methods.
 	 * Depending on the {@link KeyUseCase} the SCCKey get a different
-	 * {@link KeyType}
+	 * {@link KeyType}.
 	 * 
 	 * @param useCase: for which Scenario is the key needed? Give a value of
 	 *        {@link KeyUseCase}
@@ -316,7 +300,7 @@ public class SCCKey extends AbstractSCCKey {
 	 * signing.
 	 * 
 	 * @param c
-	 * @return SCCKeyPair
+	 * @return SCCKey
 	 * @throws NoSuchAlgorithmException
 	 * @throws SCCException
 	 * @throws CoseException
@@ -384,7 +368,7 @@ public class SCCKey extends AbstractSCCKey {
 	 * 
 	 * @param algo
 	 * @param keysize
-	 * @return SCCKeyPair
+	 * @return SCCKey
 	 */
 	private static SCCKey createAsymmetricKey(String algo, int keysize) {
 		try {
