@@ -41,6 +41,10 @@ PlaintextContainer plain = scc.decryptSymmetric(key, ciphertext);
 byte[] decrypted = plain.toBytes();
 ```
 
+## JavaDoc
+
+https://securecryptoconfig.github.io/secureCryptoConfigInterface/
+
 ## Introduction
 
 Choosing secure cryptography algorithms and their corresponding parameters is difficult. Also, current cryptography APIs cannot change their default configuration which renders them inherently insecure. The Secure Crypto Config provides a method that allows cryptography libraries to change the default cryptography algorithms over time and at the same time stay compatible with previous cryptography operations. This is achieved by combining three things standardized by the Secure Crypto Config:
