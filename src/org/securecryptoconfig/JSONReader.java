@@ -3,9 +3,9 @@ package org.securecryptoconfig;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.net.URISyntaxException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidKeyException;
@@ -17,10 +17,13 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -61,11 +64,22 @@ public class JSONReader {
 	 * @param useCase, sccFilePath (Path to used SCC file)
 	 */
 	protected static ArrayList<String> getAlgos(CryptoUseCase useCase, String sccFilePath) {
-		JSONParser jsonParser = new JSONParser();
+
 		ArrayList<String> algos = new ArrayList<String>();
-		try (FileReader reader = new FileReader(sccFilePath)) {
-			// Read JSON file
-			Object obj = jsonParser.parse(reader);
+		JSONParser jsonParser = new JSONParser();
+		Object obj;
+
+		try {
+			if (SecureCryptoConfig.customPath == true) {
+				FileReader reader = new FileReader(sccFilePath);
+				// Read JSON file
+				obj = jsonParser.parse(reader);
+			} else {
+				// Read JSON file
+				InputStream is = org.securecryptoconfig.JSONReader.class.getResourceAsStream(sccFilePath);
+				obj = jsonParser.parse(new InputStreamReader(is, "UTF-8"));
+			}
+			
 			JSONArray sccList = (JSONArray) obj;
 			JSONObject scc = (JSONObject) sccList.get(0);
 
@@ -85,16 +99,73 @@ public class JSONReader {
 	}
 
 	/**
+	 * Auxiliary method for reading out the policy name of a file at given path
+	 * 
+	 * @param path to file
+	 */
+	protected static String getPolicyName(String path) {
+		String result = "";
+		Object obj;
+		try {
+			if (SecureCryptoConfig.customPath == true) {
+				FileReader reader = new FileReader(path);
+				// Read JSON file
+				obj = jsonParser.parse(reader);
+			} else {
+				InputStream is = org.securecryptoconfig.JSONReader.class.getResourceAsStream(path);
+				JSONParser jsonParser = new JSONParser();
+				obj = jsonParser.parse(new InputStreamReader(is, "UTF-8"));
+			}
+			JSONArray sccList = (JSONArray) obj;
+			JSONObject scc = (JSONObject) sccList.get(0);
+
+			result = (String) scc.get("PolicyName");
+
+			return result;
+		} catch (IOException | ParseException e) {
+			e.printStackTrace();
+			return null;
+		}
+
+	}
+	
+	/**
+	 * Find the path to the specified policyName
+	 * @param policyName: of the Secure Crypto Config to use
+	 * @return
+	 */
+	protected static String findPathForPolicy(String policyName)
+	{
+		String path = null;
+		for (int i = 0; i < allFilePaths.size(); i++) {
+			if(getPolicyName(allFilePaths.get(i)).contains(policyName))
+			{
+				path = allFilePaths.get(i);
+				break;
+			}
+		}
+		return path;
+	}
+
+	
+	/**
 	 * Auxiliary method for reading out the version of a file at given path
 	 * 
 	 * @param path to file
 	 */
 	private static String getVersion(String sccFilePath) {
 		String result = "";
+		Object obj;
 		try {
-			FileReader reader = new FileReader(sccFilePath);
-			// Read JSON file
-			Object obj = jsonParser.parse(reader);
+			if (SecureCryptoConfig.customPath == true) {
+				FileReader reader = new FileReader(sccFilePath);
+				// Read JSON file
+				obj = jsonParser.parse(reader);
+			} else {
+				InputStream is = org.securecryptoconfig.JSONReader.class.getResourceAsStream(sccFilePath);
+				JSONParser jsonParser = new JSONParser();
+				obj = jsonParser.parse(new InputStreamReader(is, "UTF-8"));
+			}
 			JSONArray sccList = (JSONArray) obj;
 			JSONObject scc = (JSONObject) sccList.get(0);
 
@@ -115,10 +186,18 @@ public class JSONReader {
 	 */
 	private static String getSecurityLevel(String sccFilePath) {
 		String result = "";
+		Object obj;
 		try {
-			FileReader reader = new FileReader(sccFilePath);
-			// Read JSON file
-			Object obj = jsonParser.parse(reader);
+			if (SecureCryptoConfig.customPath == true) {
+				FileReader reader = new FileReader(sccFilePath);
+				// Read JSON file
+				obj = jsonParser.parse(reader);
+			} else {
+				InputStream is = org.securecryptoconfig.JSONReader.class.getResourceAsStream(sccFilePath);
+				JSONParser jsonParser = new JSONParser();
+				obj = jsonParser.parse(new InputStreamReader(is, "UTF-8"));
+			}
+
 			JSONArray sccList = (JSONArray) obj;
 			JSONObject scc = (JSONObject) sccList.get(0);
 
@@ -131,47 +210,6 @@ public class JSONReader {
 
 	}
 
-	/**
-	 * Returns the path to default SCC files in directory src/configs
-	 * 
-	 * @return
-	 */
-	protected static String getBasePath() {
-		String basePath = "";
-		try {
-			basePath = Paths.get(JSONReader.class.getClassLoader().getResource("scc-configs/").toURI()).toString();
-
-		} catch (URISyntaxException e) {
-			e.printStackTrace();
-		}
-		// fallback if no scc-configs/ folder is present
-		if (!new File(basePath).exists()) {
-			throw new InvalidPathException(basePath, "Path to SCC files does not exist!");
-		}
-		logger.debug("Base Path is: {}", basePath);
-		return basePath;
-	}
-
-	/**
-	 * Get all files out of root "configs" directory of given path
-	 * 
-	 * @param path to root directory "config"
-	 */
-	private static void getFiles(String path) {
-		try {
-			Files.walk(Paths.get(path)).filter(Files::isRegularFile)
-					.filter(file -> file.getFileName().toString().endsWith(".json")).forEach(file -> {
-						allFilePaths.add(file.toString());
-
-					});
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * Determine Security Level number for a specific SCC file (file:level)
-	 */
 	private static void getSecurityLevel() {
 		int level;
 		levels.clear();
@@ -180,6 +218,47 @@ public class JSONReader {
 			level = Integer.parseInt(getSecurityLevel(allFilePaths.get(i)));
 			levelsNames.put(allFilePaths.get(i), level);
 			levels.add(level);
+		}
+	}
+
+	/**
+	 * Get all files out of root "configs" directory of given path
+	 * 
+	 * @param path to root directory "config"
+	 */
+	private static void getFiles(String path) {
+		if (SecureCryptoConfig.customPath == true) {
+			try {
+				Files.walk(Paths.get(path)).filter(Files::isRegularFile)
+						.filter(file -> file.getFileName().toString().endsWith(".json")).forEach(file -> {
+							allFilePaths.add(file.toString());
+
+						});
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+
+			final File jarFile = new File(
+					JSONReader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+
+			if (jarFile.isFile()) { // Run with JAR file
+				try {
+					final JarFile jar = new JarFile(jarFile);
+					final Enumeration<JarEntry> entries = jar.entries(); // gives ALL entries in jar
+					while (entries.hasMoreElements()) {
+						final String name = entries.nextElement().getName();
+						if (name.endsWith(".json")) { // filter according to the path
+							allFilePaths.add("/" + name);
+						}
+					}
+
+					jar.close();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -232,7 +311,6 @@ public class JSONReader {
 		} else {
 			throw new IllegalArgumentException("No file for the specified Security Level Number");
 		}
-
 	}
 
 	/**
@@ -248,27 +326,64 @@ public class JSONReader {
 	private static boolean checkSignature(String algo, String signaturePath, String publicKeyPath) throws IOException,
 			NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException, SCCException {
 
-		Path fileLocation = Paths.get(publicKeyPath);
-		byte[] publicKey = Files.readAllBytes(fileLocation);
+		byte[] publicKey;
+		byte[] sig;
+		if (SecureCryptoConfig.customPath == true) {
+			Path fileLocation = Paths.get(publicKeyPath);
+			publicKey = Files.readAllBytes(fileLocation);
+
+			Path fileLocation1 = Paths.get(signaturePath);
+			sig = Files.readAllBytes(fileLocation1);
+
+		} else {
+			InputStream is = org.securecryptoconfig.JSONReader.class.getResourceAsStream(publicKeyPath);
+			publicKey = is.readAllBytes();
+
+			InputStream is1 = org.securecryptoconfig.JSONReader.class.getResourceAsStream(signaturePath);
+			sig = is1.readAllBytes();
+		}
+
 		PublicKey pub = KeyFactory.getInstance(algo.toString()).generatePublic(new X509EncodedKeySpec(publicKey));
 
 		SCCKey sccKeyPair = new SCCKey(KeyType.Asymmetric, pub.getEncoded(), null, algo);
 
-		Path fileLocation1 = Paths.get(signaturePath);
-		byte[] sig = Files.readAllBytes(fileLocation1);
-
 		SCCSignature signature = new SCCSignature(sig);
+
 		return signature.validateSignature(sccKeyPair);
 
 	}
 
-	private static void getPublicKeyPath() {
-		
-		File folder = new File(getBasePath() + "\\publicKeys\\");
-		File[] listOfFiles = folder.listFiles();
-		publicKeyPath1 = getBasePath() + "\\publicKeys\\" + listOfFiles[0].getName();
-		publicKeyPath2 = getBasePath() + "\\publicKeys\\" + listOfFiles[1].getName();
+	private static void getPublicKeyPath(String path) {
+		if (SecureCryptoConfig.customPath == true) {
+			File folder = new File(path + "\\publicKeys\\");
+			File[] listOfFiles = folder.listFiles();
+			publicKeyPath1 = path + "\\publicKeys\\" + listOfFiles[0].getName();
+			publicKeyPath2 = path + "\\publicKeys\\" + listOfFiles[1].getName();
+		} else {
 
+			final File jarFile = new File(
+					JSONReader.class.getProtectionDomain().getCodeSource().getLocation().getPath());
+
+			if (jarFile.isFile()) { // Run with JAR file
+				try {
+					final JarFile jar = new JarFile(jarFile);
+					final Enumeration<JarEntry> entries = jar.entries(); // gives ALL entries in jar
+					while (entries.hasMoreElements()) {
+						final String name = entries.nextElement().getName();
+						if (name.contains("1")) { // filter according to the path
+							publicKeyPath1 = "/" + name;
+						} else {
+							publicKeyPath2 = "/" + name;
+						}
+					}
+
+					jar.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+
+			}
+		}
 	}
 
 	private static void startValidation() throws SCCException {
@@ -284,8 +399,16 @@ public class JSONReader {
 
 			boolean validation1 = false;
 			boolean validation2 = false;
+			boolean result;
+			if (SecureCryptoConfig.customPath == true) {
+				result = new File(signaturePath1).exists() && new File(signaturePath2).exists();
+			} else {
+				InputStream is1 = org.securecryptoconfig.JSONReader.class.getResourceAsStream(signaturePath1);
+				InputStream is2 = org.securecryptoconfig.JSONReader.class.getResourceAsStream(signaturePath2);
+				result = is1 != null && is2 != null;
+			}
 
-			if (new File(signaturePath1).exists() && new File(signaturePath2).exists()) {
+			if (result) {
 
 				try {
 					validation1 = checkSignature(signatureAlgo, signaturePath1, publicKeyPath1);
@@ -318,19 +441,25 @@ public class JSONReader {
 	 */
 	protected static String parseFiles(String path) {
 		allFilePaths.clear();
-		getFiles(path);
-		//if (SecureCryptoConfig.customPath == true) {
 		if (SecureCryptoConfig.customPath == false) {
-			getPublicKeyPath();
-			try {
-				startValidation();
-			} catch (SCCException e) {
-				e.printStackTrace();
-			}
+			getFiles(null);
+			getPublicKeyPath(null);
+
+		} else {
+			// customPath
+			getFiles(path);
+			getPublicKeyPath(path);
+
+		}
+
+		try {
+			startValidation();
+		} catch (SCCException e) {
+			e.printStackTrace();
 		}
 		getSecurityLevel();
 		return getLatestSCC(getHighestLevel(levels));
-		
+
 	}
 
 }

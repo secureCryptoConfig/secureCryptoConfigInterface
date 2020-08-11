@@ -1,6 +1,5 @@
 package org.securecryptoconfig;
 
-import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -37,11 +36,11 @@ import COSE.Sign1Message;
  */
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
-	//protected static String sccPath;
-	protected static String sccPath = JSONReader.parseFiles(JSONReader.getBasePath());
-	protected static boolean customPath = false;
+	protected static String sccPath = JSONReader.parseFiles(null);
 
 	protected static SCCAlgorithm usedAlgorithm = null;
+	
+	public static boolean customPath = false;
 	
 	/**
 	 * All supported algorithm names
@@ -82,22 +81,20 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	/**
-	 * Return the name of the Secure Crypto Config file that is currently used to
+	 * Return the policy name of the Secure Crypto Config file that is currently used to
 	 * look up algorithms to use for executing cryptographic use case
 	 * 
-	 * @return SCCFilePath: path to the used Secure Crypto Config file
+	 * @return policyName: policy name of the used Secure Crypto Config file
 	 */
 	public static String getUsedSCC() {
-		// TODO adapt to not use the path, but the specified policyName from the file,
-		// as the file path is not standards relevant.
-		return sccPath;
+		return JSONReader.getPolicyName(sccPath);
 	}
 
 	/**
 	 * Set path to a custom root folder "scc-configs" which contains the Secure
 	 * Crypto Config files.
 	 * 
-	 * @param path: path to "scc-config" directory. Path should end with \\
+	 * @param path: path to "scc-config" directory
 	 * @throws InvalidPathException
 	 */
 	public static void setCustomSCCPath(Path path) {
@@ -112,16 +109,15 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	/**
 	 * Set Secure Crypto Config file to use
 	 * 
-	 * @param filePath: path to the Secure Crypto Config file to use
+	 * @param policyName: policy name of the Secure Crypto Config file to use
 	 * @throws InvalidPathException
 	 */
-	public static void setSCCFile(String filePath) {
-		// TODO usually we don't want to set a path to use but a policy to use
-		File file = new File(filePath);
-		if (file.exists()) {
+	public static void setSCCFile(String policyName) {
+		String filePath = JSONReader.findPathForPolicy(policyName);
+		if (filePath != null) {
 			sccPath = filePath;
 		} else {
-			throw new InvalidPathException(filePath, "Path is not existing");
+			throw new InvalidPathException(filePath, "PolicyName not existing");
 		}
 
 	}
@@ -134,7 +130,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 */
 	public static void setDefaultSCC() {
 		customPath = false;
-		sccPath = JSONReader.parseFiles(JSONReader.getBasePath());
+		sccPath = JSONReader.parseFiles(null);
 	}
 
 	/**
