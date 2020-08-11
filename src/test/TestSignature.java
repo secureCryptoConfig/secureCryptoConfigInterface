@@ -3,6 +3,7 @@ package test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -18,6 +19,7 @@ import COSE.CoseException;
 class TestSignature {
 
 	SecureCryptoConfig scc = new SecureCryptoConfig();
+	
 
 	// Use Cases:
 	// Signature
@@ -71,10 +73,10 @@ class TestSignature {
 		byte[] newSignatureBytes = newSignature.toBytes();
 
 		assertTrue(scc.validateSignature(pair, oldSignature));
-		assertTrue(scc.validateSignature(pair, new SCCSignature(oldSignaturebytes)));
+		assertTrue(scc.validateSignature(pair, SCCSignature.createFromExistingSignature(oldSignaturebytes)));
 
 		assertTrue(scc.validateSignature(pair, newSignature));
-		assertTrue(scc.validateSignature(pair, new SCCSignature(newSignatureBytes)));
+		assertTrue(scc.validateSignature(pair, SCCSignature.createFromExistingSignature(newSignatureBytes)));
 
 	}
 
@@ -82,19 +84,19 @@ class TestSignature {
 	@Test
 	void testUpdateSigningString() throws CoseException, NoSuchAlgorithmException, InvalidKeyException, SCCException {
 		String plaintext = "Hello World!";
-		SCCKey pair = SCCKey.createKey(KeyUseCase.Signing);
+		SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
 
-		SCCSignature oldSignature = scc.sign(pair, plaintext.getBytes(StandardCharsets.UTF_8));
+		SCCSignature oldSignature = scc.sign(key, plaintext.getBytes(StandardCharsets.UTF_8));
 		String oldSignatureString = oldSignature.toString();
 
-		SCCSignature newSignature = scc.updateSignature(pair, plaintext.getBytes());
+		SCCSignature newSignature = scc.updateSignature(key, plaintext.getBytes());
 		String newSignatureString = newSignature.toString();
 
-		assertTrue(scc.validateSignature(pair, oldSignature));
-		assertTrue(scc.validateSignature(pair, new SCCSignature(oldSignatureString)));
+		assertTrue(scc.validateSignature(key, oldSignature));
+		assertTrue(scc.validateSignature(key, SCCSignature.createFromExistingSignature(oldSignatureString.getBytes())));
 
-		assertTrue(scc.validateSignature(pair, newSignature));
-		assertTrue(scc.validateSignature(pair, new SCCSignature(newSignatureString)));
+		assertTrue(scc.validateSignature(key, newSignature));
+		assertTrue(scc.validateSignature(key, SCCSignature.createFromExistingSignature(newSignatureString.getBytes())));
 	}
 
 }

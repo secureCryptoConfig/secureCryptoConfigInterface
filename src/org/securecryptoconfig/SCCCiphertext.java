@@ -29,7 +29,7 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	 * 
 	 * @param msg: byte[] of COSE message
 	 */
-	public SCCCiphertext(byte[] msg) {
+	private SCCCiphertext(byte[] msg) {
 		super(msg);
 	}
 
@@ -86,5 +86,15 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 			throw new SCCException("Asymmetric ReEncryption is not possible! Not the right KeyType!", e);
 		}
 	}
+	
+	/**
+	 * Returns a SCCCiphertext from byte[] representation of existing SCCCiphertext
+	 * @param existingSCCCiphertext: byte[] representation of existing SCCCiphertext 
+	 * @return SCCCiphertext form byte[]
+	 */
+	 public static SCCCiphertext createFromExistingCiphertext(byte[] existingSCCCiphertext)
+	 {
+		 return new SCCCiphertext(existingSCCCiphertext);
+	 }
 
 }

@@ -26,19 +26,11 @@ public class SCCHash extends AbstractSCCHash {
 	 * 
 	 * @param hashMsg: byte[] of COSE message
 	 */
-	public SCCHash(byte[] hashMsg) {
+	private SCCHash(byte[] hashMsg) {
 		super(hashMsg);
 	}
 
-	/**
-	 * Constructor that creates a new SCCHash object based on existing COSE message.
-	 * 
-	 * @param hash: Base64 encoded String of COSE message
-	 */
-	public SCCHash(String hash) {
-		this(Base64.getDecoder().decode(hash));
-	}
-
+	
 	@Override
 	public boolean validateHash(PlaintextContainerInterface plaintext) throws SCCException {
 		try {
@@ -90,4 +82,14 @@ public class SCCHash extends AbstractSCCHash {
 			return null;
 		}
 	}
+	
+	/**
+	 * Returns a SCCHash from byte[] representation of existing SCCHash
+	 * @param existingSCCHash: byte[] representation of existing SCCHash 
+	 * @return SCCHash form byte[]
+	 */
+	 public static SCCHash createFromExistingHash(byte[] existingSCCHash)
+	 {
+		 return new SCCHash(existingSCCHash);
+	 }
 }

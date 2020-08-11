@@ -27,19 +27,10 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	 * 
 	 * @param hashMsg: byte[] of COSE message
 	 */
-	public SCCPasswordHash(byte[] hashMsg) {
+	private SCCPasswordHash(byte[] hashMsg) {
 		super(hashMsg);
 	}
 
-	/**
-	 * Constructor that creates a new SCCPasswordHash object based on existing COSE
-	 * message.
-	 * 
-	 * @param hash: Base64 encoded String of COSE message
-	 */
-	public SCCPasswordHash(String hash) {
-		this(Base64.getDecoder().decode(hash));
-	}
 
 	@Override
 	public boolean validatePasswordHash(PlaintextContainerInterface password) throws SCCException {
@@ -78,5 +69,15 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 			return null;
 		}
 	}
+	
+	/**
+	 * Returns a SCCPasswordHash from byte[] representation of existing SCCPasswordHash
+	 * @param existingSCCPasswordHash: byte[] representation of existing SCCPasswordHash 
+	 * @return SCCPasswordHash form byte[]
+	 */
+	 public static SCCPasswordHash createFromExistingPasswordHash(byte[] existingSCCPasswordHash)
+	 {
+		 return new SCCPasswordHash(existingSCCPasswordHash);
+	 }
 
 }

@@ -347,7 +347,7 @@ public class JSONReader {
 
 		SCCKey sccKeyPair = new SCCKey(KeyType.Asymmetric, pub.getEncoded(), null, algo);
 
-		SCCSignature signature = new SCCSignature(sig);
+		SCCSignature signature = SCCSignature.createFromExistingSignature(sig);
 
 		return signature.validateSignature(sccKeyPair);
 

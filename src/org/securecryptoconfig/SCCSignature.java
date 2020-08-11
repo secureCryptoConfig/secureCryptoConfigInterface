@@ -32,19 +32,10 @@ public class SCCSignature extends AbstractSCCSignature {
 	 * 
 	 * @param signatureMsg: byte[] of COSE message
 	 */
-	public SCCSignature(byte[] signatureMsg) {
+	private SCCSignature(byte[] signatureMsg) {
 		super(signatureMsg);
 	}
 
-	/**
-	 * Constructor that creates a new AbstractSCCSignature object based on existing
-	 * COSE message.
-	 * 
-	 * @param hash: Base64 encoded String of COSE message
-	 */
-	public SCCSignature(String hash) {
-		this(Base64.getDecoder().decode(hash));
-	}
 
 	@Override
 	public byte[] toBytes() {
@@ -91,4 +82,13 @@ public class SCCSignature extends AbstractSCCSignature {
 		}
 	}
 
+	/**
+	 * Return SCCSignature from byte[] representation of a existing SCCSignature
+	 * @param existingSCCSignature: byte[] of existing SCCSignature
+	 * @return SCCSignature
+	 */
+	public static SCCSignature createFromExistingSignature(byte[] existingSCCSignature)
+	{
+		return new SCCSignature(existingSCCSignature);
+	}
 }

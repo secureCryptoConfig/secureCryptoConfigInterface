@@ -8,7 +8,6 @@ import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.HashSet;
-
 import org.securecryptoconfig.JSONReader.CryptoUseCase;
 import org.securecryptoconfig.SCCKey.KeyType;
 
@@ -453,7 +452,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	@Override
 	public boolean validateSignature(AbstractSCCKey keyPair, byte[] signature)
 			throws InvalidKeyException, SCCException {
-		return validateSignature(keyPair, new SCCSignature(signature));
+		return validateSignature(keyPair, SCCSignature.createFromExistingSignature(signature));
 	}
 
 	@Override
@@ -536,7 +535,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			OneKey oneKey = new OneKey(pair.getPublicKey(), pair.getPrivateKey());
 			m.sign(oneKey);
 
-			return new SCCSignature(m.EncodeToBytes());
+			return SCCSignature.createFromExistingSignature(m.EncodeToBytes());
 		} catch (CoseException e) {
 			throw new SCCException("Signing could not be performed!", e);
 		}
@@ -562,7 +561,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			asymMsg.encrypt(new KeyPair(pair.getPublicKey(), pair.getPrivateKey()));
 			asymMsg.SetContent((byte[]) null);
 
-			return new SCCCiphertext(asymMsg.EncodeToBytes());
+			return SCCCiphertext.createFromExistingCiphertext(asymMsg.EncodeToBytes());
 		} catch (CoseException e) {
 			throw new SCCException("Asymmetric encryption could not be performed", e);
 		}
@@ -585,7 +584,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 			m.passwordHashWithSalt(salt);
 			m.SetContent((byte[]) null);
-			return new SCCPasswordHash(m.EncodeToBytes());
+			return SCCPasswordHash.createFromExistingPasswordHash(m.EncodeToBytes());
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;
@@ -607,7 +606,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 			m.passwordHash();
 			m.SetContent((byte[]) null);
-			return new SCCPasswordHash(m.EncodeToBytes());
+			return SCCPasswordHash.createFromExistingPasswordHash(m.EncodeToBytes());
 
 		} catch (CoseException e) {
 			e.printStackTrace();
@@ -631,7 +630,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 			hashMessage.hash();
 			hashMessage.SetContent((byte[]) null);
-			return new SCCHash(hashMessage.EncodeToBytes());
+			return SCCHash.createFromExistingHash(hashMessage.EncodeToBytes());
 
 		} catch (CoseException e) {
 			e.printStackTrace();
@@ -660,7 +659,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 			// byte[] encrypted = encrypt0Message.getEncryptedContent();
 
-			return new SCCCiphertext(encrypt0Message.EncodeToBytes());
+			return SCCCiphertext.createFromExistingCiphertext(encrypt0Message.EncodeToBytes());
 
 		} catch (CoseException e) {
 			e.printStackTrace();
