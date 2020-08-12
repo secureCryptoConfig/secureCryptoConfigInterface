@@ -295,5 +295,5 @@ By default the files provided by within the Interface are used for parsing. Ther
 
 The PolicyName of the file used for processing can be shown with `getUsedSCC()`. If you have previously set a specific file for usage or a custom path you can also go back to the default settings with the `setDefaultSCC()` method.
 
-##Specification of algorithms
+## Specification of algorithms
 By default the algorithm used for executing the specified cryptographic use case is determined by the currently used Secure Crypto Config file. It is also possible to chose a specific algorithm from all the supported ones with the method `setAlgorithm(SCCAlgorithm algorithm)`. `SCCAlgorithm` contains the unique algorithm identifiers of all currently supported algorithms for all use cases. To be able to perform a specific use case (e.g. hashing) a suitable algorithm identifier must be choose. This algorithm will be used for all further invoked methods. If the default choice of the Secure Crypto Config should be used again call `defaultAlgorithm()` or for changing to a specific algorithm call `setAlgorithm(SCCAlgorithm algorithm)` again.
