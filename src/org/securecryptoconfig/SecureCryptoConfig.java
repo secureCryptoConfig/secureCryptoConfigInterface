@@ -36,7 +36,7 @@ import COSE.Sign1Message;
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	protected static SCCInstance currentSCCInstance = JSONReader.parseFiles(null);
-	//protected static SCCInstance currentSCCInstance = null;
+	// protected static SCCInstance currentSCCInstance = null;
 	protected static SCCAlgorithm usedAlgorithm = null;
 
 	public static boolean customPath = false;
@@ -96,11 +96,13 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 */
 	public static void setCustomSCCPath(Path path) {
 		customPath = true;
-		/*
-		 * if (path.toFile().exists()) { sccPath =
-		 * JSONReader.parseFiles(path.toString()); } else { throw new
-		 * InvalidPathException(path.toString(), "Path is not existing"); }
-		 */
+
+		if (path.toFile().exists()) {
+			currentSCCInstance = JSONReader.parseFiles(path.toString());
+		} else {
+			throw new InvalidPathException(path.toString(), "Path is not existing");
+		}
+
 	}
 
 	/**
@@ -109,7 +111,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * @param policyName: policy name of the Secure Crypto Config file to use
 	 * @throws InvalidPathException
 	 */
-	public static void setPolicy(String policyName) {
+	public static void setSCCFile(String policyName) {
 		SCCInstance instance = JSONReader.findPathForPolicy(policyName);
 		if (instance != null) {
 			currentSCCInstance = instance;
@@ -122,7 +124,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	/**
 	 * Set default Secure Crypto Configuration using Secure Crypto Config files at
 	 * "src/scc-configs" Only necessary if a custom path with
-	 * {@link #setCustomSCCPath(Path)} or {@link #setPolicy(String)} was called
+	 * {@link #setCustomSCCPath(Path)} or {@link #setSCCFile(String)} was called
 	 * before
 	 */
 	public static void setDefaultSCC() {

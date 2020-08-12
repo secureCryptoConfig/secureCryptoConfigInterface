@@ -21,7 +21,7 @@
 8. [Password Hashing](#password-hashing)
 	1. [SCCPasswordHash](#sccpasswordhash)
 9. [Handling of Secure Crypto Config files](#handling-of-secure-crypto-config-files)
-10.[Specification of algorithms](#specification-of-algorithms)
+10. [Specification of algorithms](#specification-of-algorithms)
 
 ## Example Usage 
 
@@ -55,7 +55,7 @@ Choosing secure cryptography algorithms and their corresponding parameters is di
 The Secure Crypto Config provides a secure API that is secure and easy usable. It provides an abstraction from the underlying algorithm such that the usage gets more convenient and makes misuse and resulting security issues harder to occur. Even for users with not much cryptography experience it offers a possibility to implement secure cryptographic code.
 
 ## Overview
-The Secure Crypto Config Interface provides methods for the most common cryptographic use cases: Symmetric encryption, Asymmetric encryption, hashing, password hashing and Signing. The algorithms used for for the internal execution of the invoked use case is determined by the content of the Secure Crypto Config files. These JSON formatted files are provided within the Interface bt can also be customized as long as the internal structure stays the same. With the release of a new version of the Interface the files will be updated to use only currently secure algorithms and parameters. In this way the burden of making right choices for parameters and algorithms to implement secure code can be lifted from the user.
+The Secure Crypto Config Interface provides methods for the most common cryptographic use cases: Symmetric encryption, Asymmetric encryption, hashing, password hashing and Signing. The algorithms used for for the internal execution of the invoked use case is determined by the content of the Secure Crypto Config files. These JSON formatted files are provided within the Interface but can also be customized as long as the internal structure stays the same. With the release of a new version of the Interface the files will be updated to use only currently secure algorithms and parameters. Therefore, it is necessary to update the SecureCryptoConfig library as soon as possible if a new version is provided to be able to be up-to-date with the current security standard. In this way the burden of making right choices for parameters and algorithms to implement secure code can be lifted from the user.
 
 For handling the result of the cryptographic use cases we make use of a adapted version of [COSE](https://github.com/cose-wg/COSE-JAVA) to derive the parameters from output of cryptography primitives. Otherwise future changes of the default configuration would change existing applications behavior. Therefore the output is a byte representation of a corresponding COSE message which contains not only the actual output (e.g. ciphertext, hash) but also all used parameters.
 
@@ -177,6 +177,8 @@ Represents the plaintext as byte[] not only in case of encryption but also for s
 The SCCCipertext represents a byte[] representation of a specific COSE message, that contains the ciphertext as well as all used parameters of the encryption. To be able to decrypt a ciphertext correctly the same parameters as specified for encryption must be used. To be able to guarantee the correct decryption even if configuartions of the API are changing during the time these used parameters must be stored as well as the ciphertext. These necessary informations are represented as SCCiphertext which results from `encryptSymmetric(..)`, `encryptAsymmetric(..)` and is also needed as parameter for later decryption.
 This class also contains convenient methods for the user such that methods needing the SCCiphertext can easily invoked on a instance of this class.
 
+With the method `createFromExistingCiphertext(byte[] existingSCCCiphertext)` it is also possible to create a SCCCiphertext object from an already existing SCCCiphertext byte[] representation.
+
 
 
 ## Signing
@@ -214,6 +216,8 @@ Methods provided for Signing are: `sign(..)`, `updateSignature(..)` and `validat
 ### SCCSignature
 The SCCSignature is the output after performing signing. It is the same representation as the SCCCiphertext described previously. It represents a byte[] representation of a specific COSE message, that contains the signature as well as all used parameters of the signing process.
 
+With the method `createFromExistingSignature(byte[] existingSCCSignature)` it is also possible to create a SCCSignature object from an already existing SCCSignature byte[] representation.
+
 ## Hashing
 
 General process of hashing and its validation
@@ -247,6 +251,8 @@ Methods provided for Hashing are: `hash(..)`, `validateHash(..)` and `updateHash
 ### SCCHash
 The SCCHash is the output after performing hashing. It is the same representation as the SCCCiphertext or SCCSignature described previously. It represents a byte[] representation of a specific COSE message, that contains the hash as well as all used parameters of the hashing process.
 
+With the method `createFromExistingHash(byte[] existingSCCHash)` it is also possible to create a SCCHash object from an already existing SCCHash byte[] representation.
+
 ## Password Hashing
 
 General process of password hashing and its validation
@@ -278,14 +284,16 @@ Methods provided for Hashing are: `passwordHash(..)` and `validatePasswordHash(.
 The secure storage of passwords requires hashing. Yet, password hashing requires that the hashing can not be performed very fast to prevent attackers from guessing/brute-forcing passwords from leaks or against the live system.
 The SCCPasswordHash is the output after performing password hashing. It is the same representation as the SCCHash described previously. It represents a byte[] representation of a specific COSE message, that contains the hash as well as all used parameters of the hashing process.
 
+With the method `createFromExistingPasswordHash(byte[] existingSCCPasswordHash)` it is also possible to create a SCCPasswordHash object from an already existing SCCPasswordHash byte[] representation.
+
 ## Handling of Secure Crypto Config files
 The internal execurtion of a cryptographic use case is done according to Secure Crypto Config files. These files contain for each supproted use case unique algorithm ids which represent specific algorithm and parameter choices. By default these informations are parsed out of the Secure Crypto Config files which are provided within the Interface.
 
-It is also possible to give a custom part to your own (derived) versions of the Secure crypto config files. This can be done with the `setPathToSCCDirectory(String path)` mathod by simply giving the path to your directory as a parameter.
+It is also possible to give a custom part to your own (derived) versions of the Secure crypto config files. This can be done with the `setCustomSCCPath(Path path)` mathod by simply giving the path to your directory as a parameter.
 
-By default the files provided by within the Interface are used for parsing. There are files for different *security levels*. The higher the security level of a file the more confidential your data must be handled. By defualt the Interface will use the algorithm ids from the most recent (according to its version) file with the highest security level. If you want a specific file to be parsed use the `setSCCFile(String filePath)` method and give the path to the desired file. Also you can use the `setSecurityLevel(int level)` method. As a result the most recent file with the specified security level number will be used.
+By default the files provided by within the Interface are used for parsing. There are files for different *security levels*. The higher the security level of a file the more confidential your data must be handled. By defualt the Interface will use the algorithm ids from the most recent (according to its version) file with the highest security level. If you want a specific file to be parsed use the `setSCCFile(String policyName)` method and give the corresponding PolicyName of the desired file as a parameters. The PolicyName is defined inside each file. Also you can use the `setSecurityLevel(int level)` method. As a result the most recent file with the specified security level number will be used.
 
-The files used for processing can be shown with `getUsedSCC()`. If you have set a specific file for usage or a custom path you can also go back to the default settings with the `setDefaultSCC()` method.
+The PolicyName of the file used for processing can be shown with `getUsedSCC()`. If you have previously set a specific file for usage or a custom path you can also go back to the default settings with the `setDefaultSCC()` method.
 
 ##Specification of algorithms
 By default the algorithm used for executing the specified cryptographic use case is determined by the currently used Secure Crypto Config file. It is also possible to chose a specific algorithm from all the supported ones with the method `setAlgorithm(SCCAlgorithm algorithm)`. `SCCAlgorithm` contains the unique algorithm identifiers of all currently supported algorithms for all use cases. To be able to perform a specific use case (e.g. hashing) a suitable algorithm identifier must be choose. This algorithm will be used for all further invoked methods. If the default choice of the Secure Crypto Config should be used again call `defaultAlgorithm()` or for changing to a specific algorithm call `setAlgorithm(SCCAlgorithm algorithm)` again.
