@@ -225,19 +225,17 @@ public class SCCKey extends AbstractSCCKey {
 		int keysize = 0;
 
 		if (SecureCryptoConfig.usedAlgorithm == null) {
-			ArrayList<String> algorithms = new ArrayList<String>();
+			ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
 
-			algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, SecureCryptoConfig.sccPath);
-			
+			algorithms = SecureCryptoConfig.currentSCCInstance.getUsage().getSymmetricEncryption();
+
 			for (int i = 0; i < algorithms.size(); i++) {
 
-				String sccalgorithmID = algorithms.get(i);
+				SCCAlgorithm sccalgorithmID = algorithms.get(i);
 
 				if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
 
-					SCCAlgorithm chosenAlgorithmID = SCCAlgorithm.valueOf(sccalgorithmID);
-
-					switch (chosenAlgorithmID) {
+					switch (sccalgorithmID) {
 					case AES_GCM_256_96:
 						algo = "AES";
 						keysize = 256;
@@ -307,18 +305,29 @@ public class SCCKey extends AbstractSCCKey {
 	 */
 	private static SCCKey createNewKeyPair(CryptoUseCase c) throws SCCException, CoseException {
 		if (SecureCryptoConfig.usedAlgorithm == null) {
-			ArrayList<String> algorithms = new ArrayList<String>();
+			ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
 
-			algorithms = JSONReader.getAlgos(c, SecureCryptoConfig.sccPath);
+			if(c.equals(CryptoUseCase.AsymmetricEncryption))
+			{
+				algorithms = SecureCryptoConfig.currentSCCInstance.getUsage().getAsymmetricEncryption();
 
+			}else if(c.equals(CryptoUseCase.SymmetricEncryption))
+			{
+				algorithms = SecureCryptoConfig.currentSCCInstance.getUsage().getSymmetricEncryption();
+
+			}else
+			{
+				algorithms = SecureCryptoConfig.currentSCCInstance.getUsage().getSigning();
+
+			}
+			
 			for (int i = 0; i < algorithms.size(); i++) {
 
-				String sccalgorithmID = algorithms.get(i);
+				SCCAlgorithm sccalgorithmID = algorithms.get(i);
 
 				if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
-					SCCAlgorithm chosenAlgorithmID = SCCAlgorithm.valueOf(sccalgorithmID);
-
-					switch (chosenAlgorithmID) {
+					
+					switch (sccalgorithmID) {
 					// Asymmetric
 					case RSA_SHA_512:
 						return createAsymmetricKey("RSA", 4096);
@@ -417,19 +426,17 @@ public class SCCKey extends AbstractSCCKey {
 		int keysize = 0, iterations = 0, saltLength = 0;
 
 		if (SecureCryptoConfig.usedAlgorithm == null) {
-			ArrayList<String> algorithms = new ArrayList<String>();
+			ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
 
-			algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, SecureCryptoConfig.sccPath);
+			algorithms = SecureCryptoConfig.currentSCCInstance.getUsage().getSymmetricEncryption();
 
 			for (int i = 0; i < algorithms.size(); i++) {
 
-				String sccalgorithmID = algorithms.get(i);
+				SCCAlgorithm sccalgorithmID = algorithms.get(i);
 
 				if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
 
-					SCCAlgorithm chosenAlgorithmID = SCCAlgorithm.valueOf(sccalgorithmID);
-
-					switch (chosenAlgorithmID) {
+					switch (sccalgorithmID) {
 					case AES_GCM_256_96:
 						algo = "PBKDF2WithHmacSHA512";
 						keyAlgo = "AES";

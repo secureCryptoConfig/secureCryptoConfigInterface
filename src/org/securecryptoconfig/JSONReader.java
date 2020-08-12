@@ -18,10 +18,8 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Set;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -30,6 +28,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.securecryptoconfig.SCCKey.KeyType;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Class for handling/parsing SCC file content
@@ -43,7 +42,6 @@ public class JSONReader {
 			.getLogger(JSONReader.class);
 
 	private static ArrayList<String> allFilePaths = new ArrayList<String>();
-	private static HashMap<String, Integer> levelsNames = new HashMap<String, Integer>();
 	protected static HashSet<Integer> levels = new HashSet<Integer>();
 
 	private static String publicKeyPath1;
@@ -79,7 +77,7 @@ public class JSONReader {
 				InputStream is = org.securecryptoconfig.JSONReader.class.getResourceAsStream(sccFilePath);
 				obj = jsonParser.parse(new InputStreamReader(is, "UTF-8"));
 			}
-			
+
 			JSONArray sccList = (JSONArray) obj;
 			JSONObject scc = (JSONObject) sccList.get(0);
 
@@ -128,95 +126,31 @@ public class JSONReader {
 		}
 
 	}
-	
+
 	/**
 	 * Find the path to the specified policyName
+	 * 
 	 * @param policyName: of the Secure Crypto Config to use
 	 * @return
 	 */
-	protected static String findPathForPolicy(String policyName)
-	{
-		String path = null;
-		for (int i = 0; i < allFilePaths.size(); i++) {
-			if(getPolicyName(allFilePaths.get(i)).contains(policyName))
-			{
-				path = allFilePaths.get(i);
+	protected static SCCInstance findPathForPolicy(String policyName) {
+		SCCInstance instance = null;
+		for (int i = 0; i < instances.size(); i++) {
+			if (instances.get(i).getPolicyName() == policyName) {
+				instance = instances.get(i);
 				break;
 			}
 		}
-		return path;
+		return instance;
 	}
 
 	
-	/**
-	 * Auxiliary method for reading out the version of a file at given path
-	 * 
-	 * @param path to file
-	 */
-	private static String getVersion(String sccFilePath) {
-		String result = "";
-		Object obj;
-		try {
-			if (SecureCryptoConfig.customPath == true) {
-				FileReader reader = new FileReader(sccFilePath);
-				// Read JSON file
-				obj = jsonParser.parse(reader);
-			} else {
-				InputStream is = org.securecryptoconfig.JSONReader.class.getResourceAsStream(sccFilePath);
-				JSONParser jsonParser = new JSONParser();
-				obj = jsonParser.parse(new InputStreamReader(is, "UTF-8"));
-			}
-			JSONArray sccList = (JSONArray) obj;
-			JSONObject scc = (JSONObject) sccList.get(0);
-
-			result = (String) scc.get("Version");
-
-			return result;
-		} catch (IOException | ParseException e) {
-			e.printStackTrace();
-			return null;
-		}
-
-	}
-
-	/**
-	 * Auxiliary method for reading out the Security Level of a file at given path
-	 * 
-	 * @param path to file
-	 */
-	private static String getSecurityLevel(String sccFilePath) {
-		String result = "";
-		Object obj;
-		try {
-			if (SecureCryptoConfig.customPath == true) {
-				FileReader reader = new FileReader(sccFilePath);
-				// Read JSON file
-				obj = jsonParser.parse(reader);
-			} else {
-				InputStream is = org.securecryptoconfig.JSONReader.class.getResourceAsStream(sccFilePath);
-				JSONParser jsonParser = new JSONParser();
-				obj = jsonParser.parse(new InputStreamReader(is, "UTF-8"));
-			}
-
-			JSONArray sccList = (JSONArray) obj;
-			JSONObject scc = (JSONObject) sccList.get(0);
-
-			result = (String) scc.get("SecurityLevel");
-			return result;
-		} catch (IOException | ParseException e) {
-			e.printStackTrace();
-			return null;
-		}
-
-	}
 
 	private static void getSecurityLevel() {
 		int level;
 		levels.clear();
-		levelsNames.clear();
-		for (int i = 0; i < allFilePaths.size(); i++) {
-			level = Integer.parseInt(getSecurityLevel(allFilePaths.get(i)));
-			levelsNames.put(allFilePaths.get(i), level);
+		for (int i = 0; i < instances.size(); i++) {
+			level = instances.get(i).getSecurityLevel();
 			levels.add(level);
 		}
 	}
@@ -261,6 +195,26 @@ public class JSONReader {
 			}
 		}
 	}
+	protected static ArrayList<SCCInstance> instances = new ArrayList<SCCInstance>();
+	private static void getSCCInstances() {
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			for (int i = 0; i < allFilePaths.size(); i++) {
+				if (SecureCryptoConfig.customPath == true) {
+					SCCInstance sccInstance = objectMapper.readValue(new File(allFilePaths.get(i)), SCCInstance.class);
+					instances.add(sccInstance);
+					
+				}else
+				{
+					InputStream is = org.securecryptoconfig.JSONReader.class.getResourceAsStream(allFilePaths.get(i));
+					SCCInstance sccInstance = objectMapper.readValue(is, SCCInstance.class);
+					instances.add(sccInstance);
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	/**
 	 * Determines path to latest SCC file with given Security level
@@ -268,42 +222,35 @@ public class JSONReader {
 	 * @param level
 	 * @return path to latest SCC file with given Security level
 	 */
-	protected static String getLatestSCC(int level) {
-		String latest = null;
-		ArrayList<String> pathsWithKey = new ArrayList<String>();
-		HashMap<String, String> pathVersion = new HashMap<String, String>();
-
+	protected static SCCInstance getLatestSCC(int level) {
+		SCCInstance latest = null;
+		ArrayList<SCCInstance> instancesWithLevel = new ArrayList<SCCInstance>();
+	
 		if (levels.contains(level)) {
 			// which file have security level
-			for (HashMap.Entry<String, Integer> entry : levelsNames.entrySet()) {
-				if (entry.getValue().equals(level)) {
-					pathsWithKey.add(entry.getKey());
+			for (SCCInstance instance : instances) {
+				if (instance.getSecurityLevel() == level) {
+					instancesWithLevel.add(instance);
 				}
-			}
-
-			for (int i = 0; i < pathsWithKey.size(); i++) {
-				String version = getVersion(pathsWithKey.get(i));
-				pathVersion.put(pathsWithKey.get(i), version);
 			}
 
 			int highestYear = 0;
 			int highestPatch = 0;
 
-			Set<String> keys = pathVersion.keySet();
-			for (String s : keys) {
-				String nmb = pathVersion.get(s);
+			for (SCCInstance i : instancesWithLevel) {
+				String nmb = i.getVersion();
 				String version[] = nmb.split("-");
 				Integer versionInt[] = new Integer[2];
 				versionInt[0] = Integer.parseInt(version[0]);
 				versionInt[1] = Integer.parseInt(version[1]);
 				if (highestYear < versionInt[0]) {
-					latest = s;
+					latest = i;
 					highestYear = versionInt[0];
 
 				} else if (highestYear == versionInt[0]) {
 					if (highestPatch < versionInt[1]) {
 						highestPatch = versionInt[1];
-						latest = s;
+						latest = i;
 					}
 				}
 			}
@@ -439,15 +386,18 @@ public class JSONReader {
 	 * @return path
 	 * @throws SCCException
 	 */
-	protected static String parseFiles(String path) {
+	protected static SCCInstance parseFiles(String path) {
 		allFilePaths.clear();
+		instances.clear();
 		if (SecureCryptoConfig.customPath == false) {
 			getFiles(null);
+			getSCCInstances();
 			getPublicKeyPath(null);
 
 		} else {
 			// customPath
 			getFiles(path);
+			getSCCInstances();
 			getPublicKeyPath(path);
 
 		}
@@ -459,7 +409,8 @@ public class JSONReader {
 		}
 		getSecurityLevel();
 		return getLatestSCC(getHighestLevel(levels));
+		
 
 	}
-
+	
 }

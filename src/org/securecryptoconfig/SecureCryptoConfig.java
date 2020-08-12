@@ -4,11 +4,11 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.security.InvalidKeyException;
+import java.security.InvalidParameterException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.HashSet;
-import org.securecryptoconfig.JSONReader.CryptoUseCase;
 import org.securecryptoconfig.SCCKey.KeyType;
 
 import com.upokecenter.cbor.CBORObject;
@@ -35,12 +35,12 @@ import COSE.Sign1Message;
  */
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
-	protected static String sccPath = JSONReader.parseFiles(null);
-
+	protected static SCCInstance currentSCCInstance = JSONReader.parseFiles(null);
+	//protected static SCCInstance currentSCCInstance = null;
 	protected static SCCAlgorithm usedAlgorithm = null;
-	
+
 	public static boolean customPath = false;
-	
+
 	/**
 	 * All supported algorithm names
 	 *
@@ -57,9 +57,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		// PasswordHash
 		PBKDF_SHA_256
 	}
-	
-	
-	
+
 	/**
 	 * Set the latest Secure Crypto Config file of a specific Security level for
 	 * usage.
@@ -73,20 +71,20 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 */
 	public static void setSecurityLevel(int level) {
 		if (JSONReader.levels.contains(level)) {
-			sccPath = JSONReader.getLatestSCC(level);
+			currentSCCInstance = JSONReader.getLatestSCC(level);
 		} else {
 			throw new IllegalArgumentException("There are no files with the specified Security Level");
 		}
 	}
 
 	/**
-	 * Return the policy name of the Secure Crypto Config file that is currently used to
-	 * look up algorithms to use for executing cryptographic use case
+	 * Return the policy name of the Secure Crypto Config file that is currently
+	 * used to look up algorithms to use for executing cryptographic use case
 	 * 
 	 * @return policyName: policy name of the used Secure Crypto Config file
 	 */
 	public static String getUsedSCC() {
-		return JSONReader.getPolicyName(sccPath);
+		return currentSCCInstance.getPolicyName();
 	}
 
 	/**
@@ -98,11 +96,11 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 */
 	public static void setCustomSCCPath(Path path) {
 		customPath = true;
-		if (path.toFile().exists()) {
-			sccPath = JSONReader.parseFiles(path.toString());
-		} else {
-			throw new InvalidPathException(path.toString(), "Path is not existing");
-		}
+		/*
+		 * if (path.toFile().exists()) { sccPath =
+		 * JSONReader.parseFiles(path.toString()); } else { throw new
+		 * InvalidPathException(path.toString(), "Path is not existing"); }
+		 */
 	}
 
 	/**
@@ -111,12 +109,12 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * @param policyName: policy name of the Secure Crypto Config file to use
 	 * @throws InvalidPathException
 	 */
-	public static void setSCCFile(String policyName) {
-		String filePath = JSONReader.findPathForPolicy(policyName);
-		if (filePath != null) {
-			sccPath = filePath;
+	public static void setPolicy(String policyName) {
+		SCCInstance instance = JSONReader.findPathForPolicy(policyName);
+		if (instance != null) {
+			currentSCCInstance = instance;
 		} else {
-			throw new InvalidPathException(filePath, "PolicyName not existing");
+			throw new InvalidParameterException("PolicyName not existing");
 		}
 
 	}
@@ -124,12 +122,12 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	/**
 	 * Set default Secure Crypto Configuration using Secure Crypto Config files at
 	 * "src/scc-configs" Only necessary if a custom path with
-	 * {@link #setCustomSCCPath(Path)} or {@link #setSCCFile(String)} was called
+	 * {@link #setCustomSCCPath(Path)} or {@link #setPolicy(String)} was called
 	 * before
 	 */
 	public static void setDefaultSCC() {
 		customPath = false;
-		sccPath = JSONReader.parseFiles(null);
+		currentSCCInstance = JSONReader.parseFiles(null);
 	}
 
 	/**
@@ -137,34 +135,35 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * 
 	 * @return hashSet
 	 */
-	protected static HashSet<String> getEnums() {
-		HashSet<String> values = new HashSet<String>();
+	protected static HashSet<SCCAlgorithm> getEnums() {
+		HashSet<SCCAlgorithm> values = new HashSet<SCCAlgorithm>();
 
 		for (SCCAlgorithm c : SCCAlgorithm.values()) {
-			values.add(c.name());
+			values.add(c);
 		}
 
 		return values;
 	}
-	
+
 	/**
-	 * Set a specific algorithm for the execution of the later performed use cases. Possible choices
-	 * are containes in {@link SCCAlgorithm}
-	 * @param algorithm: choice of one specific supported algorithm for the following performed use cases.
+	 * Set a specific algorithm for the execution of the later performed use cases.
+	 * Possible choices are containes in {@link SCCAlgorithm}
+	 * 
+	 * @param algorithm: choice of one specific supported algorithm for the
+	 *        following performed use cases.
 	 * 
 	 */
-	public static void setAlgorithm(SCCAlgorithm algorithm)
-	{
+	public static void setAlgorithm(SCCAlgorithm algorithm) {
 		usedAlgorithm = algorithm;
 	}
-	
+
 	/**
-	 * Use the algorithms proposed in the currently used Secure Crypto Config file for the
-	 * execution of the performed use cases. Only necessary if specific algorithm was set previously via
-	 * {@link SecureCryptoConfig#setAlgorithm(AlgorithmID)} 
+	 * Use the algorithms proposed in the currently used Secure Crypto Config file
+	 * for the execution of the performed use cases. Only necessary if specific
+	 * algorithm was set previously via
+	 * {@link SecureCryptoConfig#setAlgorithm(AlgorithmID)}
 	 */
-	public static void defaultAlgorithm()
-	{
+	public static void defaultAlgorithm() {
 		usedAlgorithm = null;
 	}
 
@@ -173,30 +172,29 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			throws CoseException, InvalidKeyException {
 
 		if (key.getKeyType() == KeyType.Symmetric) {
-			if(usedAlgorithm == null) {
-			ArrayList<String> algorithms = new ArrayList<String>();
+			if (usedAlgorithm == null) {
+				ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
 
-			algorithms = JSONReader.getAlgos(CryptoUseCase.SymmetricEncryption, sccPath);
-			for (int i = 0; i < algorithms.size(); i++) {
+				algorithms = currentSCCInstance.getUsage().getSymmetricEncryption();
 
-				String sccalgorithmID = algorithms.get(i);
+				for (int i = 0; i < algorithms.size(); i++) {
 
-				if (getEnums().contains(sccalgorithmID)) {
+					SCCAlgorithm sccalgorithmID = algorithms.get(i);
 
-					SCCAlgorithm chosenAlgorithmID = SCCAlgorithm.valueOf(sccalgorithmID);
+					if (getEnums().contains(sccalgorithmID)) {
 
-					switch (chosenAlgorithmID) {
-					case AES_GCM_256_96:
-						return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_256);
-					case AES_GCM_128_96:
-						return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_128);
-					default:
-						break;
+						switch (sccalgorithmID) {
+						case AES_GCM_256_96:
+							return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_256);
+						case AES_GCM_128_96:
+							return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_128);
+						default:
+							break;
 
+						}
 					}
 				}
-			}
-			}else {
+			} else {
 				switch (usedAlgorithm) {
 				case AES_GCM_256_96:
 					return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_256);
@@ -206,7 +204,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 					break;
 
 				}
-				
+
 			}
 		} else {
 			throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
@@ -250,28 +248,39 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	@Override
 	public SCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
 			throws CoseException, InvalidKeyException, SCCException {
+
 		if (keyPair.getKeyType() == KeyType.Asymmetric) {
-			ArrayList<String> algorithms = new ArrayList<String>();
-			algorithms = JSONReader.getAlgos(CryptoUseCase.AsymmetricEncryption, sccPath);
+			if (usedAlgorithm == null) {
+				ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
 
-			for (int i = 0; i < algorithms.size(); i++) {
+				algorithms = currentSCCInstance.getUsage().getAsymmetricEncryption();
 
-				String sccalgorithmID = algorithms.get(i);
+				for (int i = 0; i < algorithms.size(); i++) {
 
-				if (getEnums().contains(sccalgorithmID)) {
+					SCCAlgorithm sccalgorithmID = algorithms.get(i);
 
-					SCCAlgorithm chosenAlgorithmID = SCCAlgorithm.valueOf(sccalgorithmID);
+					if (getEnums().contains(sccalgorithmID)) {
 
-					switch (chosenAlgorithmID) {
-					case RSA_SHA_512:
-						return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_512, keyPair);
-					default:
-						break;
+						switch (sccalgorithmID) {
+						case RSA_SHA_512:
+							return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_512,
+									keyPair);
+						default:
+							break;
+						}
 					}
-				}
 
+				}
+			} else {
+				switch (usedAlgorithm) {
+				case RSA_SHA_512:
+					return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_512, keyPair);
+				default:
+					break;
+				}
 			}
 		} else {
+
 			throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
 					+ "Create a key with KeyType.Asymmetric");
 		}
@@ -311,27 +320,34 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	@Override
 	public SCCHash hash(PlaintextContainerInterface plaintext) throws CoseException {
 
-		ArrayList<String> algorithms = new ArrayList<String>();
+		if (usedAlgorithm == null) {
+			ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
 
-		algorithms = JSONReader.getAlgos(CryptoUseCase.Hashing, sccPath);
+			algorithms = currentSCCInstance.getUsage().getHashing();
+			for (int i = 0; i < algorithms.size(); i++) {
 
-		for (int i = 0; i < algorithms.size(); i++) {
+				SCCAlgorithm sccalgorithmID = algorithms.get(i);
 
-			String sccalgorithmID = algorithms.get(i);
+				if (getEnums().contains(sccalgorithmID)) {
 
-			if (getEnums().contains(sccalgorithmID)) {
-
-				SCCAlgorithm chosenAlgorithmID = SCCAlgorithm.valueOf(sccalgorithmID);
-
-				switch (chosenAlgorithmID) {
-				case SHA_512:
-					PlaintextContainer p = new PlaintextContainer(plaintext.toBytes());
-					return SecureCryptoConfig.createHashMessage(p, AlgorithmID.SHA_512);
-				default:
-					break;
+					switch (sccalgorithmID) {
+					case SHA_512:
+						PlaintextContainer p = new PlaintextContainer(plaintext.toBytes());
+						return SecureCryptoConfig.createHashMessage(p, AlgorithmID.SHA_512);
+					default:
+						break;
+					}
 				}
-			}
 
+			}
+		} else {
+			switch (usedAlgorithm) {
+			case SHA_512:
+				PlaintextContainer p = new PlaintextContainer(plaintext.toBytes());
+				return SecureCryptoConfig.createHashMessage(p, AlgorithmID.SHA_512);
+			default:
+				break;
+			}
 		}
 		throw new CoseException("No supported algorithm!");
 	}
@@ -376,24 +392,34 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	public SCCSignature sign(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
 			throws CoseException, InvalidKeyException, SCCException {
 		if (keyPair.getKeyType() == KeyType.Asymmetric) {
-			ArrayList<String> algorithms = new ArrayList<String>();
-			algorithms = JSONReader.getAlgos(CryptoUseCase.Signing, sccPath);
 
-			for (int i = 0; i < algorithms.size(); i++) {
-				String sccalgorithmID = algorithms.get(i);
+			if (usedAlgorithm == null) {
 
-				if (getEnums().contains(sccalgorithmID)) {
+				ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
 
-					SCCAlgorithm chosenAlgorithmID = SCCAlgorithm.valueOf(sccalgorithmID);
+				algorithms = currentSCCInstance.getUsage().getSigning();
 
-					switch (chosenAlgorithmID) {
-					case ECDSA_512:
-						return SecureCryptoConfig.createSignMessage(plaintext, keyPair, AlgorithmID.ECDSA_512);
-					default:
-						break;
+				for (int i = 0; i < algorithms.size(); i++) {
+					SCCAlgorithm sccalgorithmID = algorithms.get(i);
+
+					if (getEnums().contains(sccalgorithmID)) {
+
+						switch (sccalgorithmID) {
+						case ECDSA_512:
+							return SecureCryptoConfig.createSignMessage(plaintext, keyPair, AlgorithmID.ECDSA_512);
+						default:
+							break;
+						}
 					}
-				}
 
+				}
+			} else {
+				switch (usedAlgorithm) {
+				case ECDSA_512:
+					return SecureCryptoConfig.createSignMessage(plaintext, keyPair, AlgorithmID.ECDSA_512);
+				default:
+					break;
+				}
 			}
 		} else {
 			throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
@@ -458,26 +484,33 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	@Override
 	public SCCPasswordHash passwordHash(PlaintextContainerInterface password) throws CoseException {
 
-		ArrayList<String> algorithms = new ArrayList<String>();
+		if (usedAlgorithm == null) {
+			ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
 
-		algorithms = JSONReader.getAlgos(CryptoUseCase.PasswordHashing, sccPath);
+			algorithms = currentSCCInstance.getUsage().getPasswordHashing();
 
-		for (int i = 0; i < algorithms.size(); i++) {
+			for (int i = 0; i < algorithms.size(); i++) {
 
-			String sccalgorithmID = algorithms.get(i);
+				SCCAlgorithm sccalgorithmID = algorithms.get(i);
 
-			if (getEnums().contains(sccalgorithmID)) {
+				if (getEnums().contains(sccalgorithmID)) {
 
-				SCCAlgorithm chosenAlgorithmID = SCCAlgorithm.valueOf(sccalgorithmID);
-
-				switch (chosenAlgorithmID) {
-				case PBKDF_SHA_256:
-					return SecureCryptoConfig.createPasswordHashMessage(password, AlgorithmID.PBKDF_SHA_256);
-				default:
-					break;
+					switch (sccalgorithmID) {
+					case PBKDF_SHA_256:
+						return SecureCryptoConfig.createPasswordHashMessage(password, AlgorithmID.PBKDF_SHA_256);
+					default:
+						break;
+					}
 				}
-			}
 
+			}
+		} else {
+			switch (usedAlgorithm) {
+			case PBKDF_SHA_256:
+				return SecureCryptoConfig.createPasswordHashMessage(password, AlgorithmID.PBKDF_SHA_256);
+			default:
+				break;
+			}
 		}
 		throw new CoseException("No supported algorithm!");
 
