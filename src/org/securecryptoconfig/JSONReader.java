@@ -292,11 +292,11 @@ public class JSONReader {
 
 		PublicKey pub = KeyFactory.getInstance(algo.toString()).generatePublic(new X509EncodedKeySpec(publicKey));
 
-		SCCKey sccKeyPair = new SCCKey(KeyType.Asymmetric, pub.getEncoded(), null, algo);
+		SCCKey key = new SCCKey(KeyType.Asymmetric, pub.getEncoded(), null, algo);
 
 		SCCSignature signature = SCCSignature.createFromExistingSignature(sig);
 
-		return signature.validateSignature(sccKeyPair);
+		return signature.validateSignature(key);
 
 	}
 

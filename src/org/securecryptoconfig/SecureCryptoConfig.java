@@ -248,10 +248,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
+	public SCCCiphertext encryptAsymmetric(AbstractSCCKey key, PlaintextContainerInterface plaintext)
 			throws CoseException, InvalidKeyException, SCCException {
 
-		if (keyPair.getKeyType() == KeyType.Asymmetric) {
+		if (key.getKeyType() == KeyType.Asymmetric) {
 			if (usedAlgorithm == null) {
 				ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
 
@@ -266,7 +266,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 						switch (sccalgorithmID) {
 						case RSA_SHA_512:
 							return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_512,
-									keyPair);
+									key);
 						default:
 							break;
 						}
@@ -276,7 +276,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			} else {
 				switch (usedAlgorithm) {
 				case RSA_SHA_512:
-					return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_512, keyPair);
+					return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_512, key);
 				default:
 					break;
 				}
@@ -290,28 +290,28 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCCiphertext encryptAsymmetric(AbstractSCCKey keyPair, byte[] plaintext)
+	public SCCCiphertext encryptAsymmetric(AbstractSCCKey key, byte[] plaintext)
 			throws CoseException, InvalidKeyException, SCCException {
 
-		return encryptAsymmetric(keyPair, new PlaintextContainer(plaintext));
+		return encryptAsymmetric(key, new PlaintextContainer(plaintext));
 
 	}
 
 	@Override
-	public SCCCiphertext reEncryptAsymmetric(AbstractSCCKey keyPair, AbstractSCCCiphertext ciphertext)
+	public SCCCiphertext reEncryptAsymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext)
 			throws CoseException, InvalidKeyException, SCCException {
-		PlaintextContainer decrypted = decryptAsymmetric(keyPair, ciphertext);
-		return encryptAsymmetric(keyPair, decrypted);
+		PlaintextContainer decrypted = decryptAsymmetric(key, ciphertext);
+		return encryptAsymmetric(key, decrypted);
 	}
 
 	@Override
-	public PlaintextContainer decryptAsymmetric(AbstractSCCKey keyPair, AbstractSCCCiphertext ciphertext)
+	public PlaintextContainer decryptAsymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext)
 			throws CoseException, InvalidKeyException, SCCException {
-		if (keyPair.getKeyType() == KeyType.Asymmetric) {
-			SCCKey pair = (SCCKey) keyPair;
+		if (key.getKeyType() == KeyType.Asymmetric) {
+			SCCKey k = (SCCKey) key;
 
 			AsymMessage msg = (AsymMessage) AsymMessage.DecodeFromBytes(ciphertext.msg);
-			return new PlaintextContainer(msg.decrypt(new KeyPair(pair.getPublicKey(), pair.getPrivateKey())));
+			return new PlaintextContainer(msg.decrypt(new KeyPair(k.getPublicKey(), k.getPrivateKey())));
 		} else {
 			throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
 					+ "Create a key with KeyType.Asymmetric");
@@ -391,9 +391,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCSignature sign(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
+	public SCCSignature sign(AbstractSCCKey key, PlaintextContainerInterface plaintext)
 			throws CoseException, InvalidKeyException, SCCException {
-		if (keyPair.getKeyType() == KeyType.Asymmetric) {
+		if (key.getKeyType() == KeyType.Asymmetric) {
 
 			if (usedAlgorithm == null) {
 
@@ -408,7 +408,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 						switch (sccalgorithmID) {
 						case ECDSA_512:
-							return SecureCryptoConfig.createSignMessage(plaintext, keyPair, AlgorithmID.ECDSA_512);
+							return SecureCryptoConfig.createSignMessage(plaintext, key, AlgorithmID.ECDSA_512);
 						default:
 							break;
 						}
@@ -418,7 +418,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			} else {
 				switch (usedAlgorithm) {
 				case ECDSA_512:
-					return SecureCryptoConfig.createSignMessage(plaintext, keyPair, AlgorithmID.ECDSA_512);
+					return SecureCryptoConfig.createSignMessage(plaintext, key, AlgorithmID.ECDSA_512);
 				default:
 					break;
 				}
@@ -431,41 +431,41 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCSignature sign(AbstractSCCKey keyPair, byte[] plaintext)
+	public SCCSignature sign(AbstractSCCKey key, byte[] plaintext)
 			throws CoseException, InvalidKeyException, SCCException {
 
-		return sign(keyPair, new PlaintextContainer(plaintext));
+		return sign(key, new PlaintextContainer(plaintext));
 
 	}
 
 	@Override
-	public SCCSignature updateSignature(AbstractSCCKey keyPair, PlaintextContainerInterface plaintext)
+	public SCCSignature updateSignature(AbstractSCCKey key, PlaintextContainerInterface plaintext)
 			throws CoseException, InvalidKeyException, SCCException {
-		return sign(keyPair, plaintext);
+		return sign(key, plaintext);
 	}
 
 	@Override
-	public SCCSignature updateSignature(AbstractSCCKey keyPair, byte[] plaintext)
+	public SCCSignature updateSignature(AbstractSCCKey key, byte[] plaintext)
 			throws CoseException, InvalidKeyException, SCCException {
-		return updateSignature(keyPair, new PlaintextContainer(plaintext));
+		return updateSignature(key, new PlaintextContainer(plaintext));
 	}
 
 	@Override
-	public boolean validateSignature(AbstractSCCKey keyPair, AbstractSCCSignature signature)
+	public boolean validateSignature(AbstractSCCKey key, AbstractSCCSignature signature)
 			throws InvalidKeyException, SCCException {
-		if (keyPair.getKeyType() == KeyType.Asymmetric) {
-			SCCKey pair = (SCCKey) keyPair;
+		if (key.getKeyType() == KeyType.Asymmetric) {
+			SCCKey k = (SCCKey) key;
 			PrivateKey privateKey = null;
 			try {
 				SCCSignature s = (SCCSignature) signature;
 				Sign1Message msg = s.convertByteToMsg();
 				try {
-					privateKey = pair.getPrivateKey();
+					privateKey = k.getPrivateKey();
 				} catch (NullPointerException e) {
-					OneKey oneKey = new OneKey(pair.getPublicKey(), null);
+					OneKey oneKey = new OneKey(k.getPublicKey(), null);
 					return msg.validate(oneKey);
 				}
-				OneKey oneKey = new OneKey(pair.getPublicKey(), privateKey);
+				OneKey oneKey = new OneKey(k.getPublicKey(), privateKey);
 				return msg.validate(oneKey);
 			} catch (CoseException e) {
 				throw new SCCException("Signature validation could not be performed!", e);
@@ -478,9 +478,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public boolean validateSignature(AbstractSCCKey keyPair, byte[] signature)
+	public boolean validateSignature(AbstractSCCKey key, byte[] signature)
 			throws InvalidKeyException, SCCException {
-		return validateSignature(keyPair, SCCSignature.createFromExistingSignature(signature));
+		return validateSignature(key, SCCSignature.createFromExistingSignature(signature));
 	}
 
 	@Override
@@ -564,10 +564,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			AlgorithmID id) throws SCCException {
 		Sign1Message m = new Sign1Message();
 		m.SetContent(plaintext.toBytes());
-		SCCKey pair = (SCCKey) key;
+		SCCKey k = (SCCKey) key;
 		try {
 			m.addAttribute(HeaderKeys.Algorithm, AlgorithmID.ECDSA_512.AsCBOR(), Attribute.PROTECTED);
-			OneKey oneKey = new OneKey(pair.getPublicKey(), pair.getPrivateKey());
+			OneKey oneKey = new OneKey(k.getPublicKey(), k.getPrivateKey());
 			m.sign(oneKey);
 
 			return SCCSignature.createFromExistingSignature(m.EncodeToBytes());
@@ -581,19 +581,19 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * 
 	 * @param plaintext
 	 * @param id
-	 * @param keyPair
+	 * @param key
 	 * @return SCCCiphertext
 	 * @throws SCCException
 	 * @throws IllegalStateException
 	 */
 	protected static SCCCiphertext createAsymMessage(PlaintextContainerInterface plaintext, AlgorithmID id,
-			AbstractSCCKey keyPair) throws SCCException {
+			AbstractSCCKey key) throws SCCException {
 		try {
-			SCCKey pair = (SCCKey) keyPair;
+			SCCKey k = (SCCKey) key;
 			AsymMessage asymMsg = new AsymMessage();
 			asymMsg.SetContent(plaintext.toBytes());
 			asymMsg.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
-			asymMsg.encrypt(new KeyPair(pair.getPublicKey(), pair.getPrivateKey()));
+			asymMsg.encrypt(new KeyPair(k.getPublicKey(), k.getPrivateKey()));
 			asymMsg.SetContent((byte[]) null);
 
 			return SCCCiphertext.createFromExistingCiphertext(asymMsg.EncodeToBytes());

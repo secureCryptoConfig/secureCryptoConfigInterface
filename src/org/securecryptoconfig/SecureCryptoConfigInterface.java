@@ -447,11 +447,11 @@ abstract interface PlaintextContainerInterface {
 	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
 	 * {@link SCCKey.KeyUseCase#AsymmetricEncryption}
 	 * 
-	 * @param pair: {@link SCCKey}
+	 * @param key: {@link SCCKey}
 	 * @return {@link SCCCiphertext}
 	 * @throws SCCException
 	 */
-	abstract AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey pair) throws SCCException;
+	abstract AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey key) throws SCCException;
 
 	/**
 	 * Signing of a {@link PlaintextContainer} value with a specific {@link SCCKey}.

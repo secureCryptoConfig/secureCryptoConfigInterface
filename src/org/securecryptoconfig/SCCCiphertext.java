@@ -55,9 +55,9 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	}
 
 	@Override
-	public PlaintextContainer decryptAsymmetric(AbstractSCCKey pair) throws SCCException {
+	public PlaintextContainer decryptAsymmetric(AbstractSCCKey key) throws SCCException {
 		try {
-			return scc.decryptAsymmetric(pair, this);
+			return scc.decryptAsymmetric(key, this);
 		} catch (CoseException e) {
 			throw new SCCException("Asymmetric decryption could not be performed!", e);
 		} catch (InvalidKeyException e) {
