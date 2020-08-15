@@ -3,13 +3,17 @@ package org.securecryptoconfig;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.InvalidParameterException;
 import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.HashSet;
 import org.securecryptoconfig.SCCKey.KeyType;
+import org.securecryptoconfig.SCCKey.KeyUseCase;
+import org.securecryptoconfig.SecureCryptoConfig.SCCAlgorithm;
 
 import com.upokecenter.cbor.CBORObject;
 
@@ -35,8 +39,8 @@ import COSE.Sign1Message;
  */
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
-	protected static SCCInstance currentSCCInstance = JSONReader.parseFiles(null);
-	// protected static SCCInstance currentSCCInstance = null;
+	//protected static SCCInstance currentSCCInstance = JSONReader.parseFiles(null);
+	protected static SCCInstance currentSCCInstance = null;
 	protected static SCCAlgorithm usedAlgorithm = null;
 
 	public static boolean customPath = false;
@@ -47,13 +51,13 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 */
 	public static enum SCCAlgorithm {
 		// symmetric:
-		AES_GCM_256_96, AES_GCM_128_96, AES_CCM_128_96, AES_CCM_256_96,
+		AES_GCM_256_96, AES_GCM_128_96, AES_GCM_192_96,
 		// Digital Signature
-		ECDSA_512,
+		ECDSA_512, ECDSA_256,ECDSA_384,
 		// Hash
 		SHA_512, SHA_256, SHA3_512, SHA3_256,
 		// asymmetric:
-		RSA_SHA_512, RSA_SHA_256, RSA_PKCS1,
+		RSA_SHA_512, RSA_SHA_256, RSA_ECB,
 		// PasswordHash
 		PBKDF_SHA_512, PBKDF_SHA_256, // SHA 512 with 64 salt
 		SHA_512_64
@@ -191,10 +195,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 							return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_256);
 						case AES_GCM_128_96:
 							return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_128);
-						case AES_CCM_128_96:
-							return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_CCM_64_128_128);
-						case AES_CCM_256_96:
-							return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_CCM_64_128_256);
+						case  AES_GCM_192_96:
+							return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_192);
 						default:
 							break;
 
@@ -207,10 +209,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 					return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_256);
 				case AES_GCM_128_96:
 					return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_128);
-				case AES_CCM_128_96:
-					return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_CCM_64_128_128);
-				case AES_CCM_256_96:
-					return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_CCM_64_128_256);
+				case  AES_GCM_192_96:
+					return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_192);
 				default:
 					break;
 
@@ -277,8 +277,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 							return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_512, key);
 						case RSA_SHA_256:
 							return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_256, key);
-						case RSA_PKCS1:
-							return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_PKCS1, key);
+						case RSA_ECB:
+							return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_ECB, key);
 						default:
 							break;
 						}
@@ -291,8 +291,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 					return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_512, key);
 				case RSA_SHA_256:
 					return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_256, key);
-				case RSA_PKCS1:
-					return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_PKCS1, key);
+				case RSA_ECB:
+					return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_ECB, key);
 
 				default:
 					break;
@@ -449,6 +449,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 						switch (sccalgorithmID) {
 						case ECDSA_512:
 							return SecureCryptoConfig.createSignMessage(plaintext, key, AlgorithmID.ECDSA_512);
+						case ECDSA_256:
+							return SecureCryptoConfig.createSignMessage(plaintext, key, AlgorithmID.ECDSA_256);
+						case ECDSA_384:
+							return SecureCryptoConfig.createSignMessage(plaintext, key, AlgorithmID.ECDSA_384);
 						default:
 							break;
 						}
@@ -459,6 +463,11 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				switch (usedAlgorithm) {
 				case ECDSA_512:
 					return SecureCryptoConfig.createSignMessage(plaintext, key, AlgorithmID.ECDSA_512);
+				case ECDSA_256:
+					return SecureCryptoConfig.createSignMessage(plaintext, key, AlgorithmID.ECDSA_256);
+				case ECDSA_384:
+					return SecureCryptoConfig.createSignMessage(plaintext, key, AlgorithmID.ECDSA_384);
+				
 				default:
 					break;
 				}
@@ -750,6 +759,20 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;
+		}
+	}
+	
+	public static void main(String[] args) {
+		SecureCryptoConfig scc = new SecureCryptoConfig();
+		try {
+			SecureCryptoConfig.setCustomSCCPath(Paths.get("C:\\Users\\Lisa\\Documents\\Uni\\Semester10\\scc-configs"));
+			SecureCryptoConfig.setAlgorithm(SCCAlgorithm.ECDSA_384);
+			SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
+			
+			System.out.println(scc.sign(key, "Hello".getBytes()).toString());
+		} catch (CoseException | SCCException | NoSuchAlgorithmException | InvalidKeyException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 

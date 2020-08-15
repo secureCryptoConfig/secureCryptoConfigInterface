@@ -38,9 +38,11 @@ public abstract class AsymCommon extends Message {
             case RSA_OAEP_SHA_256:
             	algName = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
             	RSA_Decrypt(rgbKey, algName);
-            case RSA_PKCS1:
+            	break;
+            case RSA_ECB:
             	algName = "RSA/ECB/PKCS1Padding";
             	RSA_Decrypt(rgbKey, algName);
+            	break;
             default:
                 throw new CoseException("Unsupported Algorithm Specified");
         }
@@ -76,9 +78,11 @@ public abstract class AsymCommon extends Message {
             case RSA_OAEP_SHA_256:
             	algName = "RSA/ECB/OAEPWithSHA-256AndMGF1Padding";
             	RSA_Encrypt(rgbKey, algName);
-            case RSA_PKCS1:
+            	break;
+            case RSA_ECB:
             	algName = "RSA/ECB/PKCS1Padding";
             	RSA_Encrypt(rgbKey, algName);
+            	break;
             default:
                 throw new CoseException("Unsupported Algorithm Specified");
         }

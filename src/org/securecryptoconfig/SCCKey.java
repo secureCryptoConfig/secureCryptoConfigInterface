@@ -236,6 +236,10 @@ public class SCCKey extends AbstractSCCKey {
 				if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
 
 					switch (sccalgorithmID) {
+					case AES_GCM_192_96:
+						algo = "AES";
+						keysize = 192;
+						break;
 					case AES_GCM_256_96:
 						algo = "AES";
 						keysize = 256;
@@ -247,6 +251,7 @@ public class SCCKey extends AbstractSCCKey {
 					default:
 						break;
 
+
 					}
 
 					return createSymmetricKey(algo, keysize);
@@ -255,6 +260,10 @@ public class SCCKey extends AbstractSCCKey {
 			}
 		} else {
 			switch (SecureCryptoConfig.usedAlgorithm) {
+			case AES_GCM_192_96:
+				algo = "AES";
+				keysize = 192;
+				break;
 			case AES_GCM_256_96:
 				algo = "AES";
 				keysize = 256;
@@ -304,6 +313,8 @@ public class SCCKey extends AbstractSCCKey {
 	 * @throws CoseException
 	 */
 	private static SCCKey createNewKeyPair(CryptoUseCase c) throws SCCException, CoseException {
+		AlgorithmID id;
+		String algoKey;
 		if (SecureCryptoConfig.usedAlgorithm == null) {
 			ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
 
@@ -329,17 +340,26 @@ public class SCCKey extends AbstractSCCKey {
 					
 					switch (sccalgorithmID) {
 					// Asymmetric
+					case RSA_ECB:
+					case RSA_SHA_256:
 					case RSA_SHA_512:
 						return createAsymmetricKey("RSA", 4096);
+
 					// Signing
 					case ECDSA_512:
-						try {
-							OneKey oneKey = OneKey.generateKey(AlgorithmID.ECDSA_512);
-							return new SCCKey(KeyType.Asymmetric, oneKey.AsPublicKey().getEncoded(),
-									oneKey.AsPrivateKey().getEncoded(), "EC");
-						} catch (CoseException e) {
-							throw new SCCException("Key could not be created!", e);
-						}
+						id = AlgorithmID.ECDSA_512;
+						algoKey = "EC";
+						return createOneKey(id, algoKey);
+						
+					case ECDSA_256:
+						id = AlgorithmID.ECDSA_256;
+						algoKey = "EC";
+						return createOneKey(id, algoKey);
+					case ECDSA_384:
+						id = AlgorithmID.ECDSA_384;
+						algoKey = "EC";
+						return createOneKey(id, algoKey);
+					
 					default:
 						break;
 					}
@@ -350,23 +370,41 @@ public class SCCKey extends AbstractSCCKey {
 
 			switch (SecureCryptoConfig.usedAlgorithm) {
 			// Asymmetric
+			case RSA_ECB:
+			case RSA_SHA_256:
 			case RSA_SHA_512:
 				return createAsymmetricKey("RSA", 4096);
 
 			// Signing
 			case ECDSA_512:
-				try {
-					OneKey oneKey = OneKey.generateKey(AlgorithmID.ECDSA_512);
-					return new SCCKey(KeyType.Asymmetric, oneKey.AsPublicKey().getEncoded(),
-							oneKey.AsPrivateKey().getEncoded(), "EC");
-				} catch (CoseException e) {
-					throw new SCCException("Key could not be created!", e);
-				}
+				id = AlgorithmID.ECDSA_512;
+				algoKey = "EC";
+				return createOneKey(id, algoKey);
+				
+			case ECDSA_256:
+				id = AlgorithmID.ECDSA_256;
+				algoKey = "EC";
+				return createOneKey(id, algoKey);
+			case ECDSA_384:
+				id = AlgorithmID.ECDSA_384;
+				algoKey = "EC";
+				return createOneKey(id, algoKey);
 			default:
 				break;
 			}
 		}
 		throw new CoseException("Key could not be created! No algorithm specified!");
+	}
+	
+	private static SCCKey createOneKey(AlgorithmID id, String algoKey) throws SCCException
+	{
+		try {
+			OneKey oneKey = OneKey.generateKey(id);
+			return new SCCKey(KeyType.Asymmetric, oneKey.AsPublicKey().getEncoded(),
+					oneKey.AsPrivateKey().getEncoded(), algoKey);
+		} catch (CoseException e) {
+			throw new SCCException("Key could not be created!", e);
+		}
 	}
 
 	/**
@@ -437,6 +475,13 @@ public class SCCKey extends AbstractSCCKey {
 				if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
 
 					switch (sccalgorithmID) {
+					case AES_GCM_192_96:
+						algo = "PBKDF2WithHmacSHA512";
+						keyAlgo = "AES";
+						keysize = 192;
+						iterations = 10000;
+						saltLength = 64;
+						break;
 					case AES_GCM_256_96:
 						algo = "PBKDF2WithHmacSHA512";
 						keyAlgo = "AES";
@@ -444,6 +489,7 @@ public class SCCKey extends AbstractSCCKey {
 						iterations = 10000;
 						saltLength = 64;
 						break;
+				
 					case AES_GCM_128_96:
 						algo = "PBKDF2WithHmacSHA512";
 						keyAlgo = "AES";
@@ -453,7 +499,6 @@ public class SCCKey extends AbstractSCCKey {
 						break;
 					default:
 						break;
-
 					}
 
 					return createKeyWithPassword(password, algo, keyAlgo, keysize, iterations, saltLength);
@@ -463,6 +508,13 @@ public class SCCKey extends AbstractSCCKey {
 		} else {
 
 			switch (SecureCryptoConfig.usedAlgorithm) {
+			case AES_GCM_192_96:
+				algo = "PBKDF2WithHmacSHA512";
+				keyAlgo = "AES";
+				keysize = 192;
+				iterations = 10000;
+				saltLength = 64;
+				break;
 			case AES_GCM_256_96:
 				algo = "PBKDF2WithHmacSHA512";
 				keyAlgo = "AES";
@@ -470,6 +522,7 @@ public class SCCKey extends AbstractSCCKey {
 				iterations = 10000;
 				saltLength = 64;
 				break;
+		
 			case AES_GCM_128_96:
 				algo = "PBKDF2WithHmacSHA512";
 				keyAlgo = "AES";
