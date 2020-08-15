@@ -60,10 +60,16 @@ public enum AlgorithmID {
     RSA_PSS_384(-38, 0, 0),
     RSA_PSS_512(-39, 0, 0), 
     SHA_512(0, 512, 0),
+    SHA_256(0, 256, 0),
+    SHA3_512(0, 512, 0),
+    SHA3_256(0, 256, 0),
+
     
     RSA_OAEP_SHA_512(-42, 256, 0),
     
-    PBKDF_SHA_256(8, 256, 64)
+    PBKDF_SHA_512(8, 512, 64),
+    PBKDF_SHA_256(8, 256, 64),
+    SHA_512_64(8, 512, 64)
     ;
  
     private final CBORObject value;

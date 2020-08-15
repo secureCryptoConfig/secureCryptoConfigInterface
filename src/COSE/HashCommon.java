@@ -20,6 +20,15 @@ public abstract class HashCommon extends Message{
             case SHA_512:
                 algName = "SHA-512";
                 break;
+            case SHA_256:
+                algName = "SHA-256";
+                break;
+            case SHA3_512:
+                algName = "SHA3-512";
+                break;
+            case SHA3_256:
+                algName = "SHA3-256";
+                break;
                 
             default:
                 throw new CoseException("Unsupported Algorithm Specified");
