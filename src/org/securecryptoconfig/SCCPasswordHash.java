@@ -4,6 +4,7 @@ import java.util.Base64;
 
 import COSE.CoseException;
 import COSE.PasswordHashMessage;
+import COSE.Sign1Message;
 
 /**
  * Container for a Cryptographic Password Hash.
@@ -74,10 +75,17 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	 * Returns a SCCPasswordHash from byte[] representation of existing SCCPasswordHash
 	 * @param existingSCCPasswordHash: byte[] representation of existing SCCPasswordHash 
 	 * @return SCCPasswordHash form byte[]
+	 * @throws SCCException 
 	 */
-	 public static SCCPasswordHash createFromExistingPasswordHash(byte[] existingSCCPasswordHash)
+	 public static SCCPasswordHash createFromExistingPasswordHash(byte[] existingSCCPasswordHash) throws SCCException
 	 {
-		 return new SCCPasswordHash(existingSCCPasswordHash);
+		 try {
+				PasswordHashMessage msg = (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(existingSCCPasswordHash);
+				 return new SCCPasswordHash(existingSCCPasswordHash);
+			} catch (CoseException e) {
+				throw new SCCException("No valid SCCPasswordHash byte[] representation", e);
+			}
+		
 	 }
 
 }

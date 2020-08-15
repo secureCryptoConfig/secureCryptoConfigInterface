@@ -171,7 +171,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	@Override
 	public SCCCiphertext encryptSymmetric(AbstractSCCKey key, PlaintextContainerInterface plaintext)
-			throws CoseException, InvalidKeyException {
+			throws CoseException, InvalidKeyException, SCCException {
 
 		if (key.getKeyType() == KeyType.Symmetric) {
 			if (usedAlgorithm == null) {
@@ -217,14 +217,14 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	@Override
 	public SCCCiphertext encryptSymmetric(AbstractSCCKey key, byte[] plaintext)
-			throws CoseException, InvalidKeyException {
+			throws CoseException, InvalidKeyException, SCCException {
 
 		return encryptSymmetric(key, new PlaintextContainer(plaintext));
 	}
 
 	@Override
 	public SCCCiphertext reEncryptSymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext)
-			throws CoseException, InvalidKeyException {
+			throws CoseException, InvalidKeyException, SCCException {
 
 		PlaintextContainer decrypted = decryptSymmetric(key, ciphertext);
 		return encryptSymmetric(key, decrypted);
@@ -320,7 +320,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCHash hash(PlaintextContainerInterface plaintext) throws CoseException {
+	public SCCHash hash(PlaintextContainerInterface plaintext) throws CoseException, SCCException {
 
 		if (usedAlgorithm == null) {
 			ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
@@ -355,7 +355,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCHash hash(byte[] plaintext) throws CoseException {
+	public SCCHash hash(byte[] plaintext) throws CoseException, SCCException {
 		try {
 			return hash(new PlaintextContainer(plaintext));
 		} catch (CoseException e) {
@@ -365,17 +365,17 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCHash updateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException {
+	public SCCHash updateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException, SCCException {
 		return hash(plaintext);
 	}
 
 	@Override
-	public SCCHash updateHash(byte[] plaintext, AbstractSCCHash hash) throws CoseException {
+	public SCCHash updateHash(byte[] plaintext, AbstractSCCHash hash) throws CoseException, SCCException {
 		return updateHash(new PlaintextContainer(plaintext), hash);
 	}
 
 	@Override
-	public boolean validateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException {
+	public boolean validateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException, SCCException {
 		SCCHash sccHash = (SCCHash) hash;
 		String s = new String(sccHash.convertByteToMsg().getHashedContent(), StandardCharsets.UTF_8);
 
@@ -386,7 +386,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public boolean validateHash(byte[] plaintext, AbstractSCCHash hash) throws CoseException {
+	public boolean validateHash(byte[] plaintext, AbstractSCCHash hash) throws CoseException, SCCException {
 		return validateHash(new PlaintextContainer(plaintext), hash);
 	}
 
@@ -484,7 +484,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCPasswordHash passwordHash(PlaintextContainerInterface password) throws CoseException {
+	public SCCPasswordHash passwordHash(PlaintextContainerInterface password) throws CoseException, SCCException {
 
 		if (usedAlgorithm == null) {
 			ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
@@ -519,7 +519,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCPasswordHash passwordHash(byte[] password) throws CoseException {
+	public SCCPasswordHash passwordHash(byte[] password) throws CoseException, SCCException {
 		try {
 			return passwordHash(new PlaintextContainer(password));
 		} catch (CoseException e) {
@@ -530,7 +530,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	@Override
 	public boolean validatePasswordHash(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash)
-			throws CoseException {
+			throws CoseException, SCCException {
 
 		SCCPasswordHash sccHash = (SCCPasswordHash) passwordhash;
 		PasswordHashMessage msg = sccHash.convertByteToMsg();
@@ -547,7 +547,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public boolean validatePasswordHash(byte[] password, AbstractSCCPasswordHash passwordhash) throws CoseException {
+	public boolean validatePasswordHash(byte[] password, AbstractSCCPasswordHash passwordhash) throws CoseException, SCCException {
 		return validatePasswordHash(new PlaintextContainer(password), passwordhash);
 	}
 
@@ -610,9 +610,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * @param id
 	 * @param salt
 	 * @return SCCPasswordHash
+	 * @throws SCCException 
 	 */
 	protected static SCCPasswordHash createPasswordHashMessageSalt(PlaintextContainerInterface password, AlgorithmID id,
-			byte[] salt) {
+			byte[] salt) throws SCCException {
 		try {
 			PasswordHashMessage m = new PasswordHashMessage();
 			m.SetContent(password.toBytes());
@@ -632,8 +633,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * @param password
 	 * @param id
 	 * @return SCCPasswordHash
+	 * @throws SCCException 
 	 */
-	protected static SCCPasswordHash createPasswordHashMessage(PlaintextContainerInterface password, AlgorithmID id) {
+	protected static SCCPasswordHash createPasswordHashMessage(PlaintextContainerInterface password, AlgorithmID id) throws SCCException {
 
 		try {
 			PasswordHashMessage m = new PasswordHashMessage();
@@ -655,8 +657,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * @param plaintext
 	 * @param id
 	 * @return SCCHash
+	 * @throws SCCException 
 	 */
-	protected static SCCHash createHashMessage(PlaintextContainer plaintext, AlgorithmID id) {
+	protected static SCCHash createHashMessage(PlaintextContainer plaintext, AlgorithmID id) throws SCCException {
 		try {
 			HashMessage hashMessage = new HashMessage();
 			hashMessage.SetContent(plaintext.toBytes());
@@ -680,9 +683,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * @param key
 	 * @param id
 	 * @return SCCCiphertext
+	 * @throws SCCException 
 	 */
 	protected static SCCCiphertext createMessage(PlaintextContainerInterface plaintext, AbstractSCCKey key,
-			AlgorithmID id) {
+			AlgorithmID id) throws SCCException {
 		try {
 			Encrypt0Message encrypt0Message = new Encrypt0Message();
 			encrypt0Message.SetContent(plaintext.toBytes());
@@ -691,8 +695,6 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 			encrypt0Message.encrypt(key.key);
 			encrypt0Message.SetContent((byte[]) null);
-
-			// byte[] encrypted = encrypt0Message.getEncryptedContent();
 
 			return SCCCiphertext.createFromExistingCiphertext(encrypt0Message.EncodeToBytes());
 

@@ -39,7 +39,7 @@ class TestHashing {
 	// - byte[] plain hash, return: byte[] hash
 	// - byte[] plain hash + validate, return: boolean
 	@Test
-	void testHashingByteValidation() throws CoseException {
+	void testHashingByteValidation() throws CoseException, SCCException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCHash hash = scc.hash(plaintext);
 
@@ -54,7 +54,7 @@ class TestHashing {
 	// - String plain hash, return: String hash
 	// - String plain hash + validate, return: boolean
 	@Test
-	void testHashingStringValidation() throws CoseException {
+	void testHashingStringValidation() throws CoseException, SCCException {
 		String plaintext = "Hello World!";
 		SCCHash hash = scc.hash(plaintext.getBytes(StandardCharsets.UTF_8));
 
@@ -64,7 +64,7 @@ class TestHashing {
 
 	// - hash, return: updated byte[]hash
 	@Test
-	void testUpdateHashingByte() throws CoseException {
+	void testUpdateHashingByte() throws CoseException, SCCException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 
 		// TODO here we should change the actually used hash to test if
@@ -85,7 +85,7 @@ class TestHashing {
 
 	// - hash, return: updated String hash
 	@Test
-	void testUpdateHashingString() throws CoseException {
+	void testUpdateHashingString() throws CoseException, SCCException {
 		String plaintext = "Hello World!";
 		SCCHash oldHash = scc.hash(plaintext.getBytes(StandardCharsets.UTF_8));
 		String oldHashString = oldHash.toString();
@@ -119,7 +119,7 @@ class TestHashing {
 	// - byte[] plain hash, return: byte[] hash
 	// - byte[] plain hash + validate, return: boolean
 	@Test
-	void testPasswordHashingByteValidation() throws CoseException {
+	void testPasswordHashingByteValidation() throws CoseException, SCCException {
 		byte[] password = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCPasswordHash hash = scc.passwordHash(password);
 		byte[] hashedValue = hash.toBytes();
@@ -131,7 +131,7 @@ class TestHashing {
 	// - String plain hash, return: String hash
 	// - String plain hash + validate, return: boolean
 	@Test
-	void testPasswordHashingStringValidation() throws CoseException {
+	void testPasswordHashingStringValidation() throws CoseException, SCCException {
 		String password = "Hello World!";
 		SCCPasswordHash hash = scc.passwordHash(password.getBytes(StandardCharsets.UTF_8));
 		String hashedValue = hash.toString();

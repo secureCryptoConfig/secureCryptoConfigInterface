@@ -34,9 +34,10 @@ abstract interface SecureCryptoConfigInterface {
 	 * @throws CoseException
 	 * @throws InvalidKeyException : If {@link SCCKey} has not the
 	 *                             {@link KeyType#Symmetric}
+	 * @throws SCCException 
 	 */
 	public AbstractSCCCiphertext encryptSymmetric(AbstractSCCKey key, PlaintextContainerInterface plaintext)
-			throws CoseException, InvalidKeyException;
+			throws CoseException, InvalidKeyException, SCCException;
 
 	/**
 	 * Symmetric encryption with a certain {@link SCCKey} for a given plaintext based on the current Secure Crypto Config file.
@@ -50,9 +51,10 @@ abstract interface SecureCryptoConfigInterface {
 	 * @throws CoseException
 	 * @throws InvalidKeyException: If {@link SCCKey} has not the
 	 *                              {@link KeyType#Symmetric}
+	 * @throws SCCException 
 	 */
 	public AbstractSCCCiphertext encryptSymmetric(AbstractSCCKey key, byte[] plaintext)
-			throws CoseException, InvalidKeyException;
+			throws CoseException, InvalidKeyException, SCCException;
 	
 	
 
@@ -66,9 +68,10 @@ abstract interface SecureCryptoConfigInterface {
 	 * @throws CoseException
 	 * @throws InvalidKeyException: If {@link SCCKey} has not the
 	 *                              {@link KeyType#Symmetric}
+	 * @throws SCCException 
 	 */
 	public AbstractSCCCiphertext reEncryptSymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext)
-			throws CoseException, InvalidKeyException;
+			throws CoseException, InvalidKeyException, SCCException;
 	
 
 	/**
@@ -162,8 +165,9 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCHash}
 	 * @throws CoseException
+	 * @throws SCCException 
 	 */
-	public AbstractSCCHash hash(PlaintextContainerInterface plaintext) throws CoseException;
+	public AbstractSCCHash hash(PlaintextContainerInterface plaintext) throws CoseException, SCCException;
 
 	/**
 	 * Hashing of a given plaintext based on the current Secure Crypto Config file.
@@ -171,8 +175,9 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param plaintext: as byte[]
 	 * @return {@link SCCHash}
 	 * @throws CoseException
+	 * @throws SCCException 
 	 */
-	public AbstractSCCHash hash(byte[] plaintext) throws CoseException;
+	public AbstractSCCHash hash(byte[] plaintext) throws CoseException, SCCException;
 
 
 	/**
@@ -183,8 +188,9 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param hash: {@link SCCHash}
 	 * @return {@link SCCHash}
 	 * @throws CoseException
+	 * @throws SCCException 
 	 */
-	public AbstractSCCHash updateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException;
+	public AbstractSCCHash updateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException, SCCException;
 
 
 	/**
@@ -195,8 +201,9 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param hash: {@link SCCHash}
 	 * @return {@link SCCHash}
 	 * @throws CoseException
+	 * @throws SCCException 
 	 */
-	public AbstractSCCHash updateHash(byte[] plaintext, AbstractSCCHash hash) throws CoseException;
+	public AbstractSCCHash updateHash(byte[] plaintext, AbstractSCCHash hash) throws CoseException, SCCException;
 	
 
 	/**
@@ -209,8 +216,9 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param hash: {@link SCCHash}
 	 * @return boolean
 	 * @throws CoseException
+	 * @throws SCCException 
 	 */
-	public boolean validateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException;
+	public boolean validateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException, SCCException;
 
 	/**
 	 * Validate a given {@link SCCHash} for a specific plaintext.
@@ -222,8 +230,9 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param hash: {@link SCCHash}
 	 * @return boolean
 	 * @throws CoseException
+	 * @throws SCCException 
 	 */
-	public boolean validateHash(byte[] plaintext, AbstractSCCHash hash) throws CoseException;
+	public boolean validateHash(byte[] plaintext, AbstractSCCHash hash) throws CoseException, SCCException;
 
 	// Digital Signature
 
@@ -329,8 +338,9 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param password: as {@link PlaintextContainer}
 	 * @return {@link SCCPasswordHash}
 	 * @throws CoseException
+	 * @throws SCCException 
 	 */
-	public AbstractSCCPasswordHash passwordHash(PlaintextContainerInterface password) throws CoseException;
+	public AbstractSCCPasswordHash passwordHash(PlaintextContainerInterface password) throws CoseException, SCCException;
 
 
 	/**
@@ -339,8 +349,9 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param password: as byte[]
 	 * @return {@link SCCPasswordHash}
 	 * @throws CoseException
+	 * @throws SCCException 
 	 */
-	public AbstractSCCPasswordHash passwordHash(byte[] password) throws CoseException;
+	public AbstractSCCPasswordHash passwordHash(byte[] password) throws CoseException, SCCException;
 	
 
 	/**
@@ -353,9 +364,10 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param passwordhash: {@link SCCPasswordHash}
 	 * @return boolean
 	 * @throws CoseException
+	 * @throws SCCException 
 	 */
 	public boolean validatePasswordHash(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash)
-			throws CoseException;
+			throws CoseException, SCCException;
 
 	/**
 	 * Validate a given {@link SCCPasswordHash} against given password.
@@ -367,8 +379,9 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param passwordhash: {@link SCCPasswordHash}
 	 * @return boolean
 	 * @throws CoseException
+	 * @throws SCCException 
 	 */
-	public boolean validatePasswordHash(byte[] password, AbstractSCCPasswordHash passwordhash) throws CoseException;
+	public boolean validatePasswordHash(byte[] password, AbstractSCCPasswordHash passwordhash) throws CoseException, SCCException;
 }
 
 /**

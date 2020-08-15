@@ -4,6 +4,7 @@ import java.security.InvalidKeyException;
 import java.util.Base64;
 
 import COSE.CoseException;
+import COSE.Encrypt0Message;
 import COSE.Sign1Message;
 
 /**
@@ -33,7 +34,9 @@ public class SCCSignature extends AbstractSCCSignature {
 	 * @param signatureMsg: byte[] of COSE message
 	 */
 	private SCCSignature(byte[] signatureMsg) {
+		
 		super(signatureMsg);
+		
 	}
 
 
@@ -86,9 +89,17 @@ public class SCCSignature extends AbstractSCCSignature {
 	 * Return SCCSignature from byte[] representation of a existing SCCSignature
 	 * @param existingSCCSignature: byte[] of existing SCCSignature
 	 * @return SCCSignature
+	 * @throws SCCException 
 	 */
-	public static SCCSignature createFromExistingSignature(byte[] existingSCCSignature)
+	public static SCCSignature createFromExistingSignature(byte[] existingSCCSignature) throws SCCException
 	{
-		return new SCCSignature(existingSCCSignature);
+		try {
+			Sign1Message msg = (Sign1Message) Sign1Message.DecodeFromBytes(existingSCCSignature);
+			return new SCCSignature(existingSCCSignature);
+		} catch (CoseException e) {
+			throw new SCCException("No valid SCCSignature byte[] representation", e);
+		}
+		
+		
 	}
 }

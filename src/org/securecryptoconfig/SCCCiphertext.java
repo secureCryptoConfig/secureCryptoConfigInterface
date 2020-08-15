@@ -4,6 +4,8 @@ import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 
 import COSE.CoseException;
+import COSE.Encrypt0Message;
+import COSE.PasswordHashMessage;
 
 /**
  * Container for the ciphertext (as result from encrypting a
@@ -91,10 +93,17 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	 * Returns a SCCCiphertext from byte[] representation of existing SCCCiphertext
 	 * @param existingSCCCiphertext: byte[] representation of existing SCCCiphertext 
 	 * @return SCCCiphertext form byte[]
+	 * @throws SCCException 
 	 */
-	 public static SCCCiphertext createFromExistingCiphertext(byte[] existingSCCCiphertext)
+	 public static SCCCiphertext createFromExistingCiphertext(byte[] existingSCCCiphertext) throws SCCException
 	 {
-		 return new SCCCiphertext(existingSCCCiphertext);
+		 try {
+				Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(existingSCCCiphertext);
+				 return new SCCCiphertext(existingSCCCiphertext);
+			} catch (CoseException e) {
+				throw new SCCException("No valid SCCCiphertext byte[] representation", e);
+			}
+		
 	 }
 
 }
