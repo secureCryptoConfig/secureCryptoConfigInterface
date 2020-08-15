@@ -4,7 +4,6 @@ import java.util.Base64;
 
 import COSE.CoseException;
 import COSE.PasswordHashMessage;
-import COSE.Sign1Message;
 
 /**
  * Container for a Cryptographic Password Hash.
@@ -74,18 +73,35 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	/**
 	 * Returns a SCCPasswordHash from byte[] representation of existing SCCPasswordHash
 	 * @param existingSCCPasswordHash: byte[] representation of existing SCCPasswordHash 
-	 * @return SCCPasswordHash form byte[]
+	 * @return SCCPasswordHash from byte[]
 	 * @throws SCCException 
 	 */
 	 public static SCCPasswordHash createFromExistingPasswordHash(byte[] existingSCCPasswordHash) throws SCCException
 	 {
 		 try {
-				PasswordHashMessage msg = (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(existingSCCPasswordHash);
+				PasswordHashMessage.DecodeFromBytes(existingSCCPasswordHash);
 				 return new SCCPasswordHash(existingSCCPasswordHash);
 			} catch (CoseException e) {
 				throw new SCCException("No valid SCCPasswordHash byte[] representation", e);
 			}
 		
 	 }
+	 
+	 /**
+		 * Returns a SCCPasswordHash from String (Base64) representation of existing SCCPasswordHash
+		 * @param existingSCCPasswordHash: String (Base64) representation of existing SCCPasswordHash 
+		 * @return SCCPasswordHash from String (Base64)
+		 * @throws SCCException 
+		 */
+		 public static SCCPasswordHash createFromExistingPasswordHash(String existingSCCPasswordHash) throws SCCException
+		 {
+			 try {
+					PasswordHashMessage.DecodeFromBytes(Base64.getDecoder().decode(existingSCCPasswordHash));
+					 return new SCCPasswordHash(Base64.getDecoder().decode(existingSCCPasswordHash));
+				} catch (CoseException e) {
+					throw new SCCException("No valid SCCPasswordHash String representation", e);
+				}
+			
+		 }
 
 }

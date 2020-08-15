@@ -59,7 +59,7 @@ class TestHashing {
 		SCCHash hash = scc.hash(plaintext.getBytes(StandardCharsets.UTF_8));
 
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes()), hash));
-		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes()), SCCHash.createFromExistingHash(hash.toString().getBytes())));
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes()), SCCHash.createFromExistingHash(hash.toString())));
 	}
 
 	// - hash, return: updated byte[]hash
@@ -96,9 +96,9 @@ class TestHashing {
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)), oldHash));
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)), newHash));
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)),
-				SCCHash.createFromExistingHash(oldHashString.getBytes())));
+				SCCHash.createFromExistingHash(oldHashString)));
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)),
-				SCCHash.createFromExistingHash(newHashString.getBytes())));
+				SCCHash.createFromExistingHash(newHashString)));
 
 	}
 
@@ -138,7 +138,7 @@ class TestHashing {
 
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes()), hash));
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)),
-				SCCPasswordHash.createFromExistingPasswordHash(hashedValue.getBytes())));
+				SCCPasswordHash.createFromExistingPasswordHash(hashedValue)));
 	}
 
 }

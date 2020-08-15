@@ -4,7 +4,6 @@ import java.util.Base64;
 
 import COSE.CoseException;
 import COSE.HashMessage;
-import COSE.PasswordHashMessage;
 
 /**
  * Container for a Cryptographic Hash.
@@ -93,10 +92,26 @@ public class SCCHash extends AbstractSCCHash {
 	 public static SCCHash createFromExistingHash(byte[] existingSCCHash) throws SCCException
 	 {
 		 try {
-				PasswordHashMessage msg = (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(existingSCCHash);
+				HashMessage.DecodeFromBytes(existingSCCHash);
 				 return new SCCHash(existingSCCHash);
 			} catch (CoseException e) {
 				throw new SCCException("No valid SCCHash byte[] representation", e);
 			}
 	 }
+	 
+	 /**
+		 * Returns a SCCHash from String (Base64) representation of existing SCCHash
+		 * @param existingSCCHash: String (Base64) representation of existing SCCHash 
+		 * @return SCCHash from String (Base64)
+		 * @throws SCCException 
+		 */
+		 public static SCCHash createFromExistingHash(String existingSCCHash) throws SCCException
+		 {
+			 try {
+					HashMessage.DecodeFromBytes(Base64.getDecoder().decode(existingSCCHash));
+					 return new SCCHash(Base64.getDecoder().decode(existingSCCHash));
+				} catch (CoseException e) {
+					throw new SCCException("No valid SCCHash String representation", e);
+				}
+		 }
 }

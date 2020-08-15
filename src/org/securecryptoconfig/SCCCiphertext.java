@@ -2,10 +2,10 @@ package org.securecryptoconfig;
 
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
+import java.util.Base64;
 
 import COSE.CoseException;
 import COSE.Encrypt0Message;
-import COSE.PasswordHashMessage;
 
 /**
  * Container for the ciphertext (as result from encrypting a
@@ -92,18 +92,35 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	/**
 	 * Returns a SCCCiphertext from byte[] representation of existing SCCCiphertext
 	 * @param existingSCCCiphertext: byte[] representation of existing SCCCiphertext 
-	 * @return SCCCiphertext form byte[]
+	 * @return SCCCiphertext from byte[]
 	 * @throws SCCException 
 	 */
 	 public static SCCCiphertext createFromExistingCiphertext(byte[] existingSCCCiphertext) throws SCCException
 	 {
 		 try {
-				Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(existingSCCCiphertext);
+				Encrypt0Message.DecodeFromBytes(existingSCCCiphertext);
 				 return new SCCCiphertext(existingSCCCiphertext);
 			} catch (CoseException e) {
 				throw new SCCException("No valid SCCCiphertext byte[] representation", e);
 			}
 		
 	 }
+	 
+	 /**
+		 * Returns a SCCCiphertext from String (Base64) representation of existing SCCCiphertext
+		 * @param existingSCCCiphertext: String (Base64) representation of existing SCCCiphertext 
+		 * @return SCCCiphertext from String (Base64)
+		 * @throws SCCException 
+		 */
+		 public static SCCCiphertext createFromExistingCiphertext(String existingSCCCiphertext) throws SCCException
+		 {
+			 try {
+					Encrypt0Message.DecodeFromBytes(Base64.getDecoder().decode(existingSCCCiphertext));
+					 return new SCCCiphertext(Base64.getDecoder().decode(existingSCCCiphertext));
+				} catch (CoseException e) {
+					throw new SCCException("No valid SCCCiphertext String representation", e);
+				}
+			
+		 }
 
 }

@@ -3,7 +3,6 @@ package test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
@@ -93,10 +92,10 @@ class TestSignature {
 		String newSignatureString = newSignature.toString();
 
 		assertTrue(scc.validateSignature(key, oldSignature));
-		assertTrue(scc.validateSignature(key, SCCSignature.createFromExistingSignature(oldSignatureString.getBytes())));
+		assertTrue(scc.validateSignature(key, SCCSignature.createFromExistingSignature(oldSignatureString)));
 
 		assertTrue(scc.validateSignature(key, newSignature));
-		assertTrue(scc.validateSignature(key, SCCSignature.createFromExistingSignature(newSignatureString.getBytes())));
+		assertTrue(scc.validateSignature(key, SCCSignature.createFromExistingSignature(newSignatureString)));
 	}
 
 }
