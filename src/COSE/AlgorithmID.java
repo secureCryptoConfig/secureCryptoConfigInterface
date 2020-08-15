@@ -66,6 +66,8 @@ public enum AlgorithmID {
 
     
     RSA_OAEP_SHA_512(-42, 256, 0),
+    RSA_OAEP_SHA_256(-41, 256, 0),
+    RSA_PKCS1(8, 256, 0),
     
     PBKDF_SHA_512(8, 512, 64),
     PBKDF_SHA_256(8, 256, 64),

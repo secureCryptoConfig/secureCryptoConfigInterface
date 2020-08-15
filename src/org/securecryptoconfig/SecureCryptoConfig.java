@@ -47,15 +47,15 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 */
 	public static enum SCCAlgorithm {
 		// symmetric:
-		AES_GCM_256_96, AES_GCM_128_96,
+		AES_GCM_256_96, AES_GCM_128_96, AES_CCM_128_96, AES_CCM_256_96,
 		// Digital Signature
 		ECDSA_512,
 		// Hash
 		SHA_512, SHA_256, SHA3_512, SHA3_256,
 		// asymmetric:
-		RSA_SHA_512,
+		RSA_SHA_512, RSA_SHA_256, RSA_PKCS1,
 		// PasswordHash
-		PBKDF_SHA_512, PBKDF_SHA_256, //SHA 512 with 64 salt 
+		PBKDF_SHA_512, PBKDF_SHA_256, // SHA 512 with 64 salt
 		SHA_512_64
 	}
 
@@ -153,7 +153,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * Possible choices are containes in {@link SCCAlgorithm}
 	 * 
 	 * @param algorithm: choice of one specific supported algorithm for the
-	 *        following performed use cases.
+	 *                   following performed use cases.
 	 * 
 	 */
 	public static void setAlgorithm(SCCAlgorithm algorithm) {
@@ -191,6 +191,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 							return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_256);
 						case AES_GCM_128_96:
 							return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_128);
+						case AES_CCM_128_96:
+							return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_CCM_64_128_128);
+						case AES_CCM_256_96:
+							return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_CCM_64_128_256);
 						default:
 							break;
 
@@ -203,6 +207,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 					return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_256);
 				case AES_GCM_128_96:
 					return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_128);
+				case AES_CCM_128_96:
+					return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_CCM_64_128_128);
+				case AES_CCM_256_96:
+					return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_CCM_64_128_256);
 				default:
 					break;
 
@@ -266,8 +274,11 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 						switch (sccalgorithmID) {
 						case RSA_SHA_512:
-							return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_512,
-									key);
+							return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_512, key);
+						case RSA_SHA_256:
+							return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_256, key);
+						case RSA_PKCS1:
+							return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_PKCS1, key);
 						default:
 							break;
 						}
@@ -278,6 +289,11 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				switch (usedAlgorithm) {
 				case RSA_SHA_512:
 					return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_512, key);
+				case RSA_SHA_256:
+					return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_256, key);
+				case RSA_PKCS1:
+					return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_PKCS1, key);
+
 				default:
 					break;
 				}
@@ -328,7 +344,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
 
 			algorithms = currentSCCInstance.getUsage().getHashing();
-			
+
 			for (int i = 0; i < algorithms.size(); i++) {
 
 				SCCAlgorithm sccalgorithmID = algorithms.get(i);
@@ -348,7 +364,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 					case SHA3_256:
 						p = new PlaintextContainer(plaintext.toBytes());
 						return SecureCryptoConfig.createHashMessage(p, AlgorithmID.SHA3_256);
-					
+
 					default:
 						break;
 					}
@@ -387,7 +403,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public SCCHash updateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException, SCCException {
+	public SCCHash updateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash)
+			throws CoseException, SCCException {
 		return hash(plaintext);
 	}
 
@@ -397,7 +414,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public boolean validateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException, SCCException {
+	public boolean validateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash)
+			throws CoseException, SCCException {
 		SCCHash sccHash = (SCCHash) hash;
 		String s = new String(sccHash.convertByteToMsg().getHashedContent(), StandardCharsets.UTF_8);
 
@@ -500,8 +518,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public boolean validateSignature(AbstractSCCKey key, byte[] signature)
-			throws InvalidKeyException, SCCException {
+	public boolean validateSignature(AbstractSCCKey key, byte[] signature) throws InvalidKeyException, SCCException {
 		return validateSignature(key, SCCSignature.createFromExistingSignature(signature));
 	}
 
@@ -577,7 +594,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	@Override
-	public boolean validatePasswordHash(byte[] password, AbstractSCCPasswordHash passwordhash) throws CoseException, SCCException {
+	public boolean validatePasswordHash(byte[] password, AbstractSCCPasswordHash passwordhash)
+			throws CoseException, SCCException {
 		return validatePasswordHash(new PlaintextContainer(password), passwordhash);
 	}
 
@@ -640,7 +658,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * @param id
 	 * @param salt
 	 * @return SCCPasswordHash
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
 	protected static SCCPasswordHash createPasswordHashMessageSalt(PlaintextContainerInterface password, AlgorithmID id,
 			byte[] salt) throws SCCException {
@@ -663,9 +681,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * @param password
 	 * @param id
 	 * @return SCCPasswordHash
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
-	protected static SCCPasswordHash createPasswordHashMessage(PlaintextContainerInterface password, AlgorithmID id) throws SCCException {
+	protected static SCCPasswordHash createPasswordHashMessage(PlaintextContainerInterface password, AlgorithmID id)
+			throws SCCException {
 
 		try {
 			PasswordHashMessage m = new PasswordHashMessage();
@@ -687,7 +706,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * @param plaintext
 	 * @param id
 	 * @return SCCHash
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
 	protected static SCCHash createHashMessage(PlaintextContainer plaintext, AlgorithmID id) throws SCCException {
 		try {
@@ -713,7 +732,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * @param key
 	 * @param id
 	 * @return SCCCiphertext
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
 	protected static SCCCiphertext createMessage(PlaintextContainerInterface plaintext, AbstractSCCKey key,
 			AlgorithmID id) throws SCCException {
