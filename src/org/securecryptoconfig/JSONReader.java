@@ -146,14 +146,6 @@ public class JSONReader {
 
 	
 
-	private static void getSecurityLevel() {
-		int level;
-		levels.clear();
-		for (int i = 0; i < instances.size(); i++) {
-			level = instances.get(i).getSecurityLevel();
-			levels.add(level);
-		}
-	}
 
 	/**
 	 * Get all files out of root "configs" directory of given path
@@ -197,18 +189,40 @@ public class JSONReader {
 	}
 	protected static ArrayList<SCCInstance> instances = new ArrayList<SCCInstance>();
 	private static void getSCCInstances() {
+		levels.clear();
 		ObjectMapper objectMapper = new ObjectMapper();
+		int level;
+		String version;
 		try {
 			for (int i = 0; i < allFilePaths.size(); i++) {
 				if (SecureCryptoConfig.customPath == true) {
 					SCCInstance sccInstance = objectMapper.readValue(new File(allFilePaths.get(i)), SCCInstance.class);
-					instances.add(sccInstance);
+					//check securityLevel, version format
+					level = sccInstance.getSecurityLevel();
+					version = sccInstance.getVersion();
+					if (level>0 && version.matches("^[2]\\d{3}-\\d+"))
+					{
+						levels.add(level);
+						instances.add(sccInstance);
+					}else
+					{
+						break;
+					}
 					
 				}else
 				{
 					InputStream is = org.securecryptoconfig.JSONReader.class.getResourceAsStream(allFilePaths.get(i));
 					SCCInstance sccInstance = objectMapper.readValue(is, SCCInstance.class);
-					instances.add(sccInstance);
+					level = sccInstance.getSecurityLevel();
+					version = sccInstance.getVersion();
+					if (level>0 && version.matches("^[2]\\d{3}-\\d+"))
+					{
+						levels.add(level);
+						instances.add(sccInstance);
+					}else
+					{
+						break;
+					}
 				}
 			}
 		} catch (IOException e) {
@@ -407,10 +421,11 @@ public class JSONReader {
 		} catch (SCCException e) {
 			e.printStackTrace();
 		}
-		getSecurityLevel();
+		
 		return getLatestSCC(getHighestLevel(levels));
 		
 
 	}
+	
 	
 }
