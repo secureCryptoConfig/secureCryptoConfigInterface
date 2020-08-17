@@ -3,18 +3,13 @@ package org.securecryptoconfig;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.InvalidParameterException;
 import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.HashSet;
 import org.securecryptoconfig.SCCKey.KeyType;
-import org.securecryptoconfig.SCCKey.KeyUseCase;
-import org.securecryptoconfig.SecureCryptoConfig.SCCAlgorithm;
-
 import com.upokecenter.cbor.CBORObject;
 
 import COSE.AlgorithmID;
@@ -759,20 +754,6 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		} catch (CoseException e) {
 			e.printStackTrace();
 			return null;
-		}
-	}
-	
-	public static void main(String[] args) {
-		SecureCryptoConfig scc = new SecureCryptoConfig();
-		try {
-			SecureCryptoConfig.setCustomSCCPath(Paths.get("C:\\Users\\Lisa\\Documents\\Uni\\Semester10\\scc-configs"));
-			SecureCryptoConfig.setAlgorithm(SCCAlgorithm.ECDSA_384);
-			SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
-			
-			System.out.println(scc.sign(key, "Hello".getBytes()).toString());
-		} catch (CoseException | SCCException | NoSuchAlgorithmException | InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 	}
 
