@@ -15,6 +15,11 @@ import org.securecryptoconfig.SecureCryptoConfig;
 
 import COSE.CoseException;
 
+/**
+ * Class for testing all functionalities for signing from the Secure Crypto Config Interface
+ * @author Lisa
+ *
+ */
 class TestSignature {
 
 	SecureCryptoConfig scc = new SecureCryptoConfig();
@@ -36,11 +41,11 @@ class TestSignature {
 	@Test
 	void testSigningByteValidation() throws CoseException, NoSuchAlgorithmException, InvalidKeyException, SCCException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCKey pair = SCCKey.createKey(KeyUseCase.Signing);
+		SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
 
-		SCCSignature signature = scc.sign(pair, plaintext);
+		SCCSignature signature = scc.sign(key, plaintext);
 
-		boolean result = scc.validateSignature(pair, signature);
+		boolean result = scc.validateSignature(key, signature);
 
 		assertTrue(result);
 
@@ -52,30 +57,30 @@ class TestSignature {
 	void testSigningStringValidation()
 			throws CoseException, NoSuchAlgorithmException, InvalidKeyException, SCCException {
 		String plaintext = "Hello World!";
-		SCCKey pair = SCCKey.createKey(KeyUseCase.Signing);
+		SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
 
-		SCCSignature signature = scc.sign(pair, plaintext.getBytes(StandardCharsets.UTF_8));
+		SCCSignature signature = scc.sign(key, plaintext.getBytes(StandardCharsets.UTF_8));
 
-		assertTrue(scc.validateSignature(pair, signature));
+		assertTrue(scc.validateSignature(key, signature));
 	}
 
 	// - signature + key, return: updated byte[] signature
 	@Test
 	void testUpdateSigningByte() throws CoseException, NoSuchAlgorithmException, InvalidKeyException, SCCException {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCKey pair = SCCKey.createKey(KeyUseCase.Signing);
+		SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
 
-		SCCSignature oldSignature = scc.sign(pair, plaintext);
+		SCCSignature oldSignature = scc.sign(key, plaintext);
 		byte[] oldSignaturebytes = oldSignature.toBytes();
 
-		SCCSignature newSignature = scc.updateSignature(pair, plaintext);
+		SCCSignature newSignature = scc.updateSignature(key, plaintext);
 		byte[] newSignatureBytes = newSignature.toBytes();
 
-		assertTrue(scc.validateSignature(pair, oldSignature));
-		assertTrue(scc.validateSignature(pair, SCCSignature.createFromExistingSignature(oldSignaturebytes)));
+		assertTrue(scc.validateSignature(key, oldSignature));
+		assertTrue(scc.validateSignature(key, SCCSignature.createFromExistingSignature(oldSignaturebytes)));
 
-		assertTrue(scc.validateSignature(pair, newSignature));
-		assertTrue(scc.validateSignature(pair, SCCSignature.createFromExistingSignature(newSignatureBytes)));
+		assertTrue(scc.validateSignature(key, newSignature));
+		assertTrue(scc.validateSignature(key, SCCSignature.createFromExistingSignature(newSignatureBytes)));
 
 	}
 

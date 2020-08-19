@@ -13,6 +13,11 @@ import org.securecryptoconfig.SecureCryptoConfig;
 
 import COSE.CoseException;
 
+/**
+ * Class for testing all functionalities for (password) hashing from the Secure Crypto Config Interface
+ * @author Lisa
+ *
+ */
 class TestHashing {
 	SecureCryptoConfig scc = new SecureCryptoConfig();
 

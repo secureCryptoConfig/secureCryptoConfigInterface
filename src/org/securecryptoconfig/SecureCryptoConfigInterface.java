@@ -614,24 +614,27 @@ abstract class AbstractSCCKey {
 	 * 
 	 * @return byte[]: returns byte[] representation of key in case that the key has
 	 *         {@link SCCKey.KeyType#Symmetric}
+	 * @throws InvalidKeyException 
 	 */
-	abstract byte[] toBytes();
+	abstract byte[] toBytes() throws InvalidKeyException;
 
 	/**
 	 * Get byte[] representation of public key.
 	 * 
 	 * @return byte[]: returns byte[] representation of public key in case that the
 	 *         key has {@link SCCKey.KeyType#Asymmetric}
+	 * @throws InvalidKeyException 
 	 */
-	abstract byte[] getPublicKeyBytes();
+	abstract byte[] getPublicKeyBytes() throws InvalidKeyException;
 
 	/**
 	 * Get byte[] representation of private key.
 	 * 
 	 * @return byte[]: returns byte[] representation of private key in case that the
 	 *         key has {@link SCCKey.KeyType#Asymmetric}
+	 * @throws InvalidKeyException 
 	 */
-	abstract byte[] getPrivateKeyBytes();
+	abstract byte[] getPrivateKeyBytes() throws InvalidKeyException;
 
 	/**
 	 * Get {@link KeyType} of {@link SCCKey}.

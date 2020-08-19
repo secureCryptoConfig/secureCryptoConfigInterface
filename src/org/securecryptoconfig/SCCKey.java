@@ -1,6 +1,8 @@
 package org.securecryptoconfig;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -22,6 +24,9 @@ import javax.crypto.spec.SecretKeySpec;
 
 import org.securecryptoconfig.JSONReader.CryptoUseCase;
 import org.securecryptoconfig.SecureCryptoConfig.SCCAlgorithm;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import COSE.AlgorithmID;
 import COSE.CoseException;
@@ -60,20 +65,7 @@ public class SCCKey extends AbstractSCCKey {
 		SymmetricEncryption, AsymmetricEncryption, Signing
 	}
 
-	/**
-	 * Constructor which gets the {@link KeyType}, the byte[] representation of the
-	 * key and the algorithm of its creation.
-	 * 
-	 * This constructor is used in for SCCKeys of {@link KeyType#Symmetric}. If a
-	 * new SCCKey should be created call {@link #createKey(KeyUseCase)}.
-	 * 
-	 * @param type: choice of {@link KeyType}
-	 * @param key: byte[] representation of key
-	 * @param algorithm: used for key creation
-	 */
-	public SCCKey(KeyType type, byte[] key, String algorithm) {
-		super(type, key, algorithm);
-	}
+	
 
 	@Override
 	public KeyType getKeyType() {
@@ -97,34 +89,35 @@ public class SCCKey extends AbstractSCCKey {
 	 * @param privateKey: byte[] representation of private key
 	 * @param algorithm: used for key creation
 	 */
-	public SCCKey(KeyType type, byte[] publicKey, byte[] privateKey, String algorithm) {
+	protected SCCKey(KeyType type, byte[] publicKey, byte[] privateKey, String algorithm) {
 		super(type, publicKey, privateKey, algorithm);
 	}
 
 	@Override
-	public byte[] toBytes() {
+	public byte[] toBytes() throws InvalidKeyException {
 		if (this.type == KeyType.Symmetric) {
-			return this.key;
+			return this.publicKey;
 		} else {
-			return null;
+			throw new InvalidKeyException("Wrong key type for this method. Not symmetric! Call getPublicKeyBytes() or getPrivateKeyBytes()");
 		}
 	}
 
 	@Override
-	public byte[] getPublicKeyBytes() {
+	public byte[] getPublicKeyBytes() throws InvalidKeyException {
 		if (type == KeyType.Asymmetric) {
 			return this.publicKey;
 		} else {
-			return null;
+			throw new InvalidKeyException("Wrong key type for this method. Not asymmetric: no publicKey existing! Call toBytes() to get byte[] representation of key");
 		}
 	}
 
 	@Override
-	public byte[] getPrivateKeyBytes() {
+	public byte[] getPrivateKeyBytes() throws InvalidKeyException {
 		if (type == KeyType.Asymmetric) {
 			return this.privateKey;
 		} else {
-			return null;
+			throw new InvalidKeyException("Wrong key type for this method. Not asymmetric: no privateKey existing!");
+			
 		}
 	}
 
@@ -132,13 +125,13 @@ public class SCCKey extends AbstractSCCKey {
 	 * Returns byte[] representation of key to SecretKey for further processing
 	 * 
 	 * @return SecretKey
+	 * @throws InvalidKeyException 
 	 */
-	protected SecretKey getSecretKey() {
+	protected SecretKey getSecretKey() throws InvalidKeyException {
 		if (this.type == KeyType.Symmetric) {
 			return new SecretKeySpec(key, 0, key.length, this.algorithm);
 		} else {
-			// TODO throw exception instead of returning null
-			return null;
+			throw new InvalidKeyException("Wrong key type for this method. Not symmetric!");
 		}
 	}
 
@@ -296,7 +289,7 @@ public class SCCKey extends AbstractSCCKey {
 			keyGen = KeyGenerator.getInstance(algo.toString());
 			keyGen.init(keysize);
 			SecretKey key = keyGen.generateKey();
-			return new SCCKey(KeyType.Symmetric, key.getEncoded(), algo);
+			return new SCCKey(KeyType.Symmetric, key.getEncoded(), null, algo);
 		} catch (NoSuchAlgorithmException e) {
 			throw new SCCException("Key could not be created! No algorithm specified!", e);
 		}
@@ -564,12 +557,37 @@ public class SCCKey extends AbstractSCCKey {
 					password.toString(StandardCharsets.UTF_8).toCharArray(), salt, iterations, keysize);
 			SecretKey secretKeyFromPBKDF2 = secretKeyFactory.generateSecret(passwordBasedEncryptionKeySpec);
 			SecretKey key = new SecretKeySpec(secretKeyFromPBKDF2.getEncoded(), keyAlgo.toString());
-			return new SCCKey(KeyType.Symmetric, key.getEncoded(), keyAlgo);
+			return new SCCKey(KeyType.Symmetric, key.getEncoded(), null, keyAlgo);
 		} catch (NoSuchAlgorithmException e) {
 			throw new SCCException("Key could not be created! No algorithm specified!", e);
 		} catch (InvalidKeySpecException e) {
 			throw new SCCException("Key could not be created!", e);
 		}
+	}
+	
+	public byte[] decodeObjectToBytes()
+	{
+		ObjectMapper objectMapper = new ObjectMapper();
+		try {
+			byte[] keyAsByte = objectMapper.writeValueAsBytes(this);
+			return keyAsByte;
+		} catch (JsonProcessingException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public static SCCKey createFromExistingKey(byte[] existingSCCKey)
+	{
+		ObjectMapper objectMapper = new ObjectMapper();
+		SCCInstanceKey sccInstanceKey = null;
+		try {
+			sccInstanceKey = objectMapper.readValue(existingSCCKey, SCCInstanceKey.class);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		SCCKey key = new SCCKey(sccInstanceKey.getType(), sccInstanceKey.getPublicKey(), sccInstanceKey.getPrivateKey(), sccInstanceKey.getAlgorithm());
+		return key;
 	}
 
 	/**
@@ -591,5 +609,7 @@ public class SCCKey extends AbstractSCCKey {
 		}
 
 	}
+	
+	
 
 }

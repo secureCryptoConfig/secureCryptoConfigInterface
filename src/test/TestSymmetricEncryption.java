@@ -22,6 +22,11 @@ import COSE.CoseException;
 
 class TestSymmetricEncryption {
 
+	/**
+	 * Class for testing all functionalities for symmetric encryption from the Secure Crypto Config Interface
+	 * @author Lisa
+	 *
+	 */
 	SecureCryptoConfig scc = new SecureCryptoConfig();
 
 	// Use Cases:
@@ -143,13 +148,12 @@ class TestSymmetricEncryption {
 	@Test
 	void testSymmetricByteEncryptionWithExistingKey()
 			throws NoSuchAlgorithmException, CoseException, InvalidKeyException, SCCException {
-		// Some bytes for a key
-		byte[] existingKeyBytes = new byte[32];
-		SecureRandom random = SecureRandom.getInstanceStrong();
-		random.nextBytes(existingKeyBytes);
-
+		// SCCKey already exists
+		SCCKey existingKey = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
+		byte[] existingSCCKey = existingKey.decodeObjectToBytes();
+				
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
-		SCCKey key = new SCCKey(KeyType.Symmetric, existingKeyBytes, "AES");
+		SCCKey key = SCCKey.createFromExistingKey(existingSCCKey);
 		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext);
 		byte[] encrypted = ciphertext.toBytes();
 
@@ -164,13 +168,13 @@ class TestSymmetricEncryption {
 	@Test
 	void testSymmetricStringEncryptionWithExistingKey()
 			throws NoSuchAlgorithmException, CoseException, InvalidKeyException, SCCException {
-		// Some bytes for a key
-		byte[] existingKeyBytes = new byte[32];
-		SecureRandom random = SecureRandom.getInstanceStrong();
-		random.nextBytes(existingKeyBytes);
+		// SCCKey already exists
+		SCCKey existingKey = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
+		byte[] existingSCCKey = existingKey.decodeObjectToBytes();
+						
 
 		String plaintext = "Hello World!";
-		SCCKey key = new SCCKey(KeyType.Symmetric, existingKeyBytes, "AES");
+		SCCKey key = SCCKey.createFromExistingKey(existingSCCKey);
 		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext.getBytes(StandardCharsets.UTF_8));
 		String encrypted = ciphertext.toString(StandardCharsets.UTF_8);
 
