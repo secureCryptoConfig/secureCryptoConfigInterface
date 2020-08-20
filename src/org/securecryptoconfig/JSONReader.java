@@ -221,9 +221,10 @@ public class JSONReader {
 		} else {
 			InputStream is = org.securecryptoconfig.JSONReader.class.getResourceAsStream(publicKeyPath);
 			publicKey = is.readAllBytes();
-
+			is.close();
 			InputStream is1 = org.securecryptoconfig.JSONReader.class.getResourceAsStream(signaturePath);
 			sig = is1.readAllBytes();
+			is1.close();
 		}
 
 		PublicKey pub = KeyFactory.getInstance(algo.toString()).generatePublic(new X509EncodedKeySpec(publicKey));
@@ -255,7 +256,7 @@ public class JSONReader {
 						final String name = entries.nextElement().getName();
 						if (name.contains("1")) { // filter according to the path
 							publicKeyPath1 = "/" + name;
-						} else {
+						} else if (name.contains("2")) {
 							publicKeyPath2 = "/" + name;
 						}
 					}
@@ -270,6 +271,8 @@ public class JSONReader {
 	}
 
 	private static void startValidation() throws SCCException {
+		InputStream is1;
+		InputStream is2;
 		for (int i = 0; i < allFilePaths.size(); i++) {
 			String filepath = allFilePaths.get(i);
 			String signaturePath1 = filepath;
@@ -286,9 +289,17 @@ public class JSONReader {
 			if (SecureCryptoConfig.customPath == true) {
 				result = new File(signaturePath1).exists() && new File(signaturePath2).exists();
 			} else {
-				InputStream is1 = org.securecryptoconfig.JSONReader.class.getResourceAsStream(signaturePath1);
-				InputStream is2 = org.securecryptoconfig.JSONReader.class.getResourceAsStream(signaturePath2);
+				is1 = org.securecryptoconfig.JSONReader.class.getResourceAsStream(signaturePath1);
+				is2 = org.securecryptoconfig.JSONReader.class.getResourceAsStream(signaturePath2);
 				result = is1 != null && is2 != null;
+				try {
+					is1.close();
+					is2.close();
+				} catch (IOException e) {
+					
+					e.printStackTrace();
+				}
+				
 			}
 
 			if (result) {
@@ -310,8 +321,9 @@ public class JSONReader {
 				logger.debug("This file will not be considered!");
 				allFilePaths.remove(i);
 			}
-
+			
 		}
+		
 	}
 
 	/**
