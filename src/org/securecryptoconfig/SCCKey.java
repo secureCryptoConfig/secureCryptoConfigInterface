@@ -23,6 +23,7 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.securecryptoconfig.JSONReader.CryptoUseCase;
+import org.securecryptoconfig.SCCKey.KeyUseCase;
 import org.securecryptoconfig.SecureCryptoConfig.SCCAlgorithm;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -33,13 +34,43 @@ import COSE.CoseException;
 import COSE.OneKey;
 
 /**
- * Container for a key used for cryptography operations like symmetric,
- * asymmetric encryption or signing.
+ * Class representing a container of a key used for cryptography operations like
+ * symmetric or asymmetric encryption.
  * 
- * SCCKey contains a byte[] representation of a key as well as all the
- * parameters needed to define the type and use case of the key.
+ * SCCKey contains a byte[] representation of a key as well as different
+ * parameters like the type ({@link SCCKey.KeyType}) and the used algorithm for
+ * key creation.
  * 
- * @author Lisa
+ * A new {@link SCCKey} for performing a cryptographic use case can be created with
+ * {@link SCCKey#createKey(KeyUseCase)} as follows:
+ * 
+ * <pre>
+ * {@code
+ * 	SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
+ * }
+ * </pre>
+ * Choose a suitable {@link SCCKey.KeyUseCase} for key creation. For doing asymmetric encryption
+ * use {@link SCCKey.KeyUseCase#AsymmetricEncryption}. <br>For doing symmetric encryption
+ * {@link SCCKey.KeyUseCase#SymmetricEncryption}. <br>
+ * For Signing {@link SCCKey.KeyUseCase#Signing}<br><br>
+ * Alternatively when performing symmetric encryption it is also possible to create a key derived from a password
+ * with {@link SCCKey#createSymmetricKeyWithPassword(byte[])}:
+ * 
+ * <pre>
+ * {
+ * 	@code
+ * 	SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
+ * }
+ * </pre>
+ * 
+ * Also it is possible to create a SCCKey from already existing SCCKey byte[]
+ * with {@link SCCKey#createFromExistingKey(byte[])}::
+ * 
+ * <pre>
+ * {@code
+ * SCCKey key = SCCKey.createFromExistingKey(existingSCCKey)
+ * }
+ * </pre>
  *
  */
 public class SCCKey extends AbstractSCCKey {

@@ -6,14 +6,13 @@ import java.security.InvalidKeyException;
 import COSE.CoseException;
 
 /**
- * Class representing the plaintext processed in cryptographic use cases.
+ * Class for a container representing the plaintext processed in cryptographic
+ * use cases.
  * 
  * A PlaintextContainer contains the plaintext as byte[] representation. The
  * class provides various cryptography operations that can be performed on the
  * plaintext (e.g. encryption, signing).
  * 
- * @author Lisa
- *
  */
 public class PlaintextContainer implements PlaintextContainerInterface {
 

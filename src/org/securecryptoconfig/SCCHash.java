@@ -6,16 +6,24 @@ import COSE.CoseException;
 import COSE.HashMessage;
 
 /**
- * Container for a Cryptographic Hash.
+ * Class representing a container for a cryptographic Hash.
  * 
- * SCCHash contains a byte[] representation of a COSE message. The byte[]
+ * SCCHash contains a byte[] representation of a COSE message. The message
  * contains the hash as well as all the parameters used during hashing. The
  * inclusion of the used parameters in the hash ensures that validation
  * implementation code does not need to know the used algorithm or parameters
  * before validation, but can parse it from the COSE message.
  * 
- * @author Lisa
- *
+ * A new SCCHash can be created by calling {@link SecureCryptoConfig#hash(byte[])}.<br>
+ * E.g.
+ * <pre>
+ * {@code
+ * SecureCryptoConfig scc = new SecureCryptoConfig();
+ * SCCSignature signature = scc.hash(plaintext);
+ * }
+ * </pre>
+ * Alternatively it is also possible to create a SCCHash from a existing byte[]
+ * representation of a SCCHash by calling {@link SCCHash#createFromExistingHash(byte[])}
  */
 public class SCCHash extends AbstractSCCHash {
 

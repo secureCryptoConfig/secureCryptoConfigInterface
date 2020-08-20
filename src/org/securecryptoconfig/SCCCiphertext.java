@@ -7,17 +7,22 @@ import COSE.CoseException;
 import COSE.Encrypt0Message;
 
 /**
- * Container for the ciphertext (as result from encrypting a
- * plaintext/plaintextcontainer).
+ * Class representing a container for the ciphertext (as result from encrypting a
+ * plaintext).
  * 
- * SCCCiphertext contains a byte[] representation of a COSE message. The byte[]
- * contains the encrypted plaintext as well as all the parameters used during
- * encryption. The inclusion of the used parameters, except the key, in the
- * ciphertext ensures that decryption implementation code does not need to know
- * the used algorithm or parameters before decryption, but can parse it from the
- * COSE message. So it only requires the used key.
+ * SCCCiphertext contains a byte[] representation of a specific COSE message.
+ * This message contains the encrypted plaintext as well as all the parameters
+ * used during encryption. The inclusion of the used parameters, except the key,
+ * in the SCCCiphertext ensures before the decryption no used algorithm or
+ * parameters must be specified by the user, but can parse it from the COSE
+ * message.
  * 
- * @author Lisa
+ * For creating a new SCCCiphertext call the method
+ * {@link SecureCryptoConfig#encryptSymmetric(AbstractSCCKey, byte[])} or
+ * {@link SecureCryptoConfig#encryptAsymmetric(AbstractSCCKey, byte[])}. It is
+ * also possible to create a SCCCiphertext from an existing SCCCiphertext byte[]
+ * representation when calling
+ * {@link SCCCiphertext#createFromExistingCiphertext(byte[])}
  *
  */
 public class SCCCiphertext extends AbstractSCCCiphertext {

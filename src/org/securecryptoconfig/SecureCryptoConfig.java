@@ -164,7 +164,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	/**
 	 * Set a specific algorithm for the execution of the later performed use cases.
 	 * Possible choices are contained in {@link SCCAlgorithm}
-	 * E.g.
+	 * <br>E.g.
 	 * <pre>
 	 * {@code
 	 * SecureCryptoConfig.setAlgorithm(SCCAlgorithm.AES_GCM_256_96);
@@ -184,7 +184,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * Use the algorithms proposed in the currently used Secure Crypto Config file
 	 * for the execution of the use cases. Only necessary if specific
 	 * algorithm was set previously via
-	 * {@link SecureCryptoConfig#setAlgorithm(AlgorithmID)}
+	 * {@link #setAlgorithm(SCCAlgorithm)}
 	 */
 	public static void defaultAlgorithm() {
 		usedAlgorithm = null;

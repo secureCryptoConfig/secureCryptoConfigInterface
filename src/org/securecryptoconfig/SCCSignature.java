@@ -5,13 +5,8 @@ import java.util.Base64;
 
 import COSE.CoseException;
 import COSE.Sign1Message;
-
 /**
- * Container for a digital signature. 
- * 
- * Must not be used for creating a new signature.
- * A new SCCSignature can be created with {@link SecureCryptoConfig#sign(AbstractSCCKey, byte[])} 
- * or {@link SecureCryptoConfig#sign(AbstractSCCKey, PlaintextContainerInterface)}
+ * Class representing a container for a Digital Signature.
  * 
  * SCCSignature contains a byte[] representation of a COSE message. The byte[]
  * contains the signature as well as all the parameters used during signing. The
@@ -19,8 +14,16 @@ import COSE.Sign1Message;
  * implementation code does not need to know the used algorithm or parameters
  * before validation, but can parse it from the COSE message.
  * 
- * @author Lisa
- *
+ * A new SCCSignature can be created by calling {@link SecureCryptoConfig#sign(AbstractSCCKey, byte[])}.<br>
+ * E.g.
+ * <pre>
+ * {@code
+ * SecureCryptoConfig scc = new SecureCryptoConfig();
+ * SCCSignature signature = scc.sign(plaintext, key);
+ * }
+ * </pre>
+ * Alternatively it is also possible to create a SCCSignature from a existing byte[]
+ * representation of a SCCSignature by calling {@link SCCSignature#createFromExistingSignature(byte[])}
  */
 public class SCCSignature extends AbstractSCCSignature {
 

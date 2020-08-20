@@ -2,18 +2,18 @@ package org.securecryptoconfig;
 
 import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
-import java.util.Base64;
-
 import org.securecryptoconfig.SCCKey.KeyType;
 import org.securecryptoconfig.SCCKey.KeyUseCase;
 
 import COSE.CoseException;
 
 /**
- * Interface defining methods that can be used to perform different cryptographic use cases.
+ * Interface defining methods that can be used to perform different
+ * cryptographic use cases.
  * 
- * Most methods are defined inside {@link SecureCryptoConfig}. To start performing the
- * desired use case make use of this class as starting point of your implementation.
+ * Most methods are defined inside {@link SecureCryptoConfig}. To start
+ * performing the desired use case make use of this class as starting point of
+ * your implementation.
  * 
  * @author Lisa
  *
@@ -23,98 +23,116 @@ abstract interface SecureCryptoConfigInterface {
 	// Symmetric Encryption
 
 	/**
-	 * Symmetric encryption with a certain {@link SCCKey} for a given plaintext based on the current Secure Crypto Config file.
+	 * Symmetric encryption with a certain {@link SCCKey} for a given plaintext
+	 * based on the current Secure Crypto Config file.
 	 * 
-	 * A new {@link SCCKey} for performing can be created with {@link SCCKey#createKey(KeyUseCase)} as follows:
+	 * A new {@link SCCKey} for performing can be created with
+	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
+	 * 
 	 * <pre>
-	 * {@code
-	 * SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
-	 * }
-	 * </pre>
-	 * Alternatively it is also possible to create a key derived from a password with {@link SCCKey#createSymmetricKeyWithPassword(byte[])}:
-	 * <pre>
-	 * {@code
-	 * SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
+	 * {
+	 * 	&#64;code
+	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 	 * }
 	 * </pre>
 	 * 
-	 * Also it is possible to create a SCCKey from already existing SCCKey byte[] with {@link SCCKey#createFromExistingKey(byte[])}::
+	 * Alternatively it is also possible to create a key derived from a password
+	 * with {@link SCCKey#createSymmetricKeyWithPassword(byte[])}:
+	 * 
+	 * <pre>
+	 * {
+	 * 	&#64;code
+	 * 	SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
+	 * }
+	 * </pre>
+	 * 
+	 * Also it is possible to create a SCCKey from already existing SCCKey byte[]
+	 * with {@link SCCKey#createFromExistingKey(byte[])}::
+	 * 
 	 * <pre>
 	 * {@code
 	 * SCCKey key = SCCKey.createFromExistingKey(existingSCCKey)
 	 * }
 	 * </pre>
 	 * 
-	 * A PlaintextContainer representation can be done by calling {@link PlaintextContainer#PlaintextContainer(byte[])} with
-	 * the byte[] representation of the plaintext to be encrypted.
+	 * A PlaintextContainer representation can be done by calling
+	 * {@link PlaintextContainer#PlaintextContainer(byte[])} with the byte[]
+	 * representation of the plaintext to be encrypted.
 	 * 
-	 * @param key: {@link SCCKey}
+	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCCiphertext}
 	 * @throws CoseException
 	 * @throws InvalidKeyException : If {@link SCCKey} has not the
 	 *                             {@link KeyType#Symmetric}
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
 	public AbstractSCCCiphertext encryptSymmetric(AbstractSCCKey key, PlaintextContainerInterface plaintext)
 			throws CoseException, InvalidKeyException, SCCException;
 
 	/**
-	 * Symmetric encryption with a certain {@link SCCKey} for a given plaintext based on the current Secure Crypto Config file.
+	 * Symmetric encryption with a certain {@link SCCKey} for a given plaintext
+	 * based on the current Secure Crypto Config file.
 	 * 
-	 * A new {@link SCCKey} for performing can be created with {@link SCCKey#createKey(KeyUseCase)} as follows:
+	 * A new {@link SCCKey} for performing can be created with
+	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
+	 * 
 	 * <pre>
-	 * {@code
-	 * SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
-	 * }
-	 * </pre>
-	 * Alternatively it is also possible to create a key derived from a password with {@link SCCKey#createSymmetricKeyWithPassword(byte[])}:
-	 * <pre>
-	 * {@code
-	 * SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
+	 * {
+	 * 	&#64;code
+	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 	 * }
 	 * </pre>
 	 * 
-	 * Also it is possible to create a SCCKey from already existing SCCKey byte[] with {@link SCCKey#createFromExistingKey(byte[])}::
+	 * Alternatively it is also possible to create a key derived from a password
+	 * with {@link SCCKey#createSymmetricKeyWithPassword(byte[])}:
+	 * 
+	 * <pre>
+	 * {
+	 * 	&#64;code
+	 * 	SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
+	 * }
+	 * </pre>
+	 * 
+	 * Also it is possible to create a SCCKey from already existing SCCKey byte[]
+	 * with {@link SCCKey#createFromExistingKey(byte[])}::
+	 * 
 	 * <pre>
 	 * {@code
 	 * SCCKey key = SCCKey.createFromExistingKey(existingSCCKey)
 	 * }
 	 * </pre>
-	 *  
-	 * @param key: {@link SCCKey}
+	 * 
+	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as byte[]
 	 * @return {@link SCCCiphertext}
 	 * @throws CoseException
 	 * @throws InvalidKeyException: If {@link SCCKey} has not the
 	 *                              {@link KeyType#Symmetric}
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
 	public AbstractSCCCiphertext encryptSymmetric(AbstractSCCKey key, byte[] plaintext)
 			throws CoseException, InvalidKeyException, SCCException;
-	
-	
 
 	/**
 	 * Ciphertext will be first decrypted and then encrypted again with the current
 	 * used Secure Crypto Config file.
 	 * 
-	 * @param key: {@link SCCKey}
+	 * @param key:        {@link SCCKey}
 	 * @param ciphertext: {@link SCCCiphertext}
 	 * @return {@link SCCCiphertext}
 	 * @throws CoseException
 	 * @throws InvalidKeyException: If {@link SCCKey} has not the
 	 *                              {@link KeyType#Symmetric}
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
 	public AbstractSCCCiphertext reEncryptSymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext)
 			throws CoseException, InvalidKeyException, SCCException;
-	
 
 	/**
 	 * Decryption of a given {@link SCCCiphertext}.
 	 * 
-	 * @param key: {@link SCCKey}
+	 * @param key:           {@link SCCKey}
 	 * @param sccciphertext: {@link SCCCiphertext}
 	 * @return {@link PlaintextContainer}
 	 * @throws CoseException
@@ -127,13 +145,33 @@ abstract interface SecureCryptoConfigInterface {
 	// Asymmetric
 
 	/**
-	 * Asymmetric encryption with a certain {@link SCCKey} for a given plaintext based on the current Secure Crypto Config file.
+	 * Asymmetric encryption with a certain {@link SCCKey} for a given plaintext
+	 * based on the current Secure Crypto Config file.
 	 * 
-	 * A new {@link SCCKey} can be created with
-	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
-	 * {@link SCCKey.KeyUseCase#AsymmetricEncryption}
+	 * A new {@link SCCKey} for performing can be created with
+	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
 	 * 
-	 * @param key: {@link SCCKey}
+	 * <pre>
+	 * {
+	 * 	&#64;code
+	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
+	 * }
+	 * </pre>
+	 * 
+	 * Also it is possible to create a SCCKey from already existing SCCKey byte[]
+	 * with {@link SCCKey#createFromExistingKey(byte[])}::
+	 * 
+	 * <pre>
+	 * {@code
+	 * SCCKey key = SCCKey.createFromExistingKey(existingSCCKey)
+	 * }
+	 * </pre>
+	 * 
+	 * A PlaintextContainer representation can be done by calling
+	 * {@link PlaintextContainer#PlaintextContainer(byte[])} with the byte[]
+	 * representation of the plaintext to be encrypted.
+	 * 
+	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCCiphertext}
 	 * @throws CoseException
@@ -145,13 +183,29 @@ abstract interface SecureCryptoConfigInterface {
 			throws CoseException, InvalidKeyException, SCCException;
 
 	/**
-	 * Asymmetric encryption with a certain {@link SCCKey} for a given plaintext based on the current Secure Crypto Config file.
+	 * Asymmetric encryption with a certain {@link SCCKey} for a given plaintext
+	 * based on the current Secure Crypto Config file.
 	 * 
-	 * A new {@link SCCKey} can be created with
-	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
-	 * {@link SCCKey.KeyUseCase#AsymmetricEncryption}
+	 * A new {@link SCCKey} for performing can be created with
+	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
 	 * 
-	 * @param key: {@link SCCKey}
+	 * <pre>
+	 * {
+	 * 	&#64;code
+	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
+	 * }
+	 * </pre>
+	 * 
+	 * Also it is possible to create a SCCKey from already existing SCCKey byte[]
+	 * with {@link SCCKey#createFromExistingKey(byte[])}::
+	 * 
+	 * <pre>
+	 * {@code
+	 * SCCKey key = SCCKey.createFromExistingKey(existingSCCKey)
+	 * }
+	 * </pre>
+	 * 
+	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as byte[]
 	 * @return {@link SCCCiphertext}
 	 * @throws CoseException
@@ -161,14 +215,13 @@ abstract interface SecureCryptoConfigInterface {
 	 */
 	public AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey key, byte[] plaintext)
 			throws CoseException, InvalidKeyException, SCCException;
-	
-
 
 	/**
-
-	 * Ciphertext will be first decrypted and then encrypted based on the current Secure Crypto Config file.
 	 * 
-	 * @param key: {@link SCCKey}
+	 * Ciphertext will be first decrypted and then encrypted based on the current
+	 * Secure Crypto Config file.
+	 * 
+	 * @param key:        {@link SCCKey}
 	 * @param ciphertext: {@link SCCCiphertext}
 	 * @return {@link SCCCiphertext}
 	 * @throws CoseException
@@ -183,7 +236,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * Asymmetric decryption with a certain {@link SCCKey} for a given
 	 * {@link SCCCiphertext}.
 	 * 
-	 * @param key: {@link SCCKey}
+	 * @param key:        {@link SCCKey}
 	 * @param ciphertext: {@link SCCCiphertext}
 	 * @return {@link PlaintextContainer}
 	 * @throws CoseException
@@ -199,10 +252,14 @@ abstract interface SecureCryptoConfigInterface {
 	/**
 	 * Hashing of a given plaintext based on the current Secure Crypto Config file.
 	 * 
+	 * A PlaintextContainer representation can be done by calling
+	 * {@link PlaintextContainer#PlaintextContainer(byte[])} with the byte[]
+	 * representation of the plaintext to be hashed.
+	 * 
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCHash}
 	 * @throws CoseException
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
 	public AbstractSCCHash hash(PlaintextContainerInterface plaintext) throws CoseException, SCCException;
 
@@ -212,36 +269,38 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param plaintext: as byte[]
 	 * @return {@link SCCHash}
 	 * @throws CoseException
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
 	public AbstractSCCHash hash(byte[] plaintext) throws CoseException, SCCException;
 
-
 	/**
 	 * Given a {@link SCCHash} of a plaintext: the corresponding plaintext will be
 	 * hashed again with the current Secure Crypto Config.
 	 * 
+	 * A PlaintextContainer representation can be done by calling
+	 * {@link PlaintextContainer#PlaintextContainer(byte[])} with the byte[]
+	 * representation of the plaintext to be hashed.
+	 * 
 	 * @param plaintext: as {@link PlaintextContainer}
-	 * @param hash: {@link SCCHash}
+	 * @param hash:      {@link SCCHash}
 	 * @return {@link SCCHash}
 	 * @throws CoseException
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
-	public AbstractSCCHash updateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException, SCCException;
-
+	public AbstractSCCHash updateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash)
+			throws CoseException, SCCException;
 
 	/**
 	 * Given a {@link SCCHash} of a plaintext: the corresponding plaintext will be
 	 * hashed again with the current Secure Crypto Config.
 	 * 
 	 * @param plaintext: as byte[]
-	 * @param hash: {@link SCCHash}
+	 * @param hash:      {@link SCCHash}
 	 * @return {@link SCCHash}
 	 * @throws CoseException
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
 	public AbstractSCCHash updateHash(byte[] plaintext, AbstractSCCHash hash) throws CoseException, SCCException;
-	
 
 	/**
 	 * Validate a given {@link SCCHash} for a specific plaintext.
@@ -249,13 +308,18 @@ abstract interface SecureCryptoConfigInterface {
 	 * The plaintext will be hashed again and compared if the resulting hash is
 	 * identical to the provided one.
 	 * 
+	 * A PlaintextContainer representation can be done by calling
+	 * {@link PlaintextContainer#PlaintextContainer(byte[])} with the byte[]
+	 * representation of the plaintext to be hashed.
+	 * 
 	 * @param plaintext: as {@link PlaintextContainer}
-	 * @param hash: {@link SCCHash}
+	 * @param hash:      {@link SCCHash}
 	 * @return boolean
 	 * @throws CoseException
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
-	public boolean validateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws CoseException, SCCException;
+	public boolean validateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash)
+			throws CoseException, SCCException;
 
 	/**
 	 * Validate a given {@link SCCHash} for a specific plaintext.
@@ -264,23 +328,46 @@ abstract interface SecureCryptoConfigInterface {
 	 * identical to the provided one.
 	 * 
 	 * @param plaintext: as byte[]
-	 * @param hash: {@link SCCHash}
+	 * @param hash:      {@link SCCHash}
 	 * @return boolean
 	 * @throws CoseException
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
 	public boolean validateHash(byte[] plaintext, AbstractSCCHash hash) throws CoseException, SCCException;
 
 	// Digital Signature
 
 	/**
-	 * Signing of a plaintext with a specific {@link SCCKey} based on the current Secure Crypto Config file.
+	 * Signing of a plaintext with a specific {@link SCCKey} based on the current
+	 * Secure Crypto Config file.
 	 * 
-	 * A new {@link SCCKey} can be created with
-	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
-	 * {@link SCCKey.KeyUseCase#Signing}
+	 * /** Signing with a certain {@link SCCKey} for a given plaintext based on the
+	 * current Secure Crypto Config file.
 	 * 
-	 * @param key: {@link SCCKey}
+	 * A new {@link SCCKey} for performing can be created with
+	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
+	 * 
+	 * <pre>
+	 * {
+	 * 	&#64;code
+	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
+	 * }
+	 * </pre>
+	 * 
+	 * Also it is possible to create a SCCKey from already existing SCCKey byte[]
+	 * with {@link SCCKey#createFromExistingKey(byte[])}::
+	 * 
+	 * <pre>
+	 * {@code
+	 * SCCKey key = SCCKey.createFromExistingKey(existingSCCKey)
+	 * }
+	 * </pre>
+	 * 
+	 * A PlaintextContainer representation can be done by calling
+	 * {@link PlaintextContainer#PlaintextContainer(byte[])} with the byte[]
+	 * representation of the plaintext to be signed.
+	 * 
+	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCSignature}
 	 * @throws CoseException
@@ -291,15 +378,30 @@ abstract interface SecureCryptoConfigInterface {
 	public AbstractSCCSignature sign(AbstractSCCKey key, PlaintextContainerInterface plaintext)
 			throws CoseException, InvalidKeyException, SCCException;
 
-
 	/**
-	 * Signing of a plaintext with a specific {@link SCCKey} based on the current Secure Crypto Config file.
+	 * Signing with a certain {@link SCCKey} for a given plaintext based on the
+	 * current Secure Crypto Config file.
 	 * 
-	 * A new {@link SCCKey} can be created with
-	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
-	 * {@link SCCKey.KeyUseCase#Signing}
+	 * A new {@link SCCKey} for performing can be created with
+	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
 	 * 
-	 * @param key: {@link SCCKey}
+	 * <pre>
+	 * {
+	 * 	&#64;code
+	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
+	 * }
+	 * </pre>
+	 * 
+	 * Also it is possible to create a SCCKey from already existing SCCKey byte[]
+	 * with {@link SCCKey#createFromExistingKey(byte[])}::
+	 * 
+	 * <pre>
+	 * {@code
+	 * SCCKey key = SCCKey.createFromExistingKey(existingSCCKey)
+	 * }
+	 * </pre>
+	 * 
+	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as byte[]
 	 * @return {@link SCCSignature}
 	 * @throws CoseException
@@ -310,12 +412,11 @@ abstract interface SecureCryptoConfigInterface {
 	public AbstractSCCSignature sign(AbstractSCCKey key, byte[] plaintext)
 			throws CoseException, InvalidKeyException, SCCException;
 
-
 	/**
-	 * Update the exsting {@link SCCSignature} of a plaintext with a new signature based on the current Secure
-	 * Crypto Config.
+	 * Update the exsting {@link SCCSignature} of a plaintext with a new signature
+	 * based on the current Secure Crypto Config.
 	 * 
-	 * @param key: {@link SCCKey}
+	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCSignature}
 	 * @throws CoseException
@@ -326,12 +427,11 @@ abstract interface SecureCryptoConfigInterface {
 	public AbstractSCCSignature updateSignature(AbstractSCCKey key, PlaintextContainerInterface plaintext)
 			throws CoseException, InvalidKeyException, SCCException;
 
-
 	/**
-	 * Update the exsting {@link SCCSignature} of a plaintext with a new signature based on the current Secure
-	 * Crypto Config.
+	 * Update the exsting {@link SCCSignature} of a plaintext with a new signature
+	 * based on the current Secure Crypto Config.
 	 * 
-	 * @param key: {@link SCCKey}
+	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as byte[]
 	 * @return {@link SCCSignature}
 	 * @throws CoseException
@@ -341,11 +441,11 @@ abstract interface SecureCryptoConfigInterface {
 	 */
 	public AbstractSCCSignature updateSignature(AbstractSCCKey key, byte[] plaintext)
 			throws CoseException, InvalidKeyException, SCCException;
-	
+
 	/**
 	 * Validate a {@link SCCSignature}.
 	 * 
-	 * @param key: {@link AbstractSCCKey}
+	 * @param key:       {@link AbstractSCCKey}
 	 * @param signature: {@link SCCSignature}
 	 * @return boolean
 	 * @throws InvalidKeyException: If {@link SCCKey} has not the
@@ -358,7 +458,7 @@ abstract interface SecureCryptoConfigInterface {
 	/**
 	 * Validate a {@link SCCSignature}.
 	 * 
-	 * @param key: {@link AbstractSCCKey}
+	 * @param key:       {@link AbstractSCCKey}
 	 * @param signature: as byte[] representation of {@link SCCSignature}
 	 * @return boolean
 	 * @throws InvalidKeyException: If {@link SCCKey} has not the
@@ -372,13 +472,17 @@ abstract interface SecureCryptoConfigInterface {
 	/**
 	 * Hash a password based on the current Secure Crypto Config file.
 	 * 
+	 * A PlaintextContainer representation can be done by calling
+	 * {@link PlaintextContainer#PlaintextContainer(byte[])} with the byte[]
+	 * representation of the password to be hashed.
+	 *
 	 * @param password: as {@link PlaintextContainer}
 	 * @return {@link SCCPasswordHash}
 	 * @throws CoseException
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
-	public AbstractSCCPasswordHash passwordHash(PlaintextContainerInterface password) throws CoseException, SCCException;
-
+	public AbstractSCCPasswordHash passwordHash(PlaintextContainerInterface password)
+			throws CoseException, SCCException;
 
 	/**
 	 * Hash a password based on the current Secure Crypto Config file.
@@ -386,10 +490,9 @@ abstract interface SecureCryptoConfigInterface {
 	 * @param password: as byte[]
 	 * @return {@link SCCPasswordHash}
 	 * @throws CoseException
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
 	public AbstractSCCPasswordHash passwordHash(byte[] password) throws CoseException, SCCException;
-	
 
 	/**
 	 * Validate a given {@link SCCPasswordHash} against given password.
@@ -397,11 +500,11 @@ abstract interface SecureCryptoConfigInterface {
 	 * The password will be hashed again and compared if resulting hash is identical
 	 * to the given one.
 	 * 
-	 * @param password: as {@link PlaintextContainer}
+	 * @param password:     as {@link PlaintextContainer}
 	 * @param passwordhash: {@link SCCPasswordHash}
 	 * @return boolean
 	 * @throws CoseException
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
 	public boolean validatePasswordHash(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash)
 			throws CoseException, SCCException;
@@ -412,18 +515,19 @@ abstract interface SecureCryptoConfigInterface {
 	 * The password will be hashed again and compared if resulting hash is identical
 	 * to the given one.
 	 * 
-	 * @param password: as byte[]
+	 * @param password:     as byte[]
 	 * @param passwordhash: {@link SCCPasswordHash}
 	 * @return boolean
 	 * @throws CoseException
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
-	public boolean validatePasswordHash(byte[] password, AbstractSCCPasswordHash passwordhash) throws CoseException, SCCException;
+	public boolean validatePasswordHash(byte[] password, AbstractSCCPasswordHash passwordhash)
+			throws CoseException, SCCException;
 }
 
 /**
- * Abstract Class for a container representing the plaintext processed in
- * cryptographic use cases.
+ * Class for a container representing the plaintext processed in cryptographic
+ * use cases.
  * 
  * A PlaintextContainer contains the plaintext as byte[] representation. The
  * class provides various cryptography operations that can be performed on the
@@ -441,16 +545,26 @@ abstract interface PlaintextContainerInterface {
 
 	/**
 	 * Get String representation of {@link PlaintextContainer} depending on given
-	 * Charset
+	 * Charset. <br>
+	 * E.g
 	 * 
-	 * @param c
+	 * <pre>
+	 * {@code
+	 *  PlaintextContainer container = new PlaintextContainer(byte[]);
+	 *  String s = container.toString(StandardCharsets.UTF_8);
+	 * }
+	 * </pre>
+	 * 
+	 * @param c: charset to use
 	 * @return String
 	 */
 	abstract String toString(Charset c);
-	
+
 	/**
-	 * Returns String representation of PlaintextContainer.
-	 * As charset "UTF-8" is used. To choose another charset call {@link PlaintextContainerInterface#toString(Charset)}
+	 * Returns String representation of PlaintextContainer. As charset "UTF-8" is
+	 * used. To choose another charset call
+	 * {@link PlaintextContainerInterface#toString(Charset)}
+	 * 
 	 * @return String
 	 */
 	@Override
@@ -482,14 +596,37 @@ abstract interface PlaintextContainerInterface {
 	abstract boolean validatePasswordHash(AbstractSCCPasswordHash passwordHash) throws SCCException;
 
 	/**
-	 * Symmetric encryption with a certain {@link SCCKey} for
-	 * {@link PlaintextContainer} value.
+	 * Symmetric encryption with a certain {@link SCCKey} for a given plaintext
+	 * based on the current Secure Crypto Config file.
 	 * 
-	 * A new SCCKey can be created with
-	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
-	 * {@link SCCKey.KeyUseCase#SymmetricEncryption}. Alternatively it is also
-	 * possible to derive a key from a password with
-	 * {@link SCCKey#createSymmetricKeyWithPassword(byte[])}
+	 * A new {@link SCCKey} for performing can be created with
+	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
+	 * 
+	 * <pre>
+	 * {
+	 * 	&#64;code
+	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
+	 * }
+	 * </pre>
+	 * 
+	 * Alternatively it is also possible to create a key derived from a password
+	 * with {@link SCCKey#createSymmetricKeyWithPassword(byte[])}:
+	 * 
+	 * <pre>
+	 * {
+	 * 	&#64;code
+	 * 	SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
+	 * }
+	 * </pre>
+	 * 
+	 * Also it is possible to create a SCCKey from already existing SCCKey byte[]
+	 * with {@link SCCKey#createFromExistingKey(byte[])}::
+	 * 
+	 * <pre>
+	 * {@code
+	 * SCCKey key = SCCKey.createFromExistingKey(existingSCCKey)
+	 * }
+	 * </pre>
 	 * 
 	 * @param key: {@link SCCKey}
 	 * @return {@link SCCCiphertext}
@@ -498,12 +635,27 @@ abstract interface PlaintextContainerInterface {
 	abstract AbstractSCCCiphertext encryptSymmetric(AbstractSCCKey key) throws SCCException;
 
 	/**
-	 * Asymmetric encryption with a certain {@link SCCKey} for
-	 * {@link PlaintextContainer} value.
+	 * Asymmetric encryption with a certain {@link SCCKey} for a given plaintext
+	 * based on the current Secure Crypto Config file.
 	 * 
-	 * A new SCCKey can be created with
-	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
-	 * {@link SCCKey.KeyUseCase#AsymmetricEncryption}
+	 * A new {@link SCCKey} for performing can be created with
+	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
+	 * 
+	 * <pre>
+	 * {
+	 * 	&#64;code
+	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
+	 * }
+	 * </pre>
+	 * 
+	 * Also it is possible to create a SCCKey from already existing SCCKey byte[]
+	 * with {@link SCCKey#createFromExistingKey(byte[])}::
+	 * 
+	 * <pre>
+	 * {@code
+	 * SCCKey key = SCCKey.createFromExistingKey(existingSCCKey)
+	 * }
+	 * </pre>
 	 * 
 	 * @param key: {@link SCCKey}
 	 * @return {@link SCCCiphertext}
@@ -512,11 +664,30 @@ abstract interface PlaintextContainerInterface {
 	abstract AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey key) throws SCCException;
 
 	/**
-	 * Signing of a {@link PlaintextContainer} value with a specific {@link SCCKey}.
+	 * Signing of a plaintext with a specific {@link SCCKey} based on the current
+	 * Secure Crypto Config file.
 	 * 
-	 * A new SCCKey can be created with
-	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
-	 * {@link SCCKey.KeyUseCase#Signing}
+	 * /** Signing with a certain {@link SCCKey} for a given plaintext based on the
+	 * current Secure Crypto Config file.
+	 * 
+	 * A new {@link SCCKey} for performing can be created with
+	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
+	 * 
+	 * <pre>
+	 * {
+	 * 	&#64;code
+	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
+	 * }
+	 * </pre>
+	 * 
+	 * Also it is possible to create a SCCKey from already existing SCCKey byte[]
+	 * with {@link SCCKey#createFromExistingKey(byte[])}::
+	 * 
+	 * <pre>
+	 * {@code
+	 * SCCKey key = SCCKey.createFromExistingKey(existingSCCKey)
+	 * }
+	 * </pre>
 	 * 
 	 * @param key: {@link SCCKey}
 	 * @return {@link SCCSignature}
@@ -544,22 +715,29 @@ abstract interface PlaintextContainerInterface {
 }
 
 /**
- * Abstract Class for a Container for the ciphertext (as result from encrypting
- * a plaintext/plaintextcontainer).
+ * Class representing a container for the ciphertext (as result from encrypting a
+ * plaintext).
  * 
- * SCCCiphertext contains a byte[] representation of a COSE message. The byte[]
- * contains the encrypted plaintext as well as all the parameters used during
- * encryption. The inclusion of the used parameters, except the key, in the
- * ciphertext ensures that decryption implementation code does not need to know
- * the used algorithm or parameters before decryption, but can parse it from the
- * COSE message. So it only requires the used key.
+ * SCCCiphertext contains a byte[] representation of a specific COSE message.
+ * This message contains the encrypted plaintext as well as all the parameters
+ * used during encryption. The inclusion of the used parameters, except the key,
+ * in the SCCCiphertext ensures before the decryption no used algorithm or
+ * parameters must be specified by the user, but can parse it from the COSE
+ * message.
+ * 
+ * For creating a new SCCCiphertext call the method
+ * {@link SecureCryptoConfig#encryptSymmetric(AbstractSCCKey, byte[])} or
+ * {@link SecureCryptoConfig#encryptAsymmetric(AbstractSCCKey, byte[])}. It is
+ * also possible to create a SCCCiphertext from an existing SCCCiphertext byte[]
+ * representation when calling
+ * {@link SCCCiphertext#createFromExistingCiphertext(byte[])}
  *
  */
 abstract class AbstractSCCCiphertext {
 
 	byte[] msg;
 
-	public AbstractSCCCiphertext(byte[] msg) {
+	protected AbstractSCCCiphertext(byte[] msg) {
 		this.msg = msg;
 	}
 
@@ -625,11 +803,43 @@ abstract class AbstractSCCCiphertext {
 }
 
 /**
- * Abstract Class for the Container of a key used for cryptography
- * operations like symmetric or asymmetric encryption.
+ * Class representing a container of a key used for cryptography operations like
+ * symmetric or asymmetric encryption.
  * 
- * SCCKey contains a byte[] representation of a key as well as all the
- * parameters needed to define the type and use case of the key.
+ * SCCKey contains a byte[] representation of a key as well as different
+ * parameters like the type ({@link SCCKey.KeyType}) and the used algorithm for
+ * key creation.
+ * 
+ * A new {@link SCCKey} for performing a cryptographic use case can be created with
+ * {@link SCCKey#createKey(KeyUseCase)} as follows:
+ * 
+ * <pre>
+ * {@code
+ * 	SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
+ * }
+ * </pre>
+ * Choose a suitable {@link SCCKey.KeyUseCase} for key creation. For doing asymmetric encryption
+ * use {@link SCCKey.KeyUseCase#AsymmetricEncryption}. <br>For doing symmetric encryption
+ * {@link SCCKey.KeyUseCase#SymmetricEncryption}. <br>
+ * For Signing {@link SCCKey.KeyUseCase#Signing}<br><br>
+ * Alternatively when performing symmetric encryption it is also possible to create a key derived from a password
+ * with {@link SCCKey#createSymmetricKeyWithPassword(byte[])}:
+ * 
+ * <pre>
+ * {
+ * 	@code
+ * 	SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
+ * }
+ * </pre>
+ * 
+ * Also it is possible to create a SCCKey from already existing SCCKey byte[]
+ * with {@link SCCKey#createFromExistingKey(byte[])}::
+ * 
+ * <pre>
+ * {@code
+ * SCCKey key = SCCKey.createFromExistingKey(existingSCCKey)
+ * }
+ * </pre>
  *
  */
 abstract class AbstractSCCKey {
@@ -646,13 +856,12 @@ abstract class AbstractSCCKey {
 
 	}
 
-
 	/**
 	 * Get byte[] representation of {@link SCCKey}.
 	 * 
 	 * @return byte[]: returns byte[] representation of key in case that the key has
 	 *         {@link SCCKey.KeyType#Symmetric}
-	 * @throws InvalidKeyException 
+	 * @throws InvalidKeyException
 	 */
 	abstract byte[] toBytes() throws InvalidKeyException;
 
@@ -661,7 +870,7 @@ abstract class AbstractSCCKey {
 	 * 
 	 * @return byte[]: returns byte[] representation of public key in case that the
 	 *         key has {@link SCCKey.KeyType#Asymmetric}
-	 * @throws InvalidKeyException 
+	 * @throws InvalidKeyException
 	 */
 	abstract byte[] getPublicKeyBytes() throws InvalidKeyException;
 
@@ -670,14 +879,14 @@ abstract class AbstractSCCKey {
 	 * 
 	 * @return byte[]: returns byte[] representation of private key in case that the
 	 *         key has {@link SCCKey.KeyType#Asymmetric}
-	 * @throws InvalidKeyException 
+	 * @throws InvalidKeyException
 	 */
 	abstract byte[] getPrivateKeyBytes() throws InvalidKeyException;
 
 	/**
 	 * Get {@link KeyType} of {@link SCCKey}.
 	 * 
-	 * A key can either be {@link SCCKey.KeyType#Symmetric} {@link Or}
+	 * A key can either be {@link SCCKey.KeyType#Symmetric} or
 	 * {@link SCCKey.KeyType#Asymmetric}. According to its type a key can be used
 	 * for different cryptographic use cases.
 	 * 
@@ -695,14 +904,24 @@ abstract class AbstractSCCKey {
 }
 
 /**
- * Abstract Class for a Container for a Cryptographic Hash.
+ * Class representing a container for a cryptographic Hash.
  * 
- * SCCHash contains a byte[] representation of a COSE message. The byte[]
+ * SCCHash contains a byte[] representation of a COSE message. The message
  * contains the hash as well as all the parameters used during hashing. The
  * inclusion of the used parameters in the hash ensures that validation
  * implementation code does not need to know the used algorithm or parameters
  * before validation, but can parse it from the COSE message.
- *
+ * 
+ * A new SCCHash can be created by calling {@link SecureCryptoConfig#hash(byte[])}.<br>
+ * E.g.
+ * <pre>
+ * {@code
+ * SecureCryptoConfig scc = new SecureCryptoConfig();
+ * SCCSignature signature = scc.hash(plaintext);
+ * }
+ * </pre>
+ * Alternatively it is also possible to create a SCCHash from a existing byte[]
+ * representation of a SCCHash by calling {@link SCCHash#createFromExistingHash(byte[])}
  */
 abstract class AbstractSCCHash {
 
@@ -713,18 +932,10 @@ abstract class AbstractSCCHash {
 	 * 
 	 * @param hashMsg: byte[] of COSE message
 	 */
-	public AbstractSCCHash(byte[] hashMsg) {
+	protected AbstractSCCHash(byte[] hashMsg) {
 		this.hashMsg = hashMsg;
 	}
 
-	/**
-	 * Constructor that creates a new SCCHash object based on existing COSE message.
-	 * 
-	 * @param hashMsg: Base64 encoded String of COSE message
-	 */
-	public AbstractSCCHash(String hash) {
-		this(Base64.getDecoder().decode(hash));
-	}
 
 	/**
 	 * Get byte[] representation of {@link SCCHash}.
@@ -792,15 +1003,26 @@ abstract class AbstractSCCHash {
 }
 
 /**
- * Abstract Class for a Container for a Cryptographic Password Hash.
+ * Class representing a container for a cryptographic Password Hash.
  * 
- * SCCHash contains a byte[] representation of a COSE message. The byte[]
+ * SCCPasswordHash contains a byte[] representation of a COSE message. The byte[]
  * contains the password hash as well as all the parameters used during hashing.
  * The inclusion of the used parameters in the password hash ensures that
  * validation implementation code does not need to know the used algorithm or
  * parameters before validation, but can parse it from the COSE message.
  *
+ * A new SCCPasswordHash can be created by calling {@link SecureCryptoConfig#passwordHash(byte[])}.<br>
+ * E.g.
+ * <pre>
+ * {@code
+ * SecureCryptoConfig scc = new SecureCryptoConfig();
+ * SCCSignature signature = scc.passwordHash(password);
+ * }
+ * </pre>
+ * Alternatively it is also possible to create a SCCPasswordHash from a existing byte[]
+ * representation of a SCCPaswordHash by calling {@link SCCPasswordHash#createFromExistingPasswordHash(byte[])}
  */
+ 
 abstract class AbstractSCCPasswordHash {
 
 	byte[] hashMsg;
@@ -811,19 +1033,10 @@ abstract class AbstractSCCPasswordHash {
 	 * 
 	 * @param hashMsg: byte[] of COSE message
 	 */
-	public AbstractSCCPasswordHash(byte[] hashMsg) {
+	protected AbstractSCCPasswordHash(byte[] hashMsg) {
 		this.hashMsg = hashMsg;
 	}
 
-	/**
-	 * Constructor that creates a new AbstractSCCPasswordHash object based on
-	 * existing COSE message.
-	 * 
-	 * @param hashMsg: Base64 encoded String of COSE message
-	 */
-	public AbstractSCCPasswordHash(String hash) {
-		this(Base64.getDecoder().decode(hash));
-	}
 
 	/**
 	 * Get byte[] representation of {@link SCCPasswordHash}.
@@ -867,32 +1080,33 @@ abstract class AbstractSCCPasswordHash {
 }
 
 /**
- * Abstract class for a Container for a Digital Signature.
+ * Class representing a container for a Digital Signature.
  * 
  * SCCSignature contains a byte[] representation of a COSE message. The byte[]
  * contains the signature as well as all the parameters used during signing. The
  * inclusion of the used parameters in the signature ensures that validation
  * implementation code does not need to know the used algorithm or parameters
  * before validation, but can parse it from the COSE message.
- *
+ * 
+ * A new SCCSignature can be created by calling {@link SecureCryptoConfig#sign(AbstractSCCKey, byte[])}.<br>
+ * E.g.
+ * <pre>
+ * {@code
+ * SecureCryptoConfig scc = new SecureCryptoConfig();
+ * SCCSignature signature = scc.sign(plaintext, key);
+ * }
+ * </pre>
+ * Alternatively it is also possible to create a SCCSignature from a existing byte[]
+ * representation of a SCCSignature by calling {@link SCCSignature#createFromExistingSignature(byte[])}
  */
 abstract class AbstractSCCSignature {
 	byte[] signatureMsg;
 
-	public AbstractSCCSignature(byte[] signatureMasg) {
+	protected AbstractSCCSignature(byte[] signatureMasg) {
 		this.signatureMsg = signatureMasg;
 	}
 
-	/**
-	 * Constructor that creates a new AbstractSCCSignature object based on existing
-	 * COSE message.
-	 * 
-	 * @param hashMsg: Base64 encoded String of COSE message
-	 */
-	public AbstractSCCSignature(String hash) {
-		this(Base64.getDecoder().decode(hash));
-	}
-
+	
 	/**
 	 * Get byte[] representation of {@link SCCSignature}.
 	 * 
@@ -923,7 +1137,7 @@ abstract class AbstractSCCSignature {
 	 * The corresponding plaintext will be signed again with the current Secure
 	 * Crypto Config.
 	 * 
-	 * @param key: {@link SCCKey}
+	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCSignature}
 	 * @throws SCCException
