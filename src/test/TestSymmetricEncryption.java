@@ -7,14 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.SecureRandom;
-
 import org.junit.jupiter.api.Test;
 import org.securecryptoconfig.PlaintextContainer;
 import org.securecryptoconfig.SCCCiphertext;
 import org.securecryptoconfig.SCCException;
 import org.securecryptoconfig.SCCKey;
-import org.securecryptoconfig.SCCKey.KeyType;
 import org.securecryptoconfig.SCCKey.KeyUseCase;
 import org.securecryptoconfig.SecureCryptoConfig;
 
@@ -176,10 +173,10 @@ class TestSymmetricEncryption {
 		String plaintext = "Hello World!";
 		SCCKey key = SCCKey.createFromExistingKey(existingSCCKey);
 		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext.getBytes(StandardCharsets.UTF_8));
-		String encrypted = ciphertext.toString(StandardCharsets.UTF_8);
+		String encrypted = ciphertext.toString();
 
 		PlaintextContainer plain = ciphertext.decryptSymmetric(key);
-		String decrypted = plain.toString(StandardCharsets.UTF_8);
+		String decrypted = plain.toString();
 
 		assertEquals(plaintext, decrypted);
 	}
@@ -188,7 +185,7 @@ class TestSymmetricEncryption {
 	@Test
 	void testSymmetricByteReEncyptionWithKey()
 			throws CoseException, NoSuchAlgorithmException, InvalidKeyException, SCCException {
-		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
+		byte[] plaintext = "Hello World!".getBytes();
 		SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 		// Encryption
 		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext);
@@ -196,8 +193,8 @@ class TestSymmetricEncryption {
 		SCCCiphertext updatedCiphertext = scc.reEncryptSymmetric(key, ciphertext);
 		byte[] updateCiphertext = updatedCiphertext.toBytes();
 
-		String oldCiphertext = ciphertext.toString(StandardCharsets.UTF_8);
-		String newCiphertext = updatedCiphertext.toString(StandardCharsets.UTF_8);
+		String oldCiphertext = ciphertext.toString();
+		String newCiphertext = updatedCiphertext.toString();
 
 		assertFalse(oldCiphertext.equals(newCiphertext));
 	}
@@ -213,10 +210,10 @@ class TestSymmetricEncryption {
 		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext.getBytes(StandardCharsets.UTF_8));
 		// ReEncryption
 		SCCCiphertext updatedCiphertext = scc.reEncryptSymmetric(key, ciphertext);
-		String updateCiphertext = updatedCiphertext.toString(StandardCharsets.UTF_8);
+		String updateCiphertext = updatedCiphertext.toString();
 
-		String oldCiphertext = ciphertext.toString(StandardCharsets.UTF_8);
-		String newCiphertext = updatedCiphertext.toString(StandardCharsets.UTF_8);
+		String oldCiphertext = ciphertext.toString();
+		String newCiphertext = updatedCiphertext.toString();
 
 		assertFalse(oldCiphertext.equals(newCiphertext));
 	}
@@ -233,8 +230,8 @@ class TestSymmetricEncryption {
 		SCCCiphertext updatedCiphertext = scc.reEncryptSymmetric(key, ciphertext);
 		byte[] updateCiphertext = updatedCiphertext.toBytes();
 
-		String oldCiphertext = ciphertext.toString(StandardCharsets.UTF_8);
-		String newCiphertext = updatedCiphertext.toString(StandardCharsets.UTF_8);
+		String oldCiphertext = ciphertext.toString();
+		String newCiphertext = updatedCiphertext.toString();
 
 		assertFalse(oldCiphertext.equals(newCiphertext));
 	}
@@ -249,10 +246,10 @@ class TestSymmetricEncryption {
 		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext.getBytes(StandardCharsets.UTF_8));
 		// ReEncryption
 		SCCCiphertext updatedCiphertext = scc.reEncryptSymmetric(key, ciphertext);
-		String updateCiphertext = updatedCiphertext.toString(StandardCharsets.UTF_8);
+		String updateCiphertext = updatedCiphertext.toString();
 
-		String oldCiphertext = ciphertext.toString(StandardCharsets.UTF_8);
-		String newCiphertext = updatedCiphertext.toString(StandardCharsets.UTF_8);
+		String oldCiphertext = ciphertext.toString();
+		String newCiphertext = updatedCiphertext.toString();
 
 		assertFalse(oldCiphertext.equals(newCiphertext));
 	}

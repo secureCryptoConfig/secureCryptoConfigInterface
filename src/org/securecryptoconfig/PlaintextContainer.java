@@ -1,8 +1,8 @@
 package org.securecryptoconfig;
 
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
-
 import COSE.CoseException;
 
 /**
@@ -38,6 +38,11 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	public String toString(Charset c) {
 		return new String(this.plaintext, c);
 
+	}
+	
+	@Override
+	public String toString() {
+		return toString(StandardCharsets.UTF_8);
 	}
 
 	@Override

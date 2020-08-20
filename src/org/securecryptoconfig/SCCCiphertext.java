@@ -1,6 +1,5 @@
 package org.securecryptoconfig;
 
-import java.nio.charset.Charset;
 import java.security.InvalidKeyException;
 import java.util.Base64;
 
@@ -41,8 +40,8 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	}
 
 	@Override
-	public String toString(Charset c) {
-		return new String(this.msg, c);
+	public String toString() {
+		return Base64.getEncoder().encodeToString(this.msg);
 	}
 
 	@Override

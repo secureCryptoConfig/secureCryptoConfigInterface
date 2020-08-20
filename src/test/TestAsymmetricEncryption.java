@@ -111,7 +111,7 @@ class TestAsymmetricEncryption {
 
 		String plaintext = "Hello World!";
 		SCCCiphertext ciphertext = scc.encryptAsymmetric(key, plaintext.getBytes(StandardCharsets.UTF_8));
-		String encrypted = ciphertext.toString(StandardCharsets.UTF_8);
+		String encrypted = ciphertext.toString();
 
 		PlaintextContainer decryptedCiphertext = ciphertext.decryptAsymmetric(key);
 		String decrypted = decryptedCiphertext.toString(StandardCharsets.UTF_8);
@@ -131,8 +131,8 @@ class TestAsymmetricEncryption {
 		SCCCiphertext updatedCiphertext = scc.reEncryptAsymmetric(key, ciphertext);
 		byte[] updateCiphertect = updatedCiphertext.toBytes();
 	
-		String oldCiphertext = ciphertext.toString(StandardCharsets.UTF_8);
-		String newCiphertext = updatedCiphertext.toString(StandardCharsets.UTF_8);
+		String oldCiphertext = ciphertext.toString();
+		String newCiphertext = updatedCiphertext.toString();
 
 		assertFalse(oldCiphertext.equals(newCiphertext));
 	}
@@ -147,10 +147,10 @@ class TestAsymmetricEncryption {
 		SCCCiphertext ciphertext = scc.encryptAsymmetric(key, plaintext.getBytes(StandardCharsets.UTF_8));
 		// ReEncryption
 		SCCCiphertext updatedCiphertext = scc.reEncryptAsymmetric(key, ciphertext);
-		String updateCiphertext = updatedCiphertext.toString(StandardCharsets.UTF_8);
+		String updateCiphertext = updatedCiphertext.toString();
 
-		String oldCiphertext = ciphertext.toString(StandardCharsets.UTF_8);
-		String newCiphertext = updatedCiphertext.toString(StandardCharsets.UTF_8);
+		String oldCiphertext = ciphertext.toString();
+		String newCiphertext = updatedCiphertext.toString();
 
 		assertFalse(oldCiphertext.equals(newCiphertext));
 	}

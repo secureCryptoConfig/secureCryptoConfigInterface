@@ -410,6 +410,14 @@ abstract interface PlaintextContainerInterface {
 	 * @return String
 	 */
 	abstract String toString(Charset c);
+	
+	/**
+	 * Returns String representation of PlaintextContainer.
+	 * As charset "UTF-8" is used. To choose another charset call {@link PlaintextContainerInterface#toString(Charset)}
+	 * @return String
+	 */
+	@Override
+	public abstract String toString();
 
 	/**
 	 * Validate a given {@link SCCHash} against a {@link PlaintextContainer} value.
@@ -526,13 +534,12 @@ abstract class AbstractSCCCiphertext {
 	abstract byte[] toBytes();
 
 	/**
-	 * Get String representation of {@link SCCCiphertext} depending on given
-	 * Charset.
+	 * Base64 encode {@link SCCCiphertext}.
 	 * 
-	 * @param c: Charset
 	 * @return String
 	 */
-	abstract String toString(Charset c);
+	@Override
+	public abstract String toString();
 
 	/**
 	 * Symmetric decryption with a certain {@link SCCKey} of {@link SCCCiphertext}.
