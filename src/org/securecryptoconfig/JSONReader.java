@@ -1,10 +1,8 @@
 package org.securecryptoconfig;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -19,14 +17,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.securecryptoconfig.SCCKey.KeyType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -48,85 +41,12 @@ public class JSONReader {
 	private static String publicKeyPath2;
 	private static String signatureAlgo = "EC";
 
-	// JSON parser object to parse read file
-	private static JSONParser jsonParser = new JSONParser();
-
 	// Enum representing supported crypto use cases
 	protected enum CryptoUseCase {
 		SymmetricEncryption, Signing, Hashing, AsymmetricEncryption, PasswordHashing, KeyGeneration;
 	}
 
-	/**
-	 * Retrieving algorithms for specific Crypto Use case out of JSON
-	 * 
-	 * @param useCase, sccFilePath (Path to used SCC file)
-	 */
-	protected static ArrayList<String> getAlgos(CryptoUseCase useCase, String sccFilePath) {
-
-		ArrayList<String> algos = new ArrayList<String>();
-		JSONParser jsonParser = new JSONParser();
-		Object obj;
-
-		try {
-			if (SecureCryptoConfig.customPath == true) {
-				FileReader reader = new FileReader(sccFilePath);
-				// Read JSON file
-				obj = jsonParser.parse(reader);
-			} else {
-				// Read JSON file
-				InputStream is = org.securecryptoconfig.JSONReader.class.getResourceAsStream(sccFilePath);
-				obj = jsonParser.parse(new InputStreamReader(is, "UTF-8"));
-			}
-
-			JSONArray sccList = (JSONArray) obj;
-			JSONObject scc = (JSONObject) sccList.get(0);
-
-			JSONObject usageObject = (JSONObject) scc.get("Usage");
-			JSONArray use = (JSONArray) usageObject.get(useCase.toString());
-			Iterator<?> iterator = use.iterator();
-			while (iterator.hasNext()) {
-				// System.out.println(iterator.next());
-				algos.add((String) iterator.next());
-			}
-			return algos;
-		} catch (IOException | ParseException e) {
-			e.printStackTrace();
-			return null;
-		}
-
-	}
-
-	/**
-	 * Auxiliary method for reading out the policy name of a file at given path
-	 * 
-	 * @param path to file
-	 */
-	protected static String getPolicyName(String path) {
-		String result = "";
-		Object obj;
-		try {
-			if (SecureCryptoConfig.customPath == true) {
-				FileReader reader = new FileReader(path);
-				// Read JSON file
-				obj = jsonParser.parse(reader);
-			} else {
-				InputStream is = org.securecryptoconfig.JSONReader.class.getResourceAsStream(path);
-				JSONParser jsonParser = new JSONParser();
-				obj = jsonParser.parse(new InputStreamReader(is, "UTF-8"));
-			}
-			JSONArray sccList = (JSONArray) obj;
-			JSONObject scc = (JSONObject) sccList.get(0);
-
-			result = (String) scc.get("PolicyName");
-
-			return result;
-		} catch (IOException | ParseException e) {
-			e.printStackTrace();
-			return null;
-		}
-
-	}
-
+	
 	/**
 	 * Find the path to the specified policyName
 	 * 
@@ -193,6 +113,7 @@ public class JSONReader {
 		ObjectMapper objectMapper = new ObjectMapper();
 		int level;
 		String version;
+		
 		try {
 			for (int i = 0; i < allFilePaths.size(); i++) {
 				if (SecureCryptoConfig.customPath == true) {
@@ -281,6 +202,7 @@ public class JSONReader {
 	 * @return highest appearing level
 	 */
 	protected static int getHighestLevel(HashSet<Integer> level) {
+		
 		return Collections.max(level);
 	}
 
@@ -426,6 +348,6 @@ public class JSONReader {
 		
 
 	}
-	
+
 	
 }

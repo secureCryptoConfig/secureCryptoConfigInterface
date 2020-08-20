@@ -24,11 +24,11 @@ public class SCCInstanceKey {
 	private SCCInstanceKey()
 		{}
 
-	protected static String createSCCInstanceKey(KeyType type, byte[] publicKey, byte[] privateKey, String algorithm)
+	protected static byte[] createSCCInstanceKey(KeyType type, byte[] publicKey, byte[] privateKey, String algorithm)
 			throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 
-		return mapper.writeValueAsString(
+		return mapper.writeValueAsBytes(
 				new SCCInstanceKey(type, publicKey, privateKey, algorithm));
 	}
 

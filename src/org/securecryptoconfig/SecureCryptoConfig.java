@@ -746,7 +746,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 			encrypt0Message.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 
-			encrypt0Message.encrypt(key.key);
+			encrypt0Message.encrypt(key.publicKey);
 			encrypt0Message.SetContent((byte[]) null);
 
 			return SCCCiphertext.createFromExistingCiphertext(encrypt0Message.EncodeToBytes());
@@ -756,5 +756,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			return null;
 		}
 	}
+	
+	
 
 }

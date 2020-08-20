@@ -591,7 +591,7 @@ abstract class AbstractSCCCiphertext {
 abstract class AbstractSCCKey {
 
 	KeyType type;
-	byte[] key, privateKey, publicKey;
+	byte[] privateKey, publicKey;
 	String algorithm;
 
 	protected AbstractSCCKey(KeyType type, byte[] publicKey, byte[] privateKey, String algorithm) {
@@ -602,12 +602,6 @@ abstract class AbstractSCCKey {
 
 	}
 
-	protected AbstractSCCKey(KeyType type, byte[] key, String algorithm) {
-		this.type = type;
-		this.key = key;
-		this.algorithm = algorithm;
-
-	}
 
 	/**
 	 * Get byte[] representation of {@link SCCKey}.

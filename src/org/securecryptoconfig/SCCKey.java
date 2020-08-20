@@ -129,7 +129,7 @@ public class SCCKey extends AbstractSCCKey {
 	 */
 	protected SecretKey getSecretKey() throws InvalidKeyException {
 		if (this.type == KeyType.Symmetric) {
-			return new SecretKeySpec(key, 0, key.length, this.algorithm);
+			return new SecretKeySpec(publicKey, 0, publicKey.length, this.algorithm);
 		} else {
 			throw new InvalidKeyException("Wrong key type for this method. Not symmetric!");
 		}
@@ -567,9 +567,9 @@ public class SCCKey extends AbstractSCCKey {
 	
 	public byte[] decodeObjectToBytes()
 	{
-		ObjectMapper objectMapper = new ObjectMapper();
+		
 		try {
-			byte[] keyAsByte = objectMapper.writeValueAsBytes(this);
+			byte[] keyAsByte = SCCInstanceKey.createSCCInstanceKey(this.type, this.publicKey, this.privateKey, this.algorithm);
 			return keyAsByte;
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
@@ -586,7 +586,10 @@ public class SCCKey extends AbstractSCCKey {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		SCCKey key = new SCCKey(sccInstanceKey.getType(), sccInstanceKey.getPublicKey(), sccInstanceKey.getPrivateKey(), sccInstanceKey.getAlgorithm());
+		
+			SCCKey key = new SCCKey(sccInstanceKey.getType(), sccInstanceKey.getPublicKey(), sccInstanceKey.getPrivateKey(), sccInstanceKey.getAlgorithm());
+			
+		
 		return key;
 	}
 
