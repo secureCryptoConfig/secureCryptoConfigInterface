@@ -5,6 +5,13 @@ import java.util.ArrayList;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 
+/**
+ * Class for JSON file processing. Needed for parsing the Secure Crypto Config files.
+ * Auxiliary class for {@link SCCInstance} as multiple different Usecases with different
+ * algorithms can be specified. 
+ * @author Lisa
+ *
+ */
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class SCCInstanceUseCase {
 

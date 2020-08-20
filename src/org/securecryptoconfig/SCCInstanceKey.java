@@ -6,6 +6,12 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+/**
+ * Class needed to be able to represent the SCCKey object as byte[].
+ * 
+ * @author Lisa
+ *
+ */
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class SCCInstanceKey {
 	private KeyType type;

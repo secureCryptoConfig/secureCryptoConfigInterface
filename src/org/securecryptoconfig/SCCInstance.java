@@ -7,7 +7,11 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-
+/**
+ * Class for JSON file processing. Needed for parsing the Secure Crypto Config files.
+ * @author Lisa
+ *
+ */
 @JsonAutoDetect(fieldVisibility = Visibility.ANY)
 public class SCCInstance {
 
