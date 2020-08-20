@@ -5,14 +5,17 @@ import java.security.InvalidKeyException;
 import java.util.Base64;
 
 import org.securecryptoconfig.SCCKey.KeyType;
+import org.securecryptoconfig.SCCKey.KeyUseCase;
 
 import COSE.CoseException;
 
 /**
- * Interface that defines which methods should be used for cryptography
- * operations.
+ * Interface defining methods that can be used to perform different cryptographic use cases.
  * 
- * @author Kai
+ * Most methods are defined inside {@link SecureCryptoConfig}. To start performing the
+ * desired use case make use of this class as starting point of your implementation.
+ * 
+ * @author Lisa
  *
  */
 abstract interface SecureCryptoConfigInterface {
@@ -22,11 +25,28 @@ abstract interface SecureCryptoConfigInterface {
 	/**
 	 * Symmetric encryption with a certain {@link SCCKey} for a given plaintext based on the current Secure Crypto Config file.
 	 * 
-	 * A new {@link SCCKey} can be created with
-	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
-	 * {@link SCCKey.KeyUseCase#SymmetricEncryption} Alternatively it is also
-	 * possible to create a key derived from a password with
-	 * {@link SCCKey#createSymmetricKeyWithPassword(byte[])}
+	 * A new {@link SCCKey} for performing can be created with {@link SCCKey#createKey(KeyUseCase)} as follows:
+	 * <pre>
+	 * {@code
+	 * SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
+	 * }
+	 * </pre>
+	 * Alternatively it is also possible to create a key derived from a password with {@link SCCKey#createSymmetricKeyWithPassword(byte[])}:
+	 * <pre>
+	 * {@code
+	 * SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
+	 * }
+	 * </pre>
+	 * 
+	 * Also it is possible to create a SCCKey from already existing SCCKey byte[] with {@link SCCKey#createFromExistingKey(byte[])}::
+	 * <pre>
+	 * {@code
+	 * SCCKey key = SCCKey.createFromExistingKey(existingSCCKey)
+	 * }
+	 * </pre>
+	 * 
+	 * A PlaintextContainer representation can be done by calling {@link PlaintextContainer#PlaintextContainer(byte[])} with
+	 * the byte[] representation of the plaintext to be encrypted.
 	 * 
 	 * @param key: {@link SCCKey}
 	 * @param plaintext: as {@link PlaintextContainer}
@@ -42,11 +62,28 @@ abstract interface SecureCryptoConfigInterface {
 	/**
 	 * Symmetric encryption with a certain {@link SCCKey} for a given plaintext based on the current Secure Crypto Config file.
 	 * 
-	 * A new {@link SCCKey} can be created with
-	 * {@link SCCKey#createKey(org.securecryptoconfig.SCCKey.KeyUseCase)} with
-	 * {@link SCCKey.KeyUseCase#SymmetricEncryption}
+	 * A new {@link SCCKey} for performing can be created with {@link SCCKey#createKey(KeyUseCase)} as follows:
+	 * <pre>
+	 * {@code
+	 * SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
+	 * }
+	 * </pre>
+	 * Alternatively it is also possible to create a key derived from a password with {@link SCCKey#createSymmetricKeyWithPassword(byte[])}:
+	 * <pre>
+	 * {@code
+	 * SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
+	 * }
+	 * </pre>
 	 * 
-	 * @param key: SCCKey{@link SCCKey}text: as byte[]
+	 * Also it is possible to create a SCCKey from already existing SCCKey byte[] with {@link SCCKey#createFromExistingKey(byte[])}::
+	 * <pre>
+	 * {@code
+	 * SCCKey key = SCCKey.createFromExistingKey(existingSCCKey)
+	 * }
+	 * </pre>
+	 *  
+	 * @param key: {@link SCCKey}
+	 * @param plaintext: as byte[]
 	 * @return {@link SCCCiphertext}
 	 * @throws CoseException
 	 * @throws InvalidKeyException: If {@link SCCKey} has not the
