@@ -26,12 +26,19 @@ abstract interface SecureCryptoConfigInterface {
 	 * Symmetric encryption with a certain {@link SCCKey} for a given plaintext
 	 * based on the current Secure Crypto Config file.
 	 * 
-	 * A new {@link SCCKey} for performing can be created with
+	 * <br> The encryption can be done as follows:
+	 * <pre>
+	 * {@code
+	 * 	SecureCryptoConfig scc = new SecureCryptoConfig();
+	 *  SCCCiphertext c = scc.encryptSymmetric(sccKey, plaintext);
+	 * }
+	 * </pre>
+	 * 
+	 * <br>A new {@link SCCKey} for performing can be created with
 	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
 	 * 
 	 * <pre>
-	 * {
-	 * 	&#64;code
+	 * {@code
 	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 	 * }
 	 * </pre>
@@ -40,8 +47,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * with {@link SCCKey#createSymmetricKeyWithPassword(byte[])}:
 	 * 
 	 * <pre>
-	 * {
-	 * 	&#64;code
+	 * {@code
 	 * 	SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
 	 * }
 	 * </pre>
@@ -59,6 +65,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * {@link PlaintextContainer#PlaintextContainer(byte[])} with the byte[]
 	 * representation of the plaintext to be encrypted.
 	 * 
+	 * 
 	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCCiphertext}
@@ -74,12 +81,19 @@ abstract interface SecureCryptoConfigInterface {
 	 * Symmetric encryption with a certain {@link SCCKey} for a given plaintext
 	 * based on the current Secure Crypto Config file.
 	 * 
-	 * A new {@link SCCKey} for performing can be created with
+	 * <br> The encryption can be done as follows:
+	 * <pre>
+	 * {@code
+	 * 	SecureCryptoConfig scc = new SecureCryptoConfig();
+	 *  SCCCiphertext c = scc.encryptSymmetric(sccKey, plaintext);
+	 * }
+	 * </pre>
+	 * 
+	 * <br>A new {@link SCCKey} for performing can be created with
 	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
 	 * 
 	 * <pre>
-	 * {
-	 * 	&#64;code
+	 * {@code
 	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 	 * }
 	 * </pre>
@@ -88,8 +102,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * with {@link SCCKey#createSymmetricKeyWithPassword(byte[])}:
 	 * 
 	 * <pre>
-	 * {
-	 * 	&#64;code
+	 * {@code
 	 * 	SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
 	 * }
 	 * </pre>
@@ -148,12 +161,18 @@ abstract interface SecureCryptoConfigInterface {
 	 * Asymmetric encryption with a certain {@link SCCKey} for a given plaintext
 	 * based on the current Secure Crypto Config file.
 	 * 
-	 * A new {@link SCCKey} for performing can be created with
+	 * <br> The encryption can be done as follows:
+	 * <pre>
+	 * {@code
+	 * 	SecureCryptoConfig scc = new SecureCryptoConfig();
+	 *  SCCCiphertext c = scc.encryptAsymmetric(sccKey, plaintext);
+	 * }
+	 * </pre>
+	 * <br>A new {@link SCCKey} for performing can be created with
 	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
 	 * 
 	 * <pre>
-	 * {
-	 * 	&#64;code
+	 * {@code
 	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
 	 * }
 	 * </pre>
@@ -186,12 +205,18 @@ abstract interface SecureCryptoConfigInterface {
 	 * Asymmetric encryption with a certain {@link SCCKey} for a given plaintext
 	 * based on the current Secure Crypto Config file.
 	 * 
-	 * A new {@link SCCKey} for performing can be created with
+	 * <br> The encryption can be done as follows:
+	 * <pre>
+	 * {@code
+	 * 	SecureCryptoConfig scc = new SecureCryptoConfig();
+	 *  SCCCiphertext c = scc.encryptSymmetric(sccKey, plaintext);
+	 * }
+	 * </pre>
+	 * <br>A new {@link SCCKey} for performing can be created with
 	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
 	 * 
 	 * <pre>
-	 * {
-	 * 	&#64;code
+	 * {@code
 	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
 	 * }
 	 * </pre>
@@ -252,6 +277,13 @@ abstract interface SecureCryptoConfigInterface {
 	/**
 	 * Hashing of a given plaintext based on the current Secure Crypto Config file.
 	 * 
+	 * <br> The hashing can be done as follows:
+	 * <pre>
+	 * {@code
+	 * 	SecureCryptoConfig scc = new SecureCryptoConfig();
+	 *  SCCHash hash = scc.hash(plaintext);
+	 * }
+	 * </pre>
 	 * A PlaintextContainer representation can be done by calling
 	 * {@link PlaintextContainer#PlaintextContainer(byte[])} with the byte[]
 	 * representation of the plaintext to be hashed.
@@ -266,6 +298,13 @@ abstract interface SecureCryptoConfigInterface {
 	/**
 	 * Hashing of a given plaintext based on the current Secure Crypto Config file.
 	 * 
+	 * <br> The hashing can be done as follows:
+	 * <pre>
+	 * {@code
+	 * 	SecureCryptoConfig scc = new SecureCryptoConfig();
+	 *  SCCHash hash = scc.hash(plaintext);
+	 * }
+	 * </pre>
 	 * @param plaintext: as byte[]
 	 * @return {@link SCCHash}
 	 * @throws CoseException
@@ -277,7 +316,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * Given a {@link SCCHash} of a plaintext: the corresponding plaintext will be
 	 * hashed again with the current Secure Crypto Config.
 	 * 
-	 * A PlaintextContainer representation can be done by calling
+	 * <br><br>A PlaintextContainer representation can be done by calling
 	 * {@link PlaintextContainer#PlaintextContainer(byte[])} with the byte[]
 	 * representation of the plaintext to be hashed.
 	 * 
@@ -308,7 +347,7 @@ abstract interface SecureCryptoConfigInterface {
 	 * The plaintext will be hashed again and compared if the resulting hash is
 	 * identical to the provided one.
 	 * 
-	 * A PlaintextContainer representation can be done by calling
+	 * <br><br>A PlaintextContainer representation can be done by calling
 	 * {@link PlaintextContainer#PlaintextContainer(byte[])} with the byte[]
 	 * representation of the plaintext to be hashed.
 	 * 
@@ -337,25 +376,28 @@ abstract interface SecureCryptoConfigInterface {
 
 	// Digital Signature
 
-	/**
-	 * Signing of a plaintext with a specific {@link SCCKey} based on the current
-	 * Secure Crypto Config file.
-	 * 
-	 * /** Signing with a certain {@link SCCKey} for a given plaintext based on the
+	/** Signing with a certain {@link SCCKey} for a given plaintext based on the
 	 * current Secure Crypto Config file.
 	 * 
-	 * A new {@link SCCKey} for performing can be created with
+	 * <br> The signing can be done as follows:
+	 * <pre>
+	 * {@code
+	 * 	SecureCryptoConfig scc = new SecureCryptoConfig();
+	 *  SCCSignature sig = scc.sign(sccKey, plaintext);
+	 * }
+	 * </pre>
+	 * 
+	 * <br>A new {@link SCCKey} for performing can be created with
 	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
 	 * 
 	 * <pre>
-	 * {
-	 * 	&#64;code
+	 * {@code
 	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
 	 * }
 	 * </pre>
 	 * 
 	 * Also it is possible to create a SCCKey from already existing SCCKey byte[]
-	 * with {@link SCCKey#createFromExistingKey(byte[])}::
+	 * with {@link SCCKey#createFromExistingKey(byte[])}:
 	 * 
 	 * <pre>
 	 * {@code
@@ -382,12 +424,19 @@ abstract interface SecureCryptoConfigInterface {
 	 * Signing with a certain {@link SCCKey} for a given plaintext based on the
 	 * current Secure Crypto Config file.
 	 * 
-	 * A new {@link SCCKey} for performing can be created with
+	 * <br> The signing can be done as follows:
+	 * <pre>
+	 * {@code
+	 * 	SecureCryptoConfig scc = new SecureCryptoConfig();
+	 *  SCCSignature sig = scc.sign(sccKey, plaintext);
+	 * }
+	 * </pre>
+	 * 
+	 * <br>A new {@link SCCKey} for performing can be created with
 	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
 	 * 
 	 * <pre>
-	 * {
-	 * 	&#64;code
+	 * {@code
 	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
 	 * }
 	 * </pre>
@@ -416,6 +465,9 @@ abstract interface SecureCryptoConfigInterface {
 	 * Update the exsting {@link SCCSignature} of a plaintext with a new signature
 	 * based on the current Secure Crypto Config.
 	 * 
+	 * <br><br> A PlaintextContainer representation can be done by calling
+	 * {@link PlaintextContainer#PlaintextContainer(byte[])} with the byte[]
+	 * representation of the plaintext to be signed.
 	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCSignature}
@@ -471,7 +523,13 @@ abstract interface SecureCryptoConfigInterface {
 
 	/**
 	 * Hash a password based on the current Secure Crypto Config file.
-	 * 
+	 * <br> The password hashing can be done as follows:
+	 * <pre>
+	 * {@code
+	 * 	SecureCryptoConfig scc = new SecureCryptoConfig();
+	 *  SCCPasswordHash hash = scc.passwordHash(password);
+	 * }
+	 * </pre>
 	 * A PlaintextContainer representation can be done by calling
 	 * {@link PlaintextContainer#PlaintextContainer(byte[])} with the byte[]
 	 * representation of the password to be hashed.
@@ -487,6 +545,13 @@ abstract interface SecureCryptoConfigInterface {
 	/**
 	 * Hash a password based on the current Secure Crypto Config file.
 	 * 
+	 * <br> The password hashing can be done as follows:
+	 * <pre>
+	 * {@code
+	 * 	SecureCryptoConfig scc = new SecureCryptoConfig();
+	 *  SCCPasswordHash hash = scc.passwordHash(password);
+	 * }
+	 * </pre>
 	 * @param password: as byte[]
 	 * @return {@link SCCPasswordHash}
 	 * @throws CoseException
@@ -533,6 +598,12 @@ abstract interface SecureCryptoConfigInterface {
  * class provides various cryptography operations that can be performed on the
  * plaintext (e.g. encryption, signing).
  * 
+ * <br><br>To generate a new PlaintextContainer call {@link PlaintextContainer#PlaintextContainer(byte[])}:
+ * <pre>
+ * {@code
+ * PlaintextContainer container = new PlaintextContainer(plaintextBytes);
+ * }
+ * </pre>
  */
 abstract interface PlaintextContainerInterface {
 
@@ -573,7 +644,7 @@ abstract interface PlaintextContainerInterface {
 	/**
 	 * Validate a given {@link SCCHash} against a {@link PlaintextContainer} value.
 	 * 
-	 * The{@link PlaintextContainer} value will be hashed again and compared if
+	 * The {@link PlaintextContainer} value will be hashed again and compared if
 	 * resulting hash is identical to the given one.
 	 * 
 	 * @param hash: {@link SCCHash}
@@ -599,12 +670,18 @@ abstract interface PlaintextContainerInterface {
 	 * Symmetric encryption with a certain {@link SCCKey} for a given plaintext
 	 * based on the current Secure Crypto Config file.
 	 * 
-	 * A new {@link SCCKey} for performing can be created with
+	 * <br> The encryption can be done as follows:
+	 * <pre>
+	 * {@code
+	 *  PlaintextContainer c = new PlaintextContainer(plaintextBytes);
+	 *  SCCCiphertext ciphertext = c.encryptSymmetric(sccKey);
+	 * }
+	 * </pre>
+	 * <br>A new {@link SCCKey} for performing can be created with
 	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
 	 * 
 	 * <pre>
-	 * {
-	 * 	&#64;code
+	 * {@code
 	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 	 * }
 	 * </pre>
@@ -613,8 +690,7 @@ abstract interface PlaintextContainerInterface {
 	 * with {@link SCCKey#createSymmetricKeyWithPassword(byte[])}:
 	 * 
 	 * <pre>
-	 * {
-	 * 	&#64;code
+	 * {@code
 	 * 	SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
 	 * }
 	 * </pre>
@@ -637,13 +713,19 @@ abstract interface PlaintextContainerInterface {
 	/**
 	 * Asymmetric encryption with a certain {@link SCCKey} for a given plaintext
 	 * based on the current Secure Crypto Config file.
+	 * <br> The encryption can be done as follows:
+	 * <pre>
+	 * {@code
+	 * 	PlaintextContainer c = new PlaintextContainer(plaintextBytes);
+	 *  SCCCiphertext c = c.encryptAsymmetric(sccKey);
+	 * }
+	 * </pre>
 	 * 
-	 * A new {@link SCCKey} for performing can be created with
+	 * <br>A new {@link SCCKey} for performing can be created with
 	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
 	 * 
 	 * <pre>
-	 * {
-	 * 	&#64;code
+	 * {@code
 	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
 	 * }
 	 * </pre>
@@ -663,19 +745,22 @@ abstract interface PlaintextContainerInterface {
 	 */
 	abstract AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey key) throws SCCException;
 
-	/**
-	 * Signing of a plaintext with a specific {@link SCCKey} based on the current
-	 * Secure Crypto Config file.
-	 * 
-	 * /** Signing with a certain {@link SCCKey} for a given plaintext based on the
+	/** Signing with a certain {@link SCCKey} for a given plaintext based on the
 	 * current Secure Crypto Config file.
 	 * 
-	 * A new {@link SCCKey} for performing can be created with
+	 * <br> The signing can be done as follows:
+	 * <pre>
+	 * {@code
+	 * 	PlaintextContainer c = new PlaintextContainer(plaintextBytes);
+	 *  SCCSignature sig = c.sign(sccKey);
+	 * }
+	 * </pre>
+	 * 
+	 * <br>A new {@link SCCKey} for performing can be created with
 	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
 	 * 
 	 * <pre>
-	 * {
-	 * 	&#64;code
+	 * {@code
 	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
 	 * }
 	 * </pre>
@@ -698,6 +783,14 @@ abstract interface PlaintextContainerInterface {
 	/**
 	 * Hashing of a plaintext ({@link PlaintextContainer}).
 	 * 
+	 * <br> The hashing can be done as follows:
+	 * <pre>
+	 * {@code
+	 * 	PlaintextContainer c = new PlaintextContainer(plaintextBytes);
+	 *  SCCHash hash = c.hash();
+	 * }
+	 * </pre>
+	 * 
 	 * @return {@link SCCHash}
 	 * @throws SCCException
 	 */
@@ -705,7 +798,14 @@ abstract interface PlaintextContainerInterface {
 
 	/**
 	 * Assume the plaintext ({@link PlaintextContainer}) represents a password and
-	 * perform password hashing .
+	 * perform password hashing.
+	 * <br> The password hashing can be done as follows:
+	 * <pre>
+	 * {@code
+	 * 	PlaintextContainer c = new PlaintextContainer(passwordBytes);
+	 *  SCCPasswordHash hash = scc.passwordHash();
+	 * }
+	 * </pre>
 	 * 
 	 * @return {@link SCCPasswordHash}
 	 * @throws SCCException
@@ -718,17 +818,24 @@ abstract interface PlaintextContainerInterface {
  * Class representing a container for the ciphertext (as result from encrypting a
  * plaintext).
  * 
- * SCCCiphertext contains a byte[] representation of a specific COSE message.
+ * <br><br>SCCCiphertext contains a byte[] representation of a specific COSE message.
  * This message contains the encrypted plaintext as well as all the parameters
  * used during encryption. The inclusion of the used parameters, except the key,
  * in the SCCCiphertext ensures before the decryption no used algorithm or
  * parameters must be specified by the user, but can parse it from the COSE
  * message.
  * 
- * For creating a new SCCCiphertext call the method
+ * <br><br>For creating a new SCCCiphertext call the method
  * {@link SecureCryptoConfig#encryptSymmetric(AbstractSCCKey, byte[])} or
- * {@link SecureCryptoConfig#encryptAsymmetric(AbstractSCCKey, byte[])}. It is
- * also possible to create a SCCCiphertext from an existing SCCCiphertext byte[]
+ * {@link SecureCryptoConfig#encryptAsymmetric(AbstractSCCKey, byte[])}. <br>
+ * E.g. as result of symmetric encryption:
+ * <pre>
+ * {@code
+ *  SecureCryptoConfig scc = new SecureCryptoConfig();
+ *  SCCCiphertext c = scc.encryptSymmetric(sccKey, plaintextBytes);
+ * }
+ * </pre>
+ * It is also possible to create a SCCCiphertext from an existing SCCCiphertext byte[]
  * representation when calling
  * {@link SCCCiphertext#createFromExistingCiphertext(byte[])}
  *
@@ -806,12 +913,12 @@ abstract class AbstractSCCCiphertext {
  * Class representing a container of a key used for cryptography operations like
  * symmetric or asymmetric encryption.
  * 
- * SCCKey contains a byte[] representation of a key as well as different
+ * <br><br>SCCKey contains a byte[] representation of a key as well as different
  * parameters like the type ({@link SCCKey.KeyType}) and the used algorithm for
  * key creation.
  * 
- * A new {@link SCCKey} for performing a cryptographic use case can be created with
- * {@link SCCKey#createKey(KeyUseCase)} as follows:
+ * <br><br>A new {@link SCCKey} for performing a cryptographic use case can be created with
+ * the method {@link SCCKey#createKey(KeyUseCase)}. <br>E.g. creating a key for symmetric encryption:
  * 
  * <pre>
  * {@code
@@ -826,15 +933,14 @@ abstract class AbstractSCCCiphertext {
  * with {@link SCCKey#createSymmetricKeyWithPassword(byte[])}:
  * 
  * <pre>
- * {
- * 	@code
+ * {@code
  * 	SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
  * }
  * </pre>
  * 
  * Also it is possible to create a SCCKey from already existing SCCKey byte[]
- * with {@link SCCKey#createFromExistingKey(byte[])}::
- * 
+ * with {@link SCCKey#createFromExistingKey(byte[])}:
+ *
  * <pre>
  * {@code
  * SCCKey key = SCCKey.createFromExistingKey(existingSCCKey)
@@ -906,13 +1012,13 @@ abstract class AbstractSCCKey {
 /**
  * Class representing a container for a cryptographic Hash.
  * 
- * SCCHash contains a byte[] representation of a COSE message. The message
+ * <br><br>SCCHash contains a byte[] representation of a COSE message. The message
  * contains the hash as well as all the parameters used during hashing. The
  * inclusion of the used parameters in the hash ensures that validation
  * implementation code does not need to know the used algorithm or parameters
  * before validation, but can parse it from the COSE message.
  * 
- * A new SCCHash can be created by calling {@link SecureCryptoConfig#hash(byte[])}.<br>
+ * <br><br>A new SCCHash can be created by calling {@link SecureCryptoConfig#hash(byte[])}.<br>
  * E.g.
  * <pre>
  * {@code
@@ -1005,13 +1111,13 @@ abstract class AbstractSCCHash {
 /**
  * Class representing a container for a cryptographic Password Hash.
  * 
- * SCCPasswordHash contains a byte[] representation of a COSE message. The byte[]
+ * <br><br>SCCPasswordHash contains a byte[] representation of a COSE message. The byte[]
  * contains the password hash as well as all the parameters used during hashing.
  * The inclusion of the used parameters in the password hash ensures that
  * validation implementation code does not need to know the used algorithm or
  * parameters before validation, but can parse it from the COSE message.
  *
- * A new SCCPasswordHash can be created by calling {@link SecureCryptoConfig#passwordHash(byte[])}.<br>
+ * <br><br>A new SCCPasswordHash can be created by calling {@link SecureCryptoConfig#passwordHash(byte[])}.<br>
  * E.g.
  * <pre>
  * {@code
@@ -1082,13 +1188,13 @@ abstract class AbstractSCCPasswordHash {
 /**
  * Class representing a container for a Digital Signature.
  * 
- * SCCSignature contains a byte[] representation of a COSE message. The byte[]
+ * <br><br>SCCSignature contains a byte[] representation of a COSE message. The byte[]
  * contains the signature as well as all the parameters used during signing. The
  * inclusion of the used parameters in the signature ensures that validation
  * implementation code does not need to know the used algorithm or parameters
  * before validation, but can parse it from the COSE message.
  * 
- * A new SCCSignature can be created by calling {@link SecureCryptoConfig#sign(AbstractSCCKey, byte[])}.<br>
+ * <br><br>A new SCCSignature can be created by calling {@link SecureCryptoConfig#sign(AbstractSCCKey, byte[])}.<br>
  * E.g.
  * <pre>
  * {@code

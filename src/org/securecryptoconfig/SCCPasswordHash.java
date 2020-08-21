@@ -8,13 +8,13 @@ import COSE.PasswordHashMessage;
 /**
  * Class representing a container for a cryptographic Password Hash.
  * 
- * SCCPasswordHash contains a byte[] representation of a COSE message. The byte[]
+ * <br><br>SCCPasswordHash contains a byte[] representation of a COSE message. The byte[]
  * contains the password hash as well as all the parameters used during hashing.
  * The inclusion of the used parameters in the password hash ensures that
  * validation implementation code does not need to know the used algorithm or
  * parameters before validation, but can parse it from the COSE message.
  *
- * A new SCCPasswordHash can be created by calling {@link SecureCryptoConfig#passwordHash(byte[])}.<br>
+ * <br><br>A new SCCPasswordHash can be created by calling {@link SecureCryptoConfig#passwordHash(byte[])}.<br>
  * E.g.
  * <pre>
  * {@code
@@ -25,6 +25,7 @@ import COSE.PasswordHashMessage;
  * Alternatively it is also possible to create a SCCPasswordHash from a existing byte[]
  * representation of a SCCPaswordHash by calling {@link SCCPasswordHash#createFromExistingPasswordHash(byte[])}
  */
+ 
 public class SCCPasswordHash extends AbstractSCCPasswordHash {
 
 	private SecureCryptoConfig scc = new SecureCryptoConfig();

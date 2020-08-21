@@ -72,7 +72,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * Set the latest Secure Crypto Config file of a specific Security level for
 	 * usage.
 	 * 
-	 * Algorithms that are used for executing the invoked cryptographic use case are
+	 * <br><br>Algorithms that are used for executing the invoked cryptographic use case are
 	 * looked up in the latest Secure Crypto Config file (according to its version)
 	 * with the specified Security level
 	 * 
@@ -101,7 +101,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * Set path to a custom root folder "scc-configs" which contains the Secure
 	 * Crypto Config files.
 	 * 
-	 * To use the default Secure Config files at
+	 * <br><br>To use the default Secure Config files at
 	 * "src/scc-configs" again call {@link SecureCryptoConfig#setDefaultSCC()}
 	 * @param path: path to "scc-configs" directory
 	 * @throws InvalidPathException: Path is not existing

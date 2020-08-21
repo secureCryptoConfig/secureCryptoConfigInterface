@@ -23,7 +23,6 @@ import javax.crypto.spec.PBEKeySpec;
 import javax.crypto.spec.SecretKeySpec;
 
 import org.securecryptoconfig.JSONReader.CryptoUseCase;
-import org.securecryptoconfig.SCCKey.KeyUseCase;
 import org.securecryptoconfig.SecureCryptoConfig.SCCAlgorithm;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -37,35 +36,46 @@ import COSE.OneKey;
  * Class representing a container of a key used for cryptography operations like
  * symmetric or asymmetric encryption.
  * 
+ * <br>
+ * <br>
  * SCCKey contains a byte[] representation of a key as well as different
  * parameters like the type ({@link SCCKey.KeyType}) and the used algorithm for
  * key creation.
  * 
- * A new {@link SCCKey} for performing a cryptographic use case can be created with
- * {@link SCCKey#createKey(KeyUseCase)} as follows:
- * 
- * <pre>
- * {@code
- * 	SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
- * }
- * </pre>
- * Choose a suitable {@link SCCKey.KeyUseCase} for key creation. For doing asymmetric encryption
- * use {@link SCCKey.KeyUseCase#AsymmetricEncryption}. <br>For doing symmetric encryption
- * {@link SCCKey.KeyUseCase#SymmetricEncryption}. <br>
- * For Signing {@link SCCKey.KeyUseCase#Signing}<br><br>
- * Alternatively when performing symmetric encryption it is also possible to create a key derived from a password
- * with {@link SCCKey#createSymmetricKeyWithPassword(byte[])}:
+ * <br>
+ * <br>
+ * A new {@link SCCKey} for performing a cryptographic use case can be created
+ * with the method {@link SCCKey#createKey(KeyUseCase)}. <br>
+ * E.g. creating a key for symmetric encryption:
  * 
  * <pre>
  * {
- * 	@code
+ * 	&#64;code
+ * 	SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
+ * }
+ * </pre>
+ * 
+ * Choose a suitable {@link SCCKey.KeyUseCase} for key creation. For doing
+ * asymmetric encryption use {@link SCCKey.KeyUseCase#AsymmetricEncryption}.
+ * <br>
+ * For doing symmetric encryption {@link SCCKey.KeyUseCase#SymmetricEncryption}.
+ * <br>
+ * For Signing {@link SCCKey.KeyUseCase#Signing}<br>
+ * <br>
+ * Alternatively when performing symmetric encryption it is also possible to
+ * create a key derived from a password with
+ * {@link SCCKey#createSymmetricKeyWithPassword(byte[])}:
+ * 
+ * <pre>
+ * {
+ * 	&#64;code
  * 	SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
  * }
  * </pre>
  * 
  * Also it is possible to create a SCCKey from already existing SCCKey byte[]
- * with {@link SCCKey#createFromExistingKey(byte[])}::
- * 
+ * with {@link SCCKey#createFromExistingKey(byte[])}:
+ *
  * <pre>
  * {@code
  * SCCKey key = SCCKey.createFromExistingKey(existingSCCKey)
@@ -83,7 +93,7 @@ public class SCCKey extends AbstractSCCKey {
 	 * {@code Asymmetric} needed for asymmetric en/decryption and signing.
 	 */
 	public enum KeyType {
-	Symmetric, Asymmetric
+		Symmetric, Asymmetric
 	}
 
 	/**
@@ -95,8 +105,6 @@ public class SCCKey extends AbstractSCCKey {
 	public enum KeyUseCase {
 		SymmetricEncryption, AsymmetricEncryption, Signing
 	}
-
-	
 
 	@Override
 	public KeyType getKeyType() {
@@ -115,10 +123,10 @@ public class SCCKey extends AbstractSCCKey {
 	 * This constructor is used in for SCCKeys of {@link KeyType#Asymmetric}. If a
 	 * new SCCKey should be created call {@link #createKey(KeyUseCase)}.
 	 * 
-	 * @param type: choice of {@link KeyType}
-	 * @param publicKey: byte[] representation of public key
+	 * @param type:       choice of {@link KeyType}
+	 * @param publicKey:  byte[] representation of public key
 	 * @param privateKey: byte[] representation of private key
-	 * @param algorithm: used for key creation
+	 * @param algorithm:  used for key creation
 	 */
 	protected SCCKey(KeyType type, byte[] publicKey, byte[] privateKey, String algorithm) {
 		super(type, publicKey, privateKey, algorithm);
@@ -129,7 +137,8 @@ public class SCCKey extends AbstractSCCKey {
 		if (this.type == KeyType.Symmetric) {
 			return this.publicKey;
 		} else {
-			throw new InvalidKeyException("Wrong key type for this method. Not symmetric! Call getPublicKeyBytes() or getPrivateKeyBytes()");
+			throw new InvalidKeyException(
+					"Wrong key type for this method. Not symmetric! Call getPublicKeyBytes() or getPrivateKeyBytes()");
 		}
 	}
 
@@ -138,7 +147,8 @@ public class SCCKey extends AbstractSCCKey {
 		if (type == KeyType.Asymmetric) {
 			return this.publicKey;
 		} else {
-			throw new InvalidKeyException("Wrong key type for this method. Not asymmetric: no publicKey existing! Call toBytes() to get byte[] representation of key");
+			throw new InvalidKeyException(
+					"Wrong key type for this method. Not asymmetric: no publicKey existing! Call toBytes() to get byte[] representation of key");
 		}
 	}
 
@@ -148,7 +158,7 @@ public class SCCKey extends AbstractSCCKey {
 			return this.privateKey;
 		} else {
 			throw new InvalidKeyException("Wrong key type for this method. Not asymmetric: no privateKey existing!");
-			
+
 		}
 	}
 
@@ -156,7 +166,7 @@ public class SCCKey extends AbstractSCCKey {
 	 * Returns byte[] representation of key to SecretKey for further processing
 	 * 
 	 * @return SecretKey
-	 * @throws InvalidKeyException 
+	 * @throws InvalidKeyException
 	 */
 	protected SecretKey getSecretKey() throws InvalidKeyException {
 		if (this.type == KeyType.Symmetric) {
@@ -208,12 +218,52 @@ public class SCCKey extends AbstractSCCKey {
 	/**
 	 * Create a key for a specific {@link KeyUseCase}.
 	 * 
+	 * <br>
+	 * <br>
 	 * Depending of specified {@link KeyUseCase} the resulting SCCKey can be used
-	 * for different provided methods. Depending on the {@link KeyUseCase} the
-	 * SCCKey get a different {@link KeyType}.
+	 * for different provided methods.
+	 * 
+	 * <br>
+	 * <br>
+	 * A new {@link SCCKey} for performing a cryptographic use case can be created
+	 * with the method {@link SCCKey#createKey(KeyUseCase)}. <br>
+	 * E.g. creating a key for symmetric encryption:
+	 * 
+	 * <pre>
+	 * {@code
+	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
+	 * }
+	 * </pre>
+	 * 
+	 * Choose a suitable {@link SCCKey.KeyUseCase} for key creation. For doing
+	 * asymmetric encryption use {@link SCCKey.KeyUseCase#AsymmetricEncryption}.
+	 * <br>
+	 * For doing symmetric encryption {@link SCCKey.KeyUseCase#SymmetricEncryption}.
+	 * <br>
+	 * For Signing {@link SCCKey.KeyUseCase#Signing}<br>
+	 * <br>
+	 * Alternatively when performing symmetric encryption it is also possible to
+	 * create a key derived from a password with
+	 * {@link SCCKey#createSymmetricKeyWithPassword(byte[])}:
+	 * 
+	 * <pre>
+	 * {@code
+	 * 	SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
+	 * }
+	 * </pre>
+	 * 
+	 * Also it is possible to create a SCCKey from already existing SCCKey byte[]
+	 * with {@link SCCKey#createFromExistingKey(byte[])}:
+	 *
+	 * <pre>
+	 * {@code
+	 * SCCKey key = SCCKey.createFromExistingKey(existingSCCKey)
+	 * }
+	 * </pre>
+	 *
 	 * 
 	 * @param useCase: for which Scenario is the key needed? Give a value of
-	 *        {@link KeyUseCase}
+	 *                 {@link KeyUseCase}
 	 * @return SCCKey: key that can be used for the specified use case
 	 * @throws CoseException
 	 * @throws NoSuchAlgorithmException
@@ -274,7 +324,6 @@ public class SCCKey extends AbstractSCCKey {
 						break;
 					default:
 						break;
-
 
 					}
 
@@ -342,26 +391,23 @@ public class SCCKey extends AbstractSCCKey {
 		if (SecureCryptoConfig.usedAlgorithm == null) {
 			ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
 
-			if(c.equals(CryptoUseCase.AsymmetricEncryption))
-			{
+			if (c.equals(CryptoUseCase.AsymmetricEncryption)) {
 				algorithms = SecureCryptoConfig.currentSCCInstance.getUsage().getAsymmetricEncryption();
 
-			}else if(c.equals(CryptoUseCase.SymmetricEncryption))
-			{
+			} else if (c.equals(CryptoUseCase.SymmetricEncryption)) {
 				algorithms = SecureCryptoConfig.currentSCCInstance.getUsage().getSymmetricEncryption();
 
-			}else
-			{
+			} else {
 				algorithms = SecureCryptoConfig.currentSCCInstance.getUsage().getSigning();
 
 			}
-			
+
 			for (int i = 0; i < algorithms.size(); i++) {
 
 				SCCAlgorithm sccalgorithmID = algorithms.get(i);
 
 				if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
-					
+
 					switch (sccalgorithmID) {
 					// Asymmetric
 					case RSA_ECB:
@@ -374,7 +420,7 @@ public class SCCKey extends AbstractSCCKey {
 						id = AlgorithmID.ECDSA_512;
 						algoKey = "EC";
 						return createOneKey(id, algoKey);
-						
+
 					case ECDSA_256:
 						id = AlgorithmID.ECDSA_256;
 						algoKey = "EC";
@@ -383,7 +429,7 @@ public class SCCKey extends AbstractSCCKey {
 						id = AlgorithmID.ECDSA_384;
 						algoKey = "EC";
 						return createOneKey(id, algoKey);
-					
+
 					default:
 						break;
 					}
@@ -404,7 +450,7 @@ public class SCCKey extends AbstractSCCKey {
 				id = AlgorithmID.ECDSA_512;
 				algoKey = "EC";
 				return createOneKey(id, algoKey);
-				
+
 			case ECDSA_256:
 				id = AlgorithmID.ECDSA_256;
 				algoKey = "EC";
@@ -419,13 +465,12 @@ public class SCCKey extends AbstractSCCKey {
 		}
 		throw new CoseException("Key could not be created! No algorithm specified!");
 	}
-	
-	private static SCCKey createOneKey(AlgorithmID id, String algoKey) throws SCCException
-	{
+
+	private static SCCKey createOneKey(AlgorithmID id, String algoKey) throws SCCException {
 		try {
 			OneKey oneKey = OneKey.generateKey(id);
-			return new SCCKey(KeyType.Asymmetric, oneKey.AsPublicKey().getEncoded(),
-					oneKey.AsPrivateKey().getEncoded(), algoKey);
+			return new SCCKey(KeyType.Asymmetric, oneKey.AsPublicKey().getEncoded(), oneKey.AsPrivateKey().getEncoded(),
+					algoKey);
 		} catch (CoseException e) {
 			throw new SCCException("Key could not be created!", e);
 		}
@@ -457,6 +502,21 @@ public class SCCKey extends AbstractSCCKey {
 	/**
 	 * Creation of key derived from a given password that can be used for symmetric
 	 * encryption based on Secure Crypto Config file.
+	 * <br> This can be done as follows:
+	 * <pre>
+	 * {@code
+	 * 	SCCKey key = SCCKey.createSymmetricKeyWithPassword(passwordBytes);
+	 * }
+	 * </pre>
+	 * 
+	 * Also it is possible to create a SCCKey from already existing SCCKey byte[]
+	 * with {@link SCCKey#createFromExistingKey(byte[])}:
+	 *
+	 * <pre>
+	 * {@code
+	 * SCCKey key = SCCKey.createFromExistingKey(existingSCCKey)
+	 * }
+	 * </pre>
 	 * 
 	 * @param password: as byte[]
 	 * @return SCCKey
@@ -475,6 +535,12 @@ public class SCCKey extends AbstractSCCKey {
 	/**
 	 * Creation of key derived from a given password that can be used for symmetric
 	 * encryption based on Secure Crypto Config file.
+	 * <br> This can be done as follows:
+	 * <pre>
+	 * {@code
+	 * 	SCCKey key = SCCKey.createSymmetricKeyWithPassword(passwordString);
+	 * }
+	 * </pre>
 	 * 
 	 * @param password: as PlaintextContainer
 	 * @return SCCKey
@@ -513,7 +579,7 @@ public class SCCKey extends AbstractSCCKey {
 						iterations = 10000;
 						saltLength = 64;
 						break;
-				
+
 					case AES_GCM_128_96:
 						algo = "PBKDF2WithHmacSHA512";
 						keyAlgo = "AES";
@@ -546,7 +612,7 @@ public class SCCKey extends AbstractSCCKey {
 				iterations = 10000;
 				saltLength = 64;
 				break;
-		
+
 			case AES_GCM_128_96:
 				algo = "PBKDF2WithHmacSHA512";
 				keyAlgo = "AES";
@@ -595,21 +661,40 @@ public class SCCKey extends AbstractSCCKey {
 			throw new SCCException("Key could not be created!", e);
 		}
 	}
-	
-	public byte[] decodeObjectToBytes()
-	{
-		
+
+	/**
+	 * Method for decoding the <b>{@link SCCKey} object</b> to a byte[] representation.
+	 * 
+	 * <br><br> This byte[] can be used to restore a {@link SCCKey} object later again with the method
+	 * {@link SCCKey#createFromExistingKey(byte[])}.
+	 * <pre>
+	 * {@code
+	 * 	SCCKey key = SCCKey.createFromExistingKey(existingSCCKey)
+	 * }
+	 * </pre>
+	 * 
+	 * @return byte[]: representation of SCCKey object
+	 */
+	public byte[] decodeObjectToBytes() {
+
 		try {
-			byte[] keyAsByte = SCCInstanceKey.createSCCInstanceKey(this.type, this.publicKey, this.privateKey, this.algorithm);
+			byte[] keyAsByte = SCCInstanceKey.createSCCInstanceKey(this.type, this.publicKey, this.privateKey,
+					this.algorithm);
 			return keyAsByte;
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
 			return null;
 		}
 	}
-	
-	public static SCCKey createFromExistingKey(byte[] existingSCCKey)
-	{
+
+	/**
+	 * Method  to create a {@link SCCKey} object out of a existing byte[] SCCKey representation.
+	 * <br><br> A byte[] representation of a {@link SCCKey} object can created by calling
+	 * {@link SCCKey#decodeObjectToBytes()} on the corresponding SCCKey object.
+	 * @param existingSCCKey: byte[] representation of a {@link SCCKey} object
+	 * @return {@link SCCKey}
+	 */
+	public static SCCKey createFromExistingKey(byte[] existingSCCKey) {
 		ObjectMapper objectMapper = new ObjectMapper();
 		SCCInstanceKey sccInstanceKey = null;
 		try {
@@ -617,10 +702,10 @@ public class SCCKey extends AbstractSCCKey {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
-			SCCKey key = new SCCKey(sccInstanceKey.getType(), sccInstanceKey.getPublicKey(), sccInstanceKey.getPrivateKey(), sccInstanceKey.getAlgorithm());
-			
-		
+
+		SCCKey key = new SCCKey(sccInstanceKey.getType(), sccInstanceKey.getPublicKey(), sccInstanceKey.getPrivateKey(),
+				sccInstanceKey.getAlgorithm());
+
 		return key;
 	}
 
@@ -643,7 +728,5 @@ public class SCCKey extends AbstractSCCKey {
 		}
 
 	}
-	
-	
 
 }

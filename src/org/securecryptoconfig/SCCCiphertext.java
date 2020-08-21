@@ -10,17 +10,24 @@ import COSE.Encrypt0Message;
  * Class representing a container for the ciphertext (as result from encrypting a
  * plaintext).
  * 
- * SCCCiphertext contains a byte[] representation of a specific COSE message.
+ * <br><br>SCCCiphertext contains a byte[] representation of a specific COSE message.
  * This message contains the encrypted plaintext as well as all the parameters
  * used during encryption. The inclusion of the used parameters, except the key,
  * in the SCCCiphertext ensures before the decryption no used algorithm or
  * parameters must be specified by the user, but can parse it from the COSE
  * message.
  * 
- * For creating a new SCCCiphertext call the method
+ * <br><br>For creating a new SCCCiphertext call the method
  * {@link SecureCryptoConfig#encryptSymmetric(AbstractSCCKey, byte[])} or
- * {@link SecureCryptoConfig#encryptAsymmetric(AbstractSCCKey, byte[])}. It is
- * also possible to create a SCCCiphertext from an existing SCCCiphertext byte[]
+ * {@link SecureCryptoConfig#encryptAsymmetric(AbstractSCCKey, byte[])}. <br>
+ * E.g. as result of symmetric encryption:
+ * <pre>
+ * {@code
+ *  SecureCryptoConfig scc = new SecureCryptoConfig();
+ *  SCCCiphertext c = scc.encryptSymmetric(sccKey, plaintextBytes);
+ * }
+ * </pre>
+ * It is also possible to create a SCCCiphertext from an existing SCCCiphertext byte[]
  * representation when calling
  * {@link SCCCiphertext#createFromExistingCiphertext(byte[])}
  *

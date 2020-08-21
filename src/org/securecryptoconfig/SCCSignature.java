@@ -8,13 +8,13 @@ import COSE.Sign1Message;
 /**
  * Class representing a container for a Digital Signature.
  * 
- * SCCSignature contains a byte[] representation of a COSE message. The byte[]
+ * <br><br>SCCSignature contains a byte[] representation of a COSE message. The byte[]
  * contains the signature as well as all the parameters used during signing. The
  * inclusion of the used parameters in the signature ensures that validation
  * implementation code does not need to know the used algorithm or parameters
  * before validation, but can parse it from the COSE message.
  * 
- * A new SCCSignature can be created by calling {@link SecureCryptoConfig#sign(AbstractSCCKey, byte[])}.<br>
+ * <br><br>A new SCCSignature can be created by calling {@link SecureCryptoConfig#sign(AbstractSCCKey, byte[])}.<br>
  * E.g.
  * <pre>
  * {@code
