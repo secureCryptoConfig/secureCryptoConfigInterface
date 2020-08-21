@@ -46,16 +46,25 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 		super(msg);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public byte[] toBytes() {
 		return this.msg;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		return Base64.getEncoder().encodeToString(this.msg);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public PlaintextContainer decryptSymmetric(AbstractSCCKey key) throws SCCException {
 		try {
@@ -67,6 +76,9 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public PlaintextContainer decryptAsymmetric(AbstractSCCKey key) throws SCCException {
 		try {
@@ -78,6 +90,9 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public SCCCiphertext reEncryptSymmetric(AbstractSCCKey key) throws SCCException {
 		try {
@@ -89,6 +104,9 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public SCCCiphertext reEncryptAsymmetric(AbstractSCCKey keyPair) throws SCCException {
 		try {

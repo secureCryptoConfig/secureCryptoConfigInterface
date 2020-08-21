@@ -39,6 +39,9 @@ public class SCCHash extends AbstractSCCHash {
 	}
 
 	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean validateHash(PlaintextContainerInterface plaintext) throws SCCException {
 		try {
@@ -48,16 +51,25 @@ public class SCCHash extends AbstractSCCHash {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	boolean validateHash(byte[] plaintext) throws SCCException {
+	public boolean validateHash(byte[] plaintext) throws SCCException {
 		return validateHash(new PlaintextContainer(plaintext));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public byte[] toBytes() {
 		return this.hashMsg;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public SCCHash updateHash(PlaintextContainerInterface plaintext) throws SCCException {
 		try {
@@ -67,11 +79,17 @@ public class SCCHash extends AbstractSCCHash {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	AbstractSCCHash updateHash(byte[] plaintext) throws SCCException {
+	public AbstractSCCHash updateHash(byte[] plaintext) throws SCCException {
 		return updateHash(new PlaintextContainer(plaintext));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		return Base64.getEncoder().encodeToString(this.hashMsg);

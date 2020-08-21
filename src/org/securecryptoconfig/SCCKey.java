@@ -49,8 +49,7 @@ import COSE.OneKey;
  * E.g. creating a key for symmetric encryption:
  * 
  * <pre>
- * {
- * 	&#64;code
+ * {@code
  * 	SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
  * }
  * </pre>
@@ -67,8 +66,7 @@ import COSE.OneKey;
  * {@link SCCKey#createSymmetricKeyWithPassword(byte[])}:
  * 
  * <pre>
- * {
- * 	&#64;code
+ * {@code
  * 	SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
  * }
  * </pre>
@@ -106,11 +104,17 @@ public class SCCKey extends AbstractSCCKey {
 		SymmetricEncryption, AsymmetricEncryption, Signing
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public KeyType getKeyType() {
 		return this.type;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String getAlgorithm() {
 		return this.algorithm;
@@ -132,6 +136,9 @@ public class SCCKey extends AbstractSCCKey {
 		super(type, publicKey, privateKey, algorithm);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public byte[] toBytes() throws InvalidKeyException {
 		if (this.type == KeyType.Symmetric) {
@@ -142,6 +149,9 @@ public class SCCKey extends AbstractSCCKey {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public byte[] getPublicKeyBytes() throws InvalidKeyException {
 		if (type == KeyType.Asymmetric) {
@@ -152,6 +162,9 @@ public class SCCKey extends AbstractSCCKey {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public byte[] getPrivateKeyBytes() throws InvalidKeyException {
 		if (type == KeyType.Asymmetric) {

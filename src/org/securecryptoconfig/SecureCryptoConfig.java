@@ -190,6 +190,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		usedAlgorithm = null;
 	}
 
+	
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public SCCCiphertext encryptSymmetric(AbstractSCCKey key, PlaintextContainerInterface plaintext)
 			throws CoseException, InvalidKeyException, SCCException {
@@ -240,6 +244,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		throw new CoseException("No supported algorithms!");
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public SCCCiphertext encryptSymmetric(AbstractSCCKey key, byte[] plaintext)
 			throws CoseException, InvalidKeyException, SCCException {
@@ -247,6 +254,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		return encryptSymmetric(key, new PlaintextContainer(plaintext));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public SCCCiphertext reEncryptSymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext)
 			throws CoseException, InvalidKeyException, SCCException {
@@ -255,6 +265,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		return encryptSymmetric(key, decrypted);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public PlaintextContainer decryptSymmetric(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext)
 			throws CoseException, InvalidKeyException {
@@ -272,6 +285,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public SCCCiphertext encryptAsymmetric(AbstractSCCKey key, PlaintextContainerInterface plaintext)
 			throws CoseException, InvalidKeyException, SCCException {
@@ -322,6 +338,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		throw new CoseException("No supported algorithm!");
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public SCCCiphertext encryptAsymmetric(AbstractSCCKey key, byte[] plaintext)
 			throws CoseException, InvalidKeyException, SCCException {
@@ -329,7 +348,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		return encryptAsymmetric(key, new PlaintextContainer(plaintext));
 
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public SCCCiphertext reEncryptAsymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext)
 			throws CoseException, InvalidKeyException, SCCException {
@@ -337,6 +358,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		return encryptAsymmetric(key, decrypted);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public PlaintextContainer decryptAsymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext)
 			throws CoseException, InvalidKeyException, SCCException {
@@ -352,6 +376,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public SCCHash hash(PlaintextContainerInterface plaintext) throws CoseException, SCCException {
 
@@ -408,6 +435,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		throw new CoseException("No supported algorithm!");
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public SCCHash hash(byte[] plaintext) throws CoseException, SCCException {
 		try {
@@ -418,17 +448,26 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public SCCHash updateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash)
 			throws CoseException, SCCException {
 		return hash(plaintext);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public SCCHash updateHash(byte[] plaintext, AbstractSCCHash hash) throws CoseException, SCCException {
 		return updateHash(new PlaintextContainer(plaintext), hash);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean validateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash)
 			throws CoseException, SCCException {
@@ -440,12 +479,17 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		return s.equals(s1);
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean validateHash(byte[] plaintext, AbstractSCCHash hash) throws CoseException, SCCException {
 		return validateHash(new PlaintextContainer(plaintext), hash);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public SCCSignature sign(AbstractSCCKey key, PlaintextContainerInterface plaintext)
 			throws CoseException, InvalidKeyException, SCCException {
@@ -495,6 +539,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		throw new CoseException("No supported algorithm!");
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public SCCSignature sign(AbstractSCCKey key, byte[] plaintext)
 			throws CoseException, InvalidKeyException, SCCException {
@@ -502,19 +549,27 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		return sign(key, new PlaintextContainer(plaintext));
 
 	}
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public SCCSignature updateSignature(AbstractSCCKey key, PlaintextContainerInterface plaintext)
 			throws CoseException, InvalidKeyException, SCCException {
 		return sign(key, plaintext);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public SCCSignature updateSignature(AbstractSCCKey key, byte[] plaintext)
 			throws CoseException, InvalidKeyException, SCCException {
 		return updateSignature(key, new PlaintextContainer(plaintext));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean validateSignature(AbstractSCCKey key, AbstractSCCSignature signature)
 			throws InvalidKeyException, SCCException {
@@ -542,11 +597,17 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean validateSignature(AbstractSCCKey key, byte[] signature) throws InvalidKeyException, SCCException {
 		return validateSignature(key, SCCSignature.createFromExistingSignature(signature));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public SCCPasswordHash passwordHash(PlaintextContainerInterface password) throws CoseException, SCCException {
 
@@ -590,6 +651,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public SCCPasswordHash passwordHash(byte[] password) throws CoseException, SCCException {
 		try {
@@ -600,6 +664,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean validatePasswordHash(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash)
 			throws CoseException, SCCException {
@@ -618,6 +685,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean validatePasswordHash(byte[] password, AbstractSCCPasswordHash passwordhash)
 			throws CoseException, SCCException {

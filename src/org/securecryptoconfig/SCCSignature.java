@@ -43,17 +43,25 @@ public class SCCSignature extends AbstractSCCSignature {
 	
 	
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public byte[] toBytes() {
 		return this.signatureMsg;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		return Base64.getEncoder().encodeToString(this.signatureMsg);
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public SCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKey key)
 			throws SCCException {
@@ -66,6 +74,9 @@ public class SCCSignature extends AbstractSCCSignature {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean validateSignature(AbstractSCCKey key) throws SCCException {
 		try {

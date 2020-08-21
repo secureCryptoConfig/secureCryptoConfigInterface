@@ -40,7 +40,9 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 		super(hashMsg);
 	}
 
-
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public boolean validatePasswordHash(PlaintextContainerInterface password) throws SCCException {
 		try {
@@ -50,16 +52,25 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
-	boolean validatePasswordHash(byte[] password) throws SCCException {
+	public boolean validatePasswordHash(byte[] password) throws SCCException {
 		return validatePasswordHash(new PlaintextContainer(password));
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public byte[] toBytes() {
 		return this.hashMsg;
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public String toString() {
 		return Base64.getEncoder().encodeToString(this.hashMsg);
