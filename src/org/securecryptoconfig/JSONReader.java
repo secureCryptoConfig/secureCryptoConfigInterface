@@ -46,7 +46,6 @@ public class JSONReader {
 		SymmetricEncryption, Signing, Hashing, AsymmetricEncryption, PasswordHashing, KeyGeneration;
 	}
 
-	
 	/**
 	 * Find the path to the specified policyName
 	 * 
@@ -63,9 +62,6 @@ public class JSONReader {
 		}
 		return instance;
 	}
-
-	
-
 
 	/**
 	 * Get all files out of root "configs" directory of given path
@@ -107,41 +103,38 @@ public class JSONReader {
 			}
 		}
 	}
+
 	protected static ArrayList<SCCInstance> instances = new ArrayList<SCCInstance>();
+
 	private static void getSCCInstances() {
 		levels.clear();
 		ObjectMapper objectMapper = new ObjectMapper();
 		int level;
 		String version;
-		
+
 		try {
 			for (int i = 0; i < allFilePaths.size(); i++) {
 				if (SecureCryptoConfig.customPath == true) {
 					SCCInstance sccInstance = objectMapper.readValue(new File(allFilePaths.get(i)), SCCInstance.class);
-					//check securityLevel, version format
+					// check securityLevel, version format
 					level = sccInstance.getSecurityLevel();
 					version = sccInstance.getVersion();
-					if (level>0 && version.matches("^[2]\\d{3}-\\d+"))
-					{
+					if (level > 0 && version.matches("^[2]\\d{3}-\\d+")) {
 						levels.add(level);
 						instances.add(sccInstance);
-					}else
-					{
+					} else {
 						break;
 					}
-					
-				}else
-				{
+
+				} else {
 					InputStream is = org.securecryptoconfig.JSONReader.class.getResourceAsStream(allFilePaths.get(i));
 					SCCInstance sccInstance = objectMapper.readValue(is, SCCInstance.class);
 					level = sccInstance.getSecurityLevel();
 					version = sccInstance.getVersion();
-					if (level>0 && version.matches("^[2]\\d{3}-\\d+"))
-					{
+					if (level > 0 && version.matches("^[2]\\d{3}-\\d+")) {
 						levels.add(level);
 						instances.add(sccInstance);
-					}else
-					{
+					} else {
 						break;
 					}
 				}
@@ -160,7 +153,7 @@ public class JSONReader {
 	protected static SCCInstance getLatestSCC(int level) {
 		SCCInstance latest = null;
 		ArrayList<SCCInstance> instancesWithLevel = new ArrayList<SCCInstance>();
-	
+
 		if (levels.contains(level)) {
 			// which file have security level
 			for (SCCInstance instance : instances) {
@@ -202,7 +195,7 @@ public class JSONReader {
 	 * @return highest appearing level
 	 */
 	protected static int getHighestLevel(HashSet<Integer> level) {
-		
+
 		return Collections.max(level);
 	}
 
@@ -296,10 +289,10 @@ public class JSONReader {
 					is1.close();
 					is2.close();
 				} catch (IOException e) {
-					
+
 					e.printStackTrace();
 				}
-				
+
 			}
 
 			if (result) {
@@ -321,9 +314,9 @@ public class JSONReader {
 				logger.debug("This file will not be considered!");
 				allFilePaths.remove(i);
 			}
-			
+
 		}
-		
+
 	}
 
 	/**
@@ -355,11 +348,9 @@ public class JSONReader {
 		} catch (SCCException e) {
 			e.printStackTrace();
 		}
-		
+
 		return getLatestSCC(getHighestLevel(levels));
-		
 
 	}
 
-	
 }

@@ -7,6 +7,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
+ *  @TODO <b>! Still work in progress!</b>
+	 * <br><br>
  * Class needed to be able to represent the SCCKey object as byte[].
  * 
  * @author Lisa
