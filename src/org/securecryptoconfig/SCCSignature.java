@@ -56,6 +56,13 @@ public class SCCSignature extends AbstractSCCSignature {
 	 */
 	@Override
 	public String toString() {
+		return toBase64();
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	public String toBase64() {
 		return Base64.getEncoder().encodeToString(this.signatureMsg);
 	}
 

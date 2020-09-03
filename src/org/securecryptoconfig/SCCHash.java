@@ -91,8 +91,16 @@ public class SCCHash extends AbstractSCCHash {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public String toString() {
+	public String toBase64() {
 		return Base64.getEncoder().encodeToString(this.hashMsg);
+	}
+	
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String toString() {
+		return toBase64();
 	}
 
 	/**

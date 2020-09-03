@@ -622,10 +622,15 @@ public abstract interface SecureCryptoConfigInterface {
 	 * used. To choose another charset call
 	 * {@link PlaintextContainerInterface#toString(Charset)}
 	 * 
+	 * @deprecated 
+	 * Do not use the Java default toString() Method. Use {@link PlaintextContainer#toString(Charset)}
+	 * instead.
+	 * 
 	 * @return String
 	 */
-	@Override
+	@Deprecated
 	public abstract String toString();
+	
 
 	/**
 	 * Validate a given {@link SCCHash} against a {@link PlaintextContainer} value.
@@ -842,12 +847,21 @@ public abstract interface SecureCryptoConfigInterface {
 	public abstract byte[] toBytes();
 
 	/**
+	 * Use {@link SCCCiphertext#toBase64()} instead.
+	 * @deprecated 
+	 * Do not use the Java default toString() Method. Use {@link SCCCiphertext#toBase64()}
+	 * instead.
+	 * @return String
+	 */
+	@Deprecated
+	public abstract String toString();
+	
+	/**
 	 * Base64 encode {@link SCCCiphertext}.
 	 * 
 	 * @return String
 	 */
-	@Override
-	public abstract String toString();
+	public abstract String toBase64();
 
 	/**
 	 * Symmetric decryption with a certain {@link SCCKey} of {@link SCCCiphertext}.
@@ -1037,12 +1051,21 @@ abstract class AbstractSCCHash {
 	public abstract byte[] toBytes();
 
 	/**
+	 * Use {@link SCCHash#toBase64()} instead.
+	 * @deprecated 
+	 * Do not use the Java default toString() Method. Use {@link SCCHash#toBase64()}
+	 * instead.
+	 * @return String
+	 */
+	@Deprecated
+	public abstract String toString();
+	
+	/**
 	 * Base64 encode {@link SCCHash}.
 	 * 
 	 * @return String
 	 */
-	@Override
-	public abstract String toString();
+	public abstract String toBase64();
 
 	/**
 	 * Validate if a {@link SCCHash} matches hash of given plaintext.
@@ -1142,7 +1165,16 @@ abstract class AbstractSCCPasswordHash {
 	 * 
 	 * @return String
 	 */
-	@Override
+	public abstract String toBase64();
+	
+	/**
+	 * Use {@link SCCPasswordHash#toBase64()} instead.
+	 * @deprecated 
+	 * Do not use the Java default toString() Method. Use {@link SCCPasswordHash#toBase64()}
+	 * instead.
+	 * @return String
+	 */
+	@Deprecated
 	public abstract String toString();
 
 	/**
@@ -1211,7 +1243,16 @@ abstract class AbstractSCCSignature {
 	 * 
 	 * @return String
 	 */
-	@Override
+	public abstract String toBase64();
+	
+	/**
+	 * Use {@link SCCSignature#toBase64()} instead.
+	 * @deprecated 
+	 * Do not use the Java default toString() Method. Use {@link SCCSignature#toBase64()}
+	 * instead.
+	 * @return String
+	 */
+	@Deprecated
 	public abstract String toString();
 
 	/**

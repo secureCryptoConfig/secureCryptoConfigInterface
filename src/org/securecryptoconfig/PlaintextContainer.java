@@ -68,6 +68,10 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	 * used. To choose another charset call
 	 * {@link PlaintextContainerInterface#toString(Charset)}
 	 * 
+	 * @deprecated 
+	 * Do not use the Java default toString() Method. Use {@link PlaintextContainer#toString(Charset)}
+	 * instead.
+	 * 
 	 * @return String
 	 */
 	@Override
