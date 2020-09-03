@@ -19,7 +19,7 @@ import COSE.HashMessage;
 * <pre>
 * {@code
 * SecureCryptoConfig scc = new SecureCryptoConfig();
-* SCCSignature signature = scc.hash(plaintext);
+* SCCHash hash = scc.hash(plaintext);
 * }
 * </pre>
 * Alternatively it is also possible to create a SCCHash from a existing byte[]
@@ -98,6 +98,7 @@ public class SCCHash extends AbstractSCCHash {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Deprecated
 	@Override
 	public String toString() {
 		return toBase64();

@@ -57,6 +57,7 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Deprecated
 	@Override
 	public String toString() {
 		return toBase64();

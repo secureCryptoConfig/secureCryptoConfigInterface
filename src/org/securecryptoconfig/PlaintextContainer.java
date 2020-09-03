@@ -16,6 +16,14 @@ import COSE.CoseException;
  * class provides various cryptography operations that can be performed on the
  * plaintext (e.g. encryption, signing).
  * 
+ * A new PlaintextContainer can be created like this:
+ * <pre>
+ * {@code
+ * String plaintext = "Plaintext";
+ * PlaintextContainer container = new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8));
+ * }
+ * </pre>
+ * 
  */
 public class PlaintextContainer implements PlaintextContainerInterface {
 
@@ -74,6 +82,7 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	 * 
 	 * @return String
 	 */
+	@Deprecated
 	@Override
 	public String toString() {
 		return toString(StandardCharsets.UTF_8);

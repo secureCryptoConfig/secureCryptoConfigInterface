@@ -54,6 +54,7 @@ public class SCCSignature extends AbstractSCCSignature {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Deprecated
 	@Override
 	public String toString() {
 		return toBase64();

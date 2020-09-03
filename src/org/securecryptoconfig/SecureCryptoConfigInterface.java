@@ -629,6 +629,7 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @return String
 	 */
 	@Deprecated
+	@Override
 	public abstract String toString();
 	
 
@@ -854,6 +855,7 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @return String
 	 */
 	@Deprecated
+	@Override
 	public abstract String toString();
 	
 	/**
@@ -1058,6 +1060,7 @@ abstract class AbstractSCCHash {
 	 * @return String
 	 */
 	@Deprecated
+	@Override
 	public abstract String toString();
 	
 	/**
@@ -1175,6 +1178,7 @@ abstract class AbstractSCCPasswordHash {
 	 * @return String
 	 */
 	@Deprecated
+	@Override
 	public abstract String toString();
 
 	/**
@@ -1253,6 +1257,7 @@ abstract class AbstractSCCSignature {
 	 * @return String
 	 */
 	@Deprecated
+	@Override
 	public abstract String toString();
 
 	/**

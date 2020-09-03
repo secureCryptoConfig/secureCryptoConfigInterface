@@ -19,7 +19,7 @@ import COSE.PasswordHashMessage;
  * <pre>
  * {@code
  * SecureCryptoConfig scc = new SecureCryptoConfig();
- * SCCSignature signature = scc.passwordHash(password);
+ * SCCPasswordHash passwordHash = scc.passwordHash(password);
  * }
  * </pre>
  * Alternatively it is also possible to create a SCCPasswordHash from a existing byte[]
@@ -71,6 +71,7 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	/**
 	 * {@inheritDoc}
 	 */
+	@Deprecated
 	@Override
 	public String toString() {
 		return toBase64();
