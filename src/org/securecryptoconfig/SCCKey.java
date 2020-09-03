@@ -676,7 +676,7 @@ public class SCCKey extends AbstractSCCKey {
 	}
 
 	/**
-	 * @TODO <b>! Still work in progress!</b>
+	 * <b>TODO ! Still work in progress!</b>
 	 * <br><br>
 	 * Method for decoding the <b>{@link SCCKey} object</b> to a byte[] representation.
 	 * 
@@ -703,7 +703,7 @@ public class SCCKey extends AbstractSCCKey {
 	}
 
 	/**
-	 * @TODO <b>! Still work in progress!</b>
+	 * <b>TODO ! Still work in progress!</b>
 	 * <br><br>
 	 * Method  to create a {@link SCCKey} object out of a existing byte[] SCCKey representation.
 	 * <br><br> A byte[] representation of a {@link SCCKey} object can created by calling
