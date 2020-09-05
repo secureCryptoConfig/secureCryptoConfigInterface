@@ -146,7 +146,7 @@ class TestSymmetricEncryption {
 	void testSymmetricByteEncryptionWithExistingKey()
 			throws NoSuchAlgorithmException, CoseException, InvalidKeyException, SCCException {
 		// SCCKey already exists
-		SCCKey existingKey = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
+		SCCKey existingKey = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 		byte[] existingSCCKey = existingKey.decodeObjectToBytes();
 				
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
@@ -166,7 +166,7 @@ class TestSymmetricEncryption {
 	void testSymmetricStringEncryptionWithExistingKey()
 			throws NoSuchAlgorithmException, CoseException, InvalidKeyException, SCCException {
 		// SCCKey already exists
-		SCCKey existingKey = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
+		SCCKey existingKey = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 		byte[] existingSCCKey = existingKey.decodeObjectToBytes();
 						
 

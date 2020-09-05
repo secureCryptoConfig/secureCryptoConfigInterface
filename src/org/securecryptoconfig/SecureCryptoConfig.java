@@ -24,18 +24,20 @@ import COSE.PasswordHashMessage;
 import COSE.Sign1Message;
 
 /**
- * <b> Starting point for performing every cryptographic use case.</b> 
- * The class contains methods for performing symmetric/asymmetric en/decryption, (password) hashing and
- * signing. 
+ * <b> Starting point for performing every cryptographic use case.</b> The class
+ * contains methods for performing symmetric/asymmetric en/decryption,
+ * (password) hashing and signing.
  * 
  * Implements the {@link SecureCryptoConfigInterface}.
  * 
- * To perform the desired use case simply create a new SecureCryptoConfig object and call the specific method:
- * E.g. hashing
+ * To perform the desired use case simply create a new SecureCryptoConfig object
+ * and call the specific method: E.g. hashing
+ * 
  * <pre>
- * {@code
- * SecureCryptoConfig scc = new SecureCryptoConfig();
- * SCCHash sccHash = scc.hash(plaintext);
+ * {
+ * 	&#64;code
+ * 	SecureCryptoConfig scc = new SecureCryptoConfig();
+ * 	SCCHash sccHash = scc.hash(plaintext);
  * }
  * </pre>
  * 
@@ -45,7 +47,7 @@ import COSE.Sign1Message;
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	protected static SCCInstance currentSCCInstance = JSONReader.parseFiles(null);
-	//protected static SCCInstance currentSCCInstance = null;
+	
 	protected static SCCAlgorithm usedAlgorithm = null;
 
 	protected static boolean customPath = false;
@@ -58,7 +60,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		// symmetric:
 		AES_GCM_256_96, AES_GCM_128_96, AES_GCM_192_96,
 		// Digital Signature
-		ECDSA_512, ECDSA_256,ECDSA_384,
+		ECDSA_512, ECDSA_256, ECDSA_384,
 		// Hash
 		SHA_512, SHA_256, SHA3_512, SHA3_256,
 		// asymmetric:
@@ -72,7 +74,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * Set the latest Secure Crypto Config file of a specific Security level for
 	 * usage.
 	 * 
-	 * <br><br>Algorithms that are used for executing the invoked cryptographic use case are
+	 * <br>
+	 * <br>
+	 * Algorithms that are used for executing the invoked cryptographic use case are
 	 * looked up in the latest Secure Crypto Config file (according to its version)
 	 * with the specified Security level
 	 * 
@@ -101,8 +105,11 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * Set path to a custom root folder "scc-configs" which contains the Secure
 	 * Crypto Config files.
 	 * 
-	 * <br><br>To use the default Secure Config files at
-	 * "src/scc-configs" again call {@link SecureCryptoConfig#setDefaultSCC()}
+	 * <br>
+	 * <br>
+	 * To use the default Secure Config files at "src/scc-configs" again call
+	 * {@link SecureCryptoConfig#setDefaultSCC()}
+	 * 
 	 * @param path: path to "scc-configs" directory
 	 * @throws InvalidPathException: Path is not existing
 	 */
@@ -110,7 +117,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		customPath = true;
 
 		if (path.toFile().exists()) {
-			currentSCCInstance = JSONReader.parseFiles(path.toString());
+			JSONReader.isJAR = false;
+			currentSCCInstance = JSONReader.parseFiles(path);
+
 		} else {
 			throw new InvalidPathException(path.toString(), "Path is not existing");
 		}
@@ -118,9 +127,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	/**
-	 * Set Secure Crypto Config file (with the specified policy name) to use.
-	 * To use the default Secure Config files at
-	 * "src/scc-configs" again call {@link SecureCryptoConfig#setDefaultSCC()}
+	 * Set Secure Crypto Config file (with the specified policy name) to use. To use
+	 * the default Secure Config files at "src/scc-configs" again call
+	 * {@link SecureCryptoConfig#setDefaultSCC()}
 	 * 
 	 * @param policyName: policy name of the Secure Crypto Config file to use
 	 * @throws InvalidParameterException: policy name is not existing in any file
@@ -136,8 +145,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	/**
-	 * Go back to the usage of Secure Crypto Config files at
-	 * "src/scc-configs" included inside the library. Only necessary if a custom path with
+	 * Go back to the usage of Secure Crypto Config files at "src/scc-configs"
+	 * included inside the library. Only necessary if a custom path with
 	 * {@link #setCustomSCCPath(Path)} or {@link #setSCCFile(String)} was called
 	 * before.
 	 */
@@ -163,15 +172,17 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	/**
 	 * Set a specific algorithm for the execution of the later performed use cases.
-	 * Possible choices are contained in {@link SCCAlgorithm}
-	 * <br>E.g.
+	 * Possible choices are contained in {@link SCCAlgorithm} <br>
+	 * E.g.
+	 * 
 	 * <pre>
 	 * {@code
 	 * SecureCryptoConfig.setAlgorithm(SCCAlgorithm.AES_GCM_256_96);
 	 * }
 	 * </pre>
-	 * To use the default algorithm from the included Secure Crypto Config files again
-	 * call {@link #defaultAlgorithm()}
+	 * 
+	 * To use the default algorithm from the included Secure Crypto Config files
+	 * again call {@link #defaultAlgorithm()}
 	 * 
 	 * @param algorithm: one supported algorithm from {@link SCCAlgorithm}
 	 * 
@@ -182,15 +193,13 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	/**
 	 * Use the algorithms proposed in the currently used Secure Crypto Config file
-	 * for the execution of the use cases. Only necessary if specific
-	 * algorithm was set previously via
-	 * {@link #setAlgorithm(SCCAlgorithm)}
+	 * for the execution of the use cases. Only necessary if specific algorithm was
+	 * set previously via {@link #setAlgorithm(SCCAlgorithm)}
 	 */
 	public static void defaultAlgorithm() {
 		usedAlgorithm = null;
 	}
 
-	
 	/**
 	 * {@inheritDoc}
 	 */
@@ -215,7 +224,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 							return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_256);
 						case AES_GCM_128_96:
 							return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_128);
-						case  AES_GCM_192_96:
+						case AES_GCM_192_96:
 							return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_192);
 						default:
 							break;
@@ -229,7 +238,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 					return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_256);
 				case AES_GCM_128_96:
 					return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_128);
-				case  AES_GCM_192_96:
+				case AES_GCM_192_96:
 					return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_192);
 				default:
 					break;
@@ -348,6 +357,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		return encryptAsymmetric(key, new PlaintextContainer(plaintext));
 
 	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -479,6 +489,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		return s.equals(s1);
 	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -527,7 +538,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 					return SecureCryptoConfig.createSignMessage(plaintext, key, AlgorithmID.ECDSA_256);
 				case ECDSA_384:
 					return SecureCryptoConfig.createSignMessage(plaintext, key, AlgorithmID.ECDSA_384);
-				
+
 				default:
 					break;
 				}
@@ -549,6 +560,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		return sign(key, new PlaintextContainer(plaintext));
 
 	}
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -847,7 +859,5 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			return null;
 		}
 	}
-	
-	
 
 }
