@@ -64,7 +64,7 @@ class TestHashing {
 		SCCHash hash = scc.hash(plaintext.getBytes(StandardCharsets.UTF_8));
 
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes()), hash));
-		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes()), SCCHash.createFromExistingHash(hash.toString())));
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes()), SCCHash.createFromExistingHash(hash.toBase64())));
 	}
 
 	// - hash, return: updated byte[]hash
@@ -93,10 +93,10 @@ class TestHashing {
 	void testUpdateHashingString() throws CoseException, SCCException {
 		String plaintext = "Hello World!";
 		SCCHash oldHash = scc.hash(plaintext.getBytes(StandardCharsets.UTF_8));
-		String oldHashString = oldHash.toString();
+		String oldHashString = oldHash.toBase64();
 
 		SCCHash newHash = scc.updateHash(plaintext.getBytes(), oldHash);
-		String newHashString = newHash.toString();
+		String newHashString = newHash.toBase64();
 
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)), oldHash));
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)), newHash));
@@ -139,7 +139,7 @@ class TestHashing {
 	void testPasswordHashingStringValidation() throws CoseException, SCCException {
 		String password = "Hello World!";
 		SCCPasswordHash hash = scc.passwordHash(password.getBytes(StandardCharsets.UTF_8));
-		String hashedValue = hash.toString();
+		String hashedValue = hash.toBase64();
 
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes()), hash));
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)),

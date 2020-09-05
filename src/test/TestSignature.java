@@ -91,10 +91,10 @@ class TestSignature {
 		SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
 
 		SCCSignature oldSignature = scc.sign(key, plaintext.getBytes(StandardCharsets.UTF_8));
-		String oldSignatureString = oldSignature.toString();
+		String oldSignatureString = oldSignature.toBase64();
 
 		SCCSignature newSignature = scc.updateSignature(key, plaintext.getBytes());
-		String newSignatureString = newSignature.toString();
+		String newSignatureString = newSignature.toBase64();
 
 		assertTrue(scc.validateSignature(key, oldSignature));
 		assertTrue(scc.validateSignature(key, SCCSignature.createFromExistingSignature(oldSignatureString)));

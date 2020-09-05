@@ -173,10 +173,10 @@ class TestSymmetricEncryption {
 		String plaintext = "Hello World!";
 		SCCKey key = SCCKey.createFromExistingKey(existingSCCKey);
 		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext.getBytes(StandardCharsets.UTF_8));
-		String encrypted = ciphertext.toString();
+		String encrypted = ciphertext.toBase64();
 
 		PlaintextContainer plain = ciphertext.decryptSymmetric(key);
-		String decrypted = plain.toString();
+		String decrypted = plain.toString(StandardCharsets.UTF_8);
 
 		assertEquals(plaintext, decrypted);
 	}
@@ -193,8 +193,8 @@ class TestSymmetricEncryption {
 		SCCCiphertext updatedCiphertext = scc.reEncryptSymmetric(key, ciphertext);
 		byte[] updateCiphertext = updatedCiphertext.toBytes();
 
-		String oldCiphertext = ciphertext.toString();
-		String newCiphertext = updatedCiphertext.toString();
+		String oldCiphertext = ciphertext.toBase64();
+		String newCiphertext = updatedCiphertext.toBase64();
 
 		assertFalse(oldCiphertext.equals(newCiphertext));
 	}
@@ -210,10 +210,10 @@ class TestSymmetricEncryption {
 		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext.getBytes(StandardCharsets.UTF_8));
 		// ReEncryption
 		SCCCiphertext updatedCiphertext = scc.reEncryptSymmetric(key, ciphertext);
-		String updateCiphertext = updatedCiphertext.toString();
+		String updateCiphertext = updatedCiphertext.toBase64();
 
-		String oldCiphertext = ciphertext.toString();
-		String newCiphertext = updatedCiphertext.toString();
+		String oldCiphertext = ciphertext.toBase64();
+		String newCiphertext = updatedCiphertext.toBase64();
 
 		assertFalse(oldCiphertext.equals(newCiphertext));
 	}
@@ -230,8 +230,8 @@ class TestSymmetricEncryption {
 		SCCCiphertext updatedCiphertext = scc.reEncryptSymmetric(key, ciphertext);
 		byte[] updateCiphertext = updatedCiphertext.toBytes();
 
-		String oldCiphertext = ciphertext.toString();
-		String newCiphertext = updatedCiphertext.toString();
+		String oldCiphertext = ciphertext.toBase64();
+		String newCiphertext = updatedCiphertext.toBase64();
 
 		assertFalse(oldCiphertext.equals(newCiphertext));
 	}
@@ -246,10 +246,10 @@ class TestSymmetricEncryption {
 		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext.getBytes(StandardCharsets.UTF_8));
 		// ReEncryption
 		SCCCiphertext updatedCiphertext = scc.reEncryptSymmetric(key, ciphertext);
-		String updateCiphertext = updatedCiphertext.toString();
+		String updateCiphertext = updatedCiphertext.toBase64();
 
-		String oldCiphertext = ciphertext.toString();
-		String newCiphertext = updatedCiphertext.toString();
+		String oldCiphertext = ciphertext.toBase64();
+		String newCiphertext = updatedCiphertext.toBase64();
 
 		assertFalse(oldCiphertext.equals(newCiphertext));
 	}
