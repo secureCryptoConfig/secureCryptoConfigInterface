@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 /**
  * Still work in progress!
  * <br><br>
+ * @TODO still needs to be adapted<br>
  * Class needed to be able to represent the SCCKey object as byte[].
  * 
  * @author Lisa
