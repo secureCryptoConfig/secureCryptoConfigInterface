@@ -19,7 +19,7 @@ import COSE.Sign1Message;
  * <pre>
  * {@code
  * SecureCryptoConfig scc = new SecureCryptoConfig();
- * SCCSignature signature = scc.sign(plaintext, key);
+ * SCCSignature signature = scc.sign(key, plaintext);
  * }
  * </pre>
  * Alternatively it is also possible to create a SCCSignature from a existing byte[]
