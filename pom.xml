@@ -73,7 +73,6 @@
 			<artifactId>junit-jupiter-api</artifactId>
 			<version>5.7.0-M1</version>
 			<type>module</type>
-			<scope>test</scope>
 		</dependency>
 		<!-- https://mvnrepository.com/artifact/com.upokecenter/cbor -->
 		<dependency>
