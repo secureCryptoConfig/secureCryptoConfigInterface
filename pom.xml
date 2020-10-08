@@ -12,10 +12,7 @@
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.7.0</version>
-				<configuration>
-					<release>14</release>
-				</configuration>
+				<version>2.5</version>
 			</plugin>
 			<!-- Maven Assembly Plugin -->
 			<plugin>
