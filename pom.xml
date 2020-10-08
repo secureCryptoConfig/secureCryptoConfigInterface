@@ -8,7 +8,7 @@
 	<packaging>jar</packaging>
 		<build>
 		<finalName>SCC</finalName>
-		<sourceDirectory>src/org/securecryptoconfig</sourceDirectory>
+		<sourceDirectory>src</sourceDirectory>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
@@ -68,13 +68,13 @@
 			<artifactId>jackson-databind</artifactId>
 			<version>[2.11.2,)</version>
 		</dependency>
-		<dependency>
-			<groupId>org.junit.jupiter</groupId>
-			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.7.0-M1</version>
-			<type>module</type>
-			<scope>test</scope>
-		</dependency>
+		<!-- https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api -->
+<dependency>
+    <groupId>org.junit.jupiter</groupId>
+    <artifactId>junit-jupiter-api</artifactId>
+    <version>5.7.0</version>
+    <scope>test</scope>
+</dependency>
 		<!-- https://mvnrepository.com/artifact/com.upokecenter/cbor -->
 		<dependency>
 			<groupId>com.upokecenter</groupId>
