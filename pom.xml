@@ -8,6 +8,8 @@
 	<packaging>jar</packaging>
 		<build>
 		<finalName>SCC</finalName>
+		<sourceDirectory>src</sourceDirectory>
+		<testSourceDirectory>src/test</testSourceDirectory>
 		<plugins>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
