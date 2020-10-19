@@ -48,22 +48,22 @@ https://securecryptoconfig.github.io/secureCryptoConfigInterface/
 ## Introduction
 
 Choosing secure cryptography algorithms and their corresponding parameters is difficult. Also, current cryptography APIs cannot change their default configuration which renders them inherently insecure. The Secure Crypto Config provides a method that allows cryptography libraries to change the default cryptography algorithms over time and at the same time stay compatible with previous cryptography operations. This is achieved by combining three things standardized by the Secure Crypto Config:
-- A process that should be repeated regulary where a new set of default configurations for standardized cryptography primitives is published in a specific format.
+- A process that should be repeated regularly where a new set of default configurations for standardized cryptography primitives is published in a specific format.
 - A Secure Crypto Config Interface that describes a common API to use cryptography primitives in software
-- Using [COSE](https://github.com/cose-wg/COSE-JAVA) to derive the parameters from output of cryptography primitives, otherwise future changes of the default configuration would change existing applications behavior.
+- Using [COSE](https://github.com/cose-wg/COSE-JAVA) to derive the parameters from output of cryptography primitives, otherwise, future changes of the default configuration would change existing applications behavior.
 
-The Secure Crypto Config provides a secure API that is secure and easy usable. It provides an abstraction from the underlying algorithm such that the usage gets more convenient and makes misuse and resulting security issues harder to occur. Even for users with not much cryptography experience it offers a possibility to implement secure cryptographic code.
+The Secure Crypto Config provides a API that is secure and easily usable. It provides an abstraction from the underlying algorithm such that the usage gets more convenient and makes misuse and resulting security issues harder to occur. Even for users with not much cryptography experience, it offers a possibility to implement secure cryptographic code.
 
 ## Overview
-The Secure Crypto Config Interface provides methods for the most common cryptographic use cases: Symmetric encryption, Asymmetric encryption, hashing, password hashing and Signing. The algorithms used for for the internal execution of the invoked use case is determined by the content of the Secure Crypto Config files. These JSON formatted files are provided within the Interface but can also be customized as long as the internal structure stays the same. With the release of a new version of the Interface the files will be updated to use only currently secure algorithms and parameters. Therefore, it is necessary to update the SecureCryptoConfig library as soon as possible if a new version is provided to be able to be up-to-date with the current security standard. In this way the burden of making right choices for parameters and algorithms to implement secure code can be lifted from the user.
+The Secure Crypto Config Interface provides methods for the most common cryptographic use cases: Symmetric encryption, Asymmetric encryption, hashing, password hashing and signing. The algorithms used for the internal execution of the invoked use case is determined by the content of the Secure Crypto Config files. These JSON formatted files are provided within the Interface but can also be customized as long as the internal structure stays the same. With the release of a new version of the Interface the files will be updated to use only currently secure algorithms and parameters. Therefore, it is necessary to update the SecureCryptoConfig library as soon as possible if a new version is provided to be able to be up-to-date with the current security standard. In this way, the burden of making right choices for parameters and algorithms to implement secure code can be lifted from the user.
 
-For handling the result of the cryptographic use cases we make use of a adapted version of [COSE](https://github.com/cose-wg/COSE-JAVA) to derive the parameters from output of cryptography primitives. Otherwise future changes of the default configuration would change existing applications behavior. Therefore the output is a byte representation of a corresponding COSE message which contains not only the actual output (e.g. ciphertext, hash) but also all used parameters.
+For handling the result of the cryptographic use cases we make use of an adapted version of [COSE](https://github.com/cose-wg/COSE-JAVA) to derive the parameters from output of cryptography primitives. Otherwise, future changes in the default configuration would change existing application behavior. Therefore the output is a byte representation of a corresponding COSE message which contains not only the actual output (e.g. ciphertext, hash) but also all used parameters.
 
 
 ## Getting started
-To be abel to use the Secure Crypto Config Interface it is necessary to add two differen *jar* files in the build path of your project:
+To be able to use the Secure Crypto Config Interface it is necessary to add two different *jar* files in the build path of your project:
 - *jar* file of the Secure Crypto Config Interface
-- *jar* file of a adapted version of [COSE](https://github.com/cose-wg/COSE-JAVA)
+- *jar* file of an adapted version of [COSE](https://github.com/cose-wg/COSE-JAVA)
 
 Before using the Interface it is necessary to handle the import like follows:
 
@@ -130,7 +130,7 @@ PlaintextContainer plain = ciphertext.decryptSymmetric(key);
 
 Methods provided for symmetric encryption are: `encryptSymmetric(..)`, `reEncryptSymmetric(..)` and `decryptSymmetric(..)`
 
-- `encryptSymmetric(SCCKey key, Plaintext plaintext)`/`encryptSymmetric(SCCKey key, byte[] plaintext)`: As parameter a SCCKey must be given. The `KeyType` of this key must be `Symmetric`. The plaintext can be specified in form of a PlaintextContainer or byte[] representation. The given plaintext will be encrypted. As a result a SCCCiphertext will be returned. It is also possible to invoke the encryption method on a specified PlaintextContainer.
+- `encryptSymmetric(SCCKey key, Plaintext plaintext)`/`encryptSymmetric(SCCKey key, byte[] plaintext)`: As parameter a SCCKey must be given. The `KeyType` of this key must be `Symmetric`. The plaintext can be specified in form of a PlaintextContainer or byte[] representation. The given plaintext will be encrypted. As a result, a SCCCiphertext will be returned. It is also possible to invoke the encryption method on a specified PlaintextContainer.
 
 - `decryptSymmetric(SCCKey key, SCCCiphertext sccciphertext)`: As parameter the SCCCiphertext (containing ciphertext and encryption parameters) and the corresponding SCCKey must be specified. Can also be invoked on SCCiphertext.
 
@@ -165,19 +165,19 @@ The general process for asymmetric encryption is the same as for symmetric encry
 
 Methods provided for asymmetric encryption are: `encryptAymmetric(..)`, `reEncryptAsymmetric(..)` and `decryptAsymmetric(..)`
 
-- `encryptAsymmetric(SCCKey key, Plaintext plaintext)`/`encryptAsymmetric(SCCKey key, byte[] plaintext)`: As parameter a SCCKey must be given. The `KeyType` of this key must be `Asymmetric`. The plaintext can be specified in form of a PlaintextContainer or byte[] representation. The given plaintext will be encrypted. As a result a SCCCiphertext will be returned. It is also possible to invoke the encryption method on a specified PlaintextContainer.
+- `encryptAsymmetric(SCCKey key, Plaintext plaintext)`/`encryptAsymmetric(SCCKey key, byte[] plaintext)`: As parameter a SCCKey must be given. The `KeyType` of this key must be `Asymmetric`. The plaintext can be specified in form of a PlaintextContainer or byte[] representation. The given plaintext will be encrypted. As a result, a SCCCiphertext will be returned. It is also possible to invoke the encryption method on a specified PlaintextContainer.
 
 - `decryptAsymmetric(SCCKey key, SCCCiphertext sccciphertext)`: As parameter the SCCCiphertext (containing ciphertext and encryption parameters) and the corresponding SCCKey must be specified. Can also be invoked on SCCiphertext.
 
-- `reEncryptAsymmetric(SCCKey key, SCCCiphertext ciphertext)`: ReEncrypts a given SCCCiphertext. Ciphertext will be first decrypted and then encrypted again with the current Secure Crypto Config file. Can also be invoked on SCCiphertext.
+- `reEncryptAsymmetric(SCCKey key, SCCCiphertext ciphertext)`: ReEncrypts a given SCCCiphertext. The ciphertext will be first decrypted and then encrypted again with the current Secure Crypto Config file. Can also be invoked on SCCiphertext.
 
 ### PlaintextContainer
-Represents the plaintext as byte[] not only in case of encryption but also for signing, hashing or password hashing. By expressing the plaintext as a PlaintextContainer the user should be able to perform cryptographic use cases as convenient as possible. The PlaintextContainer class provides convenient methods that can be invoked on a PlaintextContainer instance and therefore make the actions which can be performed with a plaintext more easy. The provided convenient methods are: `toBytes()`, `toString(..)`, `validateHash(..)`, `validatePasswordHash(..)`, `encryptSymmetric(..)`, `encryptAsymmetric(..)`, `sign(..)`,  `hash()`, `passwordHash()`.
+Represents the plaintext as byte[] not only in case of encryption but also for signing, hashing or password hashing. By expressing the plaintext as a PlaintextContainer the user should be able to perform cryptographic use cases as convenient as possible. The PlaintextContainer class provides convenient methods that can be invoked on a PlaintextContainer instance and therefore make the actions that can be performed with a plaintext more easily. The provided convenient methods are: `toBytes()`, `toString(..)`, `validateHash(..)`, `validatePasswordHash(..)`, `encryptSymmetric(..)`, `encryptAsymmetric(..)`, `sign(..)`,  `hash()`, `passwordHash()`.
 
 ### SCCCiphertext
 
-The SCCCipertext represents a byte[] representation of a specific COSE message, that contains the ciphertext as well as all used parameters of the encryption. To be able to decrypt a ciphertext correctly the same parameters as specified for encryption must be used. To be able to guarantee the correct decryption even if configuartions of the API are changing during the time these used parameters must be stored as well as the ciphertext. These necessary informations are represented as SCCiphertext which results from `encryptSymmetric(..)`, `encryptAsymmetric(..)` and is also needed as parameter for later decryption.
-This class also contains convenient methods for the user such that methods needing the SCCiphertext can easily invoked on a instance of this class.
+The SCCCipertext represents a byte[] representation of a specific COSE message, that contains the ciphertext as well as all used parameters of the encryption. To be able to decrypt a ciphertext correctly the same parameters as specified for encryption must be used. To be able to guarantee the correct decryption even if configurations of the API are changing during the time these used parameters must be stored as well as the ciphertext. This necessary information is represented as SCCiphertext which results from `encryptSymmetric(..)`, `encryptAsymmetric(..)` and is also needed as parameter for later decryption.
+This class also contains convenient methods for the user such that methods needing the SCCiphertext can easily be invoked on an instance of this class.
 
 With the method `createFromExistingCiphertext(byte[] existingSCCCiphertext)` it is also possible to create a SCCCiphertext object from an already existing SCCCiphertext byte[] representation.
 
@@ -209,7 +209,7 @@ boolean result = signature.validateSignature(key);
 
 Methods provided for Signing are: `sign(..)`, `updateSignature(..)` and `validateSignature(..)`
 
-- `sign(SCCKey key, Plaintext plaintext)`/`sign(SCCKey key, byte[] plaintext)`: As parameter a SCCKey must be given. The `KeyType` of this key must be `Asymmetric`. The plaintext can be specified in form of a PlaintextContainer or byte[] representation. The given plaintext will be encrypted. As a result a SCCSignature will be returned. It is also possible to invoke the method on a specified PlaintextContainer.
+- `sign(SCCKey key, Plaintext plaintext)`/`sign(SCCKey key, byte[] plaintext)`: As parameter a SCCKey must be given. The `KeyType` of this key must be `Asymmetric`. The plaintext can be specified in form of a PlaintextContainer or byte[] representation. The given plaintext will be encrypted. As a result, a SCCSignature will be returned. It is also possible to invoke the method on a specified PlaintextContainer.
 
 - `validateSignature(SCCKey key, SCCSignature signature)`: As parameter the SCCSignature (containing signature and signing parameters) and the corresponding SCCKey must be specified. Can also be invoked on SCCSignature. Returns a boolean. Looks if the signature is valid.
 
@@ -244,7 +244,7 @@ boolean result = hash.validateHash(plaintext);
 
 Methods provided for Hashing are: `hash(..)`, `validateHash(..)` and `updateHash(..)`
 
-- `hash(Plaintext plaintext)`/`hash(byte[] plaintext)`: The plaintext can be specified in form of a PlaintextContainer or byte[] representation. The given plaintext will be hashed. As a result a SCCHash will be returned. It is also possible to invoke the method on a specified PlaintextContainer.
+- `hash(Plaintext plaintext)`/`hash(byte[] plaintext)`: The plaintext can be specified in form of a PlaintextContainer or byte[] representation. The given plaintext will be hashed. As a result, a SCCHash will be returned. It is also possible to invoke the method on a specified PlaintextContainer.
 
 - `validateHash(PlaintextContainer plaintext, SCCHash hash)`/`validateHash(byte[] plaintext, SCCHash hash)`: As parameter the SCCHash (containing hash and parameters) and the corresponding plaintext must be specified. Can also be invoked on SCCHash. Returns a boolean. Look if a given SCCHash is valid: plaintext will be hashed again and compared if resulting hash is identical to the given one.
 
@@ -278,7 +278,7 @@ boolean result = hash.validatePasswordHash(password);
 ```
 Methods provided for Hashing are: `passwordHash(..)` and `validatePasswordHash(..)`
 
-- `passwordHash(Plaintext password)`/`passwordHash(byte[] password)`: The password can be specified in form of a PlaintextContainer or byte[] representation. The given password will be hashed. As a result a SCCPasswordHash will be returned. It is also possible to invoke the method on a specified PlaintextContainer.
+- `passwordHash(Plaintext password)`/`passwordHash(byte[] password)`: The password can be specified in form of a PlaintextContainer or byte[] representation. The given password will be hashed. As a result, a SCCPasswordHash will be returned. It is also possible to invoke the method on a specified PlaintextContainer.
 
 - `validatePasswordHash(PlaintextContainer password, SCCPasswordHash hash)`/`validateHash(byte[] plaintext, SCCHash hash)`: As parameter the SCCPasswordHash (containing hash and parameters) and the corresponding password must be specified. Can also be invoked on SCCPasswordHash. Returns a boolean. Look if a given SCCPasswordHash is valid: password will be hashed again and compared if resulting hash is identical to the given one.
 
@@ -289,13 +289,13 @@ The SCCPasswordHash is the output after performing password hashing. It is the s
 With the method `createFromExistingPasswordHash(byte[] existingSCCPasswordHash)` it is also possible to create a SCCPasswordHash object from an already existing SCCPasswordHash byte[] representation.
 
 ## Handling of Secure Crypto Config files
-The internal execurtion of a cryptographic use case is done according to Secure Crypto Config files. These files contain for each supproted use case unique algorithm ids which represent specific algorithm and parameter choices. By default these informations are parsed out of the Secure Crypto Config files which are provided within the Interface.
+The internal execution of a cryptographic use case is done according to Secure Crypto Config files. These files contain for each supported use case unique algorithm ids which represent specific algorithm and parameter choices. By default, this information is parsed out of the Secure Crypto Config files which are provided within the Interface.
 
-It is also possible to give a custom part to your own (derived) versions of the Secure crypto config files. This can be done with the `setCustomSCCPath(Path path)` mathod by simply giving the path to your directory as a parameter.
+It is also possible to give a custom part to your own (derived) versions of the Secure crypto config files. This can be done with the `setCustomSCCPath(Path path)` method by simply giving the path to your directory as a parameter.
 
-By default the files provided by within the Interface are used for parsing. There are files for different *security levels*. The higher the security level of a file the more confidential your data must be handled. By defualt the Interface will use the algorithm ids from the most recent (according to its version) file with the highest security level. If you want a specific file to be parsed use the `setSCCFile(String policyName)` method and give the corresponding PolicyName of the desired file as a parameters. The PolicyName is defined inside each file. Also you can use the `setSecurityLevel(int level)` method. As a result the most recent file with the specified security level number will be used.
+By default, the files provided by within the Interface are used for parsing. There are files for different *security levels*. The higher the security level of a file the more confidential your data must be handled. By default, the Interface will use the algorithm ids from the most recent (according to its version) file with the highest security level. If you want a specific file to be parsed use the `setSCCFile(String policyName)` method and give the corresponding PolicyName of the desired file as a parameter. The PolicyName is defined inside each file. Also, you can use the `setSecurityLevel(int level)` method. As a result, the most recent file with the specified security level number will be used.
 
 The PolicyName of the file used for processing can be shown with `getUsedSCC()`. If you have previously set a specific file for usage or a custom path you can also go back to the default settings with the `setDefaultSCC()` method.
 
 ## Specification of algorithms
-By default the algorithm used for executing the specified cryptographic use case is determined by the currently used Secure Crypto Config file. It is also possible to chose a specific algorithm from all the supported ones with the method `setAlgorithm(SCCAlgorithm algorithm)`. `SCCAlgorithm` contains the unique algorithm identifiers of all currently supported algorithms for all use cases. To be able to perform a specific use case (e.g. hashing) a suitable algorithm identifier must be choose. This algorithm will be used for all further invoked methods. If the default choice of the Secure Crypto Config should be used again call `defaultAlgorithm()` or for changing to a specific algorithm call `setAlgorithm(SCCAlgorithm algorithm)` again.
+By default, the algorithm used for executing the specified cryptographic use case is determined by the currently used Secure Crypto Config file. It is also possible to chose a specific algorithm from all the supported ones with the method `setAlgorithm(SCCAlgorithm algorithm)`. `SCCAlgorithm` contains the unique algorithm identifiers of all currently supported algorithms for all use cases. To be able to perform a specific use case (e.g. hashing) a suitable algorithm identifier must be chosen. This algorithm will be used for all further invoked methods. If the default choice of the Secure Crypto Config should be used again call `defaultAlgorithm()` or for changing to a specific algorithm call `setAlgorithm(SCCAlgorithm algorithm)` again.
