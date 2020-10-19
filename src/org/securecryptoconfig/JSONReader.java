@@ -53,7 +53,7 @@ public class JSONReader {
 	 * Find the path to the specified policyName
 	 * 
 	 * @param policyName: of the Secure Crypto Config to use
-	 * @return
+	 * @return instance
 	 */
 	protected static SCCInstance findPathForPolicy(String policyName) {
 		SCCInstance instance = null;
@@ -192,7 +192,7 @@ public class JSONReader {
 	/**
 	 * Determines the highest Security Level number in Set
 	 * 
-	 * @param Set with all appearing Security Level numbers
+	 * @param level Hashset with all appearing Security Level numbers
 	 * @return highest appearing level
 	 */
 	protected static int getHighestLevel(HashSet<Integer> level) {
@@ -324,7 +324,6 @@ public class JSONReader {
 	 * 
 	 * @param path to "configs" folder containing SCC files
 	 * @return path
-	 * @throws SCCException
 	 */
 	protected static SCCInstance parseFiles(Path path) {
 		publicKeyPaths.clear();

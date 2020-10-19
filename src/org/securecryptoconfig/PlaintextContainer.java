@@ -114,7 +114,7 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	 * The {@link PlaintextContainer} value will be hashed again and compared if
 	 * resulting hash is identical to the given one.
 	 * 
-	 * @param passwordhash: {@link SCCPasswordHash}
+	 * @param passwordHash {@link SCCPasswordHash}
 	 * @return boolean
 	 * @throws SCCException
 	 */

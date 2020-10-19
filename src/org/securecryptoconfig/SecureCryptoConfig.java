@@ -81,7 +81,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * with the specified Security level
 	 * 
 	 * @param level: integer of desired security level of Secure Crypto Config file
-	 * @throws IllegalArgumentException: there are no files with the specified level
+	 * @throws IllegalArgumentException there are no files with the specified level
 	 */
 	public static void setSecurityLevel(int level) {
 		if (JSONReader.levels.contains(level)) {
@@ -111,7 +111,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * {@link SecureCryptoConfig#setDefaultSCC()}
 	 * 
 	 * @param path: path to "scc-configs" directory
-	 * @throws InvalidPathException: Path is not existing
+	 * @throws InvalidPathException Path is not existing
 	 */
 	public static void setCustomSCCPath(Path path) {
 		customPath = true;
@@ -132,7 +132,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * {@link SecureCryptoConfig#setDefaultSCC()}
 	 * 
 	 * @param policyName: policy name of the Secure Crypto Config file to use
-	 * @throws InvalidParameterException: policy name is not existing in any file
+	 * @throws InvalidParameterException policy name is not existing in any file
 	 */
 	public static void setSCCFile(String policyName) {
 		SCCInstance instance = JSONReader.findPathForPolicy(policyName);
