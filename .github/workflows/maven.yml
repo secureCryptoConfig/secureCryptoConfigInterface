@@ -35,13 +35,12 @@ jobs:
         name: Docs
         path: docs
 
-
-    - run: tar cfv apidocs.tar target/site/apidocs 
     - uses: actions/checkout@v2
       with:
         ref: gh-pages
          
-    - run: tar xfv target/site/apidocs/apidocs.tar 
+    - run: tar cfv apidocs.tar target/site/apidocs 
+    - run: tar xfv target/site/apidocs.tar 
     - run: git commit -a
     - run: git push
    
