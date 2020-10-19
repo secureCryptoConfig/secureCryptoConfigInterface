@@ -41,7 +41,7 @@ jobs:
       with:
         ref: gh-pages
          
-      run: tar xfv apidocs.tar 
-      run: git commit -a
-      run: git push
+    - run: tar xfv apidocs.tar 
+    - run: git commit -a
+    - run: git push
    
