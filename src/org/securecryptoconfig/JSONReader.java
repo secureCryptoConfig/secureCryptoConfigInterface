@@ -36,7 +36,7 @@ public class JSONReader {
 
 	private static ArrayList<Path> allFilePaths = new ArrayList<Path>();
 	private static ArrayList<Path> publicKeyPaths = new ArrayList<Path>();
-	protected static HashSet<Integer> levels = new HashSet<Integer>();
+	final protected static HashSet<Integer> levels = new HashSet<Integer>();
 
 	static FileSystem fileSystem;
 
