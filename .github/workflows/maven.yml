@@ -37,7 +37,7 @@ jobs:
 
 
     - run: tar cfv apidocs.tar target/site/apidocs 
-    - run: git checkout origin/gh-pages 
-    - run: tar xfv apidocs.tar 
-    - run: git commit -a
-    - run: git push
+    - uses: actions/checkout@v2
+        with:
+            ref: gh-pages
+   
