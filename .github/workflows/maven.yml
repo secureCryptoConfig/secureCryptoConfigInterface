@@ -36,4 +36,8 @@ jobs:
         path: docs
 
 
-    - run: tar cfv apidocs.tar target/site/apidocs && git checkout gh-pages && tar xfv apidocs.tar && git commit -a && git push
+    - run: tar cfv apidocs.tar target/site/apidocs 
+    - run: git checkout origin/gh-pages 
+    - run: tar xfv apidocs.tar 
+    - run: git commit -a
+    - run: git push
