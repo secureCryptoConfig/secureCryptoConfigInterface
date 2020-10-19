@@ -39,8 +39,8 @@ jobs:
       with:
         ref: gh-pages
          
-    - run: tar cfv apidocs.tar /home/runner/work/secureCryptoConfigInterface/secureCryptoConfigInterface/target/site/apidocs 
-    - run: tar xfv target/site/apidocs/apidocs.tar 
+    - run: tar cfv apidocs.tar docs
+    - run: tar xfv apidocs.tar 
     - run: git commit -a
     - run: git push
    
