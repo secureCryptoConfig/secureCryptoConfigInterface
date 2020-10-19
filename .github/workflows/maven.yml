@@ -21,7 +21,12 @@ jobs:
       with:
         java-version: 11
     - name: Build with Maven
-    
+      run: mvn -B package --file pom.xml
+    - run: mkdir jar && cp target/*.jar jar
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Jar
+        path: jar
         
     - run: mvn javadoc:javadoc
     - run: mkdir docs && cp -a target/site/apidocs docs
@@ -35,5 +40,7 @@ jobs:
         ref: gh-pages
          
     - run: tar cfv apidocs.tar /home/runner/work/secureCryptoConfigInterface/secureCryptoConfigInterface/target/site/apidocs 
-
+    - run: tar xfv target/site/apidocs/apidocs.tar 
+    - run: git commit -a
+    - run: git push
    
