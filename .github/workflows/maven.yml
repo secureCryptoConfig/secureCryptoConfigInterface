@@ -26,6 +26,6 @@ jobs:
     - run: mkdir jar && cp target/*.jar jar
     - uses: actions/upload-artifact@v2
       with:
-        name: Package
+        name: Jar
         path: jar
 
