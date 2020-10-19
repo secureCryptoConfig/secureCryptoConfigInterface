@@ -28,19 +28,10 @@ jobs:
         name: Jar
         path: jar
         
-    - run: mvn javadoc:javadoc
-    - run: mkdir docs && cp -a target/site/apidocs docs
-    - uses: actions/upload-artifact@v2
-      with:
-        name: Docs
-        path: docs
-
     - uses: actions/checkout@v2
       with:
         ref: gh-pages
-         
-    - run: tar cfv apidocs.tar target/site/apidocs 
-    - run: tar xfv target/site/apidocs.tar 
-    - run: git commit -a
-    - run: git push
+        
+    - run: mvn javadoc:javadoc
+    
    
