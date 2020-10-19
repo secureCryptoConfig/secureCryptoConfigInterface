@@ -22,13 +22,14 @@ jobs:
         java-version: 11
     - name: Build with Maven
       run: mvn -B package --file pom.xml
-steps:
-  - uses: actions/checkout@v2
-  - uses: actions/setup-java@v1
-  - run: mvn -B package --file pom.xml
-  - run: mkdir jar && cp target/*.jar jar
-  - uses: actions/upload-artifact@v2
-    with:
-      name: Package
-      path: jar
+      
+    steps:
+    - uses: actions/checkout@v2
+    - uses: actions/setup-java@v1
+    - run: mvn -B package --file pom.xml
+    - run: mkdir jar && cp target/*.jar jar
+    - uses: actions/upload-artifact@v2
+      with:
+        name: Package
+        path: jar
 
