@@ -29,6 +29,11 @@
 			
 		</plugins>
 	</build>
+	<properties>
+  <sonar.projectKey>secureCryptoConfig_secureCryptoConfigInterface</sonar.projectKey>
+  <sonar.organization>securecryptoconfig</sonar.organization>
+  <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+</properties>
 	<dependencies>
 		<dependency>
 	      <groupId>org.apache.maven.plugins</groupId>
