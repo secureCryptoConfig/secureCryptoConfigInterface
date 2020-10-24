@@ -5,6 +5,21 @@
 	<artifactId>secureCryptoConfigInterface</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
+	<properties>
+		<sonar.projectKey>secureCryptoConfig_secureCryptoConfigInterface</sonar.projectKey>
+		<sonar.organization>securecryptoconfig</sonar.organization>
+		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
+		<sonar.sources>src</sonar.sources>
+		<sonar.tests>test</sonar.tests>
+		<sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
+		<jacoco.version>0.8.3</jacoco.version>
+		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
+		<sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
+		<sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
+		<sonar.language>java</sonar.language>
+		<!--sonar.java.binaries=build/classes sonar.junit.reportsPath=build/test-results/test sonar.java.coveragePlugin=jacoco sonar.jacoco.reportPaths=build/jacoco/test.exec
+-->
+	</properties>
 	<build>
 		<finalName>SCC</finalName>
 		<sourceDirectory>src</sourceDirectory>
@@ -25,19 +40,39 @@
 					<target>1.8</target>
 				</configuration>
 			</plugin>
-
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco.version}</version>
+				<configuration>
+					<skip>${maven.test.skip}</skip>
+					<destFile>${basedir}/target/coverage-reports/jacoco-unit.exec</destFile>
+					<dataFile>${basedir}/target/coverage-reports/jacoco-unit.exec</dataFile>
+					<output>file</output>
+					<append>true</append>
+					<excludes>
+						<exclude>*MethodAccess</exclude>
+					</excludes>
+				</configuration>
+				<executions>
+					<execution>
+						<id>jacoco-initialize</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+						<phase>test-compile</phase>
+					</execution>
+					<execution>
+						<id>jacoco-site</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
-	<properties>
-		<sonar.projectKey>secureCryptoConfig_secureCryptoConfigInterface</sonar.projectKey>
-		<sonar.organization>securecryptoconfig</sonar.organization>
-		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
-		<sonar.sources>src</sonar.sources>
-		<sonar.tests>test</sonar.tests>
-		<sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
-		<!--sonar.java.binaries=build/classes sonar.junit.reportsPath=build/test-results/test sonar.java.coveragePlugin=jacoco sonar.jacoco.reportPaths=build/jacoco/test.exec
--->
-	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>org.apache.maven.plugins</groupId>
