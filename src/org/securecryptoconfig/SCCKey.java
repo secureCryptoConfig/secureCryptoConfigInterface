@@ -283,7 +283,6 @@ public class SCCKey extends AbstractSCCKey {
 	 *                 {@link KeyUseCase}
 	 * @return SCCKey: key that can be used for the specified use case
 	 * @throws CoseException
-	 * @throws NoSuchAlgorithmException
 	 * @throws SCCException
 	 */
 	public static SCCKey createKey(KeyUseCase useCase) throws CoseException, SCCException {
