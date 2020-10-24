@@ -691,13 +691,16 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		SCCPasswordHash hash = SecureCryptoConfig.createPasswordHashMessageSalt(password, alg, msg.getSalt());
 
 		String hash1 = new String(msg.getHashedContent(), StandardCharsets.UTF_8);
-		try {
-			String hash2 = new String(hash.convertByteToMsg().getHashedContent(), StandardCharsets.UTF_8);
-			return hash1.equals(hash2);
-		}catch(NullPointerException e) {
-			throw new SCCException("Hash is null!", e);
-		}
 		
+		if(hash != null)
+		{
+			String hash2 = new String(hash.convertByteToMsg().getHashedContent(), StandardCharsets.UTF_8);
+
+			return hash1.equals(hash2);
+		}
+		else {
+			return false;
+		}
 		
 
 	}

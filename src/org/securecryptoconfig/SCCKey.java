@@ -735,9 +735,8 @@ public class SCCKey extends AbstractSCCKey {
 	 * 
 	 * @param existingSCCKey: byte[] representation of a {@link SCCKey} object
 	 * @return {@link SCCKey}
-	 * @throws SCCException 
 	 */
-	public static SCCKey createFromExistingKey(byte[] existingSCCKey) throws SCCException {
+	public static SCCKey createFromExistingKey(byte[] existingSCCKey) {
 		ObjectMapper objectMapper = new ObjectMapper();
 		SCCInstanceKey sccInstanceKey = null;
 		try {
@@ -746,14 +745,13 @@ public class SCCKey extends AbstractSCCKey {
 			e.printStackTrace();
 		}
 
-		try {
+		if (sccInstanceKey != null) {
 			SCCKey key = new SCCKey(sccInstanceKey.getType(), sccInstanceKey.getPublicKey(),
 					sccInstanceKey.getPrivateKey(), sccInstanceKey.getAlgorithm());
 
 			return key;
-		}catch(NullPointerException e)
-		{
-			throw new SCCException("Key is in wrong format!", e);
+		} else {
+			return null;
 		}
 	}
 

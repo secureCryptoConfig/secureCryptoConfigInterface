@@ -94,7 +94,6 @@ public class JSONReader {
 			}
 		}
 
-		
 		try {
 			Stream<Path> stream = Files.walk(path);
 			stream.filter(Files::isRegularFile).filter(file -> file.getFileName().toString().endsWith(".json"))
@@ -105,7 +104,7 @@ public class JSONReader {
 			stream.close();
 		} catch (IOException | NullPointerException e) {
 			e.printStackTrace();
-		} 
+		}
 	}
 
 	protected static ArrayList<SCCInstance> instances = new ArrayList<SCCInstance>();
@@ -255,18 +254,21 @@ public class JSONReader {
 			e1.printStackTrace();
 
 		}
-	
+		Stream<Path> s = null;
 		try {
-			Stream<Path> s  = Files.walk(p);
+			s = Files.walk(p);
 			s.filter(Files::isRegularFile).filter(file -> file.getFileName().toString().startsWith("publicKey"))
 					.forEach(file -> {
 						publicKeyPaths.add(file);
 
 					});
-			s.close();
-		} catch (IOException | NullPointerException e) {
+		} catch (IOException e) {
 			e.printStackTrace();
-		} 
+		} finally {
+			if (s != null) {
+				s.close();
+			}
+		}
 	}
 
 	private static void startValidation() throws SCCException {
@@ -292,11 +294,13 @@ public class JSONReader {
 				is2 = org.securecryptoconfig.JSONReader.class.getResourceAsStream(signaturePath2);
 				result = is1 != null && is2 != null;
 				try {
-					is1.close();
-					is2.close();
-
-				} catch (IOException | NullPointerException e) {
-
+					if (is1 != null) {
+						is1.close();
+					}
+					if (is2 != null) {
+						is2.close();
+					}
+				} catch (IOException e) {
 					e.printStackTrace();
 				}
 
