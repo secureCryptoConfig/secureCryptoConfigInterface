@@ -101,7 +101,7 @@ public class JSONReader {
 		try {
 			stream = Files.walk(path);
 			stream.filter(Files::isRegularFile).filter(file -> file.getFileName().toString().endsWith(JsonFileEndingWithDot))
-					.forEach(file -> allFilePaths.add(file););
+					.forEach(file -> allFilePaths.add(file));
 			stream.close();
 		} catch (IOException | NullPointerException e) {
 			logger.warn("Path not available or not set", e);
@@ -185,11 +185,9 @@ public class JSONReader {
 					latest = i;
 					highestYear = versionInt[0];
 
-				} else if (highestYear == versionInt[0]) {
-					if (highestPatch < versionInt[1]) {
-						highestPatch = versionInt[1];
-						latest = i;
-					}
+				} else if (highestYear == versionInt[0] && highestPatch < versionInt[1]) {
+					highestPatch = versionInt[1];
+					latest = i;
 				}
 			}
 			return latest;
