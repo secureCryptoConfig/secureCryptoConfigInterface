@@ -90,7 +90,7 @@ public class JSONReader {
 					isJAR = false;
 				}
 			} catch (URISyntaxException | IOException e) {
-				logger.fatal("Custom Path invalid or not available", e);
+				logger.warn("Custom Path invalid or not available", e);
 				return;
 			}
 		}
@@ -105,7 +105,7 @@ public class JSONReader {
 					});
 			stream.close();
 		} catch (IOException | NullPointerException e) {
-			logger.fatal("Path not available or not set", e);
+			logger.warn("Path not available or not set", e);
 		} finally {
 			if (stream != null) {
 				stream.close();
@@ -151,7 +151,7 @@ public class JSONReader {
 				}
 			}
 		} catch (IOException e) {
-			logger.fatal("Error while trying to access JSON files", e);
+			logger.warn("Error while trying to access JSON files", e);
 		}
 	}
 
@@ -257,7 +257,7 @@ public class JSONReader {
 				}
 			}
 		} catch (URISyntaxException e) {
-			logger.fatal("public key path not valid", e); 
+			logger.warn("public key path not valid", e); 
 		}
 		Stream<Path> s = null;
 		try {
@@ -268,7 +268,7 @@ public class JSONReader {
 
 					});
 		} catch (IOException e) {
-			logger.fatal("Error while trying to access file", e);
+			logger.warn("Error while trying to access file", e);
 		} finally {
 			if (s != null) {
 				s.close();
@@ -306,7 +306,7 @@ public class JSONReader {
 						is2.close();
 					}
 				} catch (IOException e) {
-					logger.fatal("Error while trying to validate JSON files", e);
+					logger.warn("Error while trying to validate JSON files", e);
 				}
 
 			}
