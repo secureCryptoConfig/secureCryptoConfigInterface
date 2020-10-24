@@ -49,7 +49,8 @@ import COSE.OneKey;
  * E.g. creating a key for symmetric encryption:
  * 
  * <pre>
- * {@code
+ * {
+ * 	&#64;code
  * 	SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
  * }
  * </pre>
@@ -66,7 +67,8 @@ import COSE.OneKey;
  * {@link SCCKey#createSymmetricKeyWithPassword(byte[])}:
  * 
  * <pre>
- * {@code
+ * {
+ * 	&#64;code
  * 	SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
  * }
  * </pre>
@@ -243,7 +245,8 @@ public class SCCKey extends AbstractSCCKey {
 	 * E.g. creating a key for symmetric encryption:
 	 * 
 	 * <pre>
-	 * {@code
+	 * {
+	 * 	&#64;code
 	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 	 * }
 	 * </pre>
@@ -260,7 +263,8 @@ public class SCCKey extends AbstractSCCKey {
 	 * {@link SCCKey#createSymmetricKeyWithPassword(byte[])}:
 	 * 
 	 * <pre>
-	 * {@code
+	 * {
+	 * 	&#64;code
 	 * 	SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
 	 * }
 	 * </pre>
@@ -340,7 +344,11 @@ public class SCCKey extends AbstractSCCKey {
 
 					}
 
-					return createSymmetricKey(algo, keysize);
+					if (algo != null && keysize != 0) {
+						return createSymmetricKey(algo, keysize);
+					} else {
+						return null;
+					}
 				}
 
 			}
@@ -363,7 +371,11 @@ public class SCCKey extends AbstractSCCKey {
 
 			}
 
-			return createSymmetricKey(algo, keysize);
+			if (algo != null && keysize != 0) {
+				return createSymmetricKey(algo, keysize);
+			} else {
+				return null;
+			}
 		}
 
 		throw new CoseException("No supported algorithms! Key creation not possible!");
@@ -514,10 +526,12 @@ public class SCCKey extends AbstractSCCKey {
 
 	/**
 	 * Creation of key derived from a given password that can be used for symmetric
-	 * encryption based on Secure Crypto Config file.
-	 * <br> This can be done as follows:
+	 * encryption based on Secure Crypto Config file. <br>
+	 * This can be done as follows:
+	 * 
 	 * <pre>
-	 * {@code
+	 * {
+	 * 	&#64;code
 	 * 	SCCKey key = SCCKey.createSymmetricKeyWithPassword(passwordBytes);
 	 * }
 	 * </pre>
@@ -547,10 +561,12 @@ public class SCCKey extends AbstractSCCKey {
 
 	/**
 	 * Creation of key derived from a given password that can be used for symmetric
-	 * encryption based on Secure Crypto Config file.
-	 * <br> This can be done as follows:
+	 * encryption based on Secure Crypto Config file. <br>
+	 * This can be done as follows:
+	 * 
 	 * <pre>
-	 * {@code
+	 * {
+	 * 	&#64;code
 	 * 	SCCKey key = SCCKey.createSymmetricKeyWithPassword(passwordString);
 	 * }
 	 * </pre>
@@ -676,13 +692,17 @@ public class SCCKey extends AbstractSCCKey {
 	}
 
 	/**
-	 * Still work in progress!
-	 * <br><br>
+	 * Still work in progress! <br>
+	 * <br>
 	 * TODO still needs to be adapted<br>
-	 * Method for decoding the <b>{@link SCCKey} object</b> to a byte[] representation.
+	 * Method for decoding the <b>{@link SCCKey} object</b> to a byte[]
+	 * representation.
 	 * 
-	 * <br><br> This byte[] can be used to restore a {@link SCCKey} object later again with the method
-	 * {@link SCCKey#createFromExistingKey(byte[])}.
+	 * <br>
+	 * <br>
+	 * This byte[] can be used to restore a {@link SCCKey} object later again with
+	 * the method {@link SCCKey#createFromExistingKey(byte[])}.
+	 * 
 	 * <pre>
 	 * {@code
 	 * 	SCCKey key = SCCKey.createFromExistingKey(existingSCCKey)
@@ -704,12 +724,15 @@ public class SCCKey extends AbstractSCCKey {
 	}
 
 	/**
-	 * Still work in progress!
-	 * <br><br>
+	 * Still work in progress! <br>
+	 * <br>
 	 * TODO still needs to be adapted<br>
-	 * Method  to create a {@link SCCKey} object out of a existing byte[] SCCKey representation.
-	 * <br><br> A byte[] representation of a {@link SCCKey} object can created by calling
+	 * Method to create a {@link SCCKey} object out of a existing byte[] SCCKey
+	 * representation. <br>
+	 * <br>
+	 * A byte[] representation of a {@link SCCKey} object can created by calling
 	 * {@link SCCKey#decodeObjectToBytes()} on the corresponding SCCKey object.
+	 * 
 	 * @param existingSCCKey: byte[] representation of a {@link SCCKey} object
 	 * @return {@link SCCKey}
 	 */
@@ -722,10 +745,14 @@ public class SCCKey extends AbstractSCCKey {
 			e.printStackTrace();
 		}
 
-		SCCKey key = new SCCKey(sccInstanceKey.getType(), sccInstanceKey.getPublicKey(), sccInstanceKey.getPrivateKey(),
-				sccInstanceKey.getAlgorithm());
+		if (sccInstanceKey.getType() != null) {
+			SCCKey key = new SCCKey(sccInstanceKey.getType(), sccInstanceKey.getPublicKey(),
+					sccInstanceKey.getPrivateKey(), sccInstanceKey.getAlgorithm());
 
-		return key;
+			return key;
+		} else {
+			return null;
+		}
 	}
 
 	/**

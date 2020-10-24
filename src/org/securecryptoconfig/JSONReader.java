@@ -20,6 +20,8 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.stream.Stream;
+
 import org.securecryptoconfig.SCCKey.KeyType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -58,7 +60,7 @@ public class JSONReader {
 	protected static SCCInstance findPathForPolicy(String policyName) {
 		SCCInstance instance = null;
 		for (int i = 0; i < instances.size(); i++) {
-			if (instances.get(i).getPolicyName() == policyName) {
+			if (instances.get(i).getPolicyName().equals(policyName)) {
 				instance = instances.get(i);
 				break;
 			}
@@ -92,14 +94,18 @@ public class JSONReader {
 			}
 		}
 
+		Stream<Path> stream = null;
 		try {
-			Files.walk(path).filter(Files::isRegularFile)
-					.filter(file -> file.getFileName().toString().endsWith(".json")).forEach(file -> {
+			stream = Files.walk(path);
+			stream.filter(Files::isRegularFile).filter(file -> file.getFileName().toString().endsWith(".json"))
+					.forEach(file -> {
 						allFilePaths.add(file);
 
 					});
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			stream.close();
 		}
 	}
 
@@ -250,15 +256,18 @@ public class JSONReader {
 			e1.printStackTrace();
 
 		}
-
+		Stream<Path> s = null;
 		try {
-			Files.walk(p).filter(Files::isRegularFile)
-					.filter(file -> file.getFileName().toString().startsWith("publicKey")).forEach(file -> {
+			s = Files.walk(p);
+			s.filter(Files::isRegularFile).filter(file -> file.getFileName().toString().startsWith("publicKey"))
+					.forEach(file -> {
 						publicKeyPaths.add(file);
 
 					});
 		} catch (IOException e) {
 			e.printStackTrace();
+		} finally {
+			s.close();
 		}
 	}
 
@@ -285,8 +294,12 @@ public class JSONReader {
 				is2 = org.securecryptoconfig.JSONReader.class.getResourceAsStream(signaturePath2);
 				result = is1 != null && is2 != null;
 				try {
-					is1.close();
-					is2.close();
+					if (is1 != null) {
+						is1.close();
+					}
+					if (is2 != null) {
+						is2.close();
+					}
 				} catch (IOException e) {
 
 					e.printStackTrace();
@@ -343,6 +356,5 @@ public class JSONReader {
 		return getLatestSCC(getHighestLevel(levels));
 
 	}
-	
 
 }
