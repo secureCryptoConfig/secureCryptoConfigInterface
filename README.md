@@ -3,7 +3,7 @@
 *Java Interface that provides methods for most common cryptographic use cases. The Interface provides a cryptographic API that is secure and easy to use.*
 
 
-[![Master Build Status](https://github.com/secureCryptoConfig/secureCryptoConfigInterface/workflows/Java CI with Maven/badge.svg)](https://github.com/secureCryptoConfig/secureCryptoConfigInterface/actions)
+[![Master Build Status](https://github.com/secureCryptoConfig/secureCryptoConfigInterface/workflows/Maven/badge.svg)](https://github.com/secureCryptoConfig/secureCryptoConfigInterface/actions)
 
 
 [![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=secureCryptoConfig_secureCryptoConfigInterface&metric=alert_status)](https://sonarcloud.io/dashboard?id=secureCryptoConfig_secureCryptoConfigInterface)
