@@ -145,11 +145,11 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param key:           {@link SCCKey}
 	 * @param sccciphertext: {@link SCCCiphertext}
 	 * @return {@link PlaintextContainer}
-	 * @throws CoseException
+	 * @throws SCCException
 	 * @throws InvalidKeyException if {@link SCCKey} has not the {@link KeyType#Symmetric}
 	 */
 	public PlaintextContainerInterface decryptSymmetric(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext)
-			throws CoseException, InvalidKeyException;
+			throws SCCException, InvalidKeyException;
 
 	// Asymmetric
 

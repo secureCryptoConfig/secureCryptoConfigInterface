@@ -281,7 +281,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 */
 	@Override
 	public PlaintextContainer decryptSymmetric(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext)
-			throws CoseException, InvalidKeyException {
+			throws SCCException, InvalidKeyException {
 		if (key.getKeyType() == KeyType.Symmetric) {
 			try {
 				Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(sccciphertext.msg);
