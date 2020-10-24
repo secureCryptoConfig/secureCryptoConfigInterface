@@ -122,31 +122,23 @@ public class JSONReader {
 
 		try {
 			for (int i = 0; i < allFilePaths.size(); i++) {
+				SCCInstance sccInstance;
 				if (!isJAR) {
-					SCCInstance sccInstance = objectMapper.readValue(new File(allFilePaths.get(i).toString()),
+					sccInstance = objectMapper.readValue(new File(allFilePaths.get(i).toString()),
 							SCCInstance.class);
-					// check securityLevel, version format
-					level = sccInstance.getSecurityLevel();
-					version = sccInstance.getVersion();
-					if (level > 0 && version.matches("^[2]\\d{3}-\\d+")) {
-						levels.add(level);
-						instances.add(sccInstance);
-					} else {
-						break;
-					}
-
 				} else {
 					InputStream is = org.securecryptoconfig.JSONReader.class
 							.getResourceAsStream(allFilePaths.get(i).toString());
-					SCCInstance sccInstance = objectMapper.readValue(is, SCCInstance.class);
-					level = sccInstance.getSecurityLevel();
-					version = sccInstance.getVersion();
-					if (level > 0 && version.matches("^[2]\\d{3}-\\d+")) {
-						levels.add(level);
-						instances.add(sccInstance);
-					} else {
-						break;
-					}
+					sccInstance = objectMapper.readValue(is, SCCInstance.class);
+				}
+				// check securityLevel, version format
+				level = sccInstance.getSecurityLevel();
+				version = sccInstance.getVersion();
+				if (level > 0 && version.matches("^[2]\\d{3}-\\d+")) {
+					levels.add(level);
+					instances.add(sccInstance);
+				} else {
+					break;
 				}
 			}
 		} catch (IOException e) {
