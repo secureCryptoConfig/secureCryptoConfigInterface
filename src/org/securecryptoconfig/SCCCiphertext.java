@@ -78,8 +78,6 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	public PlaintextContainer decryptSymmetric(AbstractSCCKey key) throws SCCException {
 		try {
 			return scc.decryptSymmetric(key, this);
-		} catch (CoseException e) {
-			throw new SCCException("Symmetric decryption could not be performed!", e);
 		} catch (InvalidKeyException e) {
 			throw new SCCException("Symmetric decryption is not possible! Not the right KeyType!", e);
 		}
