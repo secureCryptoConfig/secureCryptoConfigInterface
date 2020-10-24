@@ -354,7 +354,7 @@ public class JSONReader {
 		try {
 			startValidation();
 		} catch (SCCException e) {
-			e.printStackTrace();
+			logger.warn("Error in validation of SCC files", e);
 		}
 
 		return getLatestSCC(getHighestLevel(levels));
