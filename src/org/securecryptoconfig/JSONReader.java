@@ -212,7 +212,7 @@ public class JSONReader {
 
 		byte[] publicKey;
 		byte[] sig;
-		if (isJAR == false) {
+		if (!isJAR) {
 			Path fileLocation = Paths.get(publicKeyPath);
 			publicKey = Files.readAllBytes(fileLocation);
 
@@ -228,7 +228,7 @@ public class JSONReader {
 			is1.close();
 		}
 
-		PublicKey pub = KeyFactory.getInstance(algo.toString()).generatePublic(new X509EncodedKeySpec(publicKey));
+		PublicKey pub = KeyFactory.getInstance(algo).generatePublic(new X509EncodedKeySpec(publicKey));
 
 		SCCKey key = new SCCKey(KeyType.Asymmetric, pub.getEncoded(), null, algo);
 
@@ -244,10 +244,10 @@ public class JSONReader {
 		try {
 			uri = JSONReader.class.getResource("/scc-configs/publicKeys").toURI();
 
-			if (isJAR == true) {
+			if (isJAR) {
 				p = fileSystem.getPath("/scc-configs/publicKeys");
 			} else {
-				if (SecureCryptoConfig.customPath == false) {
+				if (!SecureCryptoConfig.customPath) {
 					p = Paths.get(uri);
 				} else {
 					p = Paths.get(path.toString() + "\\publicKeys");
@@ -260,10 +260,7 @@ public class JSONReader {
 		try {
 			s = Files.walk(p);
 			s.filter(Files::isRegularFile).filter(file -> file.getFileName().toString().startsWith("publicKey"))
-					.forEach(file -> {
-						publicKeyPaths.add(file);
-
-					});
+					.forEach(file -> publicKeyPaths.add(file));
 		} catch (IOException e) {
 			logger.warn("Error while trying to access file", e);
 		} finally {
@@ -278,18 +275,16 @@ public class JSONReader {
 		InputStream is2;
 		for (int i = 0; i < allFilePaths.size(); i++) {
 			Path filepath = allFilePaths.get(i);
-			String signaturePath1 = filepath.toString();
-			String signaturePath2 = filepath.toString();
 			String[] parts = allFilePaths.get(i).toString().split("\\\\");
 			String signatureFileName1 = parts[parts.length - 1].replace(JsonFileEndingWithDot, "-signature1");
 			String signatureFileName2 = parts[parts.length - 1].replace(JsonFileEndingWithDot, "-signature2");
-			signaturePath1 = filepath.toString().replace(parts[parts.length - 1], "") + signatureFileName1;
-			signaturePath2 = filepath.toString().replace(parts[parts.length - 1], "") + signatureFileName2;
+			String signaturePath1 = filepath.toString().replace(parts[parts.length - 1], "") + signatureFileName1;
+			String signaturePath2 = filepath.toString().replace(parts[parts.length - 1], "") + signatureFileName2;
 
 			boolean validation1 = false;
 			boolean validation2 = false;
 			boolean result;
-			if (isJAR == false) {
+			if (!isJAR) {
 				result = new File(signaturePath1).exists() && new File(signaturePath2).exists();
 			} else {
 				is1 = org.securecryptoconfig.JSONReader.class.getResourceAsStream(signaturePath1);
@@ -317,7 +312,7 @@ public class JSONReader {
 						| IOException e) {
 					throw new SCCException("Signature check of Secure Crypto Config files could not be performed!", e);
 				}
-				if (validation1 != true || validation2 != true) {
+				if (!validation1 || !validation2) {
 					logger.debug("Not both signatures are valid for {}", filepath);
 					logger.debug("This file will not be considered!");
 					allFilePaths.remove(i);
