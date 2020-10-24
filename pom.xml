@@ -9,8 +9,8 @@
 		<sonar.projectKey>secureCryptoConfig_secureCryptoConfigInterface</sonar.projectKey>
 		<sonar.organization>securecryptoconfig</sonar.organization>
 		<sonar.host.url>https://sonarcloud.io</sonar.host.url>
-		<sonar.sources>src</sonar.sources>
-		<sonar.tests>test</sonar.tests>
+		<sonar.sources>src/main/java</sonar.sources>
+		<sonar.tests>src/test/java</sonar.tests>
 		<sonar.sourceEncoding>UTF-8</sonar.sourceEncoding>
 		<jacoco.version>0.8.3</jacoco.version>
 		<sonar.java.coveragePlugin>jacoco</sonar.java.coveragePlugin>
@@ -22,7 +22,11 @@
 	</properties>
 	<build>
 		<finalName>SCC</finalName>
-		<sourceDirectory>src</sourceDirectory>
+		<sourceDirectory>${basedir}/src/main/java</sourceDirectory>
+		<testSourceDirectory>${basedir}/src/test/java</testSourceDirectory>
+		<outputDirectory>${basedir}/target/classes</outputDirectory>
+		<testOutputDirectory>${basedir}/target/test-classes</testOutputDirectory>
+
 		<plugins>
 			<plugin>
 				<artifactId>maven-javadoc-plugin</artifactId>
@@ -39,6 +43,11 @@
 					<source>1.8</source>
 					<target>1.8</target>
 				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>2.22.0</version>
 			</plugin>
 			<plugin>
 				<groupId>org.sonarsource.scanner.maven</groupId>
@@ -102,6 +111,19 @@
 			<version>5.7.0</version>
 			<scope>test</scope>
 		</dependency>
+		<dependency>
+			<groupId>org.junit.jupiter</groupId>
+			<artifactId>junit-jupiter-engine</artifactId>
+			<version>5.7.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-surefire-plugin</artifactId>
+			<version>2.22.0</version>
+			<scope>test</scope>
+		</dependency>
+
 		<!-- https://mvnrepository.com/artifact/com.upokecenter/cbor -->
 		<dependency>
 			<groupId>com.upokecenter</groupId>
