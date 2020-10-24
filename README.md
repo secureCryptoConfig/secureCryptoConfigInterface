@@ -2,26 +2,47 @@
 
 *Java Interface that provides methods for most common cryptographic use cases. The Interface provides a cryptographic API that is secure and easy to use.*
 
+
+[![Master Build Status](https://github.com/secureCryptoConfig/secureCryptoConfigInterface/workflows/Java CI with Maven/badge.svg)](https://github.com/secureCryptoConfig/secureCryptoConfigInterface/actions)
+
+
+[![Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=secureCryptoConfig_secureCryptoConfigInterface&metric=alert_status)](https://sonarcloud.io/dashboard?id=secureCryptoConfig_secureCryptoConfigInterface)
+[![Maintainability Rating](https://sonarcloud.io/api/project_badges/measure?project=secureCryptoConfig_secureCryptoConfigInterface&metric=sqale_rating)](https://sonarcloud.io/component_measures?id=secureCryptoConfig_secureCryptoConfigInterface&metric=sqale_rating)
+[![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=secureCryptoConfig_secureCryptoConfigInterface&metric=security_rating)](https://sonarcloud.io/component_measures?id=secureCryptoConfig_secureCryptoConfigInterface&metric=security_rating)
+[![Reliability Rating](https://sonarcloud.io/api/project_badges/measure?project=secureCryptoConfig_secureCryptoConfigInterface&metric=reliability_rating)](https://sonarcloud.io/component_measures?id=secureCryptoConfig_secureCryptoConfigInterface&metric=reliability_rating)
+
+[![Code smells](https://sonarcloud.io/api/project_badges/measure?project=secureCryptoConfig_secureCryptoConfigInterface&metric=code_smells)](https://sonarcloud.io/component_measures?id=secureCryptoConfig_secureCryptoConfigInterface&metric=code_smells)
+[![Bugs](https://sonarcloud.io/api/project_badges/measure?project=secureCryptoConfig_secureCryptoConfigInterface&metric=bugs)](https://sonarcloud.io/component_measures?id=secureCryptoConfig_secureCryptoConfigInterface&metric=bugs)
+[![Technical debt](https://sonarcloud.io/api/project_badges/measure?project=secureCryptoConfig_secureCryptoConfigInterface&metric=sqale_index)](https://sonarcloud.io/component_measures?id=secureCryptoConfig_secureCryptoConfigInterface&metric=sqale_index)
+[![Coverage](https://sonarcloud.io/api/project_badges/measure?project=secureCryptoConfig_secureCryptoConfigInterface&metric=coverage)](https://sonarcloud.io/component_measures?id=secureCryptoConfig_secureCryptoConfigInterface&metric=coverage)
+[![Vulnerabilities](https://sonarcloud.io/api/project_badges/measure?project=secureCryptoConfig_secureCryptoConfigInterface&metric=vulnerabilities)](https://sonarcloud.io/component_measures?id=secureCryptoConfig_secureCryptoConfigInterface&metric=vulnerabilities)
+[![Duplicated Lines Density](https://sonarcloud.io/api/project_badges/measure?project=secureCryptoConfig_secureCryptoConfigInterface&metric=duplicated_lines_density)](https://sonarcloud.io/component_measures?id=secureCryptoConfig_secureCryptoConfigInterface&metric=duplicated_lines_density)
+
+![Lines Of Code](https://sonarcloud.io/api/project_badges/measure?project=secureCryptoConfig_secureCryptoConfigInterface&metric=ncloc)
+
 ## Index
 
-1. [Example Usage](#example-usage)
-2. [Introduction](#introduction)
-3. [Overview](#overview)
-4. [Getting started](#getting-started)
-5. [En/decryption](#en/decryption)
-	1. [Generating new keys](#generating-new-keys)
-	2. [Symmetric Encryption](#symmetric-encryption)
-	3. [Asymmetric Encryption](#asymmetric-encryption)
-	4. [PlaintextContainer](#plaintextcontainer)
-	5. [SCCCiphertext](#sccciphertext)
-6. [Signing](#signing)
-	1. [SCCSignature](#sccsignature)
-7. [Hashing](#hashing)
-	1. [SCCHash](#scchash)
-8. [Password Hashing](#password-hashing)
-	1. [SCCPasswordHash](#sccpasswordhash)
-9. [Handling of Secure Crypto Config files](#handling-of-secure-crypto-config-files)
-10. [Specification of algorithms](#specification-of-algorithms)
+- [Secure Crypto Config Interface](#secure-crypto-config-interface)
+	- [Index](#index)
+	- [Example Usage](#example-usage)
+	- [JavaDoc](#javadoc)
+	- [Introduction](#introduction)
+	- [Overview](#overview)
+	- [Getting started](#getting-started)
+	- [En/Decryption](#endecryption)
+		- [Generating new keys](#generating-new-keys)
+		- [Symmetric Encryption](#symmetric-encryption)
+		- [Asymmetric Encryption](#asymmetric-encryption)
+		- [PlaintextContainer](#plaintextcontainer)
+		- [SCCCiphertext](#sccciphertext)
+	- [Signing](#signing)
+		- [SCCSignature](#sccsignature)
+	- [Hashing](#hashing)
+		- [SCCHash](#scchash)
+	- [Password Hashing](#password-hashing)
+		- [SCCPasswordHash](#sccpasswordhash)
+	- [Handling of Secure Crypto Config files](#handling-of-secure-crypto-config-files)
+	- [Specification of algorithms](#specification-of-algorithms)
 
 ## Example Usage 
 
