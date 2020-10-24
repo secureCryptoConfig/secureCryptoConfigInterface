@@ -36,15 +36,17 @@ public class JSONReader {
 	private static org.apache.logging.log4j.Logger logger = org.apache.logging.log4j.LogManager
 			.getLogger(JSONReader.class);
 
-	private static ArrayList<Path> allFilePaths = new ArrayList<Path>();
-	private static ArrayList<Path> publicKeyPaths = new ArrayList<Path>();
-	final protected static HashSet<Integer> levels = new HashSet<Integer>();
+	private static ArrayList<Path> allFilePaths = new ArrayList<>();
+	private static ArrayList<Path> publicKeyPaths = new ArrayList<>();
+	protected static final HashSet<Integer> levels = new HashSet<>();
 
 	static FileSystem fileSystem;
 
 	protected static boolean isJAR = false;
 
 	private static String signatureAlgo = "EC";
+
+	private static String JsonFileEndingWithDot = ".json";
 
 	// Enum representing supported crypto use cases
 	protected enum CryptoUseCase {
@@ -77,7 +79,7 @@ public class JSONReader {
 
 		URI uri;
 
-		if (SecureCryptoConfig.customPath == false) {
+		if (!SecureCryptoConfig.customPath) {
 			try {
 				uri = JSONReader.class.getResource("/scc-configs").toURI();
 
@@ -98,11 +100,8 @@ public class JSONReader {
 		Stream<Path> stream = null;
 		try {
 			stream = Files.walk(path);
-			stream.filter(Files::isRegularFile).filter(file -> file.getFileName().toString().endsWith(".json"))
-					.forEach(file -> {
-						allFilePaths.add(file);
-
-					});
+			stream.filter(Files::isRegularFile).filter(file -> file.getFileName().toString().endsWith(JsonFileEndingWithDot))
+					.forEach(file -> allFilePaths.add(file););
 			stream.close();
 		} catch (IOException | NullPointerException e) {
 			logger.warn("Path not available or not set", e);
@@ -123,7 +122,7 @@ public class JSONReader {
 
 		try {
 			for (int i = 0; i < allFilePaths.size(); i++) {
-				if (isJAR == false) {
+				if (!isJAR) {
 					SCCInstance sccInstance = objectMapper.readValue(new File(allFilePaths.get(i).toString()),
 							SCCInstance.class);
 					// check securityLevel, version format
@@ -163,7 +162,7 @@ public class JSONReader {
 	 */
 	protected static SCCInstance getLatestSCC(int level) {
 		SCCInstance latest = null;
-		ArrayList<SCCInstance> instancesWithLevel = new ArrayList<SCCInstance>();
+		ArrayList<SCCInstance> instancesWithLevel = new ArrayList<>();
 
 		if (levels.contains(level)) {
 			// which file have security level
@@ -178,8 +177,8 @@ public class JSONReader {
 
 			for (SCCInstance i : instancesWithLevel) {
 				String nmb = i.getVersion();
-				String version[] = nmb.split("-");
-				Integer versionInt[] = new Integer[2];
+				String[] version = nmb.split("-");
+				Integer[] versionInt = new Integer[2];
 				versionInt[0] = Integer.parseInt(version[0]);
 				versionInt[1] = Integer.parseInt(version[1]);
 				if (highestYear < versionInt[0]) {
@@ -284,8 +283,8 @@ public class JSONReader {
 			String signaturePath1 = filepath.toString();
 			String signaturePath2 = filepath.toString();
 			String[] parts = allFilePaths.get(i).toString().split("\\\\");
-			String signatureFileName1 = parts[parts.length - 1].replace(".json", "-signature1");
-			String signatureFileName2 = parts[parts.length - 1].replace(".json", "-signature2");
+			String signatureFileName1 = parts[parts.length - 1].replace(JsonFileEndingWithDot, "-signature1");
+			String signatureFileName2 = parts[parts.length - 1].replace(JsonFileEndingWithDot, "-signature2");
 			signaturePath1 = filepath.toString().replace(parts[parts.length - 1], "") + signatureFileName1;
 			signaturePath2 = filepath.toString().replace(parts[parts.length - 1], "") + signatureFileName2;
 
