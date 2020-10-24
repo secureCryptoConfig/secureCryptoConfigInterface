@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 import org.junit.jupiter.api.Test;
 import org.securecryptoconfig.PlaintextContainer;
 import org.securecryptoconfig.SCCCiphertext;
@@ -79,8 +80,8 @@ class TestSymmetricEncryption {
 		// Encryption
 		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext);
 
-		assertNotEquals(plaintext, ciphertext);
-		assertFalse(ciphertext.toBytes().length == 0);
+		assertNotEquals(Base64.getEncoder().encodeToString(plaintext), ciphertext.toBase64());
+		assertNotEquals(ciphertext.toBytes().length, 0);
 
 		// Decryption
 		PlaintextContainer plain = scc.decryptSymmetric(key, ciphertext);
