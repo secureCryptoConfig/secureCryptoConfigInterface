@@ -94,8 +94,9 @@ public class JSONReader {
 			}
 		}
 
+		Stream<Path> stream = null;
 		try {
-			Stream<Path> stream = Files.walk(path);
+			stream = Files.walk(path);
 			stream.filter(Files::isRegularFile).filter(file -> file.getFileName().toString().endsWith(".json"))
 					.forEach(file -> {
 						allFilePaths.add(file);
@@ -104,6 +105,10 @@ public class JSONReader {
 			stream.close();
 		} catch (IOException | NullPointerException e) {
 			e.printStackTrace();
+		} finally {
+			if (stream != null) {
+				stream.close();
+			}
 		}
 	}
 
