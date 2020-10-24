@@ -286,7 +286,7 @@ public class SCCKey extends AbstractSCCKey {
 	 * @throws NoSuchAlgorithmException
 	 * @throws SCCException
 	 */
-	public static SCCKey createKey(KeyUseCase useCase) throws CoseException, NoSuchAlgorithmException, SCCException {
+	public static SCCKey createKey(KeyUseCase useCase) throws CoseException, SCCException {
 		CryptoUseCase c;
 		switch (useCase) {
 		case Signing:
@@ -316,9 +316,8 @@ public class SCCKey extends AbstractSCCKey {
 		int keysize = 0;
 
 		if (SecureCryptoConfig.usedAlgorithm == null) {
-			ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
 
-			algorithms = SecureCryptoConfig.currentSCCInstance.getUsage().getSymmetricEncryption();
+			ArrayList<SCCAlgorithm> algorithms = SecureCryptoConfig.currentSCCInstance.getUsage().getSymmetricEncryption();
 
 			for (int i = 0; i < algorithms.size(); i++) {
 
@@ -391,7 +390,7 @@ public class SCCKey extends AbstractSCCKey {
 	private static SCCKey createSymmetricKey(String algo, int keysize) throws SCCException {
 		KeyGenerator keyGen;
 		try {
-			keyGen = KeyGenerator.getInstance(algo.toString());
+			keyGen = KeyGenerator.getInstance(algo);
 			keyGen.init(keysize);
 			SecretKey key = keyGen.generateKey();
 			return new SCCKey(KeyType.Symmetric, key.getEncoded(), null, algo);
@@ -414,7 +413,7 @@ public class SCCKey extends AbstractSCCKey {
 		AlgorithmID id;
 		String algoKey;
 		if (SecureCryptoConfig.usedAlgorithm == null) {
-			ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
+			ArrayList<SCCAlgorithm> algorithms;
 
 			if (c.equals(CryptoUseCase.AsymmetricEncryption)) {
 				algorithms = SecureCryptoConfig.currentSCCInstance.getUsage().getAsymmetricEncryption();
@@ -508,19 +507,18 @@ public class SCCKey extends AbstractSCCKey {
 	 * @param algo
 	 * @param keysize
 	 * @return SCCKey
+	 * @throws SCCException 
 	 */
-	private static SCCKey createAsymmetricKey(String algo, int keysize) {
+	private static SCCKey createAsymmetricKey(String algo, int keysize) throws SCCException {
 		try {
 			KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance(algo);
 			keyPairGenerator.initialize(keysize);
 			KeyPair keyPair = keyPairGenerator.generateKeyPair();
-			SCCKey key = new SCCKey(KeyType.Asymmetric, keyPair.getPublic().getEncoded(),
+			return new SCCKey(KeyType.Asymmetric, keyPair.getPublic().getEncoded(),
 					keyPair.getPrivate().getEncoded(), algo);
-			return key;
+			
 		} catch (NoSuchAlgorithmException e) {
-			// TODO throw exception instead of returning null
-			e.printStackTrace();
-			return null;
+			throw new SCCException("No such algorithm!", e);
 		}
 	}
 
@@ -580,12 +578,13 @@ public class SCCKey extends AbstractSCCKey {
 			throws CoseException, SCCException {
 		String algo = null;
 		String keyAlgo = null;
-		int keysize = 0, iterations = 0, saltLength = 0;
+		int keysize = 0;
+		int iterations = 0;
+		int saltLength = 0;
 
 		if (SecureCryptoConfig.usedAlgorithm == null) {
-			ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
-
-			algorithms = SecureCryptoConfig.currentSCCInstance.getUsage().getSymmetricEncryption();
+			 
+			 ArrayList<SCCAlgorithm> algorithms = SecureCryptoConfig.currentSCCInstance.getUsage().getSymmetricEncryption();
 
 			for (int i = 0; i < algorithms.size(); i++) {
 
@@ -714,12 +713,12 @@ public class SCCKey extends AbstractSCCKey {
 	public byte[] decodeObjectToBytes() {
 
 		try {
-			byte[] keyAsByte = SCCInstanceKey.createSCCInstanceKey(this.type, this.publicKey, this.privateKey,
+			return SCCInstanceKey.createSCCInstanceKey(this.type, this.publicKey, this.privateKey,
 					this.algorithm);
-			return keyAsByte;
+			
 		} catch (JsonProcessingException e) {
 			e.printStackTrace();
-			return null;
+			return new byte[0];
 		}
 	}
 
@@ -746,10 +745,9 @@ public class SCCKey extends AbstractSCCKey {
 		}
 
 		if (sccInstanceKey != null) {
-			SCCKey key = new SCCKey(sccInstanceKey.getType(), sccInstanceKey.getPublicKey(),
+			return new SCCKey(sccInstanceKey.getType(), sccInstanceKey.getPublicKey(),
 					sccInstanceKey.getPrivateKey(), sccInstanceKey.getAlgorithm());
 
-			return key;
 		} else {
 			return null;
 		}

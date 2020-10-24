@@ -953,7 +953,8 @@ public abstract interface SecureCryptoConfigInterface {
  abstract class AbstractSCCKey {
 
 	KeyType type;
-	byte[] privateKey, publicKey;
+	byte[] privateKey;
+	byte[] publicKey;
 	String algorithm;
 
 	protected AbstractSCCKey(KeyType type, byte[] publicKey, byte[] privateKey, String algorithm) {

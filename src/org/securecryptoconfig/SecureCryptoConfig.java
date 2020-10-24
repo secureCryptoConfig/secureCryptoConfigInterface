@@ -56,7 +56,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * Contains all supported algorithm names
 	 *
 	 */
-	public static enum SCCAlgorithm {
+	public enum SCCAlgorithm {
 		// symmetric:
 		AES_GCM_256_96, AES_GCM_128_96, AES_GCM_192_96,
 		// Digital Signature
@@ -209,9 +209,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		if (key.getKeyType() == KeyType.Symmetric) {
 			if (usedAlgorithm == null) {
-				ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
-
-				algorithms = currentSCCInstance.getUsage().getSymmetricEncryption();
+			
+				ArrayList<SCCAlgorithm> algorithms = currentSCCInstance.getUsage().getSymmetricEncryption();
 
 				for (int i = 0; i < algorithms.size(); i++) {
 
@@ -303,9 +302,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		if (key.getKeyType() == KeyType.Asymmetric) {
 			if (usedAlgorithm == null) {
-				ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
-
-				algorithms = currentSCCInstance.getUsage().getAsymmetricEncryption();
+				
+				ArrayList<SCCAlgorithm> algorithms = currentSCCInstance.getUsage().getAsymmetricEncryption();
 
 				for (int i = 0; i < algorithms.size(); i++) {
 
@@ -394,9 +392,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		PlaintextContainer p;
 		if (usedAlgorithm == null) {
-			ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
-
-			algorithms = currentSCCInstance.getUsage().getHashing();
+			
+			ArrayList<SCCAlgorithm> algorithms = currentSCCInstance.getUsage().getHashing();
 
 			for (int i = 0; i < algorithms.size(); i++) {
 
@@ -508,9 +505,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 			if (usedAlgorithm == null) {
 
-				ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
-
-				algorithms = currentSCCInstance.getUsage().getSigning();
+				ArrayList<SCCAlgorithm> algorithms = currentSCCInstance.getUsage().getSigning();
 
 				for (int i = 0; i < algorithms.size(); i++) {
 					SCCAlgorithm sccalgorithmID = algorithms.get(i);
@@ -624,9 +619,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	public SCCPasswordHash passwordHash(PlaintextContainerInterface password) throws CoseException, SCCException {
 
 		if (usedAlgorithm == null) {
-			ArrayList<SCCAlgorithm> algorithms = new ArrayList<SCCAlgorithm>();
-
-			algorithms = currentSCCInstance.getUsage().getPasswordHashing();
+			
+			ArrayList<SCCAlgorithm> algorithms = currentSCCInstance.getUsage().getPasswordHashing();
 
 			for (int i = 0; i < algorithms.size(); i++) {
 
@@ -729,7 +723,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		m.SetContent(plaintext.toBytes());
 		SCCKey k = (SCCKey) key;
 		try {
-			m.addAttribute(HeaderKeys.Algorithm, AlgorithmID.ECDSA_512.AsCBOR(), Attribute.PROTECTED);
+			m.addAttribute(HeaderKeys.Algorithm, id.AsCBOR(), Attribute.PROTECTED);
 			OneKey oneKey = new OneKey(k.getPublicKey(), k.getPrivateKey());
 			m.sign(oneKey);
 
