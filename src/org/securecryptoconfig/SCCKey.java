@@ -85,6 +85,9 @@ import COSE.OneKey;
  */
 public class SCCKey extends AbstractSCCKey {
 
+	private static org.apache.logging.log4j.Logger logger = org.apache.logging.log4j.LogManager
+	.getLogger(SCCKey.class);
+
 	/**
 	 * Type of the corresponding key.
 	 * 
@@ -222,7 +225,7 @@ public class SCCKey extends AbstractSCCKey {
 			try {
 				return KeyFactory.getInstance(this.algorithm).generatePrivate(new PKCS8EncodedKeySpec(this.privateKey));
 			} catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
-				e.printStackTrace();
+				logger.warn("Privatey key invalid or algorithm invalid", e);
 				return null;
 			}
 		} else {
@@ -551,7 +554,7 @@ public class SCCKey extends AbstractSCCKey {
 			return createSymmetricKeyWithPassword(new PlaintextContainer(password));
 
 		} catch (CoseException e) {
-			e.printStackTrace();
+			logger.warn("Error in Creation of symmetric key", e);
 			return null;
 		}
 	}
@@ -716,7 +719,7 @@ public class SCCKey extends AbstractSCCKey {
 					this.algorithm);
 			
 		} catch (JsonProcessingException e) {
-			e.printStackTrace();
+			logger.warn("Error while processing JSON", e);
 			return new byte[0];
 		}
 	}
@@ -740,7 +743,7 @@ public class SCCKey extends AbstractSCCKey {
 		try {
 			sccInstanceKey = objectMapper.readValue(existingSCCKey, SCCInstanceKey.class);
 		} catch (IOException e) {
-			e.printStackTrace();
+			logger.warn("Error while accessing key", e);
 		}
 
 		if (sccInstanceKey != null) {
@@ -766,7 +769,7 @@ public class SCCKey extends AbstractSCCKey {
 			random.nextBytes(nonce);
 			return nonce;
 		} catch (NoSuchAlgorithmException e) {
-			e.printStackTrace();
+			logger.warn("Secure Random Algorithm invalid/unknown", e);
 			return null;
 		}
 

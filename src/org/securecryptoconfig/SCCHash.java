@@ -27,6 +27,9 @@ import COSE.HashMessage;
 */
 public class SCCHash extends AbstractSCCHash {
 
+	private static org.apache.logging.log4j.Logger logger = org.apache.logging.log4j.LogManager
+			.getLogger(SCCHash.class);
+	
 	private SecureCryptoConfig scc = new SecureCryptoConfig();
 
 	/**
@@ -113,7 +116,7 @@ public class SCCHash extends AbstractSCCHash {
 		try {
 			return (HashMessage) HashMessage.DecodeFromBytes(this.hashMsg);
 		} catch (CoseException e) {
-			e.printStackTrace();
+			logger.warn("Message could not be decoded from bytes. Maybe not in COSE format?", e);
 			return null;
 		}
 	}

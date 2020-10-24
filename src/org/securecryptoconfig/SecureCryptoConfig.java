@@ -46,6 +46,9 @@ import COSE.Sign1Message;
  */
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
+	private static org.apache.logging.log4j.Logger logger = org.apache.logging.log4j.LogManager
+	.getLogger(SecureCryptoConfig.class);
+
 	protected static SCCInstance currentSCCInstance = JSONReader.parseFiles(null);
 	
 	protected static SCCAlgorithm usedAlgorithm = null;
@@ -284,8 +287,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(sccciphertext.msg);
 				return new PlaintextContainer(msg.decrypt(key.toBytes()));
 			} catch (CoseException e) {
-				e.printStackTrace();
-				throw new CoseException("No supported algorithm!");
+				throw new SCCException("No supported algorithm!", e);
 			}
 		} else {
 			throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
@@ -450,7 +452,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		try {
 			return hash(new PlaintextContainer(plaintext));
 		} catch (CoseException e) {
-			e.printStackTrace();
+			logger.warn("Error while hashing.", e);
 			return null;
 		}
 	}
@@ -665,7 +667,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		try {
 			return passwordHash(new PlaintextContainer(password));
 		} catch (CoseException e) {
-			e.printStackTrace();
+			logger.warn("Error while password hashing.", e);
 			return null;
 		}
 	}
@@ -779,7 +781,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			m.SetContent((byte[]) null);
 			return SCCPasswordHash.createFromExistingPasswordHash(m.EncodeToBytes());
 		} catch (CoseException e) {
-			e.printStackTrace();
+			logger.warn("COSE Exception", e);
 			return null;
 		}
 	}
@@ -804,7 +806,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			return SCCPasswordHash.createFromExistingPasswordHash(m.EncodeToBytes());
 
 		} catch (CoseException e) {
-			e.printStackTrace();
+			logger.warn("Error with COSE", e);
 			return null;
 		}
 	}
@@ -829,7 +831,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			return SCCHash.createFromExistingHash(hashMessage.EncodeToBytes());
 
 		} catch (CoseException e) {
-			e.printStackTrace();
+			logger.warn("Error with COSE", e);
 			return null;
 		}
 	}
@@ -857,7 +859,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			return SCCCiphertext.createFromExistingCiphertext(encrypt0Message.EncodeToBytes());
 
 		} catch (CoseException e) {
-			e.printStackTrace();
+			logger.warn("Error with COSE", e);
 			return null;
 		}
 	}

@@ -28,6 +28,9 @@ import COSE.PasswordHashMessage;
  
 public class SCCPasswordHash extends AbstractSCCPasswordHash {
 
+	private static org.apache.logging.log4j.Logger logger = org.apache.logging.log4j.LogManager
+	.getLogger(SCCPasswordHash.class);
+
 	private SecureCryptoConfig scc = new SecureCryptoConfig();
 
 	/**
@@ -94,7 +97,7 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 		try {
 			return (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(this.hashMsg);
 		} catch (CoseException e) {
-			e.printStackTrace();
+			logger.warn("Error while decoding from bytes. Not in COSE format?", e);
 			return null;
 		}
 	}

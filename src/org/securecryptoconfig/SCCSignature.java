@@ -27,6 +27,9 @@ import COSE.Sign1Message;
  */
 public class SCCSignature extends AbstractSCCSignature {
 
+	private static org.apache.logging.log4j.Logger logger = org.apache.logging.log4j.LogManager
+	.getLogger(SCCSignature.class);
+
 	private SecureCryptoConfig scc = new SecureCryptoConfig();
 
 	/**
@@ -103,7 +106,7 @@ public class SCCSignature extends AbstractSCCSignature {
 		try {
 			return (Sign1Message) Sign1Message.DecodeFromBytes(this.signatureMsg);
 		} catch (CoseException e) {
-			e.printStackTrace();
+			logger.warn("Error while decoding from bytes. Not in COSE format?", e);
 			return null;
 		}
 	}
