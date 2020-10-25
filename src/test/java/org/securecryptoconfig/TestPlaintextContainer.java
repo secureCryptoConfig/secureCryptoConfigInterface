@@ -23,73 +23,47 @@ public class TestPlaintextContainer {
     static SCCKey signingKey;
 
     @BeforeAll
-    static void setup() {
+    static void setup() throws SCCException, CoseException {
         scc = new SecureCryptoConfig();
         plaintext = "Hello World!";
         pc = new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8));
-        try {
-            symmetricKey = SCCKey.createSymmetricKeyWithPassword("password".getBytes(StandardCharsets.UTF_8));
-            asymmetricKey = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
-            signingKey = SCCKey.createKey(KeyUseCase.Signing);
-        } catch (SCCException e) {
-            fail(e);
-        } catch (CoseException e) {
-            fail(e);
-        }
+        symmetricKey = SCCKey.createSymmetricKeyWithPassword("password".getBytes(StandardCharsets.UTF_8));
+        asymmetricKey = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
+        signingKey = SCCKey.createKey(KeyUseCase.Signing);
     }
 
     @Test
-    void testValidateHash() {
-        try {
-            assertTrue(pc.validateHash(pc.hash()));
-        } catch (SCCException e) {
-            fail(e);
-        }
+    void testValidateHash() throws SCCException {
+        assertTrue(pc.validateHash(pc.hash()));
     }
 
     @Test
-    void testValidatePasswordHash() {
-        try {
-            assertTrue(pc.validatePasswordHash(pc.passwordHash()));
-        } catch (SCCException e) {
-            fail(e);
-        }
+    void testValidatePasswordHash() throws SCCException {
+        assertTrue(pc.validatePasswordHash(pc.passwordHash()));
     }
 
     @Test
-    void testEncryptSymmetric() {
-        try {
-            SCCCiphertext ciphertext = pc.encryptSymmetric(symmetricKey);
-            String otherPlaintext = ciphertext.decryptSymmetric(symmetricKey).toString(StandardCharsets.UTF_8);
-            assertEquals(plaintext, otherPlaintext);
-        } catch (SCCException e) {
-            fail(e);
-        }
+    void testEncryptSymmetric() throws SCCException {
+        SCCCiphertext ciphertext = pc.encryptSymmetric(symmetricKey);
+        String otherPlaintext = ciphertext.decryptSymmetric(symmetricKey).toString(StandardCharsets.UTF_8);
+        assertEquals(plaintext, otherPlaintext);
     }
 
     @Test
-    void testEncryptAsymmetric() {
-        try {
-            SCCCiphertext ciphertext = pc.encryptAsymmetric(asymmetricKey);
-            String otherPlaintext = ciphertext.decryptAsymmetric(asymmetricKey).toString(StandardCharsets.UTF_8);
-            assertEquals(plaintext, otherPlaintext);
-        } catch (SCCException e) {
-            fail(e);
-        }
+    void testEncryptAsymmetric() throws SCCException {
+        SCCCiphertext ciphertext = pc.encryptAsymmetric(asymmetricKey);
+        String otherPlaintext = ciphertext.decryptAsymmetric(asymmetricKey).toString(StandardCharsets.UTF_8);
+        assertEquals(plaintext, otherPlaintext);
     }
 
     @Test
-    void testSign() {
-        try {
-            SCCSignature signature = pc.sign(signingKey);
+    void testSign() throws SCCException {
+        SCCSignature signature = pc.sign(signingKey);
 
-            String otherPlaintext = "Hello Malory!";
-            PlaintextContainer otherPc = new PlaintextContainer(otherPlaintext.getBytes(StandardCharsets.UTF_8));
-            SCCSignature otherSignature = otherPc.sign(signingKey);
+        String otherPlaintext = "Hello Malory!";
+        PlaintextContainer otherPc = new PlaintextContainer(otherPlaintext.getBytes(StandardCharsets.UTF_8));
+        SCCSignature otherSignature = otherPc.sign(signingKey);
 
-            assertNotEquals(signature.toBase64(), otherSignature.toBase64());
-        } catch (SCCException e) {
-            fail(e);
-        }
+        assertNotEquals(signature.toBase64(), otherSignature.toBase64());
     }
 }
