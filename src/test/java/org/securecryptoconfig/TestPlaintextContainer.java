@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.securecryptoconfig.SCCKey.KeyUseCase;
 
@@ -14,13 +15,32 @@ import COSE.CoseException;
 
 public class TestPlaintextContainer {
 
-    SecureCryptoConfig scc = new SecureCryptoConfig();
+    static SecureCryptoConfig scc;
+    static String plaintext;
+    static PlaintextContainer pc;
+    static SCCKey symmetricKey;
+    static SCCKey asymmetricKey;
+    static SCCKey signingKey;
+
+    @BeforeAll
+    static void setup() {
+        scc = new SecureCryptoConfig();
+        plaintext = "Hello World!";
+        pc = new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8));
+        try {
+            symmetricKey = SCCKey.createSymmetricKeyWithPassword("password".getBytes(StandardCharsets.UTF_8));
+            asymmetricKey = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
+            signingKey = SCCKey.createKey(KeyUseCase.Signing);
+        } catch (SCCException e) {
+            fail(e);
+        } catch (CoseException e) {
+            fail(e);
+        }
+    }
 
     @Test
     void testValidateHash() {
         try {
-            String testplaintext = "Hello World!";
-            PlaintextContainer pc = new PlaintextContainer(testplaintext.getBytes(StandardCharsets.UTF_8));
             assertTrue(pc.validateHash(pc.hash()));
         } catch (SCCException e) {
             fail(e);
@@ -30,8 +50,6 @@ public class TestPlaintextContainer {
     @Test
     void testValidatePasswordHash() {
         try {
-            String testplaintext = "Hello World!";
-            PlaintextContainer pc = new PlaintextContainer(testplaintext.getBytes(StandardCharsets.UTF_8));
             assertTrue(pc.validatePasswordHash(pc.passwordHash()));
         } catch (SCCException e) {
             fail(e);
@@ -41,12 +59,9 @@ public class TestPlaintextContainer {
     @Test
     void testEncryptSymmetric() {
         try {
-            String testPlaintext = "Hello World!";
-            PlaintextContainer pc = new PlaintextContainer(testPlaintext.getBytes(StandardCharsets.UTF_8));
-            SCCKey key = SCCKey.createSymmetricKeyWithPassword("password".getBytes(StandardCharsets.UTF_8));
-            SCCCiphertext ciphertext = pc.encryptSymmetric(key);
-            String plaintext = ciphertext.decryptSymmetric(key).toString(StandardCharsets.UTF_8);
-            assertEquals(testPlaintext, plaintext);
+            SCCCiphertext ciphertext = pc.encryptSymmetric(symmetricKey);
+            String otherPlaintext = ciphertext.decryptSymmetric(symmetricKey).toString(StandardCharsets.UTF_8);
+            assertEquals(plaintext, otherPlaintext);
         } catch (SCCException e) {
             fail(e);
         }
@@ -55,15 +70,10 @@ public class TestPlaintextContainer {
     @Test
     void testEncryptAsymmetric() {
         try {
-            String testPlaintext = "Hello World!";
-            PlaintextContainer pc = new PlaintextContainer(testPlaintext.getBytes(StandardCharsets.UTF_8));
-            SCCKey key = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
-            SCCCiphertext ciphertext = pc.encryptAsymmetric(key);
-            String plaintext = ciphertext.decryptAsymmetric(key).toString(StandardCharsets.UTF_8);
-            assertEquals(testPlaintext, plaintext);
+            SCCCiphertext ciphertext = pc.encryptAsymmetric(asymmetricKey);
+            String otherPlaintext = ciphertext.decryptAsymmetric(asymmetricKey).toString(StandardCharsets.UTF_8);
+            assertEquals(plaintext, otherPlaintext);
         } catch (SCCException e) {
-            fail(e);
-        } catch (CoseException e) {
             fail(e);
         }
     }
@@ -71,19 +81,14 @@ public class TestPlaintextContainer {
     @Test
     void testSign() {
         try {
-            String testPlaintext = "Hello World!";
-            PlaintextContainer pc = new PlaintextContainer(testPlaintext.getBytes(StandardCharsets.UTF_8));
-            SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
-            SCCSignature signature = pc.sign(key);
+            SCCSignature signature = pc.sign(signingKey);
 
             String otherPlaintext = "Hello Malory!";
             PlaintextContainer otherPc = new PlaintextContainer(otherPlaintext.getBytes(StandardCharsets.UTF_8));
-            SCCSignature otherSignature = otherPc.sign(key);
+            SCCSignature otherSignature = otherPc.sign(signingKey);
 
-            assertNotEquals(signature.toBase64(),otherSignature.toBase64());
+            assertNotEquals(signature.toBase64(), otherSignature.toBase64());
         } catch (SCCException e) {
-            fail(e);
-        } catch (CoseException e) {
             fail(e);
         }
     }
