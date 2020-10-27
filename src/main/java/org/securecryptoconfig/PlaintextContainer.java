@@ -267,6 +267,21 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 			throw new SCCException("Signing is not possible! Not the right KeyType!", e);
 		}
 	}
+	
+	/**
+	 * Determines if given signature is valid for a given plaintext
+	 * @param signature
+	 * @param key
+	 * @return boolean shows if Signature for a given plaintext is valid
+	 * @throws SCCException 
+	 */
+	@Override
+	public boolean validateSignature (AbstractSCCSignature signature, AbstractSCCKey key) throws SCCException
+	{
+		SCCSignature sigForPlain = this.sign(key);
+		
+		return signature.toBytes().equals(sigForPlain.toBytes());
+	}
 
 	/**
 	 * Hashing of a plaintext ({@link PlaintextContainer}).
@@ -314,4 +329,5 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 		}
 	}
 
+	
 }

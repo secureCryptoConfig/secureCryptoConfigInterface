@@ -773,6 +773,14 @@ public abstract interface SecureCryptoConfigInterface {
 	public abstract AbstractSCCSignature sign(AbstractSCCKey key) throws SCCException;
 
 	/**
+	 * Determines if given signature is valid for a given plaintext
+	 * @param signature
+	 * @param key
+	 * @return boolean shows if Signature for a given plaintext is valid
+	 * @throws SCCException 
+	 */
+	public abstract boolean validateSignature (AbstractSCCSignature signature, AbstractSCCKey key) throws SCCException;
+	/**
 	 * Hashing of a plaintext ({@link PlaintextContainer}).
 	 * 
 	 * <br> The hashing can be done as follows:
