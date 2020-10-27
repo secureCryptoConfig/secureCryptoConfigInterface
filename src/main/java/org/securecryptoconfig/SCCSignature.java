@@ -1,34 +1,43 @@
 package org.securecryptoconfig;
 
-import java.security.InvalidKeyException;
 import java.util.Base64;
 
 import COSE.CoseException;
 import COSE.Sign1Message;
+
 /**
  * Class representing a container for a Digital Signature.
  * 
- * <br><br>SCCSignature contains a byte[] representation of a COSE message. The byte[]
+ * <br>
+ * <br>
+ * SCCSignature contains a byte[] representation of a COSE message. The byte[]
  * contains the signature as well as all the parameters used during signing. The
  * inclusion of the used parameters in the signature ensures that validation
  * implementation code does not need to know the used algorithm or parameters
  * before validation, but can parse it from the COSE message.
  * 
- * <br><br>A new SCCSignature can be created by calling {@link SecureCryptoConfig#sign(AbstractSCCKey, byte[])}.<br>
+ * <br>
+ * <br>
+ * A new SCCSignature can be created by calling
+ * {@link SecureCryptoConfig#sign(AbstractSCCKey, byte[])}.<br>
  * E.g.
+ * 
  * <pre>
- * {@code
- * SecureCryptoConfig scc = new SecureCryptoConfig();
- * SCCSignature signature = scc.sign(key, plaintext);
+ * {
+ * 	&#64;code
+ * 	SecureCryptoConfig scc = new SecureCryptoConfig();
+ * 	SCCSignature signature = scc.sign(key, plaintext);
  * }
  * </pre>
- * Alternatively it is also possible to create a SCCSignature from a existing byte[]
- * representation of a SCCSignature by calling {@link SCCSignature#createFromExistingSignature(byte[])}
+ * 
+ * Alternatively it is also possible to create a SCCSignature from a existing
+ * byte[] representation of a SCCSignature by calling
+ * {@link SCCSignature#createFromExistingSignature(byte[])}
  */
 public class SCCSignature extends AbstractSCCSignature {
 
 	private static org.apache.logging.log4j.Logger logger = org.apache.logging.log4j.LogManager
-	.getLogger(SCCSignature.class);
+			.getLogger(SCCSignature.class);
 
 	private SecureCryptoConfig scc = new SecureCryptoConfig();
 
@@ -39,12 +48,10 @@ public class SCCSignature extends AbstractSCCSignature {
 	 * @param signatureMsg: byte[] of COSE message
 	 */
 	private SCCSignature(byte[] signatureMsg) {
-		
+
 		super(signatureMsg);
-		
+
 	}
-	
-	
 
 	/**
 	 * {@inheritDoc}
@@ -62,7 +69,7 @@ public class SCCSignature extends AbstractSCCSignature {
 	public String toString() {
 		return toBase64();
 	}
-	
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -74,15 +81,10 @@ public class SCCSignature extends AbstractSCCSignature {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKey key)
-			throws SCCException {
-		try {
-			return scc.updateSignature(key, plaintext);
-		} catch (CoseException e) {
-			throw new SCCException("Signature update could not be performed!", e);
-		} catch (InvalidKeyException e) {
-			throw new SCCException("Signature update could not be performed! Wrong KeyType!", e);
-		}
+	public SCCSignature updateSignature(PlaintextContainerInterface plaintext, AbstractSCCKey key) throws SCCException {
+
+		return scc.updateSignature(key, plaintext);
+
 	}
 
 	/**
@@ -90,11 +92,9 @@ public class SCCSignature extends AbstractSCCSignature {
 	 */
 	@Override
 	public boolean validateSignature(AbstractSCCKey key) throws SCCException {
-		try {
-			return scc.validateSignature(key, this);
-		} catch (InvalidKeyException e) {
-			throw new SCCException("Signature validation could not be performed! Wrong KeyType!", e);
-		}
+
+		return scc.validateSignature(key, this);
+
 	}
 
 	/**
@@ -113,38 +113,37 @@ public class SCCSignature extends AbstractSCCSignature {
 
 	/**
 	 * Return SCCSignature from byte[] representation of a existing SCCSignature
+	 * 
 	 * @param existingSCCSignature: byte[] of existing SCCSignature
 	 * @return SCCSignature
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
-	public static SCCSignature createFromExistingSignature(byte[] existingSCCSignature) throws SCCException
-	{
+	public static SCCSignature createFromExistingSignature(byte[] existingSCCSignature) throws SCCException {
 		try {
 			Sign1Message.DecodeFromBytes(existingSCCSignature);
 			return new SCCSignature(existingSCCSignature);
 		} catch (CoseException e) {
 			throw new SCCException("No valid SCCSignature byte[] representation", e);
 		}
-		
-		
+
 	}
-	
+
 	/**
-	 * Return SCCSignature from String (Base64) representation of a existing SCCSignature
+	 * Return SCCSignature from String (Base64) representation of a existing
+	 * SCCSignature
+	 * 
 	 * @param existingSCCSignature: String (Base64) of existing SCCSignature
 	 * @return SCCSignature
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
-	public static SCCSignature createFromExistingSignature(String existingSCCSignature) throws SCCException
-	{
+	public static SCCSignature createFromExistingSignature(String existingSCCSignature) throws SCCException {
 		try {
 			Sign1Message.DecodeFromBytes(Base64.getDecoder().decode(existingSCCSignature));
 			return new SCCSignature(Base64.getDecoder().decode(existingSCCSignature));
 		} catch (CoseException e) {
 			throw new SCCException("No valid SCCSignature String representation", e);
 		}
-		
-		
+
 	}
-	
+
 }

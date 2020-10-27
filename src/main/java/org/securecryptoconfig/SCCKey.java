@@ -145,25 +145,23 @@ public class SCCKey extends AbstractSCCKey {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public byte[] toBytes() throws InvalidKeyException {
+	public byte[] toBytes() throws SCCException {
 		if (this.type == KeyType.Symmetric) {
 			return this.publicKey;
 		} else {
-			throw new InvalidKeyException(
-					"Wrong key type for this method. Not symmetric! Call getPublicKeyBytes() or getPrivateKeyBytes()");
-		}
+			throw new SCCException("Wrong key type for this method. Not symmetric! Call getPublicKeyBytes() or getPrivateKeyBytes()", new InvalidKeyException("Invalid key!"));
+			}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public byte[] getPublicKeyBytes() throws InvalidKeyException {
+	public byte[] getPublicKeyBytes() throws SCCException {
 		if (type == KeyType.Asymmetric) {
 			return this.publicKey;
 		} else {
-			throw new InvalidKeyException(
-					"Wrong key type for this method. Not asymmetric: no publicKey existing! Call toBytes() to get byte[] representation of key");
+			throw new SCCException("Wrong key type for this method. Not asymmetric: no publicKey existing! Call toBytes() to get byte[] representation of key", new InvalidKeyException("Invalid key!"));
 		}
 	}
 
@@ -171,26 +169,25 @@ public class SCCKey extends AbstractSCCKey {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public byte[] getPrivateKeyBytes() throws InvalidKeyException {
+	public byte[] getPrivateKeyBytes() throws SCCException {
 		if (type == KeyType.Asymmetric) {
 			return this.privateKey;
 		} else {
-			throw new InvalidKeyException("Wrong key type for this method. Not asymmetric: no privateKey existing!");
-
-		}
+			throw new SCCException("Wrong key type for this method. Not asymmetric: no privateKey existing!", new InvalidKeyException("Invalid key!"));
+			}
 	}
 
 	/**
 	 * Returns byte[] representation of key to SecretKey for further processing
 	 * 
 	 * @return SecretKey
-	 * @throws InvalidKeyException
+	 * @throws SCCException
 	 */
-	protected SecretKey getSecretKey() throws InvalidKeyException {
+	protected SecretKey getSecretKey() throws SCCException {
 		if (this.type == KeyType.Symmetric) {
 			return new SecretKeySpec(publicKey, 0, publicKey.length, this.algorithm);
 		} else {
-			throw new InvalidKeyException("Wrong key type for this method. Not symmetric!");
+			throw new SCCException("Wrong key type for this method. Not symmetric!", new InvalidKeyException("Invalid key!"));
 		}
 	}
 
@@ -209,8 +206,7 @@ public class SCCKey extends AbstractSCCKey {
 				throw new SCCException("Could not convert to Public Key", e);
 			}
 		} else {
-			// TODO throw exception instead of returning null
-			return null;
+			throw new SCCException("Wrong KeyType", new InvalidKeyException());
 		}
 	}
 
@@ -219,17 +215,18 @@ public class SCCKey extends AbstractSCCKey {
 	 * processing
 	 * 
 	 * @return PrivateKey
+	 * @throws SCCException 
 	 */
-	protected PrivateKey getPrivateKey() {
+	protected PrivateKey getPrivateKey() throws SCCException {
 		if (this.type == KeyType.Asymmetric) {
 			try {
 				return KeyFactory.getInstance(this.algorithm).generatePrivate(new PKCS8EncodedKeySpec(this.privateKey));
 			} catch (InvalidKeySpecException | NoSuchAlgorithmException e) {
 				logger.warn("Privatey key invalid or algorithm invalid", e);
-				return null;
+				throw new SCCException("Cannot get private key", new InvalidKeyException());
 			}
 		} else {
-			return null;
+			throw new SCCException("Wrong KeyType", new InvalidKeyException());
 		}
 	}
 
@@ -285,10 +282,9 @@ public class SCCKey extends AbstractSCCKey {
 	 * @param useCase: for which Scenario is the key needed? Give a value of
 	 *                 {@link KeyUseCase}
 	 * @return SCCKey: key that can be used for the specified use case
-	 * @throws CoseException
 	 * @throws SCCException
 	 */
-	public static SCCKey createKey(KeyUseCase useCase) throws CoseException, SCCException {
+	public static SCCKey createKey(KeyUseCase useCase) throws SCCException {
 		CryptoUseCase c;
 		switch (useCase) {
 		case Signing:
@@ -309,10 +305,9 @@ public class SCCKey extends AbstractSCCKey {
 	 * {@link SecureCryptoConfigInterface#encryptSymmetric(AbstractSCCKey, byte[])}.
 	 * 
 	 * @return SCCKey
-	 * @throws CoseException
 	 * @throws SCCException
 	 */
-	private static SCCKey createSymmetricKey() throws CoseException, SCCException {
+	private static SCCKey createSymmetricKey() throws SCCException {
 
 		String algo = null;
 		int keysize = 0;
@@ -378,9 +373,8 @@ public class SCCKey extends AbstractSCCKey {
 				return null;
 			}
 		}
-
-		throw new CoseException("No supported algorithms! Key creation not possible!");
-
+		throw new SCCException("No supported algorithms! Key creation not possible!", new CoseException(null));
+		
 	}
 
 	/**
@@ -407,11 +401,9 @@ public class SCCKey extends AbstractSCCKey {
 	 * 
 	 * @param c
 	 * @return SCCKey
-	 * @throws NoSuchAlgorithmException
 	 * @throws SCCException
-	 * @throws CoseException
 	 */
-	private static SCCKey createNewKeyPair(CryptoUseCase c) throws SCCException, CoseException {
+	private static SCCKey createNewKeyPair(CryptoUseCase c) throws SCCException{
 		AlgorithmID id;
 		String algoKey;
 		if (SecureCryptoConfig.usedAlgorithm == null) {
@@ -489,8 +481,8 @@ public class SCCKey extends AbstractSCCKey {
 				break;
 			}
 		}
-		throw new CoseException("Key could not be created! No algorithm specified!");
-	}
+		throw new SCCException("Key could not be created! No algorithm specified!", new CoseException(null));
+		}
 
 	private static SCCKey createOneKey(AlgorithmID id, String algoKey) throws SCCException {
 		try {
@@ -553,9 +545,9 @@ public class SCCKey extends AbstractSCCKey {
 		try {
 			return createSymmetricKeyWithPassword(new PlaintextContainer(password));
 
-		} catch (CoseException e) {
+		} catch (SCCException e) {
 			logger.warn("Error in Creation of symmetric key", e);
-			return null;
+			throw new SCCException("Error in Creation of symmetric key", e);
 		}
 	}
 
@@ -573,11 +565,10 @@ public class SCCKey extends AbstractSCCKey {
 	 * 
 	 * @param password: as PlaintextContainer
 	 * @return SCCKey
-	 * @throws CoseException
 	 * @throws SCCException
 	 */
 	public static SCCKey createSymmetricKeyWithPassword(PlaintextContainer password)
-			throws CoseException, SCCException {
+			throws SCCException {
 		String algo = null;
 		String keyAlgo = null;
 		int keysize = 0;
@@ -658,8 +649,7 @@ public class SCCKey extends AbstractSCCKey {
 
 		}
 
-		throw new CoseException("No supported algorithms! Key creation not possible!");
-
+		throw new SCCException("No supported algorithms! Key creation not possible!", new CoseException(null));
 	}
 
 	/**
@@ -671,7 +661,7 @@ public class SCCKey extends AbstractSCCKey {
 	 * @param keysize
 	 * @param iterations
 	 * @param saltLength
-	 * @return
+	 * @return SCCKey
 	 * @throws SCCException
 	 */
 	private static SCCKey createKeyWithPassword(PlaintextContainer password, String algo, String keyAlgo, int keysize,

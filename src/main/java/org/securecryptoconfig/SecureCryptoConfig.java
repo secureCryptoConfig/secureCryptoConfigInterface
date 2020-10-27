@@ -35,7 +35,7 @@ import COSE.Sign1Message;
  * 
  * <pre>
  * {
- * 	&#64;code
+ * 	{@code
  * 	SecureCryptoConfig scc = new SecureCryptoConfig();
  * 	SCCHash sccHash = scc.hash(plaintext);
  * }
@@ -47,10 +47,10 @@ import COSE.Sign1Message;
 public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	private static org.apache.logging.log4j.Logger logger = org.apache.logging.log4j.LogManager
-	.getLogger(SecureCryptoConfig.class);
+			.getLogger(SecureCryptoConfig.class);
 
 	protected static SCCInstance currentSCCInstance = JSONReader.parseFiles(null);
-	
+
 	protected static SCCAlgorithm usedAlgorithm = null;
 
 	protected static boolean customPath = false;
@@ -208,11 +208,11 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 */
 	@Override
 	public SCCCiphertext encryptSymmetric(AbstractSCCKey key, PlaintextContainerInterface plaintext)
-			throws CoseException, InvalidKeyException, SCCException {
+			throws SCCException {
 
 		if (key.getKeyType() == KeyType.Symmetric) {
 			if (usedAlgorithm == null) {
-			
+
 				ArrayList<SCCAlgorithm> algorithms = currentSCCInstance.getUsage().getSymmetricEncryption();
 
 				for (int i = 0; i < algorithms.size(); i++) {
@@ -249,18 +249,18 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 			}
 		} else {
-			throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
-					+ "Create a key with KeyType.Symmetric");
+			throw new SCCException(
+					"The used SCCKey has the wrong KeyType for this use case. Create a key with KeyType.Symmetric",
+					new InvalidKeyException("Invalid key!"));
 		}
-		throw new CoseException("No supported algorithms!");
+		throw new SCCException("No supported algorithms!", new CoseException(null));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SCCCiphertext encryptSymmetric(AbstractSCCKey key, byte[] plaintext)
-			throws CoseException, InvalidKeyException, SCCException {
+	public SCCCiphertext encryptSymmetric(AbstractSCCKey key, byte[] plaintext) throws SCCException {
 
 		return encryptSymmetric(key, new PlaintextContainer(plaintext));
 	}
@@ -269,8 +269,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SCCCiphertext reEncryptSymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext)
-			throws CoseException, InvalidKeyException, SCCException {
+	public SCCCiphertext reEncryptSymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext) throws SCCException {
 
 		PlaintextContainer decrypted = decryptSymmetric(key, ciphertext);
 		return encryptSymmetric(key, decrypted);
@@ -281,7 +280,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 */
 	@Override
 	public PlaintextContainer decryptSymmetric(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext)
-			throws SCCException, InvalidKeyException {
+			throws SCCException {
 		if (key.getKeyType() == KeyType.Symmetric) {
 			try {
 				Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(sccciphertext.msg);
@@ -290,8 +289,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				throw new SCCException("No supported algorithm!", e);
 			}
 		} else {
-			throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
-					+ "Create a key with KeyType.Symmetric");
+			throw new SCCException(
+					"The used SCCKey has the wrong KeyType for this use case. Create a key with KeyType.Symmetric",
+					new InvalidKeyException());
 		}
 	}
 
@@ -300,11 +300,11 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 */
 	@Override
 	public SCCCiphertext encryptAsymmetric(AbstractSCCKey key, PlaintextContainerInterface plaintext)
-			throws CoseException, InvalidKeyException, SCCException {
+			throws SCCException {
 
 		if (key.getKeyType() == KeyType.Asymmetric) {
 			if (usedAlgorithm == null) {
-				
+
 				ArrayList<SCCAlgorithm> algorithms = currentSCCInstance.getUsage().getAsymmetricEncryption();
 
 				for (int i = 0; i < algorithms.size(); i++) {
@@ -340,19 +340,18 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				}
 			}
 		} else {
-
-			throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
-					+ "Create a key with KeyType.Asymmetric");
+			throw new SCCException("The used SCCKey has the wrong KeyType for this use case.",
+					new InvalidKeyException());
 		}
-		throw new CoseException("No supported algorithm!");
+		throw new SCCException("No supported algorithm", new CoseException(null));
+
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SCCCiphertext encryptAsymmetric(AbstractSCCKey key, byte[] plaintext)
-			throws CoseException, InvalidKeyException, SCCException {
+	public SCCCiphertext encryptAsymmetric(AbstractSCCKey key, byte[] plaintext) throws SCCException {
 
 		return encryptAsymmetric(key, new PlaintextContainer(plaintext));
 
@@ -362,8 +361,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SCCCiphertext reEncryptAsymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext)
-			throws CoseException, InvalidKeyException, SCCException {
+	public SCCCiphertext reEncryptAsymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext) throws SCCException {
 		PlaintextContainer decrypted = decryptAsymmetric(key, ciphertext);
 		return encryptAsymmetric(key, decrypted);
 	}
@@ -373,15 +371,20 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 */
 	@Override
 	public PlaintextContainer decryptAsymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext)
-			throws CoseException, InvalidKeyException, SCCException {
+			throws SCCException {
 		if (key.getKeyType() == KeyType.Asymmetric) {
 			SCCKey k = (SCCKey) key;
 
-			AsymMessage msg = (AsymMessage) AsymMessage.DecodeFromBytes(ciphertext.msg);
-			return new PlaintextContainer(msg.decrypt(new KeyPair(k.getPublicKey(), k.getPrivateKey())));
+			AsymMessage msg;
+			try {
+				msg = (AsymMessage) AsymMessage.DecodeFromBytes(ciphertext.msg);
+				return new PlaintextContainer(msg.decrypt(new KeyPair(k.getPublicKey(), k.getPrivateKey())));
+			} catch (CoseException e) {
+				throw new SCCException("Error by decoding of bytes", e);
+			}
 		} else {
-			throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
-					+ "Create a key with KeyType.Asymmetric");
+			throw new SCCException("The used SCCKey has the wrong KeyType for this use case.",
+					new InvalidKeyException());
 		}
 
 	}
@@ -390,11 +393,11 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SCCHash hash(PlaintextContainerInterface plaintext) throws CoseException, SCCException {
+	public SCCHash hash(PlaintextContainerInterface plaintext) throws SCCException {
 
 		PlaintextContainer p;
 		if (usedAlgorithm == null) {
-			
+
 			ArrayList<SCCAlgorithm> algorithms = currentSCCInstance.getUsage().getHashing();
 
 			for (int i = 0; i < algorithms.size(); i++) {
@@ -441,28 +444,24 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				break;
 			}
 		}
-		throw new CoseException("No supported algorithm!");
+		throw new SCCException("No supported algorithm!", new CoseException(null));
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SCCHash hash(byte[] plaintext) throws CoseException, SCCException {
-		try {
-			return hash(new PlaintextContainer(plaintext));
-		} catch (CoseException e) {
-			logger.warn("Error while hashing.", e);
-			return null;
-		}
+	public SCCHash hash(byte[] plaintext) throws SCCException {
+
+		return hash(new PlaintextContainer(plaintext));
+
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SCCHash updateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash)
-			throws CoseException, SCCException {
+	public SCCHash updateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws SCCException {
 		return hash(plaintext);
 	}
 
@@ -470,7 +469,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SCCHash updateHash(byte[] plaintext, AbstractSCCHash hash) throws CoseException, SCCException {
+	public SCCHash updateHash(byte[] plaintext, AbstractSCCHash hash) throws SCCException {
 		return updateHash(new PlaintextContainer(plaintext), hash);
 	}
 
@@ -478,22 +477,25 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean validateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash)
-			throws CoseException, SCCException {
+	public boolean validateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash) throws SCCException {
 		SCCHash sccHash = (SCCHash) hash;
-		String s = new String(sccHash.convertByteToMsg().getHashedContent(), StandardCharsets.UTF_8);
+		try {
+			String s = new String(sccHash.convertByteToMsg().getHashedContent(), StandardCharsets.UTF_8);
 
-		SCCHash hash1 = hash(plaintext);
-		String s1 = new String(hash1.convertByteToMsg().getHashedContent(), StandardCharsets.UTF_8);
+			SCCHash hash1 = hash(plaintext);
+			String s1 = new String(hash1.convertByteToMsg().getHashedContent(), StandardCharsets.UTF_8);
 
-		return s.equals(s1);
+			return s.equals(s1);
+		} catch (CoseException e) {
+			throw new SCCException("Valiating of hash could not be performed", e);
+		}
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean validateHash(byte[] plaintext, AbstractSCCHash hash) throws CoseException, SCCException {
+	public boolean validateHash(byte[] plaintext, AbstractSCCHash hash) throws SCCException {
 		return validateHash(new PlaintextContainer(plaintext), hash);
 	}
 
@@ -501,8 +503,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SCCSignature sign(AbstractSCCKey key, PlaintextContainerInterface plaintext)
-			throws CoseException, InvalidKeyException, SCCException {
+	public SCCSignature sign(AbstractSCCKey key, PlaintextContainerInterface plaintext) throws SCCException {
 		if (key.getKeyType() == KeyType.Asymmetric) {
 
 			if (usedAlgorithm == null) {
@@ -541,18 +542,18 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				}
 			}
 		} else {
-			throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
-					+ "Create a key with KeyType.Asymmetric");
+			throw new SCCException("The used SCCKey has the wrong KeyType for this use case. ",
+					new InvalidKeyException());
 		}
-		throw new CoseException("No supported algorithm!");
+		throw new SCCException("No supported algorithm!", new CoseException(null));
+
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SCCSignature sign(AbstractSCCKey key, byte[] plaintext)
-			throws CoseException, InvalidKeyException, SCCException {
+	public SCCSignature sign(AbstractSCCKey key, byte[] plaintext) throws SCCException {
 
 		return sign(key, new PlaintextContainer(plaintext));
 
@@ -562,8 +563,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SCCSignature updateSignature(AbstractSCCKey key, PlaintextContainerInterface plaintext)
-			throws CoseException, InvalidKeyException, SCCException {
+	public SCCSignature updateSignature(AbstractSCCKey key, PlaintextContainerInterface plaintext) throws SCCException {
 		return sign(key, plaintext);
 	}
 
@@ -571,8 +571,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SCCSignature updateSignature(AbstractSCCKey key, byte[] plaintext)
-			throws CoseException, InvalidKeyException, SCCException {
+	public SCCSignature updateSignature(AbstractSCCKey key, byte[] plaintext) throws SCCException {
 		return updateSignature(key, new PlaintextContainer(plaintext));
 	}
 
@@ -580,8 +579,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean validateSignature(AbstractSCCKey key, AbstractSCCSignature signature)
-			throws InvalidKeyException, SCCException {
+	public boolean validateSignature(AbstractSCCKey key, AbstractSCCSignature signature) throws SCCException {
 		if (key.getKeyType() == KeyType.Asymmetric) {
 			SCCKey k = (SCCKey) key;
 			PrivateKey privateKey = null;
@@ -601,8 +599,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			}
 
 		} else {
-			throw new InvalidKeyException("The used SCCKey has the wrong KeyType for this use case. "
-					+ "Create a key with KeyType.Asymmetric");
+			throw new SCCException("The used SCCKey has the wrong KeyType for this use case. ",
+					new InvalidKeyException());
 		}
 	}
 
@@ -610,7 +608,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean validateSignature(AbstractSCCKey key, byte[] signature) throws InvalidKeyException, SCCException {
+	public boolean validateSignature(AbstractSCCKey key, byte[] signature) throws SCCException {
 		return validateSignature(key, SCCSignature.createFromExistingSignature(signature));
 	}
 
@@ -618,10 +616,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SCCPasswordHash passwordHash(PlaintextContainerInterface password) throws CoseException, SCCException {
+	public SCCPasswordHash passwordHash(PlaintextContainerInterface password) throws SCCException {
 
 		if (usedAlgorithm == null) {
-			
+
 			ArrayList<SCCAlgorithm> algorithms = currentSCCInstance.getUsage().getPasswordHashing();
 
 			for (int i = 0; i < algorithms.size(); i++) {
@@ -655,7 +653,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				break;
 			}
 		}
-		throw new CoseException("No supported algorithm!");
+		throw new SCCException("No supported algorithm!", new CoseException(null));
 
 	}
 
@@ -663,13 +661,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public SCCPasswordHash passwordHash(byte[] password) throws CoseException, SCCException {
-		try {
-			return passwordHash(new PlaintextContainer(password));
-		} catch (CoseException e) {
-			logger.warn("Error while password hashing.", e);
-			return null;
-		}
+	public SCCPasswordHash passwordHash(byte[] password) throws SCCException {
+
+		return passwordHash(new PlaintextContainer(password));
+
 	}
 
 	/**
@@ -677,27 +672,29 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 */
 	@Override
 	public boolean validatePasswordHash(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash)
-			throws CoseException, SCCException {
+			throws SCCException {
 
 		SCCPasswordHash sccHash = (SCCPasswordHash) passwordhash;
 		PasswordHashMessage msg = sccHash.convertByteToMsg();
 		CBORObject algX = msg.findAttribute(HeaderKeys.Algorithm);
+		try {
 		AlgorithmID alg = AlgorithmID.FromCBOR(algX);
 
 		SCCPasswordHash hash = SecureCryptoConfig.createPasswordHashMessageSalt(password, alg, msg.getSalt());
 
 		String hash1 = new String(msg.getHashedContent(), StandardCharsets.UTF_8);
-		
-		if(hash != null)
-		{
+
+		if (hash != null) {
 			String hash2 = new String(hash.convertByteToMsg().getHashedContent(), StandardCharsets.UTF_8);
 
 			return hash1.equals(hash2);
-		}
-		else {
+		} else {
 			return false;
 		}
-		
+		}catch(CoseException e)
+		{
+			throw new SCCException("Could not validate password hash", new CoseException(null));
+		}
 
 	}
 
@@ -706,7 +703,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 */
 	@Override
 	public boolean validatePasswordHash(byte[] password, AbstractSCCPasswordHash passwordhash)
-			throws CoseException, SCCException {
+			throws SCCException {
 		return validatePasswordHash(new PlaintextContainer(password), passwordhash);
 	}
 

@@ -2,11 +2,7 @@ package org.securecryptoconfig;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-
 import org.securecryptoconfig.SCCKey.KeyUseCase;
-
-import COSE.CoseException;
 
 /**
  * Class for a container representing the plaintext processed in cryptographic
@@ -17,10 +13,12 @@ import COSE.CoseException;
  * plaintext (e.g. encryption, signing).
  * 
  * A new PlaintextContainer can be created like this:
+ * 
  * <pre>
- * {@code
- * String plaintext = "Plaintext";
- * PlaintextContainer container = new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8));
+ * {
+ * 	&#64;code
+ * 	String plaintext = "Plaintext";
+ * 	PlaintextContainer container = new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8));
  * }
  * </pre>
  * 
@@ -69,16 +67,14 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 		return new String(this.plaintext, c);
 
 	}
-	
 
 	/**
 	 * Returns String representation of PlaintextContainer. As charset "UTF-8" is
 	 * used. To choose another charset call
 	 * {@link PlaintextContainerInterface#toString(Charset)}
 	 * 
-	 * @deprecated 
-	 * Do not use the Java default toString() Method. Use {@link PlaintextContainer#toString(Charset)}
-	 * instead.
+	 * @deprecated Do not use the Java default toString() Method. Use
+	 *             {@link PlaintextContainer#toString(Charset)} instead.
 	 * 
 	 * @return String
 	 */
@@ -100,11 +96,9 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	 */
 	@Override
 	public boolean validateHash(AbstractSCCHash hash) throws SCCException {
-		try {
-			return scc.validateHash(this, hash);
-		} catch (CoseException e) {
-			throw new SCCException("Hash validation could not be performed!", e);
-		}
+
+		return scc.validateHash(this, hash);
+
 	}
 
 	/**
@@ -120,29 +114,33 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	 */
 	@Override
 	public boolean validatePasswordHash(AbstractSCCPasswordHash passwordHash) throws SCCException {
-		try {
-			return scc.validatePasswordHash(this, passwordHash);
-		} catch (CoseException e) {
-			throw new SCCException("PasswordHash validation could not be performed!", e);
-		}
+
+		return scc.validatePasswordHash(this, passwordHash);
+
 	}
 
 	/**
 	 * Symmetric encryption with a certain {@link SCCKey} for a given plaintext
 	 * based on the current Secure Crypto Config file.
 	 * 
-	 * <br> The encryption can be done as follows:
+	 * <br>
+	 * The encryption can be done as follows:
+	 * 
 	 * <pre>
-	 * {@code
-	 *  PlaintextContainer c = new PlaintextContainer(plaintextBytes);
-	 *  SCCCiphertext ciphertext = c.encryptSymmetric(sccKey);
+	 * {
+	 * 	&#64;code
+	 * 	PlaintextContainer c = new PlaintextContainer(plaintextBytes);
+	 * 	SCCCiphertext ciphertext = c.encryptSymmetric(sccKey);
 	 * }
 	 * </pre>
-	 * <br>A new {@link SCCKey} for performing can be created with
+	 * 
+	 * <br>
+	 * A new {@link SCCKey} for performing can be created with
 	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
 	 * 
 	 * <pre>
-	 * {@code
+	 * {
+	 * 	&#64;code
 	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 	 * }
 	 * </pre>
@@ -151,7 +149,8 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	 * with {@link SCCKey#createSymmetricKeyWithPassword(byte[])}:
 	 * 
 	 * <pre>
-	 * {@code
+	 * {
+	 * 	&#64;code
 	 * 	SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
 	 * }
 	 * </pre>
@@ -171,31 +170,31 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	 */
 	@Override
 	public SCCCiphertext encryptSymmetric(AbstractSCCKey key) throws SCCException {
-		try {
-			return scc.encryptSymmetric(key, this);
-		} catch (CoseException e) {
-			throw new SCCException("Symmetric encryption could not be performed!", e);
-		} catch (InvalidKeyException e) {
-			throw new SCCException("Symmetric encryption is not possible! Not the right KeyType!", e);
-		}
+
+		return scc.encryptSymmetric(key, this);
+
 	}
 
 	/**
 	 * Asymmetric encryption with a certain {@link SCCKey} for a given plaintext
-	 * based on the current Secure Crypto Config file.
-	 * <br> The encryption can be done as follows:
+	 * based on the current Secure Crypto Config file. <br>
+	 * The encryption can be done as follows:
+	 * 
 	 * <pre>
-	 * {@code
+	 * {
+	 * 	&#64;code
 	 * 	PlaintextContainer c = new PlaintextContainer(plaintextBytes);
-	 *  SCCCiphertext c = c.encryptAsymmetric(sccKey);
+	 * 	SCCCiphertext c = c.encryptAsymmetric(sccKey);
 	 * }
 	 * </pre>
 	 * 
-	 * <br>A new {@link SCCKey} for performing can be created with
+	 * <br>
+	 * A new {@link SCCKey} for performing can be created with
 	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
 	 * 
 	 * <pre>
-	 * {@code
+	 * {
+	 * 	&#64;code
 	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
 	 * }
 	 * </pre>
@@ -215,31 +214,32 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	 */
 	@Override
 	public SCCCiphertext encryptAsymmetric(AbstractSCCKey key) throws SCCException {
-		try {
-			return scc.encryptAsymmetric(key, this);
-		} catch (CoseException e) {
-			throw new SCCException("Asymmetric encryption could not be performed!", e);
-		} catch (InvalidKeyException e) {
-			throw new SCCException("Asymmetric encryption is not possible! Not the right KeyType!", e);
-		}
+		return scc.encryptAsymmetric(key, this);
+
 	}
 
-	/** Signing with a certain {@link SCCKey} for a given plaintext based on the
+	/**
+	 * Signing with a certain {@link SCCKey} for a given plaintext based on the
 	 * current Secure Crypto Config file.
 	 * 
-	 * <br> The signing can be done as follows:
+	 * <br>
+	 * The signing can be done as follows:
+	 * 
 	 * <pre>
-	 * {@code
+	 * {
+	 * 	&#64;code
 	 * 	PlaintextContainer c = new PlaintextContainer(plaintextBytes);
-	 *  SCCSignature sig = c.sign(sccKey);
+	 * 	SCCSignature sig = c.sign(sccKey);
 	 * }
 	 * </pre>
 	 * 
-	 * <br>A new {@link SCCKey} for performing can be created with
+	 * <br>
+	 * A new {@link SCCKey} for performing can be created with
 	 * {@link SCCKey#createKey(KeyUseCase)} as follows:
 	 * 
 	 * <pre>
-	 * {@code
+	 * {
+	 * 	&#64;code
 	 * 	SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
 	 * }
 	 * </pre>
@@ -259,38 +259,37 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	 */
 	@Override
 	public SCCSignature sign(AbstractSCCKey key) throws SCCException {
-		try {
-			return scc.sign(key, this);
-		} catch (CoseException e) {
-			throw new SCCException("Signing could not be performed!", e);
-		} catch (InvalidKeyException e) {
-			throw new SCCException("Signing is not possible! Not the right KeyType!", e);
-		}
+
+		return scc.sign(key, this);
+
 	}
-	
+
 	/**
 	 * Determines if given signature is valid for a given plaintext
+	 * 
 	 * @param signature
 	 * @param key
 	 * @return boolean shows if Signature for a given plaintext is valid
-	 * @throws SCCException 
+	 * @throws SCCException
 	 */
 	@Override
-	public boolean validateSignature (AbstractSCCSignature signature, AbstractSCCKey key) throws SCCException
-	{
+	public boolean validateSignature(AbstractSCCSignature signature, AbstractSCCKey key) throws SCCException {
 		SCCSignature sigForPlain = this.sign(key);
-		
-		return signature.toBytes().equals(sigForPlain.toBytes());
+
+		return signature.toBytes() == sigForPlain.toBytes();
 	}
 
 	/**
 	 * Hashing of a plaintext ({@link PlaintextContainer}).
 	 * 
-	 * <br> The hashing can be done as follows:
+	 * <br>
+	 * The hashing can be done as follows:
+	 * 
 	 * <pre>
-	 * {@code
+	 * {
+	 * 	&#64;code
 	 * 	PlaintextContainer c = new PlaintextContainer(plaintextBytes);
-	 *  SCCHash hash = c.hash();
+	 * 	SCCHash hash = c.hash();
 	 * }
 	 * </pre>
 	 * 
@@ -299,21 +298,21 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	 */
 	@Override
 	public SCCHash hash() throws SCCException {
-		try {
-			return scc.hash(this);
-		} catch (CoseException e) {
-			throw new SCCException("Hashing could not be performed!", e);
-		}
+
+		return scc.hash(this);
+
 	}
 
 	/**
 	 * Assume the plaintext ({@link PlaintextContainer}) represents a password and
-	 * perform password hashing.
-	 * <br> The password hashing can be done as follows:
+	 * perform password hashing. <br>
+	 * The password hashing can be done as follows:
+	 * 
 	 * <pre>
-	 * {@code
+	 * {
+	 * 	&#64;code
 	 * 	PlaintextContainer c = new PlaintextContainer(passwordBytes);
-	 *  SCCPasswordHash hash = scc.passwordHash();
+	 * 	SCCPasswordHash hash = scc.passwordHash();
 	 * }
 	 * </pre>
 	 * 
@@ -322,12 +321,9 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	 */
 	@Override
 	public SCCPasswordHash passwordHash() throws SCCException {
-		try {
-			return scc.passwordHash(this);
-		} catch (CoseException e) {
-			throw new SCCException("Password Hashing could not be performed!", e);
-		}
+
+		return scc.passwordHash(this);
+
 	}
 
-	
 }

@@ -1,7 +1,6 @@
 package org.securecryptoconfig;
 
 import java.nio.charset.Charset;
-import java.security.InvalidKeyException;
 import org.securecryptoconfig.SCCKey.KeyType;
 import org.securecryptoconfig.SCCKey.KeyUseCase;
 
@@ -69,12 +68,10 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCCiphertext}
-	 * @throws CoseException
-	 * @throws InvalidKeyException if {@link SCCKey} has not the {@link KeyType#Symmetric}
-	 * @throws SCCException
+	 * @throws SCCException either InvalidKeyException or CoseException
 	 */
 	public AbstractSCCCiphertext encryptSymmetric(AbstractSCCKey key, PlaintextContainerInterface plaintext)
-			throws CoseException, InvalidKeyException, SCCException;
+			throws SCCException;
 
 	/**
 	 * Symmetric encryption with a certain {@link SCCKey} for a given plaintext
@@ -118,12 +115,10 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as byte[]
 	 * @return {@link SCCCiphertext}
-	 * @throws CoseException
-	 * @throws InvalidKeyException if {@link SCCKey} has not the {@link KeyType#Symmetric}
 	 * @throws SCCException
 	 */
 	public AbstractSCCCiphertext encryptSymmetric(AbstractSCCKey key, byte[] plaintext)
-			throws CoseException, InvalidKeyException, SCCException;
+			throws SCCException;
 
 	/**
 	 * Ciphertext will be first decrypted and then encrypted again with the current
@@ -132,12 +127,10 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param key:        {@link SCCKey}
 	 * @param ciphertext: {@link SCCCiphertext}
 	 * @return {@link SCCCiphertext}
-	 * @throws CoseException
-	 * @throws InvalidKeyException if {@link SCCKey} has not the {@link KeyType#Symmetric}
 	 * @throws SCCException
 	 */
 	public AbstractSCCCiphertext reEncryptSymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext)
-			throws CoseException, InvalidKeyException, SCCException;
+			throws SCCException;
 
 	/**
 	 * Decryption of a given {@link SCCCiphertext}.
@@ -146,10 +139,9 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param sccciphertext: {@link SCCCiphertext}
 	 * @return {@link PlaintextContainer}
 	 * @throws SCCException
-	 * @throws InvalidKeyException if {@link SCCKey} has not the {@link KeyType#Symmetric}
 	 */
 	public PlaintextContainerInterface decryptSymmetric(AbstractSCCKey key, AbstractSCCCiphertext sccciphertext)
-			throws SCCException, InvalidKeyException;
+			throws SCCException;
 
 	// Asymmetric
 
@@ -189,12 +181,10 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCCiphertext}
-	 * @throws CoseException
-	 * @throws InvalidKeyException if {@link SCCKey} has not the {@link KeyType#Asymmetric}
-	 * @throws SCCException
+	* @throws SCCException
 	 */
 	public AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey key, PlaintextContainerInterface plaintext)
-			throws CoseException, InvalidKeyException, SCCException;
+			throws SCCException;
 
 	/**
 	 * Asymmetric encryption with a certain {@link SCCKey} for a given plaintext
@@ -228,12 +218,10 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as byte[]
 	 * @return {@link SCCCiphertext}
-	 * @throws CoseException
-	 * @throws InvalidKeyException if {@link SCCKey} has not the {@link KeyType#Asymmetric}
 	 * @throws SCCException
 	 */
 	public AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey key, byte[] plaintext)
-			throws CoseException, InvalidKeyException, SCCException;
+			throws SCCException;
 
 	/**
 	 * 
@@ -243,12 +231,10 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param key:        {@link SCCKey}
 	 * @param ciphertext: {@link SCCCiphertext}
 	 * @return {@link SCCCiphertext}
-	 * @throws CoseException
-	 * @throws InvalidKeyException if {@link SCCKey} has not the {@link KeyType#Asymmetric}
-	 * @throws SCCException
+	* @throws SCCException
 	 */
 	public AbstractSCCCiphertext reEncryptAsymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext)
-			throws CoseException, InvalidKeyException, SCCException;
+			throws SCCException;
 
 	/**
 	 * Asymmetric decryption with a certain {@link SCCKey} for a given
@@ -257,12 +243,10 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param key:        {@link SCCKey}
 	 * @param ciphertext: {@link SCCCiphertext}
 	 * @return {@link PlaintextContainer}
-	 * @throws CoseException
-	 * @throws InvalidKeyException if {@link SCCKey} has not the {@link KeyType#Asymmetric}
 	 * @throws SCCException
 	 */
 	public PlaintextContainerInterface decryptAsymmetric(AbstractSCCKey key, AbstractSCCCiphertext ciphertext)
-			throws CoseException, InvalidKeyException, SCCException;
+			throws SCCException;
 
 	// Hashing
 
@@ -282,10 +266,9 @@ public abstract interface SecureCryptoConfigInterface {
 	 * 
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCHash}
-	 * @throws CoseException
 	 * @throws SCCException
 	 */
-	public AbstractSCCHash hash(PlaintextContainerInterface plaintext) throws CoseException, SCCException;
+	public AbstractSCCHash hash(PlaintextContainerInterface plaintext) throws SCCException;
 
 	/**
 	 * Hashing of a given plaintext based on the current Secure Crypto Config file.
@@ -299,10 +282,9 @@ public abstract interface SecureCryptoConfigInterface {
 	 * </pre>
 	 * @param plaintext: as byte[]
 	 * @return {@link SCCHash}
-	 * @throws CoseException
 	 * @throws SCCException
 	 */
-	public AbstractSCCHash hash(byte[] plaintext) throws CoseException, SCCException;
+	public AbstractSCCHash hash(byte[] plaintext) throws SCCException;
 
 	/**
 	 * Given a {@link SCCHash} of a plaintext: the corresponding plaintext will be
@@ -315,11 +297,10 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @param hash:      {@link SCCHash}
 	 * @return {@link SCCHash}
-	 * @throws CoseException
 	 * @throws SCCException
 	 */
 	public AbstractSCCHash updateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash)
-			throws CoseException, SCCException;
+			throws SCCException;
 
 	/**
 	 * Given a {@link SCCHash} of a plaintext: the corresponding plaintext will be
@@ -328,10 +309,9 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param plaintext: as byte[]
 	 * @param hash:      {@link SCCHash}
 	 * @return {@link SCCHash}
-	 * @throws CoseException
 	 * @throws SCCException
 	 */
-	public AbstractSCCHash updateHash(byte[] plaintext, AbstractSCCHash hash) throws CoseException, SCCException;
+	public AbstractSCCHash updateHash(byte[] plaintext, AbstractSCCHash hash) throws SCCException;
 
 	/**
 	 * Validate a given {@link SCCHash} for a specific plaintext.
@@ -346,11 +326,10 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @param hash:      {@link SCCHash}
 	 * @return boolean
-	 * @throws CoseException
 	 * @throws SCCException
 	 */
 	public boolean validateHash(PlaintextContainerInterface plaintext, AbstractSCCHash hash)
-			throws CoseException, SCCException;
+			throws SCCException;
 
 	/**
 	 * Validate a given {@link SCCHash} for a specific plaintext.
@@ -361,10 +340,9 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param plaintext: as byte[]
 	 * @param hash:      {@link SCCHash}
 	 * @return boolean
-	 * @throws CoseException
 	 * @throws SCCException
 	 */
-	public boolean validateHash(byte[] plaintext, AbstractSCCHash hash) throws CoseException, SCCException;
+	public boolean validateHash(byte[] plaintext, AbstractSCCHash hash) throws SCCException;
 
 	// Digital Signature
 
@@ -404,12 +382,10 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCSignature}
-	 * @throws CoseException
-	 * @throws InvalidKeyException if {@link SCCKey} has not the {@link KeyType#Asymmetric}
 	 * @throws SCCException
 	 */
 	public AbstractSCCSignature sign(AbstractSCCKey key, PlaintextContainerInterface plaintext)
-			throws CoseException, InvalidKeyException, SCCException;
+			throws SCCException;
 
 	/**
 	 * Signing with a certain {@link SCCKey} for a given plaintext based on the
@@ -444,12 +420,10 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as byte[]
 	 * @return {@link SCCSignature}
-	 * @throws CoseException
-	 * @throws InvalidKeyException if {@link SCCKey} has not the {@link KeyType#Asymmetric}
 	 * @throws SCCException
 	 */
 	public AbstractSCCSignature sign(AbstractSCCKey key, byte[] plaintext)
-			throws CoseException, InvalidKeyException, SCCException;
+			throws SCCException;
 
 	/**
 	 * Update the exsting {@link SCCSignature} of a plaintext with a new signature
@@ -461,12 +435,10 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCSignature}
-	 * @throws CoseException
-	 * @throws InvalidKeyException if {@link SCCKey} has not the {@link KeyType#Asymmetric}
 	 * @throws SCCException
 	 */
 	public AbstractSCCSignature updateSignature(AbstractSCCKey key, PlaintextContainerInterface plaintext)
-			throws CoseException, InvalidKeyException, SCCException;
+			throws SCCException;
 
 	/**
 	 * Update the exsting {@link SCCSignature} of a plaintext with a new signature
@@ -475,12 +447,10 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as byte[]
 	 * @return {@link SCCSignature}
-	 * @throws CoseException
-	 * @throws InvalidKeyException if {@link SCCKey} has not the {@link KeyType#Asymmetric}
 	 * @throws SCCException
 	 */
 	public AbstractSCCSignature updateSignature(AbstractSCCKey key, byte[] plaintext)
-			throws CoseException, InvalidKeyException, SCCException;
+			throws SCCException;
 
 	/**
 	 * Validate a {@link SCCSignature}.
@@ -488,11 +458,10 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param key:       {@link AbstractSCCKey}
 	 * @param signature: {@link SCCSignature}
 	 * @return boolean
-	 * @throws InvalidKeyException if {@link SCCKey} has not the {@link KeyType#Asymmetric}
 	 * @throws SCCException
 	 */
 	public boolean validateSignature(AbstractSCCKey key, AbstractSCCSignature signature)
-			throws InvalidKeyException, SCCException;
+			throws SCCException;
 
 	/**
 	 * Validate a {@link SCCSignature}.
@@ -500,10 +469,9 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param key:       {@link AbstractSCCKey}
 	 * @param signature: as byte[] representation of {@link SCCSignature}
 	 * @return boolean
-	 * @throws InvalidKeyException if {@link SCCKey} has not the {@link KeyType#Asymmetric}
 	 * @throws SCCException
 	 */
-	public boolean validateSignature(AbstractSCCKey key, byte[] signature) throws InvalidKeyException, SCCException;
+	public boolean validateSignature(AbstractSCCKey key, byte[] signature) throws SCCException;
 
 	// Password Hashing
 
@@ -522,11 +490,10 @@ public abstract interface SecureCryptoConfigInterface {
 	 *
 	 * @param password: as {@link PlaintextContainer}
 	 * @return {@link SCCPasswordHash}
-	 * @throws CoseException
 	 * @throws SCCException
 	 */
 	public AbstractSCCPasswordHash passwordHash(PlaintextContainerInterface password)
-			throws CoseException, SCCException;
+			throws SCCException;
 
 	/**
 	 * Hash a password based on the current Secure Crypto Config file.
@@ -540,7 +507,6 @@ public abstract interface SecureCryptoConfigInterface {
 	 * </pre>
 	 * @param password: as byte[]
 	 * @return {@link SCCPasswordHash}
-	 * @throws CoseException
 	 * @throws SCCException
 	 */
 	public AbstractSCCPasswordHash passwordHash(byte[] password) throws CoseException, SCCException;
@@ -554,11 +520,10 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param password:     as {@link PlaintextContainer}
 	 * @param passwordhash: {@link SCCPasswordHash}
 	 * @return boolean
-	 * @throws CoseException
 	 * @throws SCCException
 	 */
 	public boolean validatePasswordHash(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash)
-			throws CoseException, SCCException;
+			throws SCCException;
 
 	/**
 	 * Validate a given {@link SCCPasswordHash} against given password.
@@ -569,11 +534,10 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param password:     as byte[]
 	 * @param passwordhash: {@link SCCPasswordHash}
 	 * @return boolean
-	 * @throws CoseException
 	 * @throws SCCException
 	 */
 	public boolean validatePasswordHash(byte[] password, AbstractSCCPasswordHash passwordhash)
-			throws CoseException, SCCException;
+			throws SCCException;
 }
 
 /**
@@ -978,27 +942,27 @@ public abstract interface SecureCryptoConfigInterface {
 	 * 
 	 * @return byte[]: returns byte[] representation of key in case that the key has
 	 *         {@link SCCKey.KeyType#Symmetric}
-	 * @throws InvalidKeyException
+	 * @throws SCCException 
 	 */
-	public abstract byte[] toBytes() throws InvalidKeyException;
+	public abstract byte[] toBytes() throws SCCException;
 
 	/**
 	 * Get byte[] representation of public key.
 	 * 
 	 * @return byte[]: returns byte[] representation of public key in case that the
 	 *         key has {@link SCCKey.KeyType#Asymmetric}
-	 * @throws InvalidKeyException
+	 * @throws SCCException 
 	 */
-	public abstract byte[] getPublicKeyBytes() throws InvalidKeyException;
+	public abstract byte[] getPublicKeyBytes() throws SCCException;
 
 	/**
 	 * Get byte[] representation of private key.
 	 * 
 	 * @return byte[]: returns byte[] representation of private key in case that the
 	 *         key has {@link SCCKey.KeyType#Asymmetric}
-	 * @throws InvalidKeyException
+	 * @throws SCCException 
 	 */
-	public abstract byte[] getPrivateKeyBytes() throws InvalidKeyException;
+	public abstract byte[] getPrivateKeyBytes() throws SCCException;
 
 	/**
 	 * Get {@link KeyType} of {@link SCCKey}.
