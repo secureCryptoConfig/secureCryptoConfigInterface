@@ -43,6 +43,7 @@
 		- [SCCPasswordHash](#sccpasswordhash)
 	- [Handling of Secure Crypto Config files](#handling-of-secure-crypto-config-files)
 	- [Specification of algorithms](#specification-of-algorithms)
+	- [Update process](#update-process)
 
 ## Example Usage 
 
@@ -320,3 +321,13 @@ The PolicyName of the file used for processing can be shown with `getUsedSCC()`.
 
 ## Specification of algorithms
 By default, the algorithm used for executing the specified cryptographic use case is determined by the currently used Secure Crypto Config file. It is also possible to chose a specific algorithm from all the supported ones with the method `setAlgorithm(SCCAlgorithm algorithm)`. `SCCAlgorithm` contains the unique algorithm identifiers of all currently supported algorithms for all use cases. To be able to perform a specific use case (e.g. hashing) a suitable algorithm identifier must be chosen. This algorithm will be used for all further invoked methods. If the default choice of the Secure Crypto Config should be used again call `defaultAlgorithm()` or for changing to a specific algorithm call `setAlgorithm(SCCAlgorithm algorithm)` again.
+
+## Update process
+
+For adding new algorithms that should be supported by the interface the following methods must be done:
+
+1.  Add the desired unique algorithm identifier to the enum `SCCAlgorithm` inside the `SecureCryptoConfig.java`.
+
+2.  Define the new algorithm identifier also inside the method realizing the corresponding cryptographic primitive. E.g. a new identifier for symmetric en-/decryption must be specified as choice inside the method `encryptSymmetric`.
+
+3. As there is no collaboration between COSE and the Secure Crypto Config Interface yet it is also necessary to define the realization of the identifier in Java inside the corresponding COSE classes (e.g. for symmentric en-/decryption inside`EncryptCommon.java`). The identifier must also be added to the `AlgorithmID.java`. This is only necessary if COSE does not provide a implementation for the new desired identifier.
