@@ -4,7 +4,6 @@ import java.nio.charset.Charset;
 import org.securecryptoconfig.SCCKey.KeyType;
 import org.securecryptoconfig.SCCKey.KeyUseCase;
 
-import COSE.CoseException;
 
 /**
  * Interface defining methods that can be used to perform different
@@ -68,7 +67,7 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCCiphertext}
-	 * @throws SCCException either InvalidKeyException or CoseException
+	 * @throws SCCException 
 	 */
 	public AbstractSCCCiphertext encryptSymmetric(AbstractSCCKey key, PlaintextContainerInterface plaintext)
 			throws SCCException;
@@ -181,7 +180,7 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @param key:       {@link SCCKey}
 	 * @param plaintext: as {@link PlaintextContainer}
 	 * @return {@link SCCCiphertext}
-	* @throws SCCException
+	 * @throws SCCException
 	 */
 	public AbstractSCCCiphertext encryptAsymmetric(AbstractSCCKey key, PlaintextContainerInterface plaintext)
 			throws SCCException;
@@ -509,7 +508,7 @@ public abstract interface SecureCryptoConfigInterface {
 	 * @return {@link SCCPasswordHash}
 	 * @throws SCCException
 	 */
-	public AbstractSCCPasswordHash passwordHash(byte[] password) throws CoseException, SCCException;
+	public AbstractSCCPasswordHash passwordHash(byte[] password) throws SCCException;
 
 	/**
 	 * Validate a given {@link SCCPasswordHash} against given password.
