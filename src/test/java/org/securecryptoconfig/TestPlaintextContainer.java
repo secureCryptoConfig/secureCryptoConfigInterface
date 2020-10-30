@@ -66,4 +66,16 @@ public class TestPlaintextContainer {
 
         assertNotEquals(signature.toBase64(), otherSignature.toBase64());
     }
+    
+    @Test
+    void testValidateSignature() throws SCCException {
+    SCCSignature s = pc.sign(signingKey);
+    //Result false but must be true (?)
+    assertEquals(true, pc.validateSignature(s, signingKey));
+    
+    String otherPlaintext = "Hello Malory!";
+    PlaintextContainer otherPc = new PlaintextContainer(otherPlaintext.getBytes(StandardCharsets.UTF_8));
+    assertEquals(false, otherPc.validateSignature(s, signingKey));
+  
+    }
 }
