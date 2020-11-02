@@ -324,10 +324,10 @@ By default, the algorithm used for executing the specified cryptographic use cas
 
 ## Update process
 
-For adding new algorithms that should be supported by the interface the following methods must be done:
+For adding new algorithms that should be supported by the interface the following steps must be done:
 
 1.  Add the desired unique algorithm identifier to the enum `SCCAlgorithm` inside the `SecureCryptoConfig.java`.
 
 2.  Define the new algorithm identifier also inside the method realizing the corresponding cryptographic primitive. E.g. a new identifier for symmetric en-/decryption must be specified as choice inside the method `encryptSymmetric`.
 
-3. As there is no collaboration between COSE and the Secure Crypto Config Interface yet it is also necessary to define the realization of the identifier in Java inside the corresponding COSE classes (e.g. for symmentric en-/decryption inside`EncryptCommon.java`). The identifier must also be added to the `AlgorithmID.java`. This is only necessary if COSE does not provide a implementation for the new desired identifier.
+3. As there is no collaboration between COSE and the Secure Crypto Config Interface yet it is also necessary to define the realization of the identifier inside the corresponding COSE classes (e.g. for symmentric en-/decryption inside`EncryptCommon.java`). The identifier must also be added to the `AlgorithmID.java` of COSE. This is only necessary if COSE does not already provide a implementation for the new desired identifier.
