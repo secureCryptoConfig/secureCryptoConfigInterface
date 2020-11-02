@@ -4,6 +4,10 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import org.securecryptoconfig.SCCKey.KeyUseCase;
 
+import COSE.CoseException;
+import COSE.OneKey;
+import COSE.Sign1Message;
+
 /**
  * Class for a container representing the plaintext processed in cryptographic
  * use cases.
@@ -274,9 +278,17 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	 */
 	@Override
 	public boolean validateSignature(AbstractSCCSignature signature, AbstractSCCKey key) throws SCCException {
-		SCCSignature sigForPlain = this.sign(key);
-
-		return signature.toBytes() == sigForPlain.toBytes();
+		try {
+			Sign1Message msg = (Sign1Message) Sign1Message.DecodeFromBytes(signature.toBytes());
+			msg.SetContent(this.plaintext);
+			SCCKey k = (SCCKey) key;
+			OneKey oneKey = new OneKey(k.getPublicKey(), k.getPrivateKey());
+			
+			return msg.validate(oneKey);
+			
+		} catch (CoseException e) {
+			throw new SCCException("No validation possible!", e);
+		}
 	}
 
 	/**

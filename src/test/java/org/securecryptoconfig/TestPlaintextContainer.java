@@ -1,12 +1,11 @@
 package org.securecryptoconfig;
 
-import java.nio.charset.StandardCharsets;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+
+import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -71,8 +70,7 @@ public class TestPlaintextContainer {
     @Test
     void testValidateSignature() throws SCCException {
     SCCSignature s = pc.sign(signingKey);
-    //Result false but must be true (?)
-    //assertTrue(pc.validateSignature(s, signingKey));
+    assertTrue(pc.validateSignature(s, signingKey));
     
     String otherPlaintext = "Hello Malory!";
     PlaintextContainer otherPc = new PlaintextContainer(otherPlaintext.getBytes(StandardCharsets.UTF_8));
