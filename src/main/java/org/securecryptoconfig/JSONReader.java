@@ -197,6 +197,17 @@ public class JSONReader {
 		return Collections.max(level);
 	}
 
+	/**
+	 * Check signature from SCC files
+	 * @param algo
+	 * @param signaturePath
+	 * @param publicKeyPath
+	 * @return
+	 * @throws IOException
+	 * @throws NoSuchAlgorithmException
+	 * @throws SCCException
+	 * @throws InvalidKeySpecException
+	 */
 	private static boolean checkSignature(String algo, String signaturePath, String publicKeyPath)
 			throws IOException, NoSuchAlgorithmException, SCCException, InvalidKeySpecException {
 
@@ -228,6 +239,11 @@ public class JSONReader {
 
 	}
 
+	/**
+	 * Method to determine where the public keys for the validation of the
+	 * signature from the SCC files can be found
+	 * @param path
+	 */
 	private static void getPublicKeyPath(Path path) {
 		URI uri;
 		Path p = null;
@@ -294,6 +310,11 @@ public class JSONReader {
 
 	}
 	
+	/**
+	 * Auxiliary method to look if opened streams must be closed 
+	 * @param is1
+	 * @param is2
+	 */
 	private static void closingStreams(InputStream is1, InputStream is2)
 	{
 		try {
@@ -308,6 +329,14 @@ public class JSONReader {
 		}
 	}
 	
+	/**
+	 * Auxiliary method to get the validation results of the SCC file signatures
+	 * @param signaturePath1
+	 * @param signaturePath2
+	 * @param filepath
+	 * @param i
+	 * @throws SCCException
+	 */
 	private static void calculateValidationResult(String signaturePath1, String signaturePath2, Path filepath, int i) throws SCCException
 	{
 

@@ -385,13 +385,13 @@ public class SCCKey extends AbstractSCCKey {
 				SCCAlgorithm sccalgorithmID = algorithms.get(i);
 
 				if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
-					return decideForAlgo(sccalgorithmID);
+					return decideForAlgoAsym(sccalgorithmID);
 
 				}
 
 			}
 		} else {
-			return decideForAlgo(SecureCryptoConfig.usedAlgorithm);
+			return decideForAlgoAsym(SecureCryptoConfig.usedAlgorithm);
 
 		}
 		throw new SCCException(standardError, new CoseException(null));
@@ -616,7 +616,13 @@ public class SCCKey extends AbstractSCCKey {
 
 	}
 
-	private static SCCKey decideForAlgo(SCCAlgorithm sccalgorithmID) throws SCCException {
+	/**
+	 * Auxiliary method for SCCKey generation for asymmetric en/decryption based on determined algorithm
+	 * @param sccalgorithmID
+	 * @return
+	 * @throws SCCException
+	 */
+	private static SCCKey decideForAlgoAsym(SCCAlgorithm sccalgorithmID) throws SCCException {
 		AlgorithmID id;
 		String algoKey;
 		switch (sccalgorithmID) {
@@ -647,6 +653,13 @@ public class SCCKey extends AbstractSCCKey {
 		throw new SCCException(standardError, new CoseException(null));
 	}
 
+	/**
+	 * Auxiliary method for SCCKey generation with password based on determined algorithm
+	 * @param sccalgorithmID
+	 * @param password
+	 * @return
+	 * @throws SCCException
+	 */
 	private static SCCKey decideForAlgoPassword(SCCAlgorithm sccalgorithmID, PlaintextContainer password)
 			throws SCCException {
 		String algo = null;
@@ -688,6 +701,12 @@ public class SCCKey extends AbstractSCCKey {
 
 	}
 
+	/**
+	 * Auxiliary method for SCCKey generation for symmetric en/decryption based on determined algorithm
+	 * @param sccalgorithmID
+	 * @return
+	 * @throws SCCException
+	 */
 	private static SCCKey decideForAlgoSymmetric(SCCAlgorithm sccalgorithmID) throws SCCException {
 
 		String algo = null;

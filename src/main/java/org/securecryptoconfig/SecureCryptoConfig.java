@@ -56,7 +56,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	protected static boolean customPath = false;
 
-	private String standardError = "No supported algorithm!";
+	private static String standardError = "No supported algorithm!";
 	private static String coseError = "Error with COSE";
 
 	/**
@@ -221,33 +221,11 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 					SCCAlgorithm sccalgorithmID = algorithms.get(i);
 
 					if (getEnums().contains(sccalgorithmID)) {
-
-						switch (sccalgorithmID) {
-						case AES_GCM_256_96:
-							return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_256);
-						case AES_GCM_128_96:
-							return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_128);
-						case AES_GCM_192_96:
-							return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_192);
-						default:
-							break;
-
-						}
+						return decideForAlgoSymmetric(sccalgorithmID, key, plaintext);
 					}
 				}
 			} else {
-				switch (usedAlgorithm) {
-				case AES_GCM_256_96:
-					return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_256);
-				case AES_GCM_128_96:
-					return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_128);
-				case AES_GCM_192_96:
-					return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_192);
-				default:
-					break;
-
-				}
-
+				return decideForAlgoSymmetric(usedAlgorithm, key, plaintext);
 			}
 		} else {
 			throw new SCCException(
@@ -255,6 +233,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 					new InvalidKeyException("Invalid key!"));
 		}
 		throw new SCCException("No supported algorithms!", new CoseException(null));
+
 	}
 
 	/**
@@ -313,39 +292,19 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 					SCCAlgorithm sccalgorithmID = algorithms.get(i);
 
 					if (getEnums().contains(sccalgorithmID)) {
-
-						switch (sccalgorithmID) {
-						case RSA_SHA_512:
-							return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_512, key);
-						case RSA_SHA_256:
-							return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_256, key);
-						case RSA_ECB:
-							return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_ECB, key);
-						default:
-							break;
-						}
+						return decideForAlgoAsymmetric(sccalgorithmID, key, plaintext);
 					}
 
 				}
 			} else {
-				switch (usedAlgorithm) {
-				case RSA_SHA_512:
-					return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_512, key);
-				case RSA_SHA_256:
-					return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_256, key);
-				case RSA_ECB:
-					return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_ECB, key);
+				return decideForAlgoAsymmetric(usedAlgorithm, key, plaintext);
 
-				default:
-					break;
-				}
 			}
 		} else {
 			throw new SCCException("The used SCCKey has the wrong KeyType for this use case.",
 					new InvalidKeyException());
 		}
 		throw new SCCException("No supported algorithm", new CoseException(null));
-
 	}
 
 	/**
@@ -515,32 +474,12 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 					SCCAlgorithm sccalgorithmID = algorithms.get(i);
 
 					if (getEnums().contains(sccalgorithmID)) {
-
-						switch (sccalgorithmID) {
-						case ECDSA_512:
-							return SecureCryptoConfig.createSignMessage(plaintext, key, AlgorithmID.ECDSA_512);
-						case ECDSA_256:
-							return SecureCryptoConfig.createSignMessage(plaintext, key, AlgorithmID.ECDSA_256);
-						case ECDSA_384:
-							return SecureCryptoConfig.createSignMessage(plaintext, key, AlgorithmID.ECDSA_384);
-						default:
-							break;
-						}
+						return decideForAlgoSigning(sccalgorithmID, key, plaintext);
 					}
 
 				}
 			} else {
-				switch (usedAlgorithm) {
-				case ECDSA_512:
-					return SecureCryptoConfig.createSignMessage(plaintext, key, AlgorithmID.ECDSA_512);
-				case ECDSA_256:
-					return SecureCryptoConfig.createSignMessage(plaintext, key, AlgorithmID.ECDSA_256);
-				case ECDSA_384:
-					return SecureCryptoConfig.createSignMessage(plaintext, key, AlgorithmID.ECDSA_384);
-
-				default:
-					break;
-				}
+				return decideForAlgoSigning(usedAlgorithm, key, plaintext);
 			}
 		} else {
 			throw new SCCException("The used SCCKey has the wrong KeyType for this use case. ",
@@ -873,4 +812,76 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		}
 	}
 
+	/**
+	 * Auxiliary method for SCCCiphertext generation for symmetric en/decryption based on determined algorithm
+	 * @param sccalgorithmID
+	 * @param key
+	 * @param plaintext
+	 * @return
+	 * @throws SCCException
+	 */
+	private static SCCCiphertext decideForAlgoSymmetric(SCCAlgorithm sccalgorithmID, AbstractSCCKey key,
+			PlaintextContainerInterface plaintext) throws SCCException {
+		switch (sccalgorithmID) {
+		case AES_GCM_256_96:
+			return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_256);
+		case AES_GCM_128_96:
+			return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_128);
+		case AES_GCM_192_96:
+			return SecureCryptoConfig.createMessage(plaintext, key, AlgorithmID.AES_GCM_192);
+		default:
+			break;
+
+		}
+		throw new SCCException("No supported algorithms!", new CoseException(null));
+
+	}
+
+	/**
+	 * Auxiliary method for SCCCiphertext generation for asymmetric en/decryption based on determined algorithm
+	 * @param sccalgorithmID
+	 * @param key
+	 * @param plaintext
+	 * @return
+	 * @throws SCCException
+	 */
+	private static SCCCiphertext decideForAlgoAsymmetric(SCCAlgorithm sccalgorithmID, AbstractSCCKey key,
+			PlaintextContainerInterface plaintext) throws SCCException {
+		switch (sccalgorithmID) {
+		case RSA_SHA_512:
+			return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_512, key);
+		case RSA_SHA_256:
+			return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_OAEP_SHA_256, key);
+		case RSA_ECB:
+			return SecureCryptoConfig.createAsymMessage(plaintext, AlgorithmID.RSA_ECB, key);
+		default:
+			break;
+		}
+		throw new SCCException("No supported algorithm", new CoseException(null));
+	}
+
+	/**
+	 * Auxiliary method for SCCSignature generation based on determined algorithm
+	 * @param sccalgorithmID
+	 * @param key
+	 * @param plaintext
+	 * @return
+	 * @throws SCCException
+	 */
+	private static SCCSignature decideForAlgoSigning(SCCAlgorithm sccalgorithmID, AbstractSCCKey key,
+			PlaintextContainerInterface plaintext) throws SCCException {
+		switch (sccalgorithmID) {
+		case ECDSA_512:
+			return SecureCryptoConfig.createSignMessage(plaintext, key, AlgorithmID.ECDSA_512);
+		case ECDSA_256:
+			return SecureCryptoConfig.createSignMessage(plaintext, key, AlgorithmID.ECDSA_256);
+		case ECDSA_384:
+			return SecureCryptoConfig.createSignMessage(plaintext, key, AlgorithmID.ECDSA_384);
+		default:
+			break;
+		}
+
+		throw new SCCException(standardError, new CoseException(null));
+
+	}
 }
