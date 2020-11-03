@@ -271,8 +271,6 @@ public class JSONReader {
 			String signaturePath1 = filepath.toString().replace(parts[parts.length - 1], "") + signatureFileName1;
 			String signaturePath2 = filepath.toString().replace(parts[parts.length - 1], "") + signatureFileName2;
 
-			boolean validation1 = false;
-			boolean validation2 = false;
 			boolean result;
 			if (!isJAR) {
 				result = new File(signaturePath1).exists() && new File(signaturePath2).exists();
@@ -280,32 +278,12 @@ public class JSONReader {
 				is1 = org.securecryptoconfig.JSONReader.class.getResourceAsStream(signaturePath1);
 				is2 = org.securecryptoconfig.JSONReader.class.getResourceAsStream(signaturePath2);
 				result = is1 != null && is2 != null;
-				try {
-					if (is1 != null) {
-						is1.close();
-					}
-					if (is2 != null) {
-						is2.close();
-					}
-				} catch (IOException e) {
-					logger.warn("Error while trying to validate JSON files", e);
-				}
-
+				closingStreams(is1, is2);
+				
 			}
 
 			if (result) {
-
-				try {
-					validation1 = checkSignature(signatureAlgo, signaturePath1, publicKeyPaths.get(0).toString());
-					validation2 = checkSignature(signatureAlgo, signaturePath2, publicKeyPaths.get(1).toString());
-				} catch (NoSuchAlgorithmException | InvalidKeySpecException | IOException e) {
-					throw new SCCException("Signature check of Secure Crypto Config files could not be performed!", e);
-				}
-				if (!validation1 || !validation2) {
-					logger.debug("Not both signatures are valid for {}", filepath);
-					logger.debug("This file will not be considered!");
-					allFilePaths.remove(i);
-				}
+				calculateValidationResult(signaturePath1, signaturePath2, filepath, i);
 			} else {
 				logger.debug("There are no two signatures defined for {}", filepath);
 				logger.debug("This file will not be considered!");
@@ -314,6 +292,41 @@ public class JSONReader {
 
 		}
 
+	}
+	
+	private static void closingStreams(InputStream is1, InputStream is2)
+	{
+		try {
+			if (is1 != null) {
+				is1.close();
+			}
+			if (is2 != null) {
+				is2.close();
+			}
+		} catch (IOException e) {
+			logger.warn("Error while trying to validate JSON files", e);
+		}
+	}
+	
+	private static void calculateValidationResult(String signaturePath1, String signaturePath2, Path filepath, int i) throws SCCException
+	{
+
+		boolean validation1 = false;
+		boolean validation2 = false;
+
+		try {
+			validation1 = checkSignature(signatureAlgo, signaturePath1, publicKeyPaths.get(0).toString());
+			validation2 = checkSignature(signatureAlgo, signaturePath2, publicKeyPaths.get(1).toString());
+		} catch (NoSuchAlgorithmException | InvalidKeySpecException | IOException e) {
+			throw new SCCException("Signature check of Secure Crypto Config files could not be performed!", e);
+		}
+	
+		if (!validation1 || !validation2) {
+			logger.debug("Not both signatures are valid for {}", filepath);
+			logger.debug("This file will not be considered!");
+			allFilePaths.remove(i);
+		}
+	
 	}
 
 	/**
