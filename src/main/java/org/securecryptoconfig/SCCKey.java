@@ -108,6 +108,8 @@ public class SCCKey extends AbstractSCCKey {
 		SymmetricEncryption, AsymmetricEncryption, Signing
 	}
 
+	private static String standardError = "Key could not be created!";
+
 	/**
 	 * {@inheritDoc}
 	 */
@@ -313,9 +315,6 @@ public class SCCKey extends AbstractSCCKey {
 	 */
 	private static SCCKey createSymmetricKey() throws SCCException {
 
-		String algo = null;
-		int keysize = 0;
-
 		if (SecureCryptoConfig.usedAlgorithm == null) {
 
 			ArrayList<SCCAlgorithm> algorithms = SecureCryptoConfig.currentSCCInstance.getUsage()
@@ -326,50 +325,13 @@ public class SCCKey extends AbstractSCCKey {
 				SCCAlgorithm sccalgorithmID = algorithms.get(i);
 
 				if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
-
-					switch (sccalgorithmID) {
-					case AES_GCM_192_96:
-						algo = "AES";
-						keysize = 192;
-						break;
-					case AES_GCM_256_96:
-						algo = "AES";
-						keysize = 256;
-						break;
-					case AES_GCM_128_96:
-						algo = "AES";
-						keysize = 128;
-						break;
-					default:
-						break;
-
-					}
-
-					return createSymmetricKey(algo, keysize);
+					return decideForAlgoSymmetric(sccalgorithmID);
 
 				}
 
 			}
 		} else {
-			switch (SecureCryptoConfig.usedAlgorithm) {
-			case AES_GCM_192_96:
-				algo = "AES";
-				keysize = 192;
-				break;
-			case AES_GCM_256_96:
-				algo = "AES";
-				keysize = 256;
-				break;
-			case AES_GCM_128_96:
-				algo = "AES";
-				keysize = 128;
-				break;
-			default:
-				break;
-
-			}
-
-			return createSymmetricKey(algo, keysize);
+			return decideForAlgoSymmetric(SecureCryptoConfig.usedAlgorithm);
 
 		}
 		throw new SCCException("No supported algorithms! Key creation not possible!", new CoseException(null));
@@ -403,8 +365,7 @@ public class SCCKey extends AbstractSCCKey {
 	 * @throws SCCException
 	 */
 	private static SCCKey createNewKeyPair(CryptoUseCase c) throws SCCException {
-		AlgorithmID id;
-		String algoKey;
+
 		if (SecureCryptoConfig.usedAlgorithm == null) {
 			ArrayList<SCCAlgorithm> algorithms;
 
@@ -424,63 +385,16 @@ public class SCCKey extends AbstractSCCKey {
 				SCCAlgorithm sccalgorithmID = algorithms.get(i);
 
 				if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
+					return decideForAlgo(sccalgorithmID);
 
-					switch (sccalgorithmID) {
-					// Asymmetric
-					case RSA_ECB:
-					case RSA_SHA_256:
-					case RSA_SHA_512:
-						return createAsymmetricKey("RSA", 4096);
-
-					// Signing
-					case ECDSA_512:
-						id = AlgorithmID.ECDSA_512;
-						algoKey = "EC";
-						return createOneKey(id, algoKey);
-
-					case ECDSA_256:
-						id = AlgorithmID.ECDSA_256;
-						algoKey = "EC";
-						return createOneKey(id, algoKey);
-					case ECDSA_384:
-						id = AlgorithmID.ECDSA_384;
-						algoKey = "EC";
-						return createOneKey(id, algoKey);
-
-					default:
-						break;
-					}
 				}
 
 			}
 		} else {
+			return decideForAlgo(SecureCryptoConfig.usedAlgorithm);
 
-			switch (SecureCryptoConfig.usedAlgorithm) {
-			// Asymmetric
-			case RSA_ECB:
-			case RSA_SHA_256:
-			case RSA_SHA_512:
-				return createAsymmetricKey("RSA", 4096);
-
-			// Signing
-			case ECDSA_512:
-				id = AlgorithmID.ECDSA_512;
-				algoKey = "EC";
-				return createOneKey(id, algoKey);
-
-			case ECDSA_256:
-				id = AlgorithmID.ECDSA_256;
-				algoKey = "EC";
-				return createOneKey(id, algoKey);
-			case ECDSA_384:
-				id = AlgorithmID.ECDSA_384;
-				algoKey = "EC";
-				return createOneKey(id, algoKey);
-			default:
-				break;
-			}
 		}
-		throw new SCCException("Key could not be created!", new CoseException(null));
+		throw new SCCException(standardError, new CoseException(null));
 	}
 
 	private static SCCKey createOneKey(AlgorithmID id, String algoKey) throws SCCException {
@@ -489,7 +403,7 @@ public class SCCKey extends AbstractSCCKey {
 			return new SCCKey(KeyType.Asymmetric, oneKey.AsPublicKey().getEncoded(), oneKey.AsPrivateKey().getEncoded(),
 					algoKey);
 		} catch (CoseException e) {
-			throw new SCCException("Key could not be created!", e);
+			throw new SCCException(standardError, e);
 		}
 	}
 
@@ -567,13 +481,6 @@ public class SCCKey extends AbstractSCCKey {
 	 * @throws SCCException
 	 */
 	public static SCCKey createSymmetricKeyWithPassword(PlaintextContainer password) throws SCCException {
-		String algo = null;
-		String keyAlgo = null;
-		int keysize = 0;
-		int iterations = 0;
-		int saltLength = 0;
-		
-		String standardAlgo = "PBKDF2WithHmacSHA512";
 
 		if (SecureCryptoConfig.usedAlgorithm == null) {
 
@@ -585,68 +492,12 @@ public class SCCKey extends AbstractSCCKey {
 				SCCAlgorithm sccalgorithmID = algorithms.get(i);
 
 				if (SecureCryptoConfig.getEnums().contains(sccalgorithmID)) {
-
-					switch (sccalgorithmID) {
-					case AES_GCM_192_96:
-						algo = standardAlgo;
-						keyAlgo = "AES";
-						keysize = 192;
-						iterations = 10000;
-						saltLength = 64;
-						break;
-					case AES_GCM_256_96:
-						algo = standardAlgo;
-						keyAlgo = "AES";
-						keysize = 256;
-						iterations = 10000;
-						saltLength = 64;
-						break;
-
-					case AES_GCM_128_96:
-						algo = standardAlgo;
-						keyAlgo = "AES";
-						keysize = 128;
-						iterations = 10000;
-						saltLength = 64;
-						break;
-					default:
-						break;
-					}
-
-					return createKeyWithPassword(password, algo, keyAlgo, keysize, iterations, saltLength);
+					return decideForAlgoPassword(sccalgorithmID, password);
 
 				}
 			}
 		} else {
-
-			switch (SecureCryptoConfig.usedAlgorithm) {
-			case AES_GCM_192_96:
-				algo = standardAlgo;
-				keyAlgo = "AES";
-				keysize = 192;
-				iterations = 10000;
-				saltLength = 64;
-				break;
-			case AES_GCM_256_96:
-				algo = standardAlgo;
-				keyAlgo = "AES";
-				keysize = 256;
-				iterations = 10000;
-				saltLength = 64;
-				break;
-
-			case AES_GCM_128_96:
-				algo = standardAlgo;
-				keyAlgo = "AES";
-				keysize = 128;
-				iterations = 10000;
-				saltLength = 64;
-				break;
-			default:
-				break;
-
-			}
-			return createKeyWithPassword(password, algo, keyAlgo, keysize, iterations, saltLength);
+			return decideForAlgoPassword(SecureCryptoConfig.usedAlgorithm, password);
 
 		}
 
@@ -679,7 +530,7 @@ public class SCCKey extends AbstractSCCKey {
 		} catch (NoSuchAlgorithmException e) {
 			throw new SCCException("Key could not be created! No algorithm specified!", e);
 		} catch (InvalidKeySpecException e) {
-			throw new SCCException("Key could not be created!", e);
+			throw new SCCException(standardError, e);
 		}
 	}
 
@@ -762,6 +613,105 @@ public class SCCKey extends AbstractSCCKey {
 			logger.warn("Secure Random Algorithm invalid/unknown", e);
 			return new byte[0];
 		}
+
+	}
+
+	private static SCCKey decideForAlgo(SCCAlgorithm sccalgorithmID) throws SCCException {
+		AlgorithmID id;
+		String algoKey;
+		switch (sccalgorithmID) {
+		// Asymmetric
+		case RSA_ECB:
+		case RSA_SHA_256:
+		case RSA_SHA_512:
+			return createAsymmetricKey("RSA", 4096);
+
+		// Signing
+		case ECDSA_512:
+			id = AlgorithmID.ECDSA_512;
+			algoKey = "EC";
+			return createOneKey(id, algoKey);
+
+		case ECDSA_256:
+			id = AlgorithmID.ECDSA_256;
+			algoKey = "EC";
+			return createOneKey(id, algoKey);
+		case ECDSA_384:
+			id = AlgorithmID.ECDSA_384;
+			algoKey = "EC";
+			return createOneKey(id, algoKey);
+
+		default:
+			break;
+		}
+		throw new SCCException(standardError, new CoseException(null));
+	}
+
+	private static SCCKey decideForAlgoPassword(SCCAlgorithm sccalgorithmID, PlaintextContainer password)
+			throws SCCException {
+		String algo = null;
+		String keyAlgo = null;
+		int keysize = 0;
+		int iterations = 0;
+		int saltLength = 0;
+
+		String standardAlgo = "PBKDF2WithHmacSHA512";
+
+		switch (sccalgorithmID) {
+		case AES_GCM_192_96:
+			algo = standardAlgo;
+			keyAlgo = "AES";
+			keysize = 192;
+			iterations = 10000;
+			saltLength = 64;
+			break;
+		case AES_GCM_256_96:
+			algo = standardAlgo;
+			keyAlgo = "AES";
+			keysize = 256;
+			iterations = 10000;
+			saltLength = 64;
+			break;
+
+		case AES_GCM_128_96:
+			algo = standardAlgo;
+			keyAlgo = "AES";
+			keysize = 128;
+			iterations = 10000;
+			saltLength = 64;
+			break;
+		default:
+			break;
+		}
+
+		return createKeyWithPassword(password, algo, keyAlgo, keysize, iterations, saltLength);
+
+	}
+
+	private static SCCKey decideForAlgoSymmetric(SCCAlgorithm sccalgorithmID) throws SCCException {
+
+		String algo = null;
+		int keysize = 0;
+
+		switch (sccalgorithmID) {
+		case AES_GCM_192_96:
+			algo = "AES";
+			keysize = 192;
+			break;
+		case AES_GCM_256_96:
+			algo = "AES";
+			keysize = 256;
+			break;
+		case AES_GCM_128_96:
+			algo = "AES";
+			keysize = 128;
+			break;
+		default:
+			break;
+
+		}
+
+		return createSymmetricKey(algo, keysize);
 
 	}
 

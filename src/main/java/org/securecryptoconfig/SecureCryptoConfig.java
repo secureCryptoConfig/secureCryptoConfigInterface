@@ -589,7 +589,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				Sign1Message msg = s.convertByteToMsg();
 
 				// Check if privateKey is empty and construct key accorsing to result
-				boolean privateKeyExists = privateKeyEmpty(k, msg);
+				boolean privateKeyExists = privateKeyEmpty(k);
 
 				if (privateKeyExists) {
 					OneKey oneKey = new OneKey(k.getPublicKey(), privateKey);
@@ -863,9 +863,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		}
 	}
 
-	private static boolean privateKeyEmpty(SCCKey k, Sign1Message msg) throws SCCException {
+	private static boolean privateKeyEmpty(SCCKey k) throws SCCException {
 		try {
-			PrivateKey privateKey = k.getPrivateKey();
+			k.getPrivateKey();
 			return false;
 		} catch (NullPointerException e) {
 			return true;
