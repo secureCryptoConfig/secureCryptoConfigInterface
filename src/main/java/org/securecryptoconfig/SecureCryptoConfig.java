@@ -8,6 +8,7 @@ import java.security.InvalidParameterException;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import org.securecryptoconfig.SCCKey.KeyType;
 import com.upokecenter.cbor.CBORObject;
@@ -54,6 +55,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	protected static SCCAlgorithm usedAlgorithm = null;
 
 	protected static boolean customPath = false;
+
+	private String standardError = "No supported algorithm!";
+	private static String coseError = "Error with COSE";
 
 	/**
 	 * Contains all supported algorithm names
@@ -164,11 +168,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * @return hashSet
 	 */
 	protected static HashSet<SCCAlgorithm> getEnums() {
-		HashSet<SCCAlgorithm> values = new HashSet<SCCAlgorithm>();
-
-		for (SCCAlgorithm c : SCCAlgorithm.values()) {
-			values.add(c);
-		}
+		HashSet<SCCAlgorithm> values = new HashSet<>();
+		Collections.addAll(values, SCCAlgorithm.values());
 
 		return values;
 	}
@@ -283,10 +284,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			throws SCCException {
 		if (key.getKeyType() == KeyType.Symmetric) {
 			try {
-				Encrypt0Message msg = (Encrypt0Message) Encrypt0Message.DecodeFromBytes(sccciphertext.msg);
+				Encrypt0Message msg = (Encrypt0Message) COSE.Message.DecodeFromBytes(sccciphertext.msg);
 				return new PlaintextContainer(msg.decrypt(key.toBytes()));
 			} catch (CoseException e) {
-				throw new SCCException("No supported algorithm!", e);
+				throw new SCCException(standardError, e);
 			}
 		} else {
 			throw new SCCException(
@@ -377,7 +378,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 			AsymMessage msg;
 			try {
-				msg = (AsymMessage) AsymMessage.DecodeFromBytes(ciphertext.msg);
+				msg = (AsymMessage) COSE.Message.DecodeFromBytes(ciphertext.msg);
 				return new PlaintextContainer(msg.decrypt(new KeyPair(k.getPublicKey(), k.getPrivateKey())));
 			} catch (CoseException e) {
 				throw new SCCException("Error by decoding of bytes", e);
@@ -444,7 +445,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				break;
 			}
 		}
-		throw new SCCException("No supported algorithm!", new CoseException(null));
+		throw new SCCException(standardError, new CoseException(null));
 	}
 
 	/**
@@ -545,7 +546,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			throw new SCCException("The used SCCKey has the wrong KeyType for this use case. ",
 					new InvalidKeyException());
 		}
-		throw new SCCException("No supported algorithm!", new CoseException(null));
+		throw new SCCException(standardError, new CoseException(null));
 
 	}
 
@@ -586,14 +587,17 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			try {
 				SCCSignature s = (SCCSignature) signature;
 				Sign1Message msg = s.convertByteToMsg();
-				try {
-					privateKey = k.getPrivateKey();
-				} catch (NullPointerException e) {
+
+				// Check if privateKey is empty and construct key accorsing to result
+				boolean privateKeyExists = privateKeyEmpty(k, msg);
+
+				if (privateKeyExists) {
+					OneKey oneKey = new OneKey(k.getPublicKey(), privateKey);
+					return msg.validate(oneKey);
+				} else {
 					OneKey oneKey = new OneKey(k.getPublicKey(), null);
 					return msg.validate(oneKey);
 				}
-				OneKey oneKey = new OneKey(k.getPublicKey(), privateKey);
-				return msg.validate(oneKey);
 			} catch (CoseException e) {
 				throw new SCCException("Signature validation could not be performed!", e);
 			}
@@ -653,7 +657,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				break;
 			}
 		}
-		throw new SCCException("No supported algorithm!", new CoseException(null));
+		throw new SCCException(standardError, new CoseException(null));
 
 	}
 
@@ -678,21 +682,20 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		PasswordHashMessage msg = sccHash.convertByteToMsg();
 		CBORObject algX = msg.findAttribute(HeaderKeys.Algorithm);
 		try {
-		AlgorithmID alg = AlgorithmID.FromCBOR(algX);
+			AlgorithmID alg = AlgorithmID.FromCBOR(algX);
 
-		SCCPasswordHash hash = SecureCryptoConfig.createPasswordHashMessageSalt(password, alg, msg.getSalt());
+			SCCPasswordHash hash = SecureCryptoConfig.createPasswordHashMessageSalt(password, alg, msg.getSalt());
 
-		String hash1 = new String(msg.getHashedContent(), StandardCharsets.UTF_8);
+			String hash1 = new String(msg.getHashedContent(), StandardCharsets.UTF_8);
 
-		if (hash != null) {
-			String hash2 = new String(hash.convertByteToMsg().getHashedContent(), StandardCharsets.UTF_8);
+			if (hash != null) {
+				String hash2 = new String(hash.convertByteToMsg().getHashedContent(), StandardCharsets.UTF_8);
 
-			return hash1.equals(hash2);
-		} else {
-			return false;
-		}
-		}catch(CoseException e)
-		{
+				return hash1.equals(hash2);
+			} else {
+				return false;
+			}
+		} catch (CoseException e) {
 			throw new SCCException("Could not validate password hash", new CoseException(null));
 		}
 
@@ -702,8 +705,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean validatePasswordHash(byte[] password, AbstractSCCPasswordHash passwordhash)
-			throws SCCException {
+	public boolean validatePasswordHash(byte[] password, AbstractSCCPasswordHash passwordhash) throws SCCException {
 		return validatePasswordHash(new PlaintextContainer(password), passwordhash);
 	}
 
@@ -803,7 +805,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			return SCCPasswordHash.createFromExistingPasswordHash(m.EncodeToBytes());
 
 		} catch (CoseException e) {
-			logger.warn("Error with COSE", e);
+			logger.warn(coseError, e);
 			return null;
 		}
 	}
@@ -828,7 +830,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			return SCCHash.createFromExistingHash(hashMessage.EncodeToBytes());
 
 		} catch (CoseException e) {
-			logger.warn("Error with COSE", e);
+			logger.warn(coseError, e);
 			return null;
 		}
 	}
@@ -856,8 +858,18 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			return SCCCiphertext.createFromExistingCiphertext(encrypt0Message.EncodeToBytes());
 
 		} catch (CoseException e) {
-			logger.warn("Error with COSE", e);
+			logger.warn(coseError, e);
 			return null;
+		}
+	}
+
+	private static boolean privateKeyEmpty(SCCKey k, Sign1Message msg) throws SCCException {
+		try {
+			PrivateKey privateKey = k.getPrivateKey();
+			return false;
+		} catch (NullPointerException e) {
+			return true;
+
 		}
 	}
 

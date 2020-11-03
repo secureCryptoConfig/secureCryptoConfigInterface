@@ -3,7 +3,6 @@ package org.securecryptoconfig;
 import java.util.Base64;
 
 import COSE.CoseException;
-import COSE.Encrypt0Message;
 
 /**
  * Class representing a container for the ciphertext (as result from encrypting
@@ -62,6 +61,7 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 
 	/**
 	 * {@inheritDoc}
+	 * @deprecated
 	 */
 	@Deprecated
 	@Override
@@ -125,7 +125,7 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	 */
 	public static SCCCiphertext createFromExistingCiphertext(byte[] existingSCCCiphertext) throws SCCException {
 		try {
-			Encrypt0Message.DecodeFromBytes(existingSCCCiphertext);
+			COSE.Message.DecodeFromBytes(existingSCCCiphertext);
 			return new SCCCiphertext(existingSCCCiphertext);
 		} catch (CoseException e) {
 			throw new SCCException("No valid SCCCiphertext byte[] representation", e);
@@ -144,7 +144,7 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 	 */
 	public static SCCCiphertext createFromExistingCiphertext(String existingSCCCiphertext) throws SCCException {
 		try {
-			Encrypt0Message.DecodeFromBytes(Base64.getDecoder().decode(existingSCCCiphertext));
+			COSE.Message.DecodeFromBytes(Base64.getDecoder().decode(existingSCCCiphertext));
 			return new SCCCiphertext(Base64.getDecoder().decode(existingSCCCiphertext));
 		} catch (CoseException e) {
 			throw new SCCException("No valid SCCCiphertext String representation", e);

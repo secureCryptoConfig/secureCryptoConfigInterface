@@ -1,7 +1,6 @@
 package org.securecryptoconfig;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import java.nio.charset.StandardCharsets;
@@ -9,13 +8,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import org.junit.jupiter.api.Test;
-import org.securecryptoconfig.PlaintextContainer;
-import org.securecryptoconfig.SCCCiphertext;
-import org.securecryptoconfig.SCCException;
-import org.securecryptoconfig.SCCKey;
 import org.securecryptoconfig.SCCKey.KeyUseCase;
-import org.securecryptoconfig.SecureCryptoConfig;
-
 import COSE.CoseException;
 
 class TestSymmetricEncryption {
@@ -81,7 +74,7 @@ class TestSymmetricEncryption {
 		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext);
 
 		assertNotEquals(Base64.getEncoder().encodeToString(plaintext), ciphertext.toBase64());
-		assertNotEquals(ciphertext.toBytes().length, 0);
+		assertNotEquals(0, ciphertext.toBytes().length);
 
 		// Decryption
 		PlaintextContainer plain = scc.decryptSymmetric(key, ciphertext);
@@ -197,7 +190,7 @@ class TestSymmetricEncryption {
 		String oldCiphertext = ciphertext.toBase64();
 		String newCiphertext = updatedCiphertext.toBase64();
 
-		assertFalse(oldCiphertext.equals(newCiphertext));
+		assertNotEquals(oldCiphertext, newCiphertext);
 	}
 
 	// - encrypted String encrypt + key, return: encrypted String
@@ -216,7 +209,7 @@ class TestSymmetricEncryption {
 		String oldCiphertext = ciphertext.toBase64();
 		String newCiphertext = updatedCiphertext.toBase64();
 
-		assertFalse(oldCiphertext.equals(newCiphertext));
+		assertNotEquals(oldCiphertext, newCiphertext);
 	}
 
 	// - encrypted byte[] encrypt + password, return: encrypted byte[]
@@ -234,7 +227,7 @@ class TestSymmetricEncryption {
 		String oldCiphertext = ciphertext.toBase64();
 		String newCiphertext = updatedCiphertext.toBase64();
 
-		assertFalse(oldCiphertext.equals(newCiphertext));
+		assertNotEquals(oldCiphertext, newCiphertext);
 	}
 
 	// - encrypted String encrypt + password, return: encrypted String
@@ -252,7 +245,7 @@ class TestSymmetricEncryption {
 		String oldCiphertext = ciphertext.toBase64();
 		String newCiphertext = updatedCiphertext.toBase64();
 
-		assertFalse(oldCiphertext.equals(newCiphertext));
+		assertNotEquals(oldCiphertext, newCiphertext);
 	}
 
 }

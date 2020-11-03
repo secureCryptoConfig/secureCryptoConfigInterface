@@ -80,6 +80,7 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 
 	/**
 	 * {@inheritDoc}
+	 * @deprecated
 	 */
 	@Deprecated
 	@Override
@@ -102,7 +103,7 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	 */
 	protected PasswordHashMessage convertByteToMsg() {
 		try {
-			return (PasswordHashMessage) PasswordHashMessage.DecodeFromBytes(this.hashMsg);
+			return (PasswordHashMessage) COSE.Message.DecodeFromBytes(this.hashMsg);
 		} catch (CoseException e) {
 			logger.warn("Error while decoding from bytes. Not in COSE format?", e);
 			return null;
@@ -120,7 +121,7 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	 */
 	public static SCCPasswordHash createFromExistingPasswordHash(byte[] existingSCCPasswordHash) throws SCCException {
 		try {
-			PasswordHashMessage.DecodeFromBytes(existingSCCPasswordHash);
+			COSE.Message.DecodeFromBytes(existingSCCPasswordHash);
 			return new SCCPasswordHash(existingSCCPasswordHash);
 		} catch (CoseException e) {
 			throw new SCCException("No valid SCCPasswordHash byte[] representation", e);
@@ -139,7 +140,7 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 	 */
 	public static SCCPasswordHash createFromExistingPasswordHash(String existingSCCPasswordHash) throws SCCException {
 		try {
-			PasswordHashMessage.DecodeFromBytes(Base64.getDecoder().decode(existingSCCPasswordHash));
+			COSE.Message.DecodeFromBytes(Base64.getDecoder().decode(existingSCCPasswordHash));
 			return new SCCPasswordHash(Base64.getDecoder().decode(existingSCCPasswordHash));
 		} catch (CoseException e) {
 			throw new SCCException("No valid SCCPasswordHash String representation", e);

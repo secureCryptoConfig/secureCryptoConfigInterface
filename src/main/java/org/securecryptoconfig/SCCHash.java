@@ -104,6 +104,7 @@ public class SCCHash extends AbstractSCCHash {
 
 	/**
 	 * {@inheritDoc}
+	 * @deprecated
 	 */
 	@Deprecated
 	@Override
@@ -118,7 +119,7 @@ public class SCCHash extends AbstractSCCHash {
 	 */
 	protected HashMessage convertByteToMsg() {
 		try {
-			return (HashMessage) HashMessage.DecodeFromBytes(this.hashMsg);
+			return (HashMessage) COSE.Message.DecodeFromBytes(this.hashMsg);
 		} catch (CoseException e) {
 			logger.warn("Message could not be decoded from bytes. Maybe not in COSE format?", e);
 			return null;
@@ -134,7 +135,7 @@ public class SCCHash extends AbstractSCCHash {
 	 */
 	public static SCCHash createFromExistingHash(byte[] existingSCCHash) throws SCCException {
 		try {
-			HashMessage.DecodeFromBytes(existingSCCHash);
+			COSE.Message.DecodeFromBytes(existingSCCHash);
 			return new SCCHash(existingSCCHash);
 		} catch (CoseException e) {
 			throw new SCCException("No valid SCCHash byte[] representation", e);
@@ -150,7 +151,7 @@ public class SCCHash extends AbstractSCCHash {
 	 */
 	public static SCCHash createFromExistingHash(String existingSCCHash) throws SCCException {
 		try {
-			HashMessage.DecodeFromBytes(Base64.getDecoder().decode(existingSCCHash));
+			COSE.Message.DecodeFromBytes(Base64.getDecoder().decode(existingSCCHash));
 			return new SCCHash(Base64.getDecoder().decode(existingSCCHash));
 		} catch (CoseException e) {
 			throw new SCCException("No valid SCCHash String representation", e);

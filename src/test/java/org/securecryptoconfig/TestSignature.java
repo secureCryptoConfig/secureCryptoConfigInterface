@@ -7,12 +7,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 
 import org.junit.jupiter.api.Test;
-import org.securecryptoconfig.SCCException;
-import org.securecryptoconfig.SCCKey;
 import org.securecryptoconfig.SCCKey.KeyUseCase;
-import org.securecryptoconfig.SCCSignature;
-import org.securecryptoconfig.SecureCryptoConfig;
-
 import COSE.CoseException;
 
 /**

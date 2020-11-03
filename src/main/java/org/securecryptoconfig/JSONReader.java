@@ -10,11 +10,9 @@ import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.InvalidKeyException;
 import java.security.KeyFactory;
 import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
-import java.security.SignatureException;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.ArrayList;
@@ -100,7 +98,8 @@ public class JSONReader {
 		Stream<Path> stream = null;
 		try {
 			stream = Files.walk(path);
-			stream.filter(Files::isRegularFile).filter(file -> file.getFileName().toString().endsWith(JsonFileEndingWithDot))
+			stream.filter(Files::isRegularFile)
+					.filter(file -> file.getFileName().toString().endsWith(JsonFileEndingWithDot))
 					.forEach(file -> allFilePaths.add(file));
 			stream.close();
 		} catch (IOException | NullPointerException e) {
@@ -112,7 +111,7 @@ public class JSONReader {
 		}
 	}
 
-	protected static ArrayList<SCCInstance> instances = new ArrayList<SCCInstance>();
+	protected static ArrayList<SCCInstance> instances = new ArrayList<>();
 
 	private static void getSCCInstances() {
 		levels.clear();
@@ -124,8 +123,7 @@ public class JSONReader {
 			for (int i = 0; i < allFilePaths.size(); i++) {
 				SCCInstance sccInstance;
 				if (!isJAR) {
-					sccInstance = objectMapper.readValue(new File(allFilePaths.get(i).toString()),
-							SCCInstance.class);
+					sccInstance = objectMapper.readValue(new File(allFilePaths.get(i).toString()), SCCInstance.class);
 				} else {
 					InputStream is = org.securecryptoconfig.JSONReader.class
 							.getResourceAsStream(allFilePaths.get(i).toString());
@@ -199,8 +197,8 @@ public class JSONReader {
 		return Collections.max(level);
 	}
 
-	private static boolean checkSignature(String algo, String signaturePath, String publicKeyPath) throws IOException,
-			NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException, SCCException {
+	private static boolean checkSignature(String algo, String signaturePath, String publicKeyPath)
+			throws IOException, NoSuchAlgorithmException, SCCException, InvalidKeySpecException {
 
 		byte[] publicKey;
 		byte[] sig;
@@ -246,7 +244,7 @@ public class JSONReader {
 				}
 			}
 		} catch (URISyntaxException e) {
-			logger.warn("public key path not valid", e); 
+			logger.warn("public key path not valid", e);
 		}
 		Stream<Path> s = null;
 		try {
@@ -300,8 +298,7 @@ public class JSONReader {
 				try {
 					validation1 = checkSignature(signatureAlgo, signaturePath1, publicKeyPaths.get(0).toString());
 					validation2 = checkSignature(signatureAlgo, signaturePath2, publicKeyPaths.get(1).toString());
-				} catch (InvalidKeyException | NoSuchAlgorithmException | InvalidKeySpecException | SignatureException
-						| IOException e) {
+				} catch (NoSuchAlgorithmException | InvalidKeySpecException | IOException e) {
 					throw new SCCException("Signature check of Secure Crypto Config files could not be performed!", e);
 				}
 				if (!validation1 || !validation2) {

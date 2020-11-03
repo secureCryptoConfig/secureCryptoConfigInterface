@@ -279,7 +279,7 @@ public class PlaintextContainer implements PlaintextContainerInterface {
 	@Override
 	public boolean validateSignature(AbstractSCCSignature signature, AbstractSCCKey key) throws SCCException {
 		try {
-			Sign1Message msg = (Sign1Message) Sign1Message.DecodeFromBytes(signature.toBytes());
+			Sign1Message msg = (Sign1Message) COSE.Message.DecodeFromBytes(signature.toBytes());
 			msg.SetContent(this.plaintext);
 			SCCKey k = (SCCKey) key;
 			OneKey oneKey = new OneKey(k.getPublicKey(), k.getPrivateKey());

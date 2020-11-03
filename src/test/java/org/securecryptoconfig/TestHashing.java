@@ -5,12 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
-import org.securecryptoconfig.PlaintextContainer;
-import org.securecryptoconfig.SCCException;
-import org.securecryptoconfig.SCCHash;
-import org.securecryptoconfig.SCCPasswordHash;
-import org.securecryptoconfig.SecureCryptoConfig;
-
 import COSE.CoseException;
 
 /**

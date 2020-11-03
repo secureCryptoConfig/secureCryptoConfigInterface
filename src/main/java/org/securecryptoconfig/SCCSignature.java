@@ -63,6 +63,7 @@ public class SCCSignature extends AbstractSCCSignature {
 
 	/**
 	 * {@inheritDoc}
+	 * @deprecated
 	 */
 	@Deprecated
 	@Override
@@ -104,7 +105,7 @@ public class SCCSignature extends AbstractSCCSignature {
 	 */
 	protected Sign1Message convertByteToMsg() {
 		try {
-			return (Sign1Message) Sign1Message.DecodeFromBytes(this.signatureMsg);
+			return (Sign1Message) COSE.Message.DecodeFromBytes(this.signatureMsg);
 		} catch (CoseException e) {
 			logger.warn("Error while decoding from bytes. Not in COSE format?", e);
 			return null;
@@ -120,7 +121,7 @@ public class SCCSignature extends AbstractSCCSignature {
 	 */
 	public static SCCSignature createFromExistingSignature(byte[] existingSCCSignature) throws SCCException {
 		try {
-			Sign1Message.DecodeFromBytes(existingSCCSignature);
+			COSE.Message.DecodeFromBytes(existingSCCSignature);
 			return new SCCSignature(existingSCCSignature);
 		} catch (CoseException e) {
 			throw new SCCException("No valid SCCSignature byte[] representation", e);
@@ -138,7 +139,7 @@ public class SCCSignature extends AbstractSCCSignature {
 	 */
 	public static SCCSignature createFromExistingSignature(String existingSCCSignature) throws SCCException {
 		try {
-			Sign1Message.DecodeFromBytes(Base64.getDecoder().decode(existingSCCSignature));
+			COSE.Message.DecodeFromBytes(Base64.getDecoder().decode(existingSCCSignature));
 			return new SCCSignature(Base64.getDecoder().decode(existingSCCSignature));
 		} catch (CoseException e) {
 			throw new SCCException("No valid SCCSignature String representation", e);
