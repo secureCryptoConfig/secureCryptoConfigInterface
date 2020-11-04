@@ -1,5 +1,7 @@
 package org.securecryptoconfig;
 
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
@@ -8,6 +10,8 @@ import java.security.NoSuchAlgorithmException;
 
 import org.junit.jupiter.api.Test;
 import org.securecryptoconfig.SCCKey.KeyUseCase;
+import org.securecryptoconfig.SecureCryptoConfig.SCCAlgorithm;
+
 import COSE.CoseException;
 
 /**
@@ -98,4 +102,41 @@ class TestSignature {
 		assertTrue(scc.validateSignature(key, SCCSignature.createFromExistingSignature(newSignatureString)));
 	}
 
+	@Test
+	void testSigningWithSpecificAlgo() throws SCCException {
+		// Set specific algorithm
+		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.ECDSA_256);
+		
+		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
+		SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
+
+		SCCSignature oldSignature = scc.sign(key, plaintext);
+		byte[] oldSignaturebytes = oldSignature.toBytes();
+
+		SCCSignature newSignature = scc.updateSignature(key, plaintext);
+		byte[] newSignatureBytes = newSignature.toBytes();
+
+		assertTrue(scc.validateSignature(key, oldSignature));
+		assertTrue(scc.validateSignature(key, SCCSignature.createFromExistingSignature(oldSignaturebytes)));
+
+		assertTrue(scc.validateSignature(key, newSignature));
+		assertTrue(scc.validateSignature(key, SCCSignature.createFromExistingSignature(newSignatureBytes)));
+		
+		SecureCryptoConfig.defaultAlgorithm();
+	}
+	
+	@Test
+	void testSigningWithWrongAlgo() throws SCCException {
+		
+		String plaintext = "Hello World!";
+		SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
+		
+		// Set specific algorithm
+		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.AES_GCM_128_96);
+		// Sign
+		assertThrows(SCCException.class,
+				() ->scc.sign(key, plaintext.getBytes(StandardCharsets.UTF_8)));
+		
+		SecureCryptoConfig.defaultAlgorithm();
+	}
 }

@@ -204,14 +204,6 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		usedAlgorithm = null;
 	}
 	
-	/**
-	 * Return currently used algorithm id for realizing crypto primitive
-	 * @return
-	 */
-	public static SCCAlgorithm getAlgorithm()
-	{
-		return usedAlgorithm;
-	}
 
 	/**
 	 * {@inheritDoc}

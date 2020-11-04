@@ -283,23 +283,73 @@ class TestSymmetricEncryption {
 		assertThrows(InvalidPathException.class,
 				() -> SecureCryptoConfig.setCustomSCCPath(Paths.get("NoExistingPath")));
 
-		// Set specific algorithm
-		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.AES_GCM_192_96);
-		SecureCryptoConfig.defaultAlgorithm();
 	}
 
 	@Test
 	void testWrongKeyType() throws SCCException {
 		String plaintext = "Hello World!";
-		
+
 		SCCKey keyAsym = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
-		assertThrows(SCCException.class, () -> scc.encryptSymmetric(keyAsym, plaintext.getBytes(StandardCharsets.UTF_8)));
+		assertThrows(SCCException.class,
+				() -> scc.encryptSymmetric(keyAsym, plaintext.getBytes(StandardCharsets.UTF_8)));
 
 		SCCKey keySym = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
-		assertThrows(SCCException.class, () -> scc.encryptAsymmetric(keySym, plaintext.getBytes(StandardCharsets.UTF_8)));
+		assertThrows(SCCException.class,
+				() -> scc.encryptAsymmetric(keySym, plaintext.getBytes(StandardCharsets.UTF_8)));
 
 		assertThrows(SCCException.class, () -> scc.sign(keySym, plaintext.getBytes(StandardCharsets.UTF_8)));
 
+	}
+
+	@Test
+	void testSymmetricEncryptionWithSpecificAlgo() throws SCCException {
+		// Set specific algorithm
+		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.AES_GCM_192_96);
+
+		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
+		byte[] password = "password".getBytes(StandardCharsets.UTF_8);
+		SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
+		// Encryption
+		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext);
+		// ReEncryption
+		SCCCiphertext updatedCiphertext = scc.reEncryptSymmetric(key, ciphertext);
+		byte[] updateCiphertext = updatedCiphertext.toBytes();
+
+		String oldCiphertext = ciphertext.toBase64();
+		String newCiphertext = updatedCiphertext.toBase64();
+
+		assertNotEquals(oldCiphertext, newCiphertext);
+
+		SecureCryptoConfig.defaultAlgorithm();
+	}
+
+	@Test
+	void testSymmetricEncryptionWithWrongAlgo() throws SCCException {
+
+		String plaintext = "Hello World!";
+		SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
+
+		// Set specific algorithm
+		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.ECDSA_256);
+		// Encryption
+		assertThrows(SCCException.class, () -> scc.encryptSymmetric(key, plaintext.getBytes(StandardCharsets.UTF_8)));
+
+		SecureCryptoConfig.defaultAlgorithm();
+	}
+
+	// Test SCCKey
+	@Test
+	void testSCCKeyWrongAlgo() throws SCCException {
+		// Set specific wrong algorithm
+		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.ECDSA_256);
+		assertThrows(NullPointerException.class, () -> SCCKey.createKey(KeyUseCase.SymmetricEncryption));
+		
+		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.AES_GCM_128_96);
+		assertThrows(SCCException.class, () -> SCCKey.createKey(KeyUseCase.AsymmetricEncryption));
+		assertThrows(SCCException.class, () -> SCCKey.createKey(KeyUseCase.Signing));
+
+		SecureCryptoConfig.defaultAlgorithm();
+		
 	}
 
 }

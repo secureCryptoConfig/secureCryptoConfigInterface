@@ -1,10 +1,14 @@
 package org.securecryptoconfig;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
+import org.securecryptoconfig.SCCKey.KeyUseCase;
+import org.securecryptoconfig.SecureCryptoConfig.SCCAlgorithm;
+
 import COSE.CoseException;
 
 /**
@@ -138,6 +142,66 @@ class TestHashing {
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes()), hash));
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)),
 				SCCPasswordHash.createFromExistingPasswordHash(hashedValue)));
+	}
+	
+	@Test
+	void testHashWithSpecificAlgo() throws SCCException {
+		// Set specific algorithm
+		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.SHA3_512);
+		
+		String plaintext = "Hello World!";
+		PlaintextContainer plaintextContainer = new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8));
+
+		SCCHash hash = plaintextContainer.hash();
+
+		assertTrue(plaintextContainer.validateHash(hash));
+	
+		SecureCryptoConfig.defaultAlgorithm();
+	}
+	
+	@Test
+	void testPasswordHashWithSpecificAlgo() throws SCCException {
+		// Set specific algorithm
+		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.PBKDF_SHA_256);
+		
+		String password = "Hello World!";
+		SCCPasswordHash hash = scc.passwordHash(password.getBytes(StandardCharsets.UTF_8));
+		String hashedValue = hash.toBase64();
+
+		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes()), hash));
+		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)),
+				SCCPasswordHash.createFromExistingPasswordHash(hashedValue)));
+	
+	
+		SecureCryptoConfig.defaultAlgorithm();
+	}
+	
+	@Test
+	void testHashWithWrongAlgo() throws SCCException {
+		
+		String plaintext = "Hello World!";
+		
+		// Set specific algorithm
+		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.ECDSA_256);
+		// Encryption
+		assertThrows(SCCException.class,
+				() ->scc.hash(plaintext.getBytes(StandardCharsets.UTF_8)));
+		
+		SecureCryptoConfig.defaultAlgorithm();
+	}
+	
+	@Test
+	void testPasswordHashWithWrongAlgo() throws SCCException {
+		
+		String plaintext = "Hello World!";
+		
+		// Set specific algorithm
+		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.ECDSA_256);
+		// Encryption
+		assertThrows(SCCException.class,
+				() ->scc.passwordHash(plaintext.getBytes(StandardCharsets.UTF_8)));
+		
+		SecureCryptoConfig.defaultAlgorithm();
 	}
 
 }
