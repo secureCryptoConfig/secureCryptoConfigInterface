@@ -203,6 +203,15 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	public static void defaultAlgorithm() {
 		usedAlgorithm = null;
 	}
+	
+	/**
+	 * Return currently used algorithm id for realizing crypto primitive
+	 * @return
+	 */
+	public static SCCAlgorithm getAlgorithm()
+	{
+		return usedAlgorithm;
+	}
 
 	/**
 	 * {@inheritDoc}
@@ -355,7 +364,6 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	@Override
 	public SCCHash hash(PlaintextContainerInterface plaintext) throws SCCException {
 
-		PlaintextContainer p;
 		if (usedAlgorithm == null) {
 
 			ArrayList<SCCAlgorithm> algorithms = currentSCCInstance.getUsage().getHashing();
@@ -365,44 +373,12 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				SCCAlgorithm sccalgorithmID = algorithms.get(i);
 
 				if (getEnums().contains(sccalgorithmID)) {
-
-					switch (sccalgorithmID) {
-					case SHA_512:
-						p = new PlaintextContainer(plaintext.toBytes());
-						return SecureCryptoConfig.createHashMessage(p, AlgorithmID.SHA_512);
-					case SHA_256:
-						p = new PlaintextContainer(plaintext.toBytes());
-						return SecureCryptoConfig.createHashMessage(p, AlgorithmID.SHA_256);
-					case SHA3_512:
-						p = new PlaintextContainer(plaintext.toBytes());
-						return SecureCryptoConfig.createHashMessage(p, AlgorithmID.SHA3_512);
-					case SHA3_256:
-						p = new PlaintextContainer(plaintext.toBytes());
-						return SecureCryptoConfig.createHashMessage(p, AlgorithmID.SHA3_256);
-
-					default:
-						break;
-					}
+					return decideForAlgoHash(sccalgorithmID, plaintext);
 				}
 
 			}
 		} else {
-			switch (usedAlgorithm) {
-			case SHA_512:
-				p = new PlaintextContainer(plaintext.toBytes());
-				return SecureCryptoConfig.createHashMessage(p, AlgorithmID.SHA_512);
-			case SHA_256:
-				p = new PlaintextContainer(plaintext.toBytes());
-				return SecureCryptoConfig.createHashMessage(p, AlgorithmID.SHA_256);
-			case SHA3_512:
-				p = new PlaintextContainer(plaintext.toBytes());
-				return SecureCryptoConfig.createHashMessage(p, AlgorithmID.SHA3_512);
-			case SHA3_256:
-				p = new PlaintextContainer(plaintext.toBytes());
-				return SecureCryptoConfig.createHashMessage(p, AlgorithmID.SHA3_256);
-			default:
-				break;
-			}
+			return decideForAlgoHash(usedAlgorithm, plaintext);
 		}
 		throw new SCCException(standardError, new CoseException(null));
 	}
@@ -570,31 +546,13 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 				SCCAlgorithm sccalgorithmID = algorithms.get(i);
 
 				if (getEnums().contains(sccalgorithmID)) {
-
-					switch (sccalgorithmID) {
-					case PBKDF_SHA_512:
-						return SecureCryptoConfig.createPasswordHashMessage(password, AlgorithmID.PBKDF_SHA_512);
-					case PBKDF_SHA_256:
-						return SecureCryptoConfig.createPasswordHashMessage(password, AlgorithmID.PBKDF_SHA_256);
-					case SHA_512_64:
-						return SecureCryptoConfig.createPasswordHashMessage(password, AlgorithmID.SHA_512_64);
-					default:
-						break;
-					}
+					return decideForAlgoPasswordHash(sccalgorithmID, password);
 				}
 
 			}
 		} else {
-			switch (usedAlgorithm) {
-			case PBKDF_SHA_512:
-				return SecureCryptoConfig.createPasswordHashMessage(password, AlgorithmID.PBKDF_SHA_512);
-			case PBKDF_SHA_256:
-				return SecureCryptoConfig.createPasswordHashMessage(password, AlgorithmID.PBKDF_SHA_256);
-			case SHA_512_64:
-				return SecureCryptoConfig.createPasswordHashMessage(password, AlgorithmID.SHA_512_64);
-			default:
-				break;
-			}
+			return decideForAlgoPasswordHash(usedAlgorithm, password);
+			
 		}
 		throw new SCCException(standardError, new CoseException(null));
 
@@ -883,5 +841,43 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 		throw new SCCException(standardError, new CoseException(null));
 
+	}
+	
+	private static SCCPasswordHash decideForAlgoPasswordHash(SCCAlgorithm sccalgorithmID, PlaintextContainerInterface password) throws SCCException {
+
+		switch (sccalgorithmID) {
+		case PBKDF_SHA_512:
+			return SecureCryptoConfig.createPasswordHashMessage(password, AlgorithmID.PBKDF_SHA_512);
+		case PBKDF_SHA_256:
+			return SecureCryptoConfig.createPasswordHashMessage(password, AlgorithmID.PBKDF_SHA_256);
+		case SHA_512_64:
+			return SecureCryptoConfig.createPasswordHashMessage(password, AlgorithmID.SHA_512_64);
+		default:
+			break;
+		}
+		throw new SCCException(standardError, new CoseException(null));
+	}
+	
+	private static SCCHash decideForAlgoHash(SCCAlgorithm sccalgorithmID, PlaintextContainerInterface plaintext) throws SCCException {
+		PlaintextContainer p;
+		switch (sccalgorithmID) {
+		case SHA_512:
+			p = new PlaintextContainer(plaintext.toBytes());
+			return SecureCryptoConfig.createHashMessage(p, AlgorithmID.SHA_512);
+		case SHA_256:
+			p = new PlaintextContainer(plaintext.toBytes());
+			return SecureCryptoConfig.createHashMessage(p, AlgorithmID.SHA_256);
+		case SHA3_512:
+			p = new PlaintextContainer(plaintext.toBytes());
+			return SecureCryptoConfig.createHashMessage(p, AlgorithmID.SHA3_512);
+		case SHA3_256:
+			p = new PlaintextContainer(plaintext.toBytes());
+			return SecureCryptoConfig.createHashMessage(p, AlgorithmID.SHA3_256);
+
+		default:
+			break;
+		}
+		throw new SCCException(standardError, new CoseException(null));
+		
 	}
 }

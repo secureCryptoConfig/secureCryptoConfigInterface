@@ -2,19 +2,27 @@ package org.securecryptoconfig;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.charset.StandardCharsets;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Paths;
 import java.security.InvalidKeyException;
+import java.security.InvalidParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 import org.junit.jupiter.api.Test;
 import org.securecryptoconfig.SCCKey.KeyUseCase;
+import org.securecryptoconfig.SecureCryptoConfig.SCCAlgorithm;
+
 import COSE.CoseException;
 
 class TestSymmetricEncryption {
 
 	/**
-	 * Class for testing all functionalities for symmetric encryption from the Secure Crypto Config Interface
+	 * Class for testing all functionalities for symmetric encryption from the
+	 * Secure Crypto Config Interface
+	 * 
 	 * @author Lisa
 	 *
 	 */
@@ -142,7 +150,7 @@ class TestSymmetricEncryption {
 		// SCCKey already exists
 		SCCKey existingKey = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 		byte[] existingSCCKey = existingKey.decodeObjectToBytes();
-				
+
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		SCCKey key = SCCKey.createFromExistingKey(existingSCCKey);
 		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext);
@@ -162,7 +170,6 @@ class TestSymmetricEncryption {
 		// SCCKey already exists
 		SCCKey existingKey = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 		byte[] existingSCCKey = existingKey.decodeObjectToBytes();
-						
 
 		String plaintext = "Hello World!";
 		SCCKey key = SCCKey.createFromExistingKey(existingSCCKey);
@@ -246,6 +253,53 @@ class TestSymmetricEncryption {
 		String newCiphertext = updatedCiphertext.toBase64();
 
 		assertNotEquals(oldCiphertext, newCiphertext);
+	}
+
+	// Tests for SCC files handling
+	@Test
+	void testSCCFileHandling() {
+		// Set security level and get the policy name of the SCC file currently used
+		SecureCryptoConfig.setSecurityLevel(5);
+		String policyName = SecureCryptoConfig.getUsedSCC();
+		assertEquals("SCC_SecurityLevel_5", policyName);
+
+		// Set not existing security level
+		assertThrows(IllegalArgumentException.class, () -> SecureCryptoConfig.setSecurityLevel(7));
+
+		// Go back to default SCC
+		SecureCryptoConfig.setDefaultSCC();
+		String policyName1 = SecureCryptoConfig.getUsedSCC();
+		assertEquals("SCC_SecurityLevel_5", policyName1);
+
+		// Set specific SCC file with desired policyName
+		SecureCryptoConfig.setSCCFile("SCC_SecurityLevel_5");
+		String policyName2 = SecureCryptoConfig.getUsedSCC();
+		assertEquals("SCC_SecurityLevel_5", policyName2);
+
+		// Set specific SCC file with not existing policyName
+		assertThrows(InvalidParameterException.class, () -> SecureCryptoConfig.setSCCFile("WrongName"));
+
+		// Set custom path that is not existing
+		assertThrows(InvalidPathException.class,
+				() -> SecureCryptoConfig.setCustomSCCPath(Paths.get("NoExistingPath")));
+
+		// Set specific algorithm
+		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.AES_GCM_192_96);
+		SecureCryptoConfig.defaultAlgorithm();
+	}
+
+	@Test
+	void testWrongKeyType() throws SCCException {
+		String plaintext = "Hello World!";
+		
+		SCCKey keyAsym = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
+		assertThrows(SCCException.class, () -> scc.encryptSymmetric(keyAsym, plaintext.getBytes(StandardCharsets.UTF_8)));
+
+		SCCKey keySym = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
+		assertThrows(SCCException.class, () -> scc.encryptAsymmetric(keySym, plaintext.getBytes(StandardCharsets.UTF_8)));
+
+		assertThrows(SCCException.class, () -> scc.sign(keySym, plaintext.getBytes(StandardCharsets.UTF_8)));
+
 	}
 
 }
