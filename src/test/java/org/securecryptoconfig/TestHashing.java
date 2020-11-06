@@ -9,6 +9,8 @@ import org.junit.jupiter.api.Test;
 import org.securecryptoconfig.SCCKey.KeyUseCase;
 import org.securecryptoconfig.SecureCryptoConfig.SCCAlgorithm;
 
+import com.upokecenter.cbor.CBORException;
+
 import COSE.CoseException;
 
 /**
@@ -47,10 +49,14 @@ class TestHashing {
 		SCCHash hash = scc.hash(plaintext);
 
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), hash));
+		//Same with short-cut methods
+		assertTrue(new PlaintextContainer(plaintext).validateHash(hash));
 
 		byte[] hashedValue = hash.toBytes();
 
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), SCCHash.createFromExistingHash(hashedValue)));
+		//Same with short-cut methods
+		assertTrue(new PlaintextContainer(plaintext).validateHash(SCCHash.createFromExistingHash(hashedValue)));
 
 	}
 
@@ -83,6 +89,18 @@ class TestHashing {
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), SCCHash.createFromExistingHash(oldHashBytes)));
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), newHash));
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), SCCHash.createFromExistingHash(newHashBytes)));
+
+		//Same with short-cut methods
+		SCCHash oldHash2 = new PlaintextContainer(plaintext).hash();
+		byte[] oldHashBytes2 = oldHash2.toBytes();
+
+		SCCHash newHash2 = (SCCHash) oldHash2.updateHash(plaintext);
+		byte[] newHashBytes2 = newHash2.toBytes();
+		
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), oldHash2));
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), SCCHash.createFromExistingHash(oldHashBytes2)));
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), newHash2));
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), SCCHash.createFromExistingHash(newHashBytes2)));
 
 	}
 
@@ -172,7 +190,6 @@ class TestHashing {
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)),
 				SCCPasswordHash.createFromExistingPasswordHash(hashedValue)));
 	
-	
 		SecureCryptoConfig.defaultAlgorithm();
 	}
 	
@@ -202,6 +219,16 @@ class TestHashing {
 				() ->scc.passwordHash(plaintext.getBytes(StandardCharsets.UTF_8)));
 		
 		SecureCryptoConfig.defaultAlgorithm();
+	}
+	
+	@Test
+	void testCreateHash() throws SCCException {
+		assertThrows(CBORException.class,
+				() ->SCCHash.createFromExistingHash("NoHash".getBytes()));
+	
+		assertThrows(CBORException.class,
+				() ->SCCHash.createFromExistingHash("NoHash".toString()));
+	
 	}
 
 }
