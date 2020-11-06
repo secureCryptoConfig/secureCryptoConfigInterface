@@ -51,12 +51,14 @@ class TestHashing {
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), hash));
 		//Same with short-cut methods
 		assertTrue(new PlaintextContainer(plaintext).validateHash(hash));
+		assertTrue(hash.validateHash(plaintext));
 
 		byte[] hashedValue = hash.toBytes();
 
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), SCCHash.createFromExistingHash(hashedValue)));
 		//Same with short-cut methods
 		assertTrue(new PlaintextContainer(plaintext).validateHash(SCCHash.createFromExistingHash(hashedValue)));
+		assertTrue(SCCHash.createFromExistingHash(hashedValue).validateHash(plaintext));
 
 	}
 
@@ -147,6 +149,11 @@ class TestHashing {
 
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password), hash));
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password), SCCPasswordHash.createFromExistingPasswordHash(hashedValue)));
+	
+		//Same with short-cut methods
+		assertTrue(hash.validatePasswordHash(password));
+		assertTrue(SCCPasswordHash.createFromExistingPasswordHash(hashedValue).validatePasswordHash(new PlaintextContainer(password)));
+	
 	}
 
 	// - String plain hash, return: String hash
@@ -223,11 +230,21 @@ class TestHashing {
 	
 	@Test
 	void testCreateHash() throws SCCException {
-		assertThrows(CBORException.class,
+		assertThrows(SCCException.class,
 				() ->SCCHash.createFromExistingHash("NoHash".getBytes()));
 	
-		assertThrows(CBORException.class,
+		assertThrows(SCCException.class,
 				() ->SCCHash.createFromExistingHash("NoHash".toString()));
+	
+	}
+	
+	@Test
+	void testCreatePasswordHash() throws SCCException {
+		assertThrows(SCCException.class,
+				() ->SCCPasswordHash.createFromExistingPasswordHash("NoHash".getBytes()));
+	
+		assertThrows(SCCException.class,
+				() ->SCCPasswordHash.createFromExistingPasswordHash("NoHash".toString()));
 	
 	}
 

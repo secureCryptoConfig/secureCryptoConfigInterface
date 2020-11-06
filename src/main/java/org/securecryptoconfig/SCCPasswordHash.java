@@ -2,6 +2,8 @@ package org.securecryptoconfig;
 
 import java.util.Base64;
 
+import com.upokecenter.cbor.CBORException;
+
 import COSE.CoseException;
 import COSE.PasswordHashMessage;
 
@@ -123,7 +125,7 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 		try {
 			COSE.Message.DecodeFromBytes(existingSCCPasswordHash);
 			return new SCCPasswordHash(existingSCCPasswordHash);
-		} catch (CoseException e) {
+		} catch (CBORException| CoseException e) {
 			throw new SCCException("No valid SCCPasswordHash byte[] representation", e);
 		}
 
@@ -142,7 +144,7 @@ public class SCCPasswordHash extends AbstractSCCPasswordHash {
 		try {
 			COSE.Message.DecodeFromBytes(Base64.getDecoder().decode(existingSCCPasswordHash));
 			return new SCCPasswordHash(Base64.getDecoder().decode(existingSCCPasswordHash));
-		} catch (CoseException e) {
+		} catch (CBORException| CoseException e) {
 			throw new SCCException("No valid SCCPasswordHash String representation", e);
 		}
 

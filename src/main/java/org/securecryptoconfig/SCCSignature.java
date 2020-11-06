@@ -2,6 +2,8 @@ package org.securecryptoconfig;
 
 import java.util.Base64;
 
+import com.upokecenter.cbor.CBORException;
+
 import COSE.CoseException;
 import COSE.Sign1Message;
 
@@ -106,7 +108,7 @@ public class SCCSignature extends AbstractSCCSignature {
 	protected Sign1Message convertByteToMsg() {
 		try {
 			return (Sign1Message) COSE.Message.DecodeFromBytes(this.signatureMsg);
-		} catch (CoseException e) {
+		} catch (CBORException | CoseException e) {
 			logger.warn("Error while decoding from bytes. Not in COSE format?", e);
 			return null;
 		}
@@ -123,7 +125,7 @@ public class SCCSignature extends AbstractSCCSignature {
 		try {
 			COSE.Message.DecodeFromBytes(existingSCCSignature);
 			return new SCCSignature(existingSCCSignature);
-		} catch (CoseException e) {
+		} catch (CBORException | CoseException e) {
 			throw new SCCException("No valid SCCSignature byte[] representation", e);
 		}
 

@@ -12,6 +12,8 @@ import org.junit.jupiter.api.Test;
 import org.securecryptoconfig.SCCKey.KeyUseCase;
 import org.securecryptoconfig.SecureCryptoConfig.SCCAlgorithm;
 
+import com.upokecenter.cbor.CBORException;
+
 import COSE.CoseException;
 
 /**
@@ -81,6 +83,14 @@ class TestSignature {
 		assertTrue(scc.validateSignature(key, newSignature));
 		assertTrue(scc.validateSignature(key, SCCSignature.createFromExistingSignature(newSignatureBytes)));
 
+		//Same with short-cut methods
+		
+		assertTrue(oldSignature.validateSignature(key));
+		assertTrue(SCCSignature.createFromExistingSignature(oldSignaturebytes).validateSignature(key));
+
+		assertTrue(newSignature.validateSignature(key));
+		assertTrue(SCCSignature.createFromExistingSignature(newSignatureBytes).validateSignature(key));
+
 	}
 
 	// - signature + key, return: updated String signature
@@ -138,5 +148,15 @@ class TestSignature {
 				() ->scc.sign(key, plaintext.getBytes(StandardCharsets.UTF_8)));
 		
 		SecureCryptoConfig.defaultAlgorithm();
+	}
+	
+	@Test
+	void testCreateSignature() throws SCCException {
+		assertThrows(CBORException.class,
+				() ->SCCSignature.createFromExistingSignature("NoSignature".getBytes()));
+	
+		assertThrows(CBORException.class,
+				() ->SCCSignature.createFromExistingSignature("NoSignature".toString()));
+	
 	}
 }

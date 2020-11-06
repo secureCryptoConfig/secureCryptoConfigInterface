@@ -2,6 +2,8 @@ package org.securecryptoconfig;
 
 import java.util.Base64;
 
+import com.upokecenter.cbor.CBORException;
+
 import COSE.CoseException;
 import COSE.HashMessage;
 
@@ -137,7 +139,7 @@ public class SCCHash extends AbstractSCCHash {
 		try {
 			COSE.Message.DecodeFromBytes(existingSCCHash);
 			return new SCCHash(existingSCCHash);
-		} catch (CoseException e) {
+		} catch (CBORException | CoseException e) {
 			throw new SCCException("No valid SCCHash byte[] representation", e);
 		}
 	}
@@ -153,7 +155,7 @@ public class SCCHash extends AbstractSCCHash {
 		try {
 			COSE.Message.DecodeFromBytes(Base64.getDecoder().decode(existingSCCHash));
 			return new SCCHash(Base64.getDecoder().decode(existingSCCHash));
-		} catch (CoseException e) {
+		} catch (CBORException | CoseException e) {
 			throw new SCCException("No valid SCCHash String representation", e);
 		}
 	}
