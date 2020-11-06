@@ -383,8 +383,10 @@ class TestSymmetricEncryption {
 		assertEquals("AES", key.getAlgorithm());
 		SecureCryptoConfig.defaultAlgorithm();
 		
-		assertThrows(SCCException.class, () -> SCCKey.createKey(KeyUseCase.Signing).toBytes());
-		assertThrows(SCCException.class, () -> SCCKey.createKey(KeyUseCase.Signing).getSecretKey());
+		SCCKey keyAsym = SCCKey.createKey(KeyUseCase.Signing);
+		
+		assertThrows(SCCException.class, () -> keyAsym.toBytes());
+		assertThrows(SCCException.class, () -> keyAsym.getSecretKey());
 
 	}
 	
