@@ -152,10 +152,10 @@ class TestSignature {
 	
 	@Test
 	void testCreateSignature() throws SCCException {
-		assertThrows(CBORException.class,
+		assertThrows(SCCException.class,
 				() ->SCCSignature.createFromExistingSignature("NoSignature".getBytes()));
 	
-		assertThrows(CBORException.class,
+		assertThrows(SCCException.class,
 				() ->SCCSignature.createFromExistingSignature("NoSignature".toString()));
 	
 	}

@@ -143,7 +143,7 @@ public class SCCSignature extends AbstractSCCSignature {
 		try {
 			COSE.Message.DecodeFromBytes(Base64.getDecoder().decode(existingSCCSignature));
 			return new SCCSignature(Base64.getDecoder().decode(existingSCCSignature));
-		} catch (CoseException e) {
+		} catch (CBORException | CoseException e) {
 			throw new SCCException("No valid SCCSignature String representation", e);
 		}
 
