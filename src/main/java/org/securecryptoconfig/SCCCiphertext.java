@@ -2,6 +2,8 @@ package org.securecryptoconfig;
 
 import java.util.Base64;
 
+import com.upokecenter.cbor.CBORException;
+
 import COSE.CoseException;
 
 /**
@@ -127,7 +129,7 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 		try {
 			COSE.Message.DecodeFromBytes(existingSCCCiphertext);
 			return new SCCCiphertext(existingSCCCiphertext);
-		} catch (CoseException e) {
+		} catch (CBORException | CoseException e) {
 			throw new SCCException("No valid SCCCiphertext byte[] representation", e);
 		}
 
@@ -146,7 +148,7 @@ public class SCCCiphertext extends AbstractSCCCiphertext {
 		try {
 			COSE.Message.DecodeFromBytes(Base64.getDecoder().decode(existingSCCCiphertext));
 			return new SCCCiphertext(Base64.getDecoder().decode(existingSCCCiphertext));
-		} catch (CoseException e) {
+		} catch (CBORException | CoseException e) {
 			throw new SCCException("No valid SCCCiphertext String representation", e);
 		}
 

@@ -110,6 +110,15 @@ class TestSignature {
 
 		assertTrue(scc.validateSignature(key, newSignature));
 		assertTrue(scc.validateSignature(key, SCCSignature.createFromExistingSignature(newSignatureString)));
+	
+		//With other String conversion
+		String newSignaturetoString = newSignature.toString();
+		String oldSignaturetoString = oldSignature.toString();
+		
+		assertTrue(scc.validateSignature(key, SCCSignature.createFromExistingSignature(oldSignaturetoString)));
+		assertTrue(scc.validateSignature(key, SCCSignature.createFromExistingSignature(newSignaturetoString)));
+	
+
 	}
 
 	@Test

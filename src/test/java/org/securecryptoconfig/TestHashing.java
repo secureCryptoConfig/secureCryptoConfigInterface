@@ -71,6 +71,10 @@ class TestHashing {
 
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes()), hash));
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes()), SCCHash.createFromExistingHash(hash.toBase64())));
+	
+		//Same with other String conversion
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes()), SCCHash.createFromExistingHash(hash.toString())));
+		
 	}
 
 	// - hash, return: updated byte[]hash
@@ -167,6 +171,13 @@ class TestHashing {
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes()), hash));
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)),
 				SCCPasswordHash.createFromExistingPasswordHash(hashedValue)));
+		
+		//Same with other String conversion
+		String hashedValueString = hash.toString();
+
+		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)),
+				SCCPasswordHash.createFromExistingPasswordHash(hashedValueString)));
+	
 	}
 	
 	@Test

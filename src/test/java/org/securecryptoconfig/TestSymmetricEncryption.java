@@ -198,6 +198,20 @@ class TestSymmetricEncryption {
 		String newCiphertext = updatedCiphertext.toBase64();
 
 		assertNotEquals(oldCiphertext, newCiphertext);
+		
+		// Same with other String conversion
+		String oldCiphertextString = ciphertext.toString();
+		String newCiphertextString = updatedCiphertext.toString();
+		
+		assertNotEquals(oldCiphertextString, newCiphertextString);
+		
+		//Same with short-cut methods
+		SCCCiphertext updatedCiphertext2 = ciphertext.reEncryptSymmetric(key);
+		byte[] updateCiphertext2 = updatedCiphertext.toBytes();
+
+		String newCiphertext2 = updatedCiphertext2.toBase64();
+
+		assertNotEquals(oldCiphertext, newCiphertext2);
 	}
 
 	// - encrypted String encrypt + key, return: encrypted String
@@ -309,6 +323,7 @@ class TestSymmetricEncryption {
 		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
 		byte[] password = "password".getBytes(StandardCharsets.UTF_8);
 		SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
+
 		// Encryption
 		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext);
 		// ReEncryption
@@ -343,12 +358,41 @@ class TestSymmetricEncryption {
 		// Set specific wrong algorithm
 		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.ECDSA_256);
 		assertThrows(NullPointerException.class, () -> SCCKey.createKey(KeyUseCase.SymmetricEncryption));
-		
+
 		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.AES_GCM_128_96);
 		assertThrows(SCCException.class, () -> SCCKey.createKey(KeyUseCase.AsymmetricEncryption));
 		assertThrows(SCCException.class, () -> SCCKey.createKey(KeyUseCase.Signing));
 
 		SecureCryptoConfig.defaultAlgorithm();
+
+	}
+
+	@Test
+	void testSCCKey() throws SCCException {
+	
+		// Set specific algorithm
+		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.AES_GCM_192_96);
+		SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
+		
+		assertThrows(SCCException.class, () -> key.getPrivateKeyBytes());
+		assertThrows(SCCException.class, () -> key.getPublicKeyBytes());
+		assertThrows(SCCException.class, () -> key.getPrivateKey());
+		assertThrows(SCCException.class, () -> key.getPublicKey());
+		
+		// Test key generation algorithm
+		assertEquals("AES", key.getAlgorithm());
+		SecureCryptoConfig.defaultAlgorithm();
+		
+		assertThrows(SCCException.class, () -> SCCKey.createKey(KeyUseCase.Signing).toBytes());
+		assertThrows(SCCException.class, () -> SCCKey.createKey(KeyUseCase.Signing).getSecretKey());
+
+	}
+	
+	@Test
+	void testWrongCipherCreation() throws SCCException 
+	{
+		assertThrows(SCCException.class, () -> SCCCiphertext.createFromExistingCiphertext("NoCipher".getBytes()));
+		assertThrows(SCCException.class, () -> SCCCiphertext.createFromExistingCiphertext("NoCipher".toString()));
 		
 	}
 

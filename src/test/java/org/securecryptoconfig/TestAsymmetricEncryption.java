@@ -55,6 +55,7 @@ class TestAsymmetricEncryption {
 		byte[] decrypted = plain.toBytes();
 
 		assertEquals(new String(plaintext, StandardCharsets.UTF_8), plain.toString(StandardCharsets.UTF_8));
+		assertThrows(SCCException.class, () -> SCCCiphertext.createFromExistingCiphertext("NoCipher".getBytes()));
 	}
 
 	// - String encrypt, return: encrypted String + new key
@@ -133,6 +134,21 @@ class TestAsymmetricEncryption {
 		String newCiphertext = updatedCiphertext.toBase64();
 
 		assertNotEquals(oldCiphertext, newCiphertext);
+
+		// Other String conversion
+		String oldCiphertextString = ciphertext.toString();
+		String newCiphertextString = updatedCiphertext.toString();
+
+		assertNotEquals(oldCiphertextString, newCiphertextString);
+
+		
+		//Same with short-cut methods
+		SCCCiphertext updatedCiphertext2 = ciphertext.reEncryptAsymmetric(key);
+		byte[] updateCiphertext2 = updatedCiphertext2.toBytes();
+
+		String newCiphertext2 = updatedCiphertext2.toBase64();
+
+		assertNotEquals(oldCiphertext, newCiphertext2);
 	}
 
 	// - encrypted String encrypt + key, return: encrypted String
