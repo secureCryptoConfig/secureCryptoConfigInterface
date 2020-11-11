@@ -118,14 +118,12 @@ public class SCCHash extends AbstractSCCHash {
 	 * Auxiliary method for converting byte[] back to COSE HashMessage
 	 * 
 	 * @return HashMessage
+	 * @throws CoseException 
 	 */
-	protected HashMessage convertByteToMsg() {
-		try {
+	protected HashMessage convertByteToMsg() throws CoseException {
+	
 			return (HashMessage) COSE.Message.DecodeFromBytes(this.hashMsg);
-		} catch (CoseException e) {
-			logger.warn("Message could not be decoded from bytes. Maybe not in COSE format?", e);
-			return null;
-		}
+		
 	}
 
 	/**

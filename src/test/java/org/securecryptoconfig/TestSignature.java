@@ -192,12 +192,16 @@ class TestSignature {
 	@Test
 	void testValidatingWithWrongKey() throws SCCException {
 		byte[] plaintext = "Hello World".getBytes();
+		PlaintextContainer p = new PlaintextContainer(plaintext);
 		SCCKey signingKey = SCCKey.createKey(KeyUseCase.Signing);
 		SCCSignature signature = scc.sign(signingKey, plaintext);
 		
 		SCCKey wrongKey = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 		assertThrows(SCCException.class,
 				() -> scc.validateSignature(wrongKey, signature));
+		
+		assertThrows(SCCException.class,
+				() -> p.validateSignature(signature, wrongKey));
 
 	}
 	

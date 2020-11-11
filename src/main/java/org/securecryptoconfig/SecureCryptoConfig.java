@@ -203,7 +203,6 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	public static void defaultAlgorithm() {
 		usedAlgorithm = null;
 	}
-	
 
 	/**
 	 * {@inheritDoc}
@@ -544,7 +543,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			}
 		} else {
 			return decideForAlgoPasswordHash(usedAlgorithm, password);
-			
+
 		}
 		throw new SCCException(standardError, new CoseException(null));
 
@@ -567,10 +566,10 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	public boolean validatePasswordHash(PlaintextContainerInterface password, AbstractSCCPasswordHash passwordhash)
 			throws SCCException {
 
-		SCCPasswordHash sccHash = (SCCPasswordHash) passwordhash;
-		PasswordHashMessage msg = sccHash.convertByteToMsg();
-		CBORObject algX = msg.findAttribute(HeaderKeys.Algorithm);
 		try {
+			SCCPasswordHash sccHash = (SCCPasswordHash) passwordhash;
+			PasswordHashMessage msg = sccHash.convertByteToMsg();
+			CBORObject algX = msg.findAttribute(HeaderKeys.Algorithm);
 			AlgorithmID alg = AlgorithmID.FromCBOR(algX);
 
 			SCCPasswordHash hash = SecureCryptoConfig.createPasswordHashMessageSalt(password, alg, msg.getSalt());
@@ -763,7 +762,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	/**
-	 * Auxiliary method for SCCCiphertext generation for symmetric en/decryption based on determined algorithm
+	 * Auxiliary method for SCCCiphertext generation for symmetric en/decryption
+	 * based on determined algorithm
+	 * 
 	 * @param sccalgorithmID
 	 * @param key
 	 * @param plaintext
@@ -788,7 +789,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 	}
 
 	/**
-	 * Auxiliary method for SCCCiphertext generation for asymmetric en/decryption based on determined algorithm
+	 * Auxiliary method for SCCCiphertext generation for asymmetric en/decryption
+	 * based on determined algorithm
+	 * 
 	 * @param sccalgorithmID
 	 * @param key
 	 * @param plaintext
@@ -812,6 +815,7 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 
 	/**
 	 * Auxiliary method for SCCSignature generation based on determined algorithm
+	 * 
 	 * @param sccalgorithmID
 	 * @param key
 	 * @param plaintext
@@ -834,8 +838,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		throw new SCCException(standardError, new CoseException(null));
 
 	}
-	
-	private static SCCPasswordHash decideForAlgoPasswordHash(SCCAlgorithm sccalgorithmID, PlaintextContainerInterface password) throws SCCException {
+
+	private static SCCPasswordHash decideForAlgoPasswordHash(SCCAlgorithm sccalgorithmID,
+			PlaintextContainerInterface password) throws SCCException {
 
 		switch (sccalgorithmID) {
 		case PBKDF_SHA_512:
@@ -849,8 +854,9 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 		}
 		throw new SCCException(standardError, new CoseException(null));
 	}
-	
-	private static SCCHash decideForAlgoHash(SCCAlgorithm sccalgorithmID, PlaintextContainerInterface plaintext) throws SCCException {
+
+	private static SCCHash decideForAlgoHash(SCCAlgorithm sccalgorithmID, PlaintextContainerInterface plaintext)
+			throws SCCException {
 		PlaintextContainer p;
 		switch (sccalgorithmID) {
 		case SHA_512:
@@ -870,6 +876,6 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			break;
 		}
 		throw new SCCException(standardError, new CoseException(null));
-		
+
 	}
 }
