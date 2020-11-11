@@ -439,11 +439,7 @@ class TestSymmetricEncryption {
 
 	}
 	
-	@Test
-	void testWrongKeyCreation() throws SCCException {
-		assertThrows(SCCException.class, () -> SCCKey.createFromExistingKey("NoKey".getBytes()));
-	}
-
+	
 	@Test
 	void testExistingCipher() throws SCCException {
 
