@@ -38,9 +38,6 @@ import COSE.Sign1Message;
  */
 public class SCCSignature extends AbstractSCCSignature {
 
-	//private static org.apache.logging.log4j.Logger logger = org.apache.logging.log4j.LogManager
-			//.getLogger(SCCSignature.class);
-
 	private SecureCryptoConfig scc = new SecureCryptoConfig();
 
 	/**

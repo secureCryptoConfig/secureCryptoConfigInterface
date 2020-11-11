@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -275,7 +276,7 @@ class TestSymmetricEncryption {
 
 	// Tests for SCC files handling
 	@Test
-	void testSCCFileHandling() {
+	void testSCCFileHandling() throws URISyntaxException {
 		// Set security level and get the policy name of the SCC file currently used
 		SecureCryptoConfig.setSecurityLevel(5);
 		String policyName = SecureCryptoConfig.getUsedSCC();
@@ -301,6 +302,8 @@ class TestSymmetricEncryption {
 		Path p = Paths.get("NoExistingPath");
 		assertThrows(InvalidPathException.class, () -> SecureCryptoConfig.setCustomSCCPath(p));
 
+		Path path = Paths.get(Paths.get(TestSymmetricEncryption.class.getClassLoader().getResource("scc-configs/").toURI()).toString());
+		SecureCryptoConfig.setCustomSCCPath(path);
 	}
 
 	@Test
