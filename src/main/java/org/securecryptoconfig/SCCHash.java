@@ -38,8 +38,8 @@ import COSE.HashMessage;
  */
 public class SCCHash extends AbstractSCCHash {
 
-	private static org.apache.logging.log4j.Logger logger = org.apache.logging.log4j.LogManager
-			.getLogger(SCCHash.class);
+	//private static org.apache.logging.log4j.Logger logger = org.apache.logging.log4j.LogManager
+			//.getLogger(SCCHash.class);
 
 	private SecureCryptoConfig scc = new SecureCryptoConfig();
 
