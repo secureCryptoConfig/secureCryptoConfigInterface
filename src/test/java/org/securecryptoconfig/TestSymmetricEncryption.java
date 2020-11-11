@@ -303,6 +303,7 @@ class TestSymmetricEncryption {
 
 		Path path = Paths.get(".//src//main//resources//scc-configs");
 		SecureCryptoConfig.setCustomSCCPath(path);
+		SecureCryptoConfig.setDefaultSCC();
 	
 	}
 
