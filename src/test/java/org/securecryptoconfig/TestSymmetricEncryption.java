@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidKeyException;
 import java.security.InvalidParameterException;
@@ -294,8 +295,9 @@ class TestSymmetricEncryption {
 		assertThrows(InvalidParameterException.class, () -> SecureCryptoConfig.setSCCFile("WrongName"));
 
 		// Set custom path that is not existing
+		Path p = Paths.get("NoExistingPath");
 		assertThrows(InvalidPathException.class,
-				() -> SecureCryptoConfig.setCustomSCCPath(Paths.get("NoExistingPath")));
+				() -> SecureCryptoConfig.setCustomSCCPath(p));
 
 	}
 
