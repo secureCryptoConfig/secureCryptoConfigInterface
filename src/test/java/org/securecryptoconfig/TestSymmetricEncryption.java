@@ -344,6 +344,30 @@ class TestSymmetricEncryption {
 	}
 
 	@Test
+	void testSymmetricEncryptionWithSpecificAlgo2() throws SCCException {
+		// Set specific algorithm
+		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.AES_GCM_128_96);
+
+		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
+		byte[] password = "password".getBytes(StandardCharsets.UTF_8);
+		SCCKey key = SCCKey.createSymmetricKeyWithPassword(password);
+
+		// Encryption
+		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext);
+
+		assertNotEquals(Base64.getEncoder().encodeToString(plaintext), ciphertext.toBase64());
+		assertNotEquals(0, ciphertext.toBytes().length);
+
+		// Decryption
+		PlaintextContainer plain = scc.decryptSymmetric(key, ciphertext);
+		byte[] decrypted = plain.toBytes();
+
+		assertEquals(new String(plaintext, StandardCharsets.UTF_8), plain.toString(StandardCharsets.UTF_8));
+
+		SecureCryptoConfig.defaultAlgorithm();
+	}
+
+	@Test
 	void testSymmetricEncryptionWithWrongAlgo() throws SCCException {
 
 		String plaintext = "Hello World!";
@@ -401,8 +425,8 @@ class TestSymmetricEncryption {
 		assertEquals(KeyType.Asymmetric, keyAsym.getKeyType());
 		assertThrows(SCCException.class, () -> keyAsym.toBytes());
 		assertThrows(SCCException.class, () -> keyAsym.getSecretKey());
-		assertNotEquals(0, keyAsym.getPrivateKeyBytes());
-		assertNotEquals(0, keyAsym.getPublicKeyBytes());
+		assertNotEquals(0, keyAsym.getPrivateKeyBytes().length);
+		assertNotEquals(0, keyAsym.getPublicKeyBytes().length);
 		assertNotEquals(0, keyAsym.getPrivateKey().getEncoded().length);
 		assertNotEquals(0, keyAsym.getPublicKey().getEncoded().length);
 
@@ -413,6 +437,11 @@ class TestSymmetricEncryption {
 		assertThrows(SCCException.class, () -> SCCCiphertext.createFromExistingCiphertext("NoCipher".getBytes()));
 		assertThrows(SCCException.class, () -> SCCCiphertext.createFromExistingCiphertext("NoCipher".toString()));
 
+	}
+	
+	@Test
+	void testWrongKeyCreation() throws SCCException {
+		assertThrows(SCCException.class, () -> SCCKey.createFromExistingKey("NoKey".getBytes()));
 	}
 
 	@Test

@@ -372,9 +372,6 @@ public class SCCKey extends AbstractSCCKey {
 			if (c.equals(CryptoUseCase.AsymmetricEncryption)) {
 				algorithms = SecureCryptoConfig.currentSCCInstance.getUsage().getAsymmetricEncryption();
 
-			} else if (c.equals(CryptoUseCase.SymmetricEncryption)) {
-				algorithms = SecureCryptoConfig.currentSCCInstance.getUsage().getSymmetricEncryption();
-
 			} else {
 				algorithms = SecureCryptoConfig.currentSCCInstance.getUsage().getSigning();
 
