@@ -15,6 +15,7 @@ import java.util.Base64;
 
 import org.apache.commons.lang.ObjectUtils.Null;
 import org.junit.jupiter.api.Test;
+import org.securecryptoconfig.SCCKey.KeyType;
 import org.securecryptoconfig.SCCKey.KeyUseCase;
 import org.securecryptoconfig.SecureCryptoConfig.SCCAlgorithm;
 
@@ -300,6 +301,9 @@ class TestSymmetricEncryption {
 		Path p = Paths.get("NoExistingPath");
 		assertThrows(InvalidPathException.class, () -> SecureCryptoConfig.setCustomSCCPath(p));
 
+		Path path = Paths.get(".//src//main//resources//scc-configs");
+		SecureCryptoConfig.setCustomSCCPath(path);
+	
 	}
 
 	@Test
@@ -387,14 +391,23 @@ class TestSymmetricEncryption {
 		assertThrows(SCCException.class, () -> key.getPrivateKey());
 		assertThrows(SCCException.class, () -> key.getPublicKey());
 
+		assertEquals(KeyType.Symmetric, key.getKeyType());
+		assertNotEquals(null, key.getAlgorithm());
+		assertNotEquals(0, key.getSecretKey().getEncoded().length);
+		
+		
 		// Test key generation algorithm
 		assertEquals("AES", key.getAlgorithm());
 		SecureCryptoConfig.defaultAlgorithm();
 
 		SCCKey keyAsym = SCCKey.createKey(KeyUseCase.Signing);
-
+		assertEquals(KeyType.Asymmetric, keyAsym.getKeyType());
 		assertThrows(SCCException.class, () -> keyAsym.toBytes());
 		assertThrows(SCCException.class, () -> keyAsym.getSecretKey());
+		assertNotEquals(0, keyAsym.getPrivateKeyBytes());
+		assertNotEquals(0, keyAsym.getPublicKeyBytes());
+		assertNotEquals(0, keyAsym.getPrivateKey().getEncoded().length);
+		assertNotEquals(0, keyAsym.getPublicKey().getEncoded().length);
 
 	}
 
@@ -419,5 +432,5 @@ class TestSymmetricEncryption {
 		assertEquals(ciphertextString, ciphertext2.toBase64());
 
 	}
-
+	
 }
