@@ -262,12 +262,14 @@ class TestHashing {
 	@Test
 	void testValidatingWithWrongHash() throws SCCException {
 		byte[] plaintext = "Hello World".getBytes();
+		SCCHash wrongHash = SCCHash.createFromExistingHash(plaintext);
+		SCCPasswordHash wrongPasswordHash = SCCPasswordHash.createFromExistingPasswordHash(plaintext);
+		
+		assertThrows(SCCException.class,
+				() -> scc.validateHash(plaintext, wrongHash));
 
 		assertThrows(SCCException.class,
-				() -> scc.validateHash(plaintext, SCCHash.createFromExistingHash(plaintext)));
-
-		assertThrows(SCCException.class,
-				() -> scc.validatePasswordHash(plaintext, SCCPasswordHash.createFromExistingPasswordHash(plaintext)));
+				() -> scc.validatePasswordHash(plaintext, wrongPasswordHash));
 
 	}
 

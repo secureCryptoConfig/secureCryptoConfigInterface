@@ -173,9 +173,10 @@ class TestSignature {
 	void testValidatingWithWrongSignature() throws SCCException {
 		byte[] noSignature = "Hello World".getBytes();
 		SCCKey key = SCCKey.createKey(KeyUseCase.Signing);
-
+		SCCSignature wrongSignature = SCCSignature.createFromExistingSignature(noSignature);
+		
 		assertThrows(SCCException.class,
-				() -> scc.validateSignature(key, SCCSignature.createFromExistingSignature(noSignature)));
+				() -> scc.validateSignature(key, wrongSignature));
 
 	}
 	
@@ -183,9 +184,10 @@ class TestSignature {
 	void testValidatingWithWrongKey() throws SCCException {
 		byte[] noSignature = "Hello World".getBytes();
 		SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
-
+		SCCSignature wrongSignature = SCCSignature.createFromExistingSignature(noSignature);
+		
 		assertThrows(SCCException.class,
-				() -> scc.validateSignature(key, SCCSignature.createFromExistingSignature(noSignature)));
+				() -> scc.validateSignature(key, wrongSignature));
 
 	}
 }
