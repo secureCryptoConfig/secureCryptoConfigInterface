@@ -51,6 +51,8 @@ class TestHashing {
 		SCCHash hash = scc.hash(plaintext);
 
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), hash));
+		assertTrue(scc.validateHash(plaintext, hash));
+		
 		// Same with short-cut methods
 		assertTrue(new PlaintextContainer(plaintext).validateHash(hash));
 		assertTrue(hash.validateHash(plaintext));
@@ -156,6 +158,8 @@ class TestHashing {
 		byte[] hashedValue = hash.toBytes();
 
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password), hash));
+		assertTrue(scc.validatePasswordHash(password, hash));
+		
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password),
 				SCCPasswordHash.createFromExistingPasswordHash(hashedValue)));
 
@@ -259,18 +263,5 @@ class TestHashing {
 
 	}
 
-	@Test
-	void testValidatingWithWrongHash() throws SCCException {
-		byte[] plaintext = "Hello World".getBytes();
-		SCCHash wrongHash = SCCHash.createFromExistingHash(plaintext);
-		SCCPasswordHash wrongPasswordHash = SCCPasswordHash.createFromExistingPasswordHash(plaintext);
-		
-		assertThrows(SCCException.class,
-				() -> scc.validateHash(plaintext, wrongHash));
-
-		assertThrows(SCCException.class,
-				() -> scc.validatePasswordHash(plaintext, wrongPasswordHash));
-
-	}
-
+	
 }
