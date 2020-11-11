@@ -72,13 +72,15 @@ public class JSONReader {
 	 * Get all files out of root "configs" directory of given path
 	 * 
 	 * @param path to root directory "config"
+	 * @throws URISyntaxException 
+	 * @throws IOException 
 	 */
-	private static void getFiles(Path path) {
+	private static void getFiles(Path path) throws URISyntaxException, IOException {
 
 		URI uri;
 
 		if (!SecureCryptoConfig.customPath) {
-			try {
+		
 				uri = JSONReader.class.getResource("/scc-configs").toURI();
 
 				if (uri.getScheme().equals("jar")) {
@@ -89,10 +91,7 @@ public class JSONReader {
 					path = Paths.get(uri);
 					isJAR = false;
 				}
-			} catch (URISyntaxException | IOException e) {
-				logger.warn("Custom Path invalid or not available", e);
-				return;
-			}
+			
 		}
 
 		Stream<Path> stream = null;
@@ -370,12 +369,13 @@ public class JSONReader {
 		allFilePaths.clear();
 		instances.clear();
 
-		getFiles(path);
-		getSCCInstances();
-		getPublicKeyPath(path);
-
 		try {
+			getFiles(path);
+			getSCCInstances();
+			getPublicKeyPath(path);
 			startValidation();
+		} catch (URISyntaxException | IOException e) {
+			logger.warn("Custom Path invalid or not available", e);
 		} catch (SCCException e) {
 			logger.warn("Error in validation of SCC files", e);
 		}

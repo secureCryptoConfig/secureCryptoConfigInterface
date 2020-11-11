@@ -39,9 +39,6 @@ import COSE.PasswordHashMessage;
 
 public class SCCPasswordHash extends AbstractSCCPasswordHash {
 
-	//private static org.apache.logging.log4j.Logger logger = org.apache.logging.log4j.LogManager
-			//.getLogger(SCCPasswordHash.class);
-
 	private SecureCryptoConfig scc = new SecureCryptoConfig();
 
 	/**
