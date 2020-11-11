@@ -458,7 +458,7 @@ public class SCCKey extends AbstractSCCKey {
 		try {
 			return createSymmetricKeyWithPassword(new PlaintextContainer(password));
 
-		} catch (SCCException e) {
+		} catch (NullPointerException| SCCException e) {
 			logger.warn("Error in Creation of symmetric key", e);
 			throw new SCCException("Error in Creation of symmetric key", e);
 		}
@@ -531,7 +531,10 @@ public class SCCKey extends AbstractSCCKey {
 			throw new SCCException("Key could not be created! No algorithm specified!", e);
 		} catch (InvalidKeySpecException e) {
 			throw new SCCException(standardError, e);
+		} catch (NullPointerException e) {
+			throw new SCCException("Key could not be created!" , e);
 		}
+		
 	}
 
 	/**

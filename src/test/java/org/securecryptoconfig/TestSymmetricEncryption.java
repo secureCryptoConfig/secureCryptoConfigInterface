@@ -12,6 +12,8 @@ import java.security.InvalidKeyException;
 import java.security.InvalidParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+
+import org.apache.commons.lang.ObjectUtils.Null;
 import org.junit.jupiter.api.Test;
 import org.securecryptoconfig.SCCKey.KeyUseCase;
 import org.securecryptoconfig.SecureCryptoConfig.SCCAlgorithm;
@@ -360,6 +362,10 @@ class TestSymmetricEncryption {
 		// Set specific wrong algorithm
 		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.ECDSA_256);
 		assertThrows(NullPointerException.class, () -> SCCKey.createKey(KeyUseCase.SymmetricEncryption));
+		
+		byte[] passwordBytes = "Password".getBytes();
+		assertThrows(SCCException.class, () -> SCCKey.createSymmetricKeyWithPassword(passwordBytes));
+		assertThrows(SCCException.class, () -> SCCKey.createSymmetricKeyWithPassword(new PlaintextContainer(passwordBytes)));
 
 		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.AES_GCM_128_96);
 		assertThrows(SCCException.class, () -> SCCKey.createKey(KeyUseCase.AsymmetricEncryption));
