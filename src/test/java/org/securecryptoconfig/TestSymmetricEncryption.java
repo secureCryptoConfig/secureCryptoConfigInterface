@@ -301,10 +301,6 @@ class TestSymmetricEncryption {
 		Path p = Paths.get("NoExistingPath");
 		assertThrows(InvalidPathException.class, () -> SecureCryptoConfig.setCustomSCCPath(p));
 
-		Path path = Paths.get(".//src//main//resources//scc-configs");
-		SecureCryptoConfig.setCustomSCCPath(path);
-		SecureCryptoConfig.setDefaultSCC();
-	
 	}
 
 	@Test
