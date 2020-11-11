@@ -25,7 +25,6 @@ class TestSignature {
 
 	SecureCryptoConfig scc = new SecureCryptoConfig();
 	
-
 	// Use Cases:
 	// Signature
 	// - byte[] plain sign, return: byte[] signature + new key
