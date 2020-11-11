@@ -14,7 +14,9 @@ import com.upokecenter.cbor.CBORException;
 import COSE.CoseException;
 
 /**
- * Class for testing all functionalities for (password) hashing from the Secure Crypto Config Interface
+ * Class for testing all functionalities for (password) hashing from the Secure
+ * Crypto Config Interface
+ * 
  * @author Lisa
  *
  */
@@ -49,14 +51,14 @@ class TestHashing {
 		SCCHash hash = scc.hash(plaintext);
 
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), hash));
-		//Same with short-cut methods
+		// Same with short-cut methods
 		assertTrue(new PlaintextContainer(plaintext).validateHash(hash));
 		assertTrue(hash.validateHash(plaintext));
 
 		byte[] hashedValue = hash.toBytes();
 
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), SCCHash.createFromExistingHash(hashedValue)));
-		//Same with short-cut methods
+		// Same with short-cut methods
 		assertTrue(new PlaintextContainer(plaintext).validateHash(SCCHash.createFromExistingHash(hashedValue)));
 		assertTrue(SCCHash.createFromExistingHash(hashedValue).validateHash(plaintext));
 
@@ -70,11 +72,13 @@ class TestHashing {
 		SCCHash hash = scc.hash(plaintext.getBytes(StandardCharsets.UTF_8));
 
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes()), hash));
-		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes()), SCCHash.createFromExistingHash(hash.toBase64())));
-	
-		//Same with other String conversion
-		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes()), SCCHash.createFromExistingHash(hash.toString())));
-		
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes()),
+				SCCHash.createFromExistingHash(hash.toBase64())));
+
+		// Same with other String conversion
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes()),
+				SCCHash.createFromExistingHash(hash.toString())));
+
 	}
 
 	// - hash, return: updated byte[]hash
@@ -96,13 +100,13 @@ class TestHashing {
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), newHash));
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), SCCHash.createFromExistingHash(newHashBytes)));
 
-		//Same with short-cut methods
+		// Same with short-cut methods
 		SCCHash oldHash2 = new PlaintextContainer(plaintext).hash();
 		byte[] oldHashBytes2 = oldHash2.toBytes();
 
 		SCCHash newHash2 = (SCCHash) oldHash2.updateHash(plaintext);
 		byte[] newHashBytes2 = newHash2.toBytes();
-		
+
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), oldHash2));
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), SCCHash.createFromExistingHash(oldHashBytes2)));
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), newHash2));
@@ -152,12 +156,14 @@ class TestHashing {
 		byte[] hashedValue = hash.toBytes();
 
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password), hash));
-		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password), SCCPasswordHash.createFromExistingPasswordHash(hashedValue)));
-	
-		//Same with short-cut methods
+		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password),
+				SCCPasswordHash.createFromExistingPasswordHash(hashedValue)));
+
+		// Same with short-cut methods
 		assertTrue(hash.validatePasswordHash(password));
-		assertTrue(SCCPasswordHash.createFromExistingPasswordHash(hashedValue).validatePasswordHash(new PlaintextContainer(password)));
-	
+		assertTrue(SCCPasswordHash.createFromExistingPasswordHash(hashedValue)
+				.validatePasswordHash(new PlaintextContainer(password)));
+
 	}
 
 	// - String plain hash, return: String hash
@@ -171,35 +177,35 @@ class TestHashing {
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes()), hash));
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)),
 				SCCPasswordHash.createFromExistingPasswordHash(hashedValue)));
-		
-		//Same with other String conversion
+
+		// Same with other String conversion
 		String hashedValueString = hash.toString();
 
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)),
 				SCCPasswordHash.createFromExistingPasswordHash(hashedValueString)));
-	
+
 	}
-	
+
 	@Test
 	void testHashWithSpecificAlgo() throws SCCException {
 		// Set specific algorithm
 		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.SHA3_512);
-		
+
 		String plaintext = "Hello World!";
 		PlaintextContainer plaintextContainer = new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8));
 
 		SCCHash hash = plaintextContainer.hash();
 
 		assertTrue(plaintextContainer.validateHash(hash));
-	
+
 		SecureCryptoConfig.defaultAlgorithm();
 	}
-	
+
 	@Test
 	void testPasswordHashWithSpecificAlgo() throws SCCException {
 		// Set specific algorithm
 		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.PBKDF_SHA_256);
-		
+
 		String password = "Hello World!";
 		SCCPasswordHash hash = scc.passwordHash(password.getBytes(StandardCharsets.UTF_8));
 		String hashedValue = hash.toBase64();
@@ -207,56 +213,62 @@ class TestHashing {
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes()), hash));
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)),
 				SCCPasswordHash.createFromExistingPasswordHash(hashedValue)));
-	
+
 		SecureCryptoConfig.defaultAlgorithm();
 	}
-	
+
 	@Test
 	void testHashWithWrongAlgo() throws SCCException {
-		
+
 		String plaintext = "Hello World!";
-		
+
 		// Set specific algorithm
 		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.ECDSA_256);
 		// Encryption
-		assertThrows(SCCException.class,
-				() ->scc.hash(plaintext.getBytes(StandardCharsets.UTF_8)));
-		
+		assertThrows(SCCException.class, () -> scc.hash(plaintext.getBytes(StandardCharsets.UTF_8)));
+
 		SecureCryptoConfig.defaultAlgorithm();
 	}
-	
+
 	@Test
 	void testPasswordHashWithWrongAlgo() throws SCCException {
-		
+
 		String plaintext = "Hello World!";
-		
+
 		// Set specific algorithm
 		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.ECDSA_256);
 		// Encryption
-		assertThrows(SCCException.class,
-				() ->scc.passwordHash(plaintext.getBytes(StandardCharsets.UTF_8)));
-		
+		assertThrows(SCCException.class, () -> scc.passwordHash(plaintext.getBytes(StandardCharsets.UTF_8)));
+
 		SecureCryptoConfig.defaultAlgorithm();
 	}
-	
+
 	@Test
 	void testCreateHash() throws SCCException {
-		assertThrows(SCCException.class,
-				() ->SCCHash.createFromExistingHash("NoHash".getBytes()));
-	
-		assertThrows(SCCException.class,
-				() ->SCCHash.createFromExistingHash("NoHash".toString()));
-	
+		assertThrows(SCCException.class, () -> SCCHash.createFromExistingHash("NoHash".getBytes()));
+
+		assertThrows(SCCException.class, () -> SCCHash.createFromExistingHash("NoHash".toString()));
+
 	}
-	
+
 	@Test
 	void testCreatePasswordHash() throws SCCException {
+		assertThrows(SCCException.class, () -> SCCPasswordHash.createFromExistingPasswordHash("NoHash".getBytes()));
+
+		assertThrows(SCCException.class, () -> SCCPasswordHash.createFromExistingPasswordHash("NoHash".toString()));
+
+	}
+
+	@Test
+	void testValidatingWithWrongHash() throws SCCException {
+		byte[] plaintext = "Hello World".getBytes();
+
 		assertThrows(SCCException.class,
-				() ->SCCPasswordHash.createFromExistingPasswordHash("NoHash".getBytes()));
-	
+				() -> scc.validateHash(plaintext, SCCHash.createFromExistingHash(plaintext)));
+
 		assertThrows(SCCException.class,
-				() ->SCCPasswordHash.createFromExistingPasswordHash("NoHash".toString()));
-	
+				() -> scc.validatePasswordHash(plaintext, SCCPasswordHash.createFromExistingPasswordHash(plaintext)));
+
 	}
 
 }

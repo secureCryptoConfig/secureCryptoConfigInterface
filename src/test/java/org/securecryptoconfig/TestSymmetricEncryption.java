@@ -399,5 +399,20 @@ class TestSymmetricEncryption {
 		assertThrows(SCCException.class, () -> SCCCiphertext.createFromExistingCiphertext("NoCipher".toString()));
 		
 	}
+	
+	@Test
+	void testExistingCipher() throws SCCException 
+	{
+		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
+		SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
+		// Encryption
+		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext);
+		byte[] ciphertextBytes = ciphertext.toBytes();
+		
+		SCCCiphertext ciphertext2 = SCCCiphertext.createFromExistingCiphertext(ciphertextBytes);
+		
+		assertEquals(ciphertextBytes, ciphertext2.toBytes());
+		
+	}
 
 }
