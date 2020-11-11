@@ -79,7 +79,7 @@ class TestSignature {
 
 		SCCSignature newSignature = scc.updateSignature(key, plaintext);
 		byte[] newSignatureBytes = newSignature.toBytes();
-
+		
 		assertTrue(scc.validateSignature(key, oldSignature));
 		assertTrue(scc.validateSignature(key, SCCSignature.createFromExistingSignature(oldSignaturebytes)));
 
@@ -94,6 +94,9 @@ class TestSignature {
 		assertTrue(newSignature.validateSignature(key));
 		assertTrue(SCCSignature.createFromExistingSignature(newSignatureBytes).validateSignature(key));
 
+		byte[] updatedSignatureBytes = oldSignature.updateSignature(new PlaintextContainer(plaintext), key).toBytes();
+		assertNotEquals(oldSignaturebytes, updatedSignatureBytes);
+	
 	}
 
 	// - signature + key, return: updated String signature
@@ -143,6 +146,20 @@ class TestSignature {
 
 		assertTrue(scc.validateSignature(key, newSignature));
 		assertTrue(scc.validateSignature(key, SCCSignature.createFromExistingSignature(newSignatureBytes)));
+		
+		//Other algo
+		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.ECDSA_384);
+		SCCSignature oldSignature2 = scc.sign(key, plaintext);
+		byte[] oldSignaturebytes2 = oldSignature2.toBytes();
+
+		SCCSignature newSignature2 = scc.updateSignature(key, plaintext);
+		byte[] newSignatureBytes2 = newSignature.toBytes();
+
+		assertTrue(scc.validateSignature(key, oldSignature2));
+		assertTrue(scc.validateSignature(key, SCCSignature.createFromExistingSignature(oldSignaturebytes2)));
+
+		assertTrue(scc.validateSignature(key, newSignature2));
+		assertTrue(scc.validateSignature(key, SCCSignature.createFromExistingSignature(newSignatureBytes2)));
 		
 		SecureCryptoConfig.defaultAlgorithm();
 	}

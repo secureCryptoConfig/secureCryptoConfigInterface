@@ -184,6 +184,19 @@ class TestAsymmetricEncryption {
 		String decrypted = decryptedCiphertext.toString(StandardCharsets.UTF_8);
 
 		assertEquals(plaintext, decrypted);
+		
+		//Other algo
+		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.RSA_ECB);
+		SCCCiphertext ciphertext2 = scc.encryptAsymmetric(key, plaintext.getBytes(StandardCharsets.UTF_8));
+		// Decryption
+		PlaintextContainer decryptedCiphertext2 = ciphertext2.decryptAsymmetric(key);
+		String decrypted2 = decryptedCiphertext2.toString(StandardCharsets.UTF_8);
+
+		assertEquals(plaintext, decrypted2);
+		
+		
+		
+		
 		SecureCryptoConfig.defaultAlgorithm();
 	}
 

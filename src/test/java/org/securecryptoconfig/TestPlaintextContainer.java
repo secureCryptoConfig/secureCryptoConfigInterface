@@ -3,6 +3,7 @@ package org.securecryptoconfig;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.nio.charset.StandardCharsets;
@@ -75,6 +76,16 @@ class TestPlaintextContainer {
 		String otherPlaintext = "Hello Malory!";
 		PlaintextContainer otherPc = new PlaintextContainer(otherPlaintext.getBytes(StandardCharsets.UTF_8));
 		assertFalse(otherPc.validateSignature(s, signingKey));
+		
+		SCCKey otherKey = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
+		assertThrows(SCCException.class, () -> pc.validateSignature(s, otherKey));
+		
+
+	}
+	
+	@Test
+	void testToString() throws SCCException {
+		assertEquals(plaintext, pc.toString());
 
 	}
 }

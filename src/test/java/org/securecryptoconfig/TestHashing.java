@@ -52,7 +52,7 @@ class TestHashing {
 
 		assertTrue(scc.validateHash(new PlaintextContainer(plaintext), hash));
 		assertTrue(scc.validateHash(plaintext, hash));
-		
+
 		// Same with short-cut methods
 		assertTrue(new PlaintextContainer(plaintext).validateHash(hash));
 		assertTrue(hash.validateHash(plaintext));
@@ -159,7 +159,7 @@ class TestHashing {
 
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password), hash));
 		assertTrue(scc.validatePasswordHash(password, hash));
-		
+
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password),
 				SCCPasswordHash.createFromExistingPasswordHash(hashedValue)));
 
@@ -202,13 +202,25 @@ class TestHashing {
 
 		assertTrue(plaintextContainer.validateHash(hash));
 
+		// Other Algo
+		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.SHA3_256);
+		SCCHash hash2 = plaintextContainer.hash();
+
+		assertTrue(plaintextContainer.validateHash(hash2));
+
+		// Other Algo
+		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.SHA_256);
+		SCCHash hash3 = plaintextContainer.hash();
+
+		assertTrue(plaintextContainer.validateHash(hash3));
+
 		SecureCryptoConfig.defaultAlgorithm();
 	}
 
 	@Test
 	void testPasswordHashWithSpecificAlgo() throws SCCException {
 		// Set specific algorithm
-		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.PBKDF_SHA_256);
+		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.PBKDF_SHA_512);
 
 		String password = "Hello World!";
 		SCCPasswordHash hash = scc.passwordHash(password.getBytes(StandardCharsets.UTF_8));
@@ -218,6 +230,17 @@ class TestHashing {
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)),
 				SCCPasswordHash.createFromExistingPasswordHash(hashedValue)));
 
+		//Other algo
+		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.SHA_512_64);
+		SCCPasswordHash hash2 = scc.passwordHash(password.getBytes(StandardCharsets.UTF_8));
+		String hashedValue2 = hash2.toBase64();
+
+		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes()), hash2));
+		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)),
+				SCCPasswordHash.createFromExistingPasswordHash(hashedValue2)));
+
+
+		
 		SecureCryptoConfig.defaultAlgorithm();
 	}
 
@@ -263,5 +286,4 @@ class TestHashing {
 
 	}
 
-	
 }

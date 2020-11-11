@@ -199,14 +199,14 @@ class TestSymmetricEncryption {
 		String newCiphertext = updatedCiphertext.toBase64();
 
 		assertNotEquals(oldCiphertext, newCiphertext);
-		
+
 		// Same with other String conversion
 		String oldCiphertextString = ciphertext.toString();
 		String newCiphertextString = updatedCiphertext.toString();
-		
+
 		assertNotEquals(oldCiphertextString, newCiphertextString);
-		
-		//Same with short-cut methods
+
+		// Same with short-cut methods
 		SCCCiphertext updatedCiphertext2 = ciphertext.reEncryptSymmetric(key);
 		byte[] updateCiphertext2 = updatedCiphertext.toBytes();
 
@@ -296,8 +296,7 @@ class TestSymmetricEncryption {
 
 		// Set custom path that is not existing
 		Path p = Paths.get("NoExistingPath");
-		assertThrows(InvalidPathException.class,
-				() -> SecureCryptoConfig.setCustomSCCPath(p));
+		assertThrows(InvalidPathException.class, () -> SecureCryptoConfig.setCustomSCCPath(p));
 
 	}
 
@@ -328,14 +327,15 @@ class TestSymmetricEncryption {
 
 		// Encryption
 		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext);
-		// ReEncryption
-		SCCCiphertext updatedCiphertext = scc.reEncryptSymmetric(key, ciphertext);
-		byte[] updateCiphertext = updatedCiphertext.toBytes();
 
-		String oldCiphertext = ciphertext.toBase64();
-		String newCiphertext = updatedCiphertext.toBase64();
+		assertNotEquals(Base64.getEncoder().encodeToString(plaintext), ciphertext.toBase64());
+		assertNotEquals(0, ciphertext.toBytes().length);
 
-		assertNotEquals(oldCiphertext, newCiphertext);
+		// Decryption
+		PlaintextContainer plain = scc.decryptSymmetric(key, ciphertext);
+		byte[] decrypted = plain.toBytes();
+
+		assertEquals(new String(plaintext, StandardCharsets.UTF_8), plain.toString(StandardCharsets.UTF_8));
 
 		SecureCryptoConfig.defaultAlgorithm();
 	}
@@ -371,48 +371,47 @@ class TestSymmetricEncryption {
 
 	@Test
 	void testSCCKey() throws SCCException {
-	
+
 		// Set specific algorithm
 		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.AES_GCM_192_96);
 		SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
-		
+
 		assertThrows(SCCException.class, () -> key.getPrivateKeyBytes());
 		assertThrows(SCCException.class, () -> key.getPublicKeyBytes());
 		assertThrows(SCCException.class, () -> key.getPrivateKey());
 		assertThrows(SCCException.class, () -> key.getPublicKey());
-		
+
 		// Test key generation algorithm
 		assertEquals("AES", key.getAlgorithm());
 		SecureCryptoConfig.defaultAlgorithm();
-		
+
 		SCCKey keyAsym = SCCKey.createKey(KeyUseCase.Signing);
-		
+
 		assertThrows(SCCException.class, () -> keyAsym.toBytes());
 		assertThrows(SCCException.class, () -> keyAsym.getSecretKey());
 
 	}
-	
+
 	@Test
-	void testWrongCipherCreation() throws SCCException 
-	{
+	void testWrongCipherCreation() throws SCCException {
 		assertThrows(SCCException.class, () -> SCCCiphertext.createFromExistingCiphertext("NoCipher".getBytes()));
 		assertThrows(SCCException.class, () -> SCCCiphertext.createFromExistingCiphertext("NoCipher".toString()));
-		
+
 	}
-	
+
 	@Test
-	void testExistingCipher() throws SCCException 
-	{
-		byte[] plaintext = "Hello World!".getBytes(StandardCharsets.UTF_8);
+	void testExistingCipher() throws SCCException {
+
+		String plaintext = "Hello World!";
 		SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 		// Encryption
-		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext);
-		byte[] ciphertextBytes = ciphertext.toBytes();
-		
-		SCCCiphertext ciphertext2 = SCCCiphertext.createFromExistingCiphertext(ciphertextBytes);
-		
-		assertEquals(ciphertextBytes, ciphertext2.toBytes());
-		
+		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext.getBytes());
+		String ciphertextString = ciphertext.toBase64();
+
+		SCCCiphertext ciphertext2 = SCCCiphertext.createFromExistingCiphertext(ciphertextString);
+
+		assertEquals(ciphertextString, ciphertext2.toBase64());
+
 	}
 
 }
