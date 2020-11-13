@@ -131,11 +131,10 @@ public abstract class PasswordHashCommon extends Message {
 			throw new CoseException("Unsupported Algorithm Specified");
 		}
 
-		
 	}
-	
-	private byte[] pbkdfWithSalt(AlgorithmID alg, byte[] rgbToBeHashed, byte[] salt, int iterations, String algName) throws CoseException
-	{
+
+	private byte[] pbkdfWithSalt(AlgorithmID alg, byte[] rgbToBeHashed, byte[] salt, int iterations, String algName)
+			throws CoseException {
 		try {
 			String content = new String(rgbToBeHashed, StandardCharsets.UTF_8);
 			char[] charContent = content.toCharArray();
@@ -149,9 +148,9 @@ public abstract class PasswordHashCommon extends Message {
 			throw new CoseException("No supported algorithm!");
 		}
 	}
-	
-	private byte[] hashWithSalt(AlgorithmID alg, byte[] rgbToBeHashed, byte[] salt, int iterations, String algName) throws CoseException
-	{
+
+	private byte[] hashWithSalt(AlgorithmID alg, byte[] rgbToBeHashed, byte[] salt, int iterations, String algName)
+			throws CoseException {
 		try {
 			MessageDigest md = MessageDigest.getInstance("SHA-512");
 
