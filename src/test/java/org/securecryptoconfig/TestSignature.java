@@ -107,7 +107,7 @@ class TestSignature {
 		SCCSignature oldSignature = scc.sign(key, plaintext.getBytes(StandardCharsets.UTF_8));
 		String oldSignatureString = oldSignature.toBase64();
 
-		SCCSignature newSignature = scc.updateSignature(key, plaintext.getBytes());
+		SCCSignature newSignature = scc.updateSignature(key, plaintext.getBytes(StandardCharsets.UTF_8));
 		String newSignatureString = newSignature.toBase64();
 
 		assertTrue(scc.validateSignature(key, oldSignature));
@@ -181,7 +181,7 @@ class TestSignature {
 	@Test
 	void testCreateSignature() throws SCCException {
 		assertThrows(SCCException.class,
-				() ->SCCSignature.createFromExistingSignature("NoSignature".getBytes()));
+				() ->SCCSignature.createFromExistingSignature("NoSignature".getBytes(StandardCharsets.UTF_8)));
 	
 		assertThrows(SCCException.class,
 				() ->SCCSignature.createFromExistingSignature("NoSignature".toString()));
@@ -191,7 +191,7 @@ class TestSignature {
 	
 	@Test
 	void testValidatingWithWrongKey() throws SCCException {
-		byte[] plaintext = "Hello World".getBytes();
+		byte[] plaintext = "Hello World".getBytes(StandardCharsets.UTF_8);
 		PlaintextContainer p = new PlaintextContainer(plaintext);
 		SCCKey signingKey = SCCKey.createKey(KeyUseCase.Signing);
 		SCCSignature signature = scc.sign(signingKey, plaintext);

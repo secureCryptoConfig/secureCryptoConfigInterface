@@ -389,7 +389,7 @@ class TestSymmetricEncryption {
 		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.ECDSA_256);
 		assertThrows(NullPointerException.class, () -> SCCKey.createKey(KeyUseCase.SymmetricEncryption));
 		
-		byte[] passwordBytes = "Password".getBytes();
+		byte[] passwordBytes = "Password".getBytes(StandardCharsets.UTF_8);
 		assertThrows(SCCException.class, () -> SCCKey.createSymmetricKeyWithPassword(passwordBytes));
 		assertThrows(SCCException.class, () -> SCCKey.createSymmetricKeyWithPassword(new PlaintextContainer(passwordBytes)));
 
@@ -435,7 +435,7 @@ class TestSymmetricEncryption {
 
 	@Test
 	void testWrongCipherCreation() throws SCCException {
-		assertThrows(SCCException.class, () -> SCCCiphertext.createFromExistingCiphertext("NoCipher".getBytes()));
+		assertThrows(SCCException.class, () -> SCCCiphertext.createFromExistingCiphertext("NoCipher".getBytes(StandardCharsets.UTF_8)));
 		assertThrows(SCCException.class, () -> SCCCiphertext.createFromExistingCiphertext("NoCipher".toString()));
 
 	}
@@ -447,7 +447,7 @@ class TestSymmetricEncryption {
 		String plaintext = "Hello World!";
 		SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
 		// Encryption
-		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext.getBytes());
+		SCCCiphertext ciphertext = scc.encryptSymmetric(key, plaintext.getBytes(StandardCharsets.UTF_8));
 		String ciphertextString = ciphertext.toBase64();
 
 		SCCCiphertext ciphertext2 = SCCCiphertext.createFromExistingCiphertext(ciphertextString);

@@ -73,12 +73,12 @@ class TestHashing {
 		String plaintext = "Hello World!";
 		SCCHash hash = scc.hash(plaintext.getBytes(StandardCharsets.UTF_8));
 
-		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes()), hash));
-		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes()),
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)), hash));
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)),
 				SCCHash.createFromExistingHash(hash.toBase64())));
 
 		// Same with other String conversion
-		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes()),
+		assertTrue(scc.validateHash(new PlaintextContainer(plaintext.getBytes(StandardCharsets.UTF_8)),
 				SCCHash.createFromExistingHash(hash.toString())));
 
 	}
@@ -178,7 +178,7 @@ class TestHashing {
 		SCCPasswordHash hash = scc.passwordHash(password.getBytes(StandardCharsets.UTF_8));
 		String hashedValue = hash.toBase64();
 
-		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes()), hash));
+		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)), hash));
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)),
 				SCCPasswordHash.createFromExistingPasswordHash(hashedValue)));
 
@@ -226,7 +226,7 @@ class TestHashing {
 		SCCPasswordHash hash = scc.passwordHash(password.getBytes(StandardCharsets.UTF_8));
 		String hashedValue = hash.toBase64();
 
-		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes()), hash));
+		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)), hash));
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)),
 				SCCPasswordHash.createFromExistingPasswordHash(hashedValue)));
 
@@ -235,7 +235,7 @@ class TestHashing {
 		SCCPasswordHash hash2 = scc.passwordHash(password.getBytes(StandardCharsets.UTF_8));
 		String hashedValue2 = hash2.toBase64();
 
-		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes()), hash2));
+		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)), hash2));
 		assertTrue(scc.validatePasswordHash(new PlaintextContainer(password.getBytes(StandardCharsets.UTF_8)),
 				SCCPasswordHash.createFromExistingPasswordHash(hashedValue2)));
 
@@ -272,7 +272,7 @@ class TestHashing {
 
 	@Test
 	void testCreateHash() throws SCCException {
-		assertThrows(SCCException.class, () -> SCCHash.createFromExistingHash("NoHash".getBytes()));
+		assertThrows(SCCException.class, () -> SCCHash.createFromExistingHash("NoHash".getBytes(StandardCharsets.UTF_8)));
 
 		assertThrows(SCCException.class, () -> SCCHash.createFromExistingHash("NoHash".toString()));
 
@@ -280,7 +280,7 @@ class TestHashing {
 
 	@Test
 	void testCreatePasswordHash() throws SCCException {
-		assertThrows(SCCException.class, () -> SCCPasswordHash.createFromExistingPasswordHash("NoHash".getBytes()));
+		assertThrows(SCCException.class, () -> SCCPasswordHash.createFromExistingPasswordHash("NoHash".getBytes(StandardCharsets.UTF_8)));
 
 		assertThrows(SCCException.class, () -> SCCPasswordHash.createFromExistingPasswordHash("NoHash".toString()));
 
