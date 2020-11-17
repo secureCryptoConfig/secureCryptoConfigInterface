@@ -43,7 +43,6 @@ public class TestJSONReader {
 		Path p = Paths.get("NoExistingPath");
 		assertThrows(InvalidPathException.class, () -> SecureCryptoConfig.setCustomSCCPath(p));
 		
-		SecureCryptoConfig.setCustomSCCPath((Paths.get(TestJSONReader.class.getResource("/scc-configs").toURI())));
 	}
 
 }
