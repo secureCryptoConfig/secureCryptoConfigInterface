@@ -4,23 +4,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.security.InvalidKeyException;
-import java.security.InvalidParameterException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-import org.apache.commons.lang.ObjectUtils.Null;
 import org.junit.jupiter.api.Test;
-import org.securecryptoconfig.SCCKey.KeyType;
 import org.securecryptoconfig.SCCKey.KeyUseCase;
 import org.securecryptoconfig.SecureCryptoConfig.SCCAlgorithm;
 
+import COSE.AlgorithmID;
 import COSE.CoseException;
+import COSE.Encrypt0Message;
+import COSE.HeaderKeys;
 
 class TestSymmetricEncryption {
 
@@ -274,54 +270,10 @@ class TestSymmetricEncryption {
 		assertNotEquals(oldCiphertext, newCiphertext);
 	}
 
-	// Tests for SCC files handling
+	
+	//Test symmetric en/decryption with specific algorithm
 	@Test
-	void testSCCFileHandling() throws URISyntaxException {
-		// Set security level and get the policy name of the SCC file currently used
-		SecureCryptoConfig.setSecurityLevel(5);
-		String policyName = SecureCryptoConfig.getUsedSCC();
-		assertEquals("SCC_SecurityLevel_5", policyName);
-
-		// Set not existing security level
-		assertThrows(IllegalArgumentException.class, () -> SecureCryptoConfig.setSecurityLevel(7));
-
-		// Go back to default SCC
-		SecureCryptoConfig.setDefaultSCC();
-		String policyName1 = SecureCryptoConfig.getUsedSCC();
-		assertEquals("SCC_SecurityLevel_5", policyName1);
-
-		// Set specific SCC file with desired policyName
-		SecureCryptoConfig.setSCCFile("SCC_SecurityLevel_5");
-		String policyName2 = SecureCryptoConfig.getUsedSCC();
-		assertEquals("SCC_SecurityLevel_5", policyName2);
-
-		// Set specific SCC file with not existing policyName
-		assertThrows(InvalidParameterException.class, () -> SecureCryptoConfig.setSCCFile("WrongName"));
-
-		// Set custom path that is not existing
-		Path p = Paths.get("NoExistingPath");
-		assertThrows(InvalidPathException.class, () -> SecureCryptoConfig.setCustomSCCPath(p));
-
-	}
-
-	@Test
-	void testWrongKeyType() throws SCCException {
-		String plaintext = "Hello World!";
-
-		SCCKey keyAsym = SCCKey.createKey(KeyUseCase.AsymmetricEncryption);
-		assertThrows(SCCException.class,
-				() -> scc.encryptSymmetric(keyAsym, plaintext.getBytes(StandardCharsets.UTF_8)));
-
-		SCCKey keySym = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
-		assertThrows(SCCException.class,
-				() -> scc.encryptAsymmetric(keySym, plaintext.getBytes(StandardCharsets.UTF_8)));
-
-		assertThrows(SCCException.class, () -> scc.sign(keySym, plaintext.getBytes(StandardCharsets.UTF_8)));
-
-	}
-
-	@Test
-	void testSymmetricEncryptionWithSpecificAlgo() throws SCCException {
+	void testSymmetricEncryptionWithSpecificAlgo() throws SCCException, CoseException {
 		// Set specific algorithm
 		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.AES_GCM_192_96);
 
@@ -335,6 +287,11 @@ class TestSymmetricEncryption {
 		assertNotEquals(Base64.getEncoder().encodeToString(plaintext), ciphertext.toBase64());
 		assertNotEquals(0, ciphertext.toBytes().length);
 
+		// Look if right COSE algorithm ID is in COSE message
+		Encrypt0Message msg = (Encrypt0Message) COSE.Message.DecodeFromBytes(ciphertext.msg);
+		AlgorithmID coseAlgo = AlgorithmID.FromCBOR(msg.findAttribute(HeaderKeys.Algorithm));
+		assertEquals(COSE.AlgorithmID.AES_GCM_192, coseAlgo);
+
 		// Decryption
 		PlaintextContainer plain = scc.decryptSymmetric(key, ciphertext);
 		byte[] decrypted = plain.toBytes();
@@ -344,8 +301,9 @@ class TestSymmetricEncryption {
 		SecureCryptoConfig.defaultAlgorithm();
 	}
 
+	//Test symmetric en/decryption with specific algorithm
 	@Test
-	void testSymmetricEncryptionWithSpecificAlgo2() throws SCCException {
+	void testSymmetricEncryptionWithSpecificAlgo2() throws SCCException, CoseException {
 		// Set specific algorithm
 		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.AES_GCM_128_96);
 
@@ -359,6 +317,11 @@ class TestSymmetricEncryption {
 		assertNotEquals(Base64.getEncoder().encodeToString(plaintext), ciphertext.toBase64());
 		assertNotEquals(0, ciphertext.toBytes().length);
 
+		// Look if right COSE algorithm ID is in COSE message
+		Encrypt0Message msg = (Encrypt0Message) COSE.Message.DecodeFromBytes(ciphertext.msg);
+		AlgorithmID coseAlgo = AlgorithmID.FromCBOR(msg.findAttribute(HeaderKeys.Algorithm));
+		assertEquals(COSE.AlgorithmID.AES_GCM_128, coseAlgo);
+
 		// Decryption
 		PlaintextContainer plain = scc.decryptSymmetric(key, ciphertext);
 		byte[] decrypted = plain.toBytes();
@@ -368,6 +331,7 @@ class TestSymmetricEncryption {
 		SecureCryptoConfig.defaultAlgorithm();
 	}
 
+	// Test if symmetric encryption is possible with not suitable algo
 	@Test
 	void testSymmetricEncryptionWithWrongAlgo() throws SCCException {
 
@@ -382,65 +346,17 @@ class TestSymmetricEncryption {
 		SecureCryptoConfig.defaultAlgorithm();
 	}
 
-	// Test SCCKey
-	@Test
-	void testSCCKeyWrongAlgo() throws SCCException {
-		// Set specific wrong algorithm
-		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.ECDSA_256);
-		assertThrows(NullPointerException.class, () -> SCCKey.createKey(KeyUseCase.SymmetricEncryption));
-		
-		byte[] passwordBytes = "Password".getBytes(StandardCharsets.UTF_8);
-		assertThrows(SCCException.class, () -> SCCKey.createSymmetricKeyWithPassword(passwordBytes));
-		assertThrows(SCCException.class, () -> SCCKey.createSymmetricKeyWithPassword(new PlaintextContainer(passwordBytes)));
 
-		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.AES_GCM_128_96);
-		assertThrows(SCCException.class, () -> SCCKey.createKey(KeyUseCase.AsymmetricEncryption));
-		assertThrows(SCCException.class, () -> SCCKey.createKey(KeyUseCase.Signing));
-
-		SecureCryptoConfig.defaultAlgorithm();
-
-	}
-
-	@Test
-	void testSCCKey() throws SCCException {
-
-		// Set specific algorithm
-		SecureCryptoConfig.setAlgorithm(SCCAlgorithm.AES_GCM_192_96);
-		SCCKey key = SCCKey.createKey(KeyUseCase.SymmetricEncryption);
-
-		assertThrows(SCCException.class, () -> key.getPrivateKeyBytes());
-		assertThrows(SCCException.class, () -> key.getPublicKeyBytes());
-		assertThrows(SCCException.class, () -> key.getPrivateKey());
-		assertThrows(SCCException.class, () -> key.getPublicKey());
-
-		assertEquals(KeyType.Symmetric, key.getKeyType());
-		assertNotEquals(null, key.getAlgorithm());
-		assertNotEquals(0, key.getSecretKey().getEncoded().length);
-		
-		
-		// Test key generation algorithm
-		assertEquals("AES", key.getAlgorithm());
-		SecureCryptoConfig.defaultAlgorithm();
-
-		SCCKey keyAsym = SCCKey.createKey(KeyUseCase.Signing);
-		assertEquals(KeyType.Asymmetric, keyAsym.getKeyType());
-		assertThrows(SCCException.class, () -> keyAsym.toBytes());
-		assertThrows(SCCException.class, () -> keyAsym.getSecretKey());
-		assertNotEquals(0, keyAsym.getPrivateKeyBytes().length);
-		assertNotEquals(0, keyAsym.getPublicKeyBytes().length);
-		assertNotEquals(0, keyAsym.getPrivateKey().getEncoded().length);
-		assertNotEquals(0, keyAsym.getPublicKey().getEncoded().length);
-
-	}
-
+	//Test if not correct byte[] cipher can be used to generate a SCCCiphertext
 	@Test
 	void testWrongCipherCreation() throws SCCException {
-		assertThrows(SCCException.class, () -> SCCCiphertext.createFromExistingCiphertext("NoCipher".getBytes(StandardCharsets.UTF_8)));
+		assertThrows(SCCException.class,
+				() -> SCCCiphertext.createFromExistingCiphertext("NoCipher".getBytes(StandardCharsets.UTF_8)));
 		assertThrows(SCCException.class, () -> SCCCiphertext.createFromExistingCiphertext("NoCipher".toString()));
 
 	}
-	
-	
+
+	//Test if existing byte[] cipher can be used to generate a SCCCiphertext
 	@Test
 	void testExistingCipher() throws SCCException {
 
@@ -455,5 +371,5 @@ class TestSymmetricEncryption {
 		assertEquals(ciphertextString, ciphertext2.toBase64());
 
 	}
-	
+
 }

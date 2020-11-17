@@ -12,8 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.securecryptoconfig.SCCKey.KeyUseCase;
 import org.securecryptoconfig.SecureCryptoConfig.SCCAlgorithm;
 
-import com.upokecenter.cbor.CBORException;
-
 import COSE.CoseException;
 
 /**
@@ -126,6 +124,7 @@ class TestSignature {
 
 	}
 
+	// Test signing with specific algorithms
 	@Test
 	void testSigningWithSpecificAlgo() throws SCCException {
 		// Set specific algorithm
@@ -163,6 +162,7 @@ class TestSignature {
 		SecureCryptoConfig.defaultAlgorithm();
 	}
 	
+	// Test if signing can be done with not suitable algo
 	@Test
 	void testSigningWithWrongAlgo() throws SCCException {
 		
@@ -178,6 +178,7 @@ class TestSignature {
 		SecureCryptoConfig.defaultAlgorithm();
 	}
 	
+	// Test if a not correct byte[] signature can be used to generate SCCSignature
 	@Test
 	void testCreateSignature() throws SCCException {
 		assertThrows(SCCException.class,
@@ -188,7 +189,7 @@ class TestSignature {
 	
 	}
 	
-	
+	// Test if validation of signature is possible with wrong key
 	@Test
 	void testValidatingWithWrongKey() throws SCCException {
 		byte[] plaintext = "Hello World".getBytes(StandardCharsets.UTF_8);

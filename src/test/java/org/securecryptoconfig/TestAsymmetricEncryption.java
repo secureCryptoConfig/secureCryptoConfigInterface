@@ -3,8 +3,6 @@ package org.securecryptoconfig;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -170,6 +168,7 @@ class TestAsymmetricEncryption {
 
 	}
 
+	// Test asymmetric en/decryption with specific algo
 	@Test
 	void testAsymmetricEncryptionWithSpecificAlgo() throws SCCException {
 		// Set specific algorithm
@@ -193,13 +192,11 @@ class TestAsymmetricEncryption {
 		String decrypted2 = decryptedCiphertext2.toString(StandardCharsets.UTF_8);
 
 		assertEquals(plaintext, decrypted2);
-		
-		
-		
-		
+
 		SecureCryptoConfig.defaultAlgorithm();
 	}
 
+	// Test if asymmetric encryption is possible with wrong algo
 	@Test
 	void testAsymmetricEncryptionWithWrongAlgo() throws SCCException {
 

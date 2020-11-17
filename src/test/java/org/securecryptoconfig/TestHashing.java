@@ -6,10 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.Test;
-import org.securecryptoconfig.SCCKey.KeyUseCase;
 import org.securecryptoconfig.SecureCryptoConfig.SCCAlgorithm;
-
-import com.upokecenter.cbor.CBORException;
 
 import COSE.CoseException;
 
@@ -190,6 +187,7 @@ class TestHashing {
 
 	}
 
+	// Test if hashing is possible with specific algo
 	@Test
 	void testHashWithSpecificAlgo() throws SCCException {
 		// Set specific algorithm
@@ -217,6 +215,7 @@ class TestHashing {
 		SecureCryptoConfig.defaultAlgorithm();
 	}
 
+	// Test if password hashing is possible with specific algo
 	@Test
 	void testPasswordHashWithSpecificAlgo() throws SCCException {
 		// Set specific algorithm
@@ -243,7 +242,8 @@ class TestHashing {
 		
 		SecureCryptoConfig.defaultAlgorithm();
 	}
-
+	
+	// Test if hashing is possible with wrong algo
 	@Test
 	void testHashWithWrongAlgo() throws SCCException {
 
@@ -257,6 +257,7 @@ class TestHashing {
 		SecureCryptoConfig.defaultAlgorithm();
 	}
 
+	// Test if password hashing is possible with wrong algo
 	@Test
 	void testPasswordHashWithWrongAlgo() throws SCCException {
 
@@ -270,6 +271,7 @@ class TestHashing {
 		SecureCryptoConfig.defaultAlgorithm();
 	}
 
+	// Test if not correct byte[] hash can be used to generate a SCCHash
 	@Test
 	void testCreateHash() throws SCCException {
 		assertThrows(SCCException.class, () -> SCCHash.createFromExistingHash("NoHash".getBytes(StandardCharsets.UTF_8)));
@@ -278,6 +280,7 @@ class TestHashing {
 
 	}
 
+	// Test if not correct byte[] hash can be used to generate a SCCPasswordHash
 	@Test
 	void testCreatePasswordHash() throws SCCException {
 		assertThrows(SCCException.class, () -> SCCPasswordHash.createFromExistingPasswordHash("NoHash".getBytes(StandardCharsets.UTF_8)));
