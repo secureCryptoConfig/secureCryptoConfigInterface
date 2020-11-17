@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -15,7 +16,7 @@ public class TestJSONReader {
 
 	// Tests for SCC files handling
 	@Test
-	void testSCCFileHandling() throws URISyntaxException {
+	void testSCCFileHandling() throws URISyntaxException, SCCException {
 		// Set security level and get the policy name of the SCC file currently used
 		SecureCryptoConfig.setSecurityLevel(5);
 		String policyName = SecureCryptoConfig.getUsedSCC();
@@ -41,7 +42,9 @@ public class TestJSONReader {
 		// Set custom path that is not existing
 		Path p = Paths.get("NoExistingPath");
 		assertThrows(InvalidPathException.class, () -> SecureCryptoConfig.setCustomSCCPath(p));
-
+		
+		SecureCryptoConfig.setCustomSCCPath(Paths.get("./src/main/resources/scc-configs/"));
+		
 	}
 
 }
