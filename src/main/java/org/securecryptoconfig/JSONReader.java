@@ -299,6 +299,7 @@ public class JSONReader {
 			}
 			System.out.println("Here3");
 			if (result) {
+				System.out.println("H");
 				calculateValidationResult(signaturePath1, signaturePath2, filepath, i);
 			} else {
 				logger.debug("There are no two signatures defined for {}", filepath);
@@ -342,7 +343,9 @@ public class JSONReader {
 
 		boolean validation1 = false;
 		boolean validation2 = false;
-
+		System.out.println("Val result");
+		System.out.println(publicKeyPaths.get(0).toString());
+		System.out.println(publicKeyPaths.get(1).toString());
 		try {
 			validation1 = checkSignature(signatureAlgo, signaturePath1, publicKeyPaths.get(0).toString());
 			validation2 = checkSignature(signatureAlgo, signaturePath2, publicKeyPaths.get(1).toString());
