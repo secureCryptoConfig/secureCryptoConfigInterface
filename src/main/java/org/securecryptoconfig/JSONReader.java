@@ -99,7 +99,7 @@ public class JSONReader {
 			stream = Files.walk(path);
 			stream.filter(Files::isRegularFile)
 					.filter(file -> file.getFileName().toString().endsWith(JsonFileEndingWithDot))
-					.forEach(file -> {allFilePaths.add(file); System.out.println(file.getFileName().toString());});
+					.forEach(file -> allFilePaths.add(file));
 			stream.close();
 		} catch (IOException | NullPointerException e) {
 			logger.warn("Path not available or not set", e);
@@ -265,7 +265,7 @@ public class JSONReader {
 		try {
 			s = Files.walk(p);
 			s.filter(Files::isRegularFile).filter(file -> file.getFileName().toString().startsWith("publicKey"))
-					.forEach(file -> {publicKeyPaths.add(file); System.out.println("filename: " + file.getFileName().toString()); System.out.println("publicKeyPaths length in getPublicKeyPath: " + publicKeyPaths.size());});
+					.forEach(file -> publicKeyPaths.add(file));
 		} catch (IOException e) {
 			logger.warn("Error while trying to access file", e);
 		} finally {
@@ -296,7 +296,6 @@ public class JSONReader {
 				
 			}
 			if (result) {
-				System.out.println("publicKeyPaths length in startValidation: " + publicKeyPaths.size());
 				calculateValidationResult(signaturePath1, signaturePath2, filepath, i);
 			} else {
 				logger.debug("There are no two signatures defined for {}", filepath);
@@ -341,7 +340,6 @@ public class JSONReader {
 		boolean validation1 = false;
 		boolean validation2 = false;
 		try {
-			System.out.println("publicKeyPaths length in calculateValidationResults: " + publicKeyPaths.size());
 			validation1 = checkSignature(signatureAlgo, signaturePath1, publicKeyPaths.get(0).toString());
 			validation2 = checkSignature(signatureAlgo, signaturePath2, publicKeyPaths.get(1).toString());
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException | IOException e) {
