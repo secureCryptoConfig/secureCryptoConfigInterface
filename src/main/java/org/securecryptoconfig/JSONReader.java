@@ -265,7 +265,7 @@ public class JSONReader {
 		try {
 			s = Files.walk(p);
 			s.filter(Files::isRegularFile).filter(file -> file.getFileName().toString().startsWith("publicKey"))
-					.forEach(file -> publicKeyPaths.add(file));
+					.forEach(file -> {publicKeyPaths.add(file); System.out.println("filename: " + file.getFileName().toString()); System.out.println("publicKeyPaths length in getPublicKeyPath: " + publicKeyPaths.size());});
 		} catch (IOException e) {
 			logger.warn("Error while trying to access file", e);
 		} finally {
