@@ -296,6 +296,7 @@ public class JSONReader {
 				
 			}
 			if (result) {
+				System.out.println("publicKeyPaths length in startValidation: " + publicKeyPaths.size());
 				calculateValidationResult(signaturePath1, signaturePath2, filepath, i);
 			} else {
 				logger.debug("There are no two signatures defined for {}", filepath);
@@ -340,7 +341,7 @@ public class JSONReader {
 		boolean validation1 = false;
 		boolean validation2 = false;
 		try {
-			System.out.println("publicKeyPaths length: " + publicKeyPaths.size());
+			System.out.println("publicKeyPaths length in calculateValidationResults: " + publicKeyPaths.size());
 			validation1 = checkSignature(signatureAlgo, signaturePath1, publicKeyPaths.get(0).toString());
 			validation2 = checkSignature(signatureAlgo, signaturePath2, publicKeyPaths.get(1).toString());
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException | IOException e) {
