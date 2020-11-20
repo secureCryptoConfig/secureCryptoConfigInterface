@@ -48,11 +48,11 @@ public class TestJSONReader {
 		
 		System.out.println(Paths.get(TestJSONReader.class.getResource("/scc-configs").toURI()));
 
-		p = Paths.get(TestJSONReader.class.getResource("/scc-configs").toURI());
+		Path p2 = Paths.get(TestJSONReader.class.getResource("/scc-configs").toURI());
 
 		Stream<Path> s = null;
 		try {
-			s = Files.walk(p);
+			s = Files.walk(p2);
 			s.filter(Files::isRegularFile)
 					.forEach(file -> System.out.println(file.getFileName()));
 		} catch (IOException e) {
