@@ -46,8 +46,9 @@ public class TestJSONReader {
 		System.out.println(Paths.get(TestJSONReader.class.getResource("/scc-configs").toURI()));
 		
 		SecureCryptoConfig.setCustomSCCPath((Paths.get(TestJSONReader.class.getResource("/scc-configs").toURI())));
-		SecureCryptoConfig.setDefaultSCC();
 		//System.out.println(Paths.get(TestJSONReader.class.getResource("/scc-configs").toURI()));
-	}
+		
+		SecureCryptoConfig.setDefaultSCC();
+		}
 
 }
