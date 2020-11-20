@@ -99,7 +99,7 @@ public class JSONReader {
 			stream = Files.walk(path);
 			stream.filter(Files::isRegularFile)
 					.filter(file -> file.getFileName().toString().endsWith(JsonFileEndingWithDot))
-					.forEach(file -> allFilePaths.add(file));
+					.forEach(file -> {allFilePaths.add(file); System.out.println(file.getFileName().toString());});
 			stream.close();
 		} catch (IOException | NullPointerException e) {
 			logger.warn("Path not available or not set", e);
@@ -281,12 +281,10 @@ public class JSONReader {
 		for (int i = 0; i < allFilePaths.size(); i++) {
 			Path filepath = allFilePaths.get(i);
 			String[] parts = allFilePaths.get(i).toString().split("\\\\");
-			System.out.println("Here1");
 			String signatureFileName1 = parts[parts.length - 1].replace(JsonFileEndingWithDot, "-signature1");
 			String signatureFileName2 = parts[parts.length - 1].replace(JsonFileEndingWithDot, "-signature2");
 			String signaturePath1 = filepath.toString().replace(parts[parts.length - 1], "") + signatureFileName1;
 			String signaturePath2 = filepath.toString().replace(parts[parts.length - 1], "") + signatureFileName2;
-			System.out.println("Here2");
 			boolean result;
 			if (!isJAR) {
 				result = new File(signaturePath1).exists() && new File(signaturePath2).exists();
@@ -342,6 +340,7 @@ public class JSONReader {
 		boolean validation1 = false;
 		boolean validation2 = false;
 		try {
+			System.out.println("publicKeyPaths length: " + publicKeyPaths.size());
 			validation1 = checkSignature(signatureAlgo, signaturePath1, publicKeyPaths.get(0).toString());
 			validation2 = checkSignature(signatureAlgo, signaturePath2, publicKeyPaths.get(1).toString());
 		} catch (NoSuchAlgorithmException | InvalidKeySpecException | IOException e) {
