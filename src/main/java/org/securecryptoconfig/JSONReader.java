@@ -370,9 +370,13 @@ public class JSONReader {
 		instances.clear();
 
 		try {
+			System.out.println("Here1");
 			getFiles(path);
+			System.out.println("Here2");
 			getSCCInstances();
+			System.out.println("Here3");
 			getPublicKeyPath(path);
+			System.out.println("Here4");
 			startValidation();
 		} catch (URISyntaxException | IOException e) {
 			logger.warn("Custom Path invalid or not available", e);
