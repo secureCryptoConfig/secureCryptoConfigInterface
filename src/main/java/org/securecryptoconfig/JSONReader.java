@@ -255,7 +255,7 @@ public class JSONReader {
 				if (!SecureCryptoConfig.customPath) {
 					p = Paths.get(uri);
 				} else {
-					p = Paths.get(path.toString() + "\\publicKeys");
+					p = Paths.get(path.toString() + File.separator  + "publicKeys");
 				}
 			}
 		} catch (URISyntaxException e) {
