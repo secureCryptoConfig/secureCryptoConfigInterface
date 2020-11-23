@@ -3,18 +3,14 @@ package org.securecryptoconfig;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-import java.io.IOException;
 import java.net.URISyntaxException;
-import java.nio.file.Files;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.InvalidParameterException;
-import java.util.stream.Stream;
-
 import org.junit.jupiter.api.Test;
 
-public class TestJSONReader {
+class TestJSONReader {
 
 	// Tests for SCC files handling
 	@Test

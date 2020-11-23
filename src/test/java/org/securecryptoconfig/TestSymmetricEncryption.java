@@ -345,7 +345,7 @@ class TestSymmetricEncryption {
 
 		SecureCryptoConfig.defaultAlgorithm();
 	}
-
+	
 
 	//Test if not correct byte[] cipher can be used to generate a SCCCiphertext
 	@Test

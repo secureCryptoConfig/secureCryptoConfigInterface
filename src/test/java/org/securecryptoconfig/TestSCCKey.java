@@ -28,6 +28,14 @@ class TestSCCKey {
 
 		assertThrows(SCCException.class, () -> scc.sign(keySym, plaintext.getBytes(StandardCharsets.UTF_8)));
 
+		SCCCiphertext cSym = scc.encryptSymmetric(keySym, plaintext.getBytes(StandardCharsets.UTF_8));
+		assertThrows(SCCException.class,
+				() -> scc.decryptSymmetric(keyAsym, cSym));
+		
+		SCCCiphertext cAsym = scc.encryptAsymmetric(keyAsym, plaintext.getBytes(StandardCharsets.UTF_8));
+		assertThrows(SCCException.class,
+				() -> scc.decryptAsymmetric(keySym, cAsym));
+
 	}
 	
 	// Test if SecreteKey or private/public key can be generated

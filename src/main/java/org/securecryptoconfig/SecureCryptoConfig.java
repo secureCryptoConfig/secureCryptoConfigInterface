@@ -227,12 +227,8 @@ public class SecureCryptoConfig implements SecureCryptoConfigInterface {
 			} else {
 				return decideForAlgoSymmetric(usedAlgorithm, key, plaintext);
 			}
-		} else {
-			throw new SCCException(
-					"The used SCCKey has the wrong KeyType for this use case. Create a key with KeyType.Symmetric",
-					new InvalidKeyException("Invalid key!"));
-		}
-		throw new SCCException("No supported algorithms!", new CoseException(null));
+		} 
+		throw new SCCException("The used SCCKey has the wrong KeyType for this use case or no algorithms are supported.", new CoseException(null));
 
 	}
 
