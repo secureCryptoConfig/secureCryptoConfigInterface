@@ -255,7 +255,7 @@ public class JSONReader {
 				if (!SecureCryptoConfig.customPath) {
 					p = Paths.get(uri);
 				} else {
-					p = Paths.get(path.toString() + "\\publicKeys");
+					p = Paths.get(path.toString() + File.separator  + "publicKeys");
 				}
 			}
 		} catch (URISyntaxException e) {
@@ -281,12 +281,10 @@ public class JSONReader {
 		for (int i = 0; i < allFilePaths.size(); i++) {
 			Path filepath = allFilePaths.get(i);
 			String[] parts = allFilePaths.get(i).toString().split("\\\\");
-			System.out.println("Here1");
 			String signatureFileName1 = parts[parts.length - 1].replace(JsonFileEndingWithDot, "-signature1");
 			String signatureFileName2 = parts[parts.length - 1].replace(JsonFileEndingWithDot, "-signature2");
 			String signaturePath1 = filepath.toString().replace(parts[parts.length - 1], "") + signatureFileName1;
 			String signaturePath2 = filepath.toString().replace(parts[parts.length - 1], "") + signatureFileName2;
-			System.out.println("Here2");
 			boolean result;
 			if (!isJAR) {
 				result = new File(signaturePath1).exists() && new File(signaturePath2).exists();
