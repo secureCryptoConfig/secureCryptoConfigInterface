@@ -129,7 +129,7 @@
 		<dependency>
 			<groupId>com.upokecenter</groupId>
 			<artifactId>cbor</artifactId>
-			<version>4.1.3</version>
+			<version>4.5.1</version>
 		</dependency>
 		<dependency>
 			<groupId>com.augustcellars.cose</groupId>
